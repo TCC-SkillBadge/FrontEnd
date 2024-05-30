@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const UCServer = axios.create({
-    baseURL: 'http://localhost:6001'
+    baseURL: 'https://user-admin-tg-7408f5404851.herokuapp.com/'
 })
 
 const msgLife = 6000
@@ -54,6 +54,7 @@ export const loginUA = async (E, S) => {
                 senha: S
             }
         })
+        console.log(data)
         sessionStorage.setItem('usuarioAdmin', JSON.stringify(data))
         return {sucesso: true}
     }
