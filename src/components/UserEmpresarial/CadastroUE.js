@@ -76,7 +76,6 @@ export default class CadastroUE extends Component {
                 else this.mensagens2.replace(response.pacote)
             })
         }
-        console.log(this.state)
     }
 
     componentDidUpdate(_prevProps, prevState){

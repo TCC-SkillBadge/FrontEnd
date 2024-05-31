@@ -44,22 +44,23 @@ export default class Login extends Component {
                     else this.mensagem.replace(response.pacote)
                 })
                 break
+            default:
         }
     }
 
     escolherUC = () => {
-        this.setState({usuario: this.tiposUsuario.Comum, cabecalho: "Entrando como Usuário Comum"})
-        //this.mensagem.clear()
+        this.setState({usuario: this.tiposUsuario.Comum, cabecalho: "Entrando como Usuário Comum", emailComercial: "", senha: ""})
+        if(this.mensagem) this.mensagem.clear()
     }
 
     escolherUE = () => {
-        this.setState({usuario: this.tiposUsuario.Empresarial, cabecalho: "Entrando como Usuário Empresarial"})
-        //this.mensagem.clear()
+        this.setState({usuario: this.tiposUsuario.Empresarial, cabecalho: "Entrando como Usuário Empresarial", emailComercial: "", senha: ""})
+        if(this.mensagem) this.mensagem.clear()
     }
 
     escolherUA = () => {
-        this.setState({usuario: this.tiposUsuario.Admin, cabecalho: "Entrando como Administrador"})
-        //this.mensagem.clear()
+        this.setState({usuario: this.tiposUsuario.Admin, cabecalho: "Entrando como Administrador", emailComercial: "", senha: ""})
+        if(this.mensagem) this.mensagem.clear()
     }
 
     render() {

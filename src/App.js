@@ -4,7 +4,7 @@ import 'primeflex/themes/primeone-dark.css'
 import 'primereact/resources/themes/saga-blue/theme.css'
 import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import Navbar from './navbar/Navbar'
 import Home from './common-pages/Home'
 import Login from './common-pages/Login'
@@ -20,22 +20,23 @@ import ListarUEs from './components/UserAdmin/ListarUEs'
 function App() {
 
     return (
-    <BrowserRouter>
-        <Navbar/>
-        <Routes>
-            <Route exact path='/' element={<Home/>}/>
-            <Route path='/login' element={<Login/>}/>
-            <Route path='/cadastro' element={<Cadastro/>}/>
-            <Route path='/contaUE' element={<ContaUE/>}/>
-            <Route path='/contaUC' element={<ContaUC/>}/>
-            <Route path='/contaUA' element={<ContaUA/>}/>
-            <Route path='/pesquisaEmpr' element={<PesquisaEmpr/>}/>
-            <Route path='/pesquisaAdmin' element={<PesquisaAdmin/>}/>
-            <Route path='/listarUCs' element={<ListarUCs/>}/>
-            <Route path='/listarUEs' element={<ListarUEs/>}/>
-        </Routes>
-    </BrowserRouter>
+        <HashRouter>
+            <Navbar/>
+            <Routes>
+                <Route exact path='/' element={<Home/>}/>
+                <Route path='/login' element={<Login/>}/>
+                <Route path='/cadastro' element={<Cadastro/>}/>
+                <Route path='/contaUE' element={<ContaUE/>}/>
+                <Route path='/contaUC' element={<ContaUC/>}/>
+                <Route path='/contaUA' element={<ContaUA/>}/>
+                <Route path='/pesquisaEmpr' element={<PesquisaEmpr/>}/>
+                <Route path='/pesquisaAdmin' element={<PesquisaAdmin/>}/>
+                <Route path='/listarUCs' element={<ListarUCs/>}/>
+                <Route path='/listarUEs' element={<ListarUEs/>}/>
+            </Routes>
+        </HashRouter>
     );
 }
 
 export default App;
+

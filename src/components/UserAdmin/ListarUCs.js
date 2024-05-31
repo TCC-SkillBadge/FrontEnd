@@ -23,7 +23,6 @@ export default class ListarUCs extends Component {
                 if(response.sucesso){
                     this.mensagem.clear()
                     this.setState({listaUC: response.pacote})
-                    this.setState({msg: false})
                 }
                 else{
                     this.mensagem.replace(response.pacote)

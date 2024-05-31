@@ -23,7 +23,6 @@ export default class ListarUEs extends Component {
                 if(response.sucesso){
                     this.mensagem.clear()
                     this.setState({listaUE: response.pacote})
-                    this.setState({msg: false})
                 }
                 else{
                     this.mensagem.replace(response.pacote)

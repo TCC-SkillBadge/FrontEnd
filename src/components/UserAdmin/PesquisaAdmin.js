@@ -30,7 +30,7 @@ export default class PesquisaAdmin extends Component {
             this.mensagem.replace({severity: 'error', summary: 'Erro', detail: 'Digite um termo de pesquisa'})
             return
         }
-        this.mensagem.clear()
+        if(this.mensagem) this.mensagem.clear()
         this.setState({resultadoPesquisa: [], pesquisando: true, msg: false})
         const usuarioAdmin = sessionStorage.getItem('usuarioAdmin')
         if(usuarioAdmin){
@@ -39,7 +39,7 @@ export default class PesquisaAdmin extends Component {
             case 'Comum':
                 ADMconsultarUC(token, tipoUsuario, this.state.termoPesquisa).then(response => {
                     if(response.sucesso){
-                        this.setState({resultadoPesquisa: response.pacote, termoPesquisa: "", pesquisando: false, msg: false})
+                        this.setState({resultadoPesquisa: response.pacote, termoPesquisa: "", pesquisando: false})
                     }
                     else{
                         this.setState({pesquisando: false, msg: true})
@@ -51,7 +51,7 @@ export default class PesquisaAdmin extends Component {
                 consultarUE(token, tipoUsuario, this.state.termoPesquisa).then(response => {
                     if(response.sucesso){
                         const resultadoPesquisaAux = [response.pacote]
-                        this.setState({resultadoPesquisa: resultadoPesquisaAux, termoPesquisa: "", pesquisando: false, msg: false})
+                        this.setState({resultadoPesquisa: resultadoPesquisaAux, termoPesquisa: "", pesquisando: false})
                     }
                     else{
                         this.setState({pesquisando: false, msg: true})
@@ -59,18 +59,19 @@ export default class PesquisaAdmin extends Component {
                     }
                 })
                 break
+            default:
             }
         }  
     }
 
     escolherTPUsuarioC = () => {
         this.setState({plholder: "Insira o termo da busca", tipoUsuario: this.tipoPesquisa.Comum, cabecalho: "Pesquisar Usuário Comum", termoPesquisa: '', resultadoPesquisa: []})
-        this.mensagem.clear()
+        if(this.mensagem) this.mensagem.clear()
     }
 
     escolherTPUsuarioE = () => {
         this.setState({plholder: "Insira o email comercial ou a razao social do Empresa", tipoUsuario: this.tipoPesquisa.Empresarial, cabecalho: "Pesquisar Empresa", termoPesquisa: '', resultadoPesquisa: []})
-        this.mensagem.clear()
+        if(this.mensagem) this.mensagem.clear()
     }
 
     componentDidMount(){

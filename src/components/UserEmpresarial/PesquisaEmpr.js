@@ -41,7 +41,7 @@ export default class PesquisaEmpr extends Component {
     render() {
         return (
             <div className='p-4'>
-                <h1>Pesquisar</h1>
+                <h1>Pesquisar Usuário Comum:</h1>
                 <div className='flex inline'>
                     <div className='p-inputgroup'>
                         <span className='p-inputgroup-addon'>

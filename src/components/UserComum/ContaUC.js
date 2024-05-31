@@ -29,7 +29,8 @@ export default class ContaUC extends Component {
                         nomeCompleto: dados.nome_completo,
                         email: dados.email,
                         ocupacao: dados.ocupacao,
-                        paisOrigem: dados.pais_origem
+                        paisOrigem: dados.pais_origem,
+                        msg: false
                     })
                 }
                 else{
