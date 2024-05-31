@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Messages } from 'primereact/messages'
+import { Navigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { acessaInfoUC } from '../../controllers/UserComumCTR'
 
@@ -14,6 +15,7 @@ export default class ContaUC extends Component {
             ocupacao: "",
             paisOrigem: "",
             msg: false,
+            logado: true
         }
     }
 
@@ -43,11 +45,16 @@ export default class ContaUC extends Component {
 
     sairConta = () => {
         sessionStorage.removeItem('usuarioComum')
-        window.location.href = '/'
+        this.setState({logado: false})
+    }
+
+    componentWillUnmount(){
+        this.props.refresh()
     }
 
     render() {
         const estado = this.state
+        if(!estado.logado) return <Navigate to='/'/>
         return (
             <div className='mr-5 ml-5'>
                 <Messages id='mensagemContaUC' ref={(el) => this.mensagem = el}></Messages>

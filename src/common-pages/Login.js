@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'primereact/button'
 import { Messages } from 'primereact/messages'
 import { InputText } from 'primereact/inputtext'
+import { Navigate } from 'react-router-dom'
 import { loginUE } from '../controllers/UserEmpresarialCTR'
 import { loginUC } from '../controllers/UserComumCTR'
 import { loginUA } from '../controllers/UserAdminCTR'
@@ -13,7 +14,10 @@ export default class Login extends Component {
             emailComercial: "",
             senha: "",
             usuario: "",
-            cabecalho: "Escolha o tipo de Usuário para Login"
+            cabecalho: "Escolha o tipo de Usuário para Login",
+            logadoUC: false,
+            logadoUE: false,
+            logadoUA: false
         }
     }
 
@@ -28,19 +32,28 @@ export default class Login extends Component {
         switch(this.state.usuario){
             case 'Comum':
                 loginUC(this.state.emailComercial, this.state.senha).then(response => {
-                    if(response.sucesso) window.location.href = '/contaUC'
+                    if(response.sucesso){
+                        console.log('Entrei no redirecionamento do UC')
+                        this.setState({logadoUC: true})
+                    } 
                     else this.mensagem.replace(response.pacote)
                 })
                 break
             case 'Empresarial':
                 loginUE(this.state.emailComercial, this.state.senha).then(response => {
-                    if(response.sucesso) window.location.href = '/contaUE'
+                    if(response.sucesso){
+                        console.log('Entrei no redirecionamento do UE')
+                        this.setState({logadoUE: true})
+                    }
                     else this.mensagem.replace(response.pacote)
                 })
                 break
             case 'Admin':
                 loginUA(this.state.emailComercial, this.state.senha).then(response => {
-                    if(response.sucesso) window.location.href = '/contaUA'
+                    if(response.sucesso){
+                        console.log('Entrei no redirecionamento do UA')
+                        this.setState({logadoUA: true})
+                    } 
                     else this.mensagem.replace(response.pacote)
                 })
                 break
@@ -63,7 +76,14 @@ export default class Login extends Component {
         if(this.mensagem) this.mensagem.clear()
     }
 
+    componentWillUnmount(){
+        this.props.refresh()
+    }
+
     render() {
+        if(this.state.logadoUC) return <Navigate to='/contaUC'/>
+        if(this.state.logadoUE) return <Navigate to='/contaUE'/>
+        if(this.state.logadoUA) return <Navigate to='/contaUA'/>
         return (
             <div className='grid'>
                 <div className='col-2 p-4'>

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Messages } from 'primereact/messages'
+import { Navigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { acessaInfoUA } from '../../controllers/UserAdminCTR'
 
@@ -12,7 +13,8 @@ export default class ContaUA extends Component {
             nomeAdmin: "",
             emailAdmin: "",
             cargo: "",
-            msg: false
+            msg: false,
+            logado: true
         }
     }
 
@@ -41,11 +43,16 @@ export default class ContaUA extends Component {
 
     sairConta = () => {
         sessionStorage.removeItem('usuarioAdmin')
-        window.location.href = '/'
+        this.setState({logado: false})
+    }
+
+    componentWillUnmount(){
+        this.props.refresh()
     }
 
     render() {
         const estado = this.state
+        if(!estado.logado) return <Navigate to='/'/>
         return (
             <div className='mr-5 ml-5'>
                 <Messages id='mensagemContaUA' ref={(el) => this.mensagem = el}></Messages>
