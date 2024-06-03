@@ -1,8 +1,9 @@
 import axios from 'axios'
 
 const UEServer = axios.create({
-    baseURL: 'https://user-empresarial-tg-be2b1bc973b0.herokuapp.com/'
+    baseURL: 'http://localhost:6003/'
 })
+//'https://user-empresarial-tg-be2b1bc973b0.herokuapp.com/'
 
 const msgLife = 6000
 
@@ -17,7 +18,7 @@ export const validarCNPJ = async (CNPJ) => {
         i++
     }
 
-    //Cálculo do 1 dígito verificador
+    //Cálculo do 1º dígito verificador
     i = 0
     while(i < numerosCNPJ.length){
         soma += numerosCNPJ[i] * sequenciaValidacao[i]
@@ -28,7 +29,7 @@ export const validarCNPJ = async (CNPJ) => {
     if(resto < 2) result1 = 0
     else result1 = divisor - resto
 
-    //Cálculo do 2 dígito verificador
+    //Cálculo do 2º dígito verificador
     numerosCNPJ.push(result1)
     sequenciaValidacao.unshift(6)
     i = 0
@@ -111,19 +112,19 @@ const validarRegistroReceitaFederal = async (CNPJ) => {
     }
     catch(err){
         console.log(err)
-        try{
-          return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro na Validação do CNPJ', detail: err.message, life: msgLife}
-                }
-            )  
-        }
-        catch(err){
+        if(err.response){
             return(
                 {
                     sucesso: false,
-                    pacote: {severity: 'error', summary: 'Pesquisa Indisponível', detail: 'Entre com suas informações manualmente', life: msgLife}
+                    pacote: {severity: 'error', summary: 'Erro na Validação do CNPJ', detail: err.response.data.message, life: msgLife}
+                }
+            )
+        }
+        if(err.request){
+            return(
+                {
+                    sucesso: false,
+                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Serviço de Cadastro muito provavelmente Indisponível. Tente novamente mais tarde.', life: msgLife}
                 }
             )
         }
@@ -154,15 +155,25 @@ export const cadastrarUE = async (EC, SN, RS, CNPJ, CEP, L, B, M, SUP, NC) => {
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife}
-                }
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: { severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
+        if(err.request){
             return(
                 {
                     sucesso: false,
@@ -187,15 +198,25 @@ export const loginUE = async (EC, SN) => {
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro no Login', detail: err.response.data.message, life: msgLife}
-                }
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: { severity: 'error', summary: 'Erro no Login', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
+        if(err.request){
             return(
                 {
                     sucesso: false,
@@ -238,12 +259,35 @@ export const acessaInfoUE = async (token, tipoUsuario) => {
     }
     catch(err){
         console.log(err)
-        return(
-            {
-                sucesso: false,
-                pacote: {severity: 'error', summary: 'Erro na Acessibilidade dos Dados', detail: 'Tente novamente mais tarde', life: msgLife,  sticky: true, closable: false}
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: { severity: 'error', summary: 'Erro na Acessibilidade dos Dados', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
             }
-        )
+        }
+        if(err.request){
+            return(
+                {
+                    sucesso: false,
+                    caso: 'erro',
+                    pacote: {severity: 'error', summary: 'Erro na Acessibilidade dos Dados', detail: 'Tente novamente mais tarde', life: msgLife,  sticky: true, closable: false}
+                }
+            )
+        }
     }
 }
 
@@ -280,18 +324,39 @@ export const verTodosUE = async (token, tipoUsuario) => {
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro na Verificação dos Usuários Empresariais', detail: err.response.data.message, sticky: true, closable: false}  
-                } 
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: { severity: 'error', summary: 'Erro no Acesso à Lista de Usuários Empresariais', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
+        if(err.request){
             return(
                 {
                     sucesso: false,
+                    caso: 'erro',
                     pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', sticky: true, closable: false}
                 }
             )
@@ -331,18 +396,39 @@ export const consultarUE = async (token, tipoUsuario, P) => {
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro na Consulta', detail: err.response.data.message, life: msgLife}
-                }
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: { severity: 'error', summary: 'Erro na Consulta', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
+        if(err.request){
             return(
                 {
                     sucesso: false,
+                    caso: 'erro',
                     pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
                 }
             )

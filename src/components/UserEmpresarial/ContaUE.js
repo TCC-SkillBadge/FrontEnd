@@ -20,7 +20,8 @@ export default class ContaUE extends Component {
             suplemento: "",
             numeroContato: "",
             msg: false,
-            logado: true
+            logado: true,
+            destinoSaida: "",
         }
     }
 
@@ -46,16 +47,23 @@ export default class ContaUE extends Component {
                     })
                 }
                 else{
-                    this.mensagem.replace(response.pacote)
-                    this.setState({msg: true})
+                    switch(response.caso){
+                        case 'expirado':
+                            alert(response.pacote)
+                            this.sairConta('/login')
+                            break
+                        default:
+                            this.mensagem.replace(response.pacote)
+                            this.setState({msg: true})
+                    }
                 }
             })
         }
     }
 
-    sairConta = () => {
+    sairConta = (destino) => {
         sessionStorage.removeItem('usuarioEmpresarial')
-        this.setState({logado: false})
+        this.setState({ logado: false, destinoSaida: destino})
     }
 
     componentWillUnmount(){
@@ -64,7 +72,7 @@ export default class ContaUE extends Component {
 
     render() {
         const estado = this.state
-        if(!estado.logado) return <Navigate to='/'/>
+        if(!estado.logado) return <Navigate to={estado.destinoSaida}/>
         return (
             <div>
                 <Messages id='mensagemContaUE' ref={(el) => this.mensagem = el}></Messages>
@@ -77,7 +85,7 @@ export default class ContaUE extends Component {
                 icon='pi pi-sign-out'
                 className='p-button-danger mt-4 mr-5 ml-5'
                 label='Sair da Conta'
-                onClick={this.sairConta}/>
+                onClick={() => this.sairConta('/')}/>
             </div>
             
         )

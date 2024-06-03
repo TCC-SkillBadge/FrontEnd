@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Messages } from 'primereact/messages'
+import { Navigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { EMPRconsultarUC } from '../../controllers/UserComumCTR'
 
@@ -12,7 +13,8 @@ export default class PesquisaEmpr extends Component {
             usuarioCPesquisado: '',
             usuarioC: null,
             msg: false,
-            pesquisando: false
+            pesquisando: false,
+            logado: true
         }
     }
 
@@ -31,14 +33,23 @@ export default class PesquisaEmpr extends Component {
                     this.setState({usuarioC: response.pacote, usuarioCPesquisado: "", pesquisando: false, msg: false})
                 }
                 else{
-                    this.setState({pesquisando: false, msg: true})
-                    this.mensagem.replace(response.pacote)
+                    switch(response.caso){
+                        case 'expirado':
+                            alert(response.pacote)
+                            sessionStorage.removeItem('usuarioEmpresarial')
+                            this.setState({ logado: false })
+                            break
+                        default:
+                            this.mensagem.replace(response.pacote)
+                            this.setState({pesquisando: false, msg: true})
+                    }
                 }
             })
         }
     }
 
     render() {
+        if(!this.state.logado) return <Navigate to='/login'/>
         return (
             <div className='p-4'>
                 <h1>Pesquisar Usuário Comum:</h1>

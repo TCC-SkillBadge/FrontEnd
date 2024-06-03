@@ -2,6 +2,7 @@ import { Button } from 'primereact/button'
 import React, { Component } from 'react'
 import { InputText } from 'primereact/inputtext'
 import { Messages } from 'primereact/messages'
+import { Navigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { consultarUE } from '../../controllers/UserEmpresarialCTR'
 import { ADMconsultarUC } from '../../controllers/UserComumCTR'
@@ -16,7 +17,8 @@ export default class PesquisaAdmin extends Component {
             cabecalho: "",
             resultadoPesquisa: [],
             msg: false,
-            pesquisando: false
+            pesquisando: false,
+            logado: true
         }
     }
 
@@ -25,7 +27,7 @@ export default class PesquisaAdmin extends Component {
         Empresarial: 'Empresarial'
     }
 
-    pesquisar = () => {
+    pesquisar = async () => {
         if(this.state.termoPesquisa === ''){
             this.mensagem.replace({severity: 'error', summary: 'Erro', detail: 'Digite um termo de pesquisa'})
             return
@@ -35,32 +37,73 @@ export default class PesquisaAdmin extends Component {
         const usuarioAdmin = sessionStorage.getItem('usuarioAdmin')
         if(usuarioAdmin){
             const { token, tipoUsuario } = JSON.parse(usuarioAdmin)
+            let resultadoPesquisaAux
             switch(this.state.tipoUsuario){
-            case 'Comum':
-                ADMconsultarUC(token, tipoUsuario, this.state.termoPesquisa).then(response => {
-                    if(response.sucesso){
-                        this.setState({resultadoPesquisa: response.pacote, termoPesquisa: "", pesquisando: false})
-                    }
-                    else{
-                        this.setState({pesquisando: false, msg: true})
-                        this.mensagem.replace(response.pacote)
-                    }
-                })
-                break
-            case 'Empresarial':
-                consultarUE(token, tipoUsuario, this.state.termoPesquisa).then(response => {
-                    if(response.sucesso){
-                        const resultadoPesquisaAux = [response.pacote]
-                        this.setState({resultadoPesquisa: resultadoPesquisaAux, termoPesquisa: "", pesquisando: false})
-                    }
-                    else{
-                        this.setState({pesquisando: false, msg: true})
-                        this.mensagem.replace(response.pacote)
-                    }
-                })
-                break
-            default:
+                case 'Comum':
+                    resultadoPesquisaAux = await ADMconsultarUC(token, tipoUsuario, this.state.termoPesquisa)
+                    break
+                case 'Empresarial':
+                    resultadoPesquisaAux = await consultarUE(token, tipoUsuario, this.state.termoPesquisa)
+                    break
+                default:
             }
+            if(resultadoPesquisaAux.sucesso){
+                switch(this.state.tipoUsuario){
+                    case 'Comum':
+                        this.setState({resultadoPesquisa: resultadoPesquisaAux.pacote, termoPesquisa: "", pesquisando: false})
+                        break
+                    case 'Empresarial':
+                        const r = [resultadoPesquisaAux.pacote]
+                        this.setState({resultadoPesquisa: r, termoPesquisa: "", pesquisando: false})
+                        break
+                    default:
+                }
+            }
+            else{
+                switch(resultadoPesquisaAux.caso){
+                    case 'expirado':
+                        alert(resultadoPesquisaAux.pacote)
+                        sessionStorage.removeItem('usuarioAdmin')
+                        this.setState({ logado: false })
+                        break
+                    default:
+                        this.mensagem.replace(resultadoPesquisaAux.pacote)
+                        this.setState({pesquisando: false, msg: true})
+                }
+            }
+            // switch(this.state.tipoUsuario){
+            // case 'Comum':
+            //     ADMconsultarUC(token, tipoUsuario, this.state.termoPesquisa).then(response => {
+            //         if(response.sucesso){
+            //             this.setState({resultadoPesquisa: response.pacote, termoPesquisa: "", pesquisando: false})
+            //         }
+            //         else{
+            //             switch(response.caso){
+            //                 case 'expirado':
+            //                     alert(response.pacote)
+            //                     this.setState({ logado: false })
+            //                     break
+            //                 default:
+            //                     this.mensagem.replace(response.pacote)
+            //                     this.setState({pesquisando: false, msg: true})
+            //             }
+            //         }
+            //     })
+            //     break
+            // case 'Empresarial':
+            //     consultarUE(token, tipoUsuario, this.state.termoPesquisa).then(response => {
+            //         if(response.sucesso){
+            //             const resultadoPesquisaAux = [response.pacote]
+            //             this.setState({resultadoPesquisa: resultadoPesquisaAux, termoPesquisa: "", pesquisando: false})
+            //         }
+            //         else{
+            //             this.setState({pesquisando: false, msg: true})
+            //             this.mensagem.replace(response.pacote)
+            //         }
+            //     })
+            //     break
+            // default:
+            // }
         }  
     }
 
@@ -79,6 +122,7 @@ export default class PesquisaAdmin extends Component {
     }
 
     render() {
+        if(!this.state.logado) return <Navigate to='/login'/>
         return (
         <div className='grid'>
             <div className="col-2 p-4">

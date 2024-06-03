@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Messages } from 'primereact/messages'
+import { Navigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { verTodosUC } from '../../controllers/UserComumCTR'
 
@@ -10,7 +11,8 @@ export default class ListarUCs extends Component {
         super(props)
         this.state ={
             listaUC: [],
-            msg: false
+            msg: false,
+            logado: true
         }
     }
 
@@ -21,12 +23,19 @@ export default class ListarUCs extends Component {
             const { token, tipoUsuario } = JSON.parse(usuarioAdmin)
             verTodosUC(token, tipoUsuario).then(response => {
                 if(response.sucesso){
-                    this.mensagem.clear()
                     this.setState({listaUC: response.pacote})
                 }
                 else{
-                    this.mensagem.replace(response.pacote)
-                    this.setState({msg: true})
+                    switch(response.caso){
+                        case 'expirado':
+                            alert(response.pacote)
+                            sessionStorage.removeItem('usuarioAdmin')
+                            this.setState({ logado: false })
+                            break
+                        default:
+                            this.mensagem.replace(response.pacote)
+                            this.setState({ msg: true })
+                    }
                 }
             })
         }
@@ -37,6 +46,7 @@ export default class ListarUCs extends Component {
     }
 
     render() {
+        if(!this.state.logado) return <Navigate to='/login'/>
         return (
             <div className='mt-4'>
                 <Messages id='mensagemListaUC' ref={(el) => this.mensagem = el}></Messages>

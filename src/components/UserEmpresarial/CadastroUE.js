@@ -71,7 +71,6 @@ export default class CadastroUE extends Component {
                         municipio: response.pacote.municipio,
                         suplemento: response.pacote.complemento,
                     })
-                    console.log(this.state)
                 }
                 else this.mensagens2.replace(response.pacote)
             })

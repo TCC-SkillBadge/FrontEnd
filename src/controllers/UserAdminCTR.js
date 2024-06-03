@@ -1,8 +1,9 @@
 import axios from 'axios'
 
 const UCServer = axios.create({
-    baseURL: 'https://user-admin-tg-7408f5404851.herokuapp.com/'
+    baseURL: 'http://localhost:6001/'
 })
+//'https://user-admin-tg-7408f5404851.herokuapp.com/'
 
 const msgLife = 6000
 
@@ -25,16 +26,25 @@ export const cadastrarUA = async (EA, S, NA, CAR, COD) => {
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife}
-                }
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                   return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife}
+                        }
+                    ) 
+            }
         }
-        catch(err){
-            console.log(err)
+        if(err.request){
             return(
                 {
                     sucesso: false,
@@ -60,16 +70,25 @@ export const loginUA = async (E, S) => {
     }
     catch(err){
         console.log(err)
-        try{
-           return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro no Login', detail: err.response.data.message, life: msgLife}
-                }
-            ) 
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: 'Erro no Login', detail: err.response.data.message, life: msgLife}
+                        }
+                    ) 
+            }
         }
-        catch(err){
-            console.log(err)
+        if(err.request){
             return(
                 {
                     sucesso: false,
@@ -105,11 +124,34 @@ export const acessaInfoUA = async (token, tipoUsuario) => {
     }
     catch(err){
         console.log(err)
-        return(
-            {
-                sucesso: false,
-                pacote: {severity: 'error', summary: 'Erro na Acessibilidade dos Dados', detail: 'Tente novamente mais tarde', life: msgLife,  sticky: true, closable: false}
-            }
-        )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                default:
+                return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: {severity: 'error', summary: 'Erro na Acessibilidade dos Dados', detail: err.response.data.message, life: msgLife,  sticky: true, closable: false}
+                        }
+                    )   
+        }
+        }
+        if(err.request){
+            return(
+                {
+                    sucesso: false,
+                    caso: 'erro',
+                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife,  sticky: true, closable: false}
+                }
+            )
+        }  
     }
 }

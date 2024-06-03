@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Messages } from 'primereact/messages'
+import { Navigate } from 'react-router-dom'
 import Loading from '../Loading'
 import { verTodosUE } from '../../controllers/UserEmpresarialCTR'
 
@@ -10,7 +11,8 @@ export default class ListarUEs extends Component {
         super(props)
         this.state ={
             listaUE: [],
-            msg: false
+            msg: false,
+            logado: true
         }
     }
 
@@ -25,8 +27,16 @@ export default class ListarUEs extends Component {
                     this.setState({listaUE: response.pacote})
                 }
                 else{
-                    this.mensagem.replace(response.pacote)
-                    this.setState({msg: true})
+                    switch(response.caso){
+                        case 'expirado':
+                            alert(response.pacote)
+                            sessionStorage.removeItem('usuarioAdmin')
+                            this.setState({ logado: false })
+                            break
+                        default:
+                            this.mensagem.replace(response.pacote)
+                            this.setState({ msg: true })
+                    }
                 }
             })
         }
@@ -37,6 +47,7 @@ export default class ListarUEs extends Component {
     }
 
     render() {
+        if(!this.state.logado) return <Navigate to='/login'/>
         return (
             <div className='mt-4'>
                 <Messages id='mensagemListaUE' ref={(el) => this.mensagem = el}></Messages>

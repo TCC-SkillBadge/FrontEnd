@@ -1,8 +1,9 @@
 import axios from 'axios'
 
 const UCServer = axios.create({
-    baseURL: 'https://user-comum-tg-dd7a104138cd.herokuapp.com/'
+    baseURL: 'http://localhost:6002/'
 })  
+//'https://user-comum-tg-dd7a104138cd.herokuapp.com/'
 
 const msgLife = 6000
 
@@ -19,26 +20,35 @@ export const cadastrarUC = async (E, S, N, O, P) => {
         return(
             {
                 sucesso: true,
-                pacote: {severity: 'success', summary: 'Cadastro realizado com sucesso', detail: 'Você já pode fazer login no sistema!', life: msgLife}
+                pacote: { severity: 'success', summary: 'Cadastro realizado com sucesso', detail: 'Você já pode fazer login no sistema!', life: msgLife }
             }
         )
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife}
-                }
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: { severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
-            console.log(err)
+        if(err.request){
             return(
                 {
                     sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
+                    pacote: { severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife }
                 }
             )
         }
@@ -59,20 +69,29 @@ export const loginUC = async (E, S) => {
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro no Login', detail: err.response.data.message, life: msgLife}
-                }
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: { severity: 'error', summary: 'Erro no Login', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
-            console.log(err)
+        if(err.request){
             return(
                 {
                     sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
+                    pacote: { severity: 'error', summary: 'Erro Inseperado', detail: 'Tente novamente mais tarde', life: msgLife }
                 }
             )
         }
@@ -105,12 +124,35 @@ export const acessaInfoUC = async (token, tipoUsuario) => {
     }
     catch(err){
         console.log(err)
-        return(
-            {
-                sucesso: false,
-                pacote: {severity: 'error', summary: 'Erro na Acessibilidade dos Dados', detail: 'Tente novamente mais tarde', life: msgLife,  sticky: true, closable: false}
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: { severity: 'error', summary: 'Erro na Acessibilidade dos Dados', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
             }
-        )
+        }
+        if(err.request){
+            return(
+                {
+                    sucesso: false,
+                    caso: 'erro',
+                    pacote: { severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife,  sticky: true, closable: false }
+                }
+            )
+        }
     }
 }
 
@@ -143,20 +185,40 @@ export const verTodosUC = async (token, tipoUsuario) => {
     }
     catch(err){
         console.log(err)
-        try{
-             return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro na Verificação dos Usuários Empresariais', detail: err.response.data.message, sticky: true, closable: false}  
-                } 
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: { severity: 'error', summary: 'Erro no Acesso à Lista de Usuários Comuns', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
-            console.log(err)
+        if(err.request){
             return(
                 {
                     sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', sticky: true, closable: false}
+                    caso: 'erro',
+                    pacote: { severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', sticky: true, closable: false }
                 }
             )
         }
@@ -192,20 +254,39 @@ export const ADMconsultarUC = async (token, tipoUsuario, P) => {
     }
     catch(err){
         console.log(err)
-        try{
-            return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro na Consulta', detail: err.response.data.message, life: msgLife}
-                }
-            )
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: { severity: 'error', summary: 'Erro na Consulta', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
         }
-        catch(err){
-            console.log(err)
+        if(err.request){
             return(
                 {
                     sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
+                    pacote: { severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife }
                 }
             )
         }
@@ -239,20 +320,39 @@ export const EMPRconsultarUC = async (token, tipoUsuario, P) => {
     }
     catch(err){
         console.log(err)
-        try{
+        if(err.response){
+            switch(err.response.data.name){
+                case 'TokenExpirado':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'expirado',
+                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                        }
+                    )
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            caso: 'erro',
+                            pacote: { severity: 'error', summary: 'Erro na Consulta', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
+        }
+        if(err.request){
             return(
                 {
                     sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro na Consulta', detail: err.response.data.message, life: msgLife}
-                }
-            )
-        }
-        catch(err){
-            console.log(err)
-             return(
-                {
-                    sucesso: false,
-                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
+                    pacote: { severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife }
                 }
             )
         }

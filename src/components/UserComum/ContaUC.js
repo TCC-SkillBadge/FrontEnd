@@ -15,7 +15,8 @@ export default class ContaUC extends Component {
             ocupacao: "",
             paisOrigem: "",
             msg: false,
-            logado: true
+            logado: true,
+            destinoSaida: "",
         }
     }
 
@@ -36,16 +37,23 @@ export default class ContaUC extends Component {
                     })
                 }
                 else{
-                    this.setState({msg: true})
-                    this.mensagem.replace(response.pacote)
+                    switch(response.caso){
+                        case 'expirado':
+                            alert(response.pacote)
+                            this.sairConta('/login')
+                            break
+                        default:
+                            this.mensagem.replace(response.pacote)
+                            this.setState({msg: true})
+                    }
                 }
             })
         }
     }
 
-    sairConta = () => {
+    sairConta = (destino) => {
         sessionStorage.removeItem('usuarioComum')
-        this.setState({logado: false})
+        this.setState({ logado: false, destinoSaida: destino })
     }
 
     componentWillUnmount(){
@@ -54,7 +62,7 @@ export default class ContaUC extends Component {
 
     render() {
         const estado = this.state
-        if(!estado.logado) return <Navigate to='/'/>
+        if(!estado.logado) return <Navigate to={estado.destinoSaida}/>
         return (
             <div className='mr-5 ml-5'>
                 <Messages id='mensagemContaUC' ref={(el) => this.mensagem = el}></Messages>
@@ -65,7 +73,7 @@ export default class ContaUC extends Component {
                 <Button
                 label='Sair da Conta'
                 className='p-button-danger mt-4 mr-5 ml-5'
-                onClick={this.sairConta}/>
+                onClick={() => this.sairConta('/')}/>
             </div>
         )
     }
