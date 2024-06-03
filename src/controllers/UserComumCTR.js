@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 const UCServer = axios.create({
-    baseURL: 'http://localhost:6002/'
+    baseURL: 'https://user-comum-tg-dd7a104138cd.herokuapp.com/'
 })  
-//'https://user-comum-tg-dd7a104138cd.herokuapp.com/'
+//'http://localhost:6002/'
 
 const msgLife = 6000
 
