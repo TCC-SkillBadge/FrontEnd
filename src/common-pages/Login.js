@@ -76,10 +76,6 @@ export default class Login extends Component {
         if(this.mensagem) this.mensagem.clear()
     }
 
-    componentWillUnmount(){
-        this.props.refresh()
-    }
-
     render() {
         if(this.state.logadoUC) return <Navigate to='/contaUC'/>
         if(this.state.logadoUE) return <Navigate to='/contaUE'/>

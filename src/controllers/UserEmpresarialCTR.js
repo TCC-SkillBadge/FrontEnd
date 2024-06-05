@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 const UEServer = axios.create({
-    baseURL: 'https://user-empresarial-tg-be2b1bc973b0.herokuapp.com/'
+    baseURL: 'http://localhost:6003/'
 })
-//'http://localhost:6003/'
+//'https://user-empresarial-tg-be2b1bc973b0.herokuapp.com/'
 
 const msgLife = 6000
 
@@ -194,6 +194,7 @@ export const loginUE = async (EC, SN) => {
             }
         })
         sessionStorage.setItem('usuarioEmpresarial', JSON.stringify(data))
+        dispatchEvent(new Event('storage'))
         return {sucesso: true}
     }
     catch(err){

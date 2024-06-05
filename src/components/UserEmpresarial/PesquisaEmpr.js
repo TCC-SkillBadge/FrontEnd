@@ -14,7 +14,8 @@ export default class PesquisaEmpr extends Component {
             usuarioC: null,
             msg: false,
             pesquisando: false,
-            logado: true
+            logado: true,
+            destinoSaida: ''
         }
     }
 
@@ -36,8 +37,7 @@ export default class PesquisaEmpr extends Component {
                     switch(response.caso){
                         case 'expirado':
                             alert(response.pacote)
-                            sessionStorage.removeItem('usuarioEmpresarial')
-                            this.setState({ logado: false })
+                            this.sairConta('/login')
                             break
                         default:
                             this.mensagem.replace(response.pacote)
@@ -48,8 +48,14 @@ export default class PesquisaEmpr extends Component {
         }
     }
 
+    sairConta = (destino) => {
+        sessionStorage.removeItem('usuarioEmpresarial')
+        dispatchEvent(new Event('storage'))
+        this.setState({ logado: false, destinoSaida: destino })
+    }
+
     render() {
-        if(!this.state.logado) return <Navigate to='/login'/>
+        if(!this.state.logado) return <Navigate to={this.state.destinoSaida}/>
         return (
             <div className='p-4'>
                 <h1>Pesquisar Usuário Comum:</h1>

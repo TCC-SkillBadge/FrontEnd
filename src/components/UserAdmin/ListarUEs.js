@@ -12,7 +12,8 @@ export default class ListarUEs extends Component {
         this.state ={
             listaUE: [],
             msg: false,
-            logado: true
+            logado: true,
+            destinoSaida: ""
         }
     }
 
@@ -30,8 +31,7 @@ export default class ListarUEs extends Component {
                     switch(response.caso){
                         case 'expirado':
                             alert(response.pacote)
-                            sessionStorage.removeItem('usuarioAdmin')
-                            this.setState({ logado: false })
+                            this.sairConta('/login')
                             break
                         default:
                             this.mensagem.replace(response.pacote)
@@ -46,8 +46,14 @@ export default class ListarUEs extends Component {
         this.verTodos()
     }
 
+    sairConta = (destino) => {
+        sessionStorage.removeItem('usuarioAdmin')
+        dispatchEvent(new Event('storage'))
+        this.setState({ logado: false, destinoSaida: destino })
+    }
+
     render() {
-        if(!this.state.logado) return <Navigate to='/login'/>
+        if(!this.state.logado) return <Navigate to={this.state.destinoSaida}/>
         return (
             <div className='mt-4'>
                 <Messages id='mensagemListaUE' ref={(el) => this.mensagem = el}></Messages>

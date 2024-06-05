@@ -20,11 +20,7 @@ import { useEffect } from 'react'
 
 function App() {
 
-    useEffect(() => {
-        refresh()
-    }, [])
-
-    const refresh = () => {
+    const verificaLogin = () => {
         const usuarioEmpresarial = sessionStorage.getItem('usuarioEmpresarial')
         const usuarioComum = sessionStorage.getItem('usuarioComum')
         const usuarioAdmin = sessionStorage.getItem('usuarioAdmin')
@@ -37,16 +33,22 @@ function App() {
         document.querySelector('#atividadesUC').style.display = usuarioComum ? 'block' : 'none'
     }
 
+    useEffect(() => {
+        verificaLogin()
+    }, [])
+
+    onstorage = verificaLogin
+
     return (
         <div>
             <Navbar/>
             <Routes>
                 <Route exact path='/' element={<Home/>}/>
-                <Route path='/login' element={<Login refresh={refresh}/>}/>
+                <Route path='/login' element={<Login/>}/>
                 <Route path='/cadastro' element={<Cadastro/>}/>
-                <Route path='/contaUE' element={<ContaUE refresh={refresh}/>}/>
-                <Route path='/contaUC' element={<ContaUC refresh={refresh}/>}/>
-                <Route path='/contaUA' element={<ContaUA refresh={refresh}/>}/>
+                <Route path='/contaUE' element={<ContaUE/>}/>
+                <Route path='/contaUC' element={<ContaUC/>}/>
+                <Route path='/contaUA' element={<ContaUA/>}/>
                 <Route path='/pesquisaEmpr' element={<PesquisaEmpr/>}/>
                 <Route path='/pesquisaAdmin' element={<PesquisaAdmin/>}/>
                 <Route path='/listarUCs' element={<ListarUCs/>}/>

@@ -53,11 +53,8 @@ export default class ContaUC extends Component {
 
     sairConta = (destino) => {
         sessionStorage.removeItem('usuarioComum')
+        dispatchEvent(new Event('storage'))
         this.setState({ logado: false, destinoSaida: destino })
-    }
-
-    componentWillUnmount(){
-        this.props.refresh()
     }
 
     render() {

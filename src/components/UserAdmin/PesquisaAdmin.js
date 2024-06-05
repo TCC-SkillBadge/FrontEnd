@@ -18,7 +18,8 @@ export default class PesquisaAdmin extends Component {
             resultadoPesquisa: [],
             msg: false,
             pesquisando: false,
-            logado: true
+            logado: true,
+            destinoSaida: ""
         }
     }
 
@@ -63,47 +64,13 @@ export default class PesquisaAdmin extends Component {
                 switch(resultadoPesquisaAux.caso){
                     case 'expirado':
                         alert(resultadoPesquisaAux.pacote)
-                        sessionStorage.removeItem('usuarioAdmin')
-                        this.setState({ logado: false })
+                        this.sairConta('/login')
                         break
                     default:
                         this.mensagem.replace(resultadoPesquisaAux.pacote)
                         this.setState({pesquisando: false, msg: true})
                 }
             }
-            // switch(this.state.tipoUsuario){
-            // case 'Comum':
-            //     ADMconsultarUC(token, tipoUsuario, this.state.termoPesquisa).then(response => {
-            //         if(response.sucesso){
-            //             this.setState({resultadoPesquisa: response.pacote, termoPesquisa: "", pesquisando: false})
-            //         }
-            //         else{
-            //             switch(response.caso){
-            //                 case 'expirado':
-            //                     alert(response.pacote)
-            //                     this.setState({ logado: false })
-            //                     break
-            //                 default:
-            //                     this.mensagem.replace(response.pacote)
-            //                     this.setState({pesquisando: false, msg: true})
-            //             }
-            //         }
-            //     })
-            //     break
-            // case 'Empresarial':
-            //     consultarUE(token, tipoUsuario, this.state.termoPesquisa).then(response => {
-            //         if(response.sucesso){
-            //             const resultadoPesquisaAux = [response.pacote]
-            //             this.setState({resultadoPesquisa: resultadoPesquisaAux, termoPesquisa: "", pesquisando: false})
-            //         }
-            //         else{
-            //             this.setState({pesquisando: false, msg: true})
-            //             this.mensagem.replace(response.pacote)
-            //         }
-            //     })
-            //     break
-            // default:
-            // }
         }  
     }
 
@@ -121,8 +88,14 @@ export default class PesquisaAdmin extends Component {
         this.escolherTPUsuarioC()
     }
 
+    sairConta = (destino) => {
+        sessionStorage.removeItem('usuarioAdmin')
+        dispatchEvent(new Event('storage'))
+        this.setState({ logado: false, destinoSaida: destino })
+    }
+
     render() {
-        if(!this.state.logado) return <Navigate to='/login'/>
+        if(!this.state.logado) return <Navigate to={this.state.destinoSaida}/>
         return (
         <div className='grid'>
             <div className="col-2 p-4">
