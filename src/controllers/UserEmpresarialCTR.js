@@ -3,7 +3,7 @@ import axios from 'axios'
 const UEServer = axios.create({
     baseURL: 'https://user-empresarial-tg-be2b1bc973b0.herokuapp.com/'
 })
-//''http://localhost:6003/'
+//'http://localhost:6003/'
 
 const msgLife = 6000
 

@@ -61,15 +61,15 @@ export default class CadastroUE extends Component {
         if(numerosCNPJ.length === 14){
             validarCNPJ(numerosCNPJ).then(response => {
                 console.log('Executando validarCNPJ() em CadastroUE.js')
-                console.log(response)
+                const estado = this.state
                 if(response.sucesso){
                     this.setState({
-                        emailComercial: response.pacote.email,
-                        razaoSocial: response.pacote.nome,
-                        logradouro: response.pacote.logradouro + (response.pacote.numero === "" ? null : `, n. ${response.pacote.numero}`),
-                        bairro: response.pacote.bairro,
-                        municipio: response.pacote.municipio,
-                        suplemento: response.pacote.complemento,
+                        emailComercial: estado.emailComercial === "" ? response.pacote.email : estado.emailComercial,
+                        razaoSocial: estado.razaoSocial === "" ? response.pacote.nome : estado.razaoSocial,
+                        logradouro: estado.logradouro === "" ? (response.pacote.logradouro + (response.pacote.numero === "" ? null : `, n. ${response.pacote.numero}`)) : estado.logradouro,
+                        bairro: estado.bairro === "" ? response.pacote.bairro : estado.bairro,
+                        municipio: estado.municipio === "" ? response.pacote.municipio : estado.municipio,
+                        suplemento: estado.suplemento === "" ? response.pacote.complemento : estado.suplemento,
                     })
                 }
                 else this.mensagens2.replace(response.pacote)
