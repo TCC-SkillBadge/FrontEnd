@@ -25,6 +25,13 @@ export const cadastrarBadge = async (IMG, DESC, CRIADOR) => {
         console.log(err)
         if(err.response){
             switch(err.response.data.name){
+                case 'ErroInternoServidor':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
                 case 'ServicoIndisponivel':
                     return(
                         {
@@ -77,15 +84,15 @@ export const consultarBadge = async (P) => {
         console.log(err)
         if(err.response){
             switch(err.response.data.name){
-                case 'TokenExpirado':
+                case 'ServicoIndisponivel':
                     return(
                         {
                             sucesso: false,
-                            caso: 'expirado',
-                            pacote: 'Sua sessão expirou. Faça Login novamente para poder continuar suas atividades'
+                            caso: 'erro',
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
                         }
                     )
-                case 'ServicoIndisponivel':
+                case 'BadgeNaoEncontrada':
                     return(
                         {
                             sucesso: false,
@@ -108,6 +115,111 @@ export const consultarBadge = async (P) => {
                 {
                     sucesso: false,
                     caso: 'erro',
+                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
+                }
+            )
+        }
+    }
+}
+
+export const atualizarBadge = async (ID, IMG, DESC, CRIADOR) => {
+    console.log('Entrei na função atualizatBadge() em BadgeController')
+    try{
+        await BadgeServer.post('/atualizar', {
+            id_badge: ID,
+            imagem_mb: IMG,
+            desc_certificacao: DESC,
+            criador: CRIADOR
+        })
+        return(
+            {
+                sucesso: true,
+                pacote: {severity: 'success', summary: 'Atualização realizada com sucesso', detail: 'Você já pode consultar sua badge!', life: msgLife}
+            }
+        )
+    }
+    catch(err){
+        console.log(err)
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ErroInternoServidor':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: { severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
+        }
+        if(err.request){
+            return(
+                {
+                    sucesso: false,
+                    pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
+                }
+            )
+        }
+    }
+}
+
+export const excluirBadge = async (ID) => {
+    console.log('Entrei na função excluirBadge() em BadgeController')
+    try{
+        await BadgeServer.post('/excluir', {
+            id_badge: ID
+        })
+        return(
+            {
+                sucesso: true,
+                pacote: {severity: 'success', summary: 'Exclusão realizada com sucesso', life: msgLife}
+            }
+        )
+    }
+    catch(err){
+        console.log(err)
+        if(err.response){
+            switch(err.response.data.name){
+                case 'ErroInternoServidor':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                case 'ServicoIndisponivel':
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: {severity: 'error', summary: err.response.data.messsage, detail: 'Tente novamente mais tarde', life: msgLife}
+                        }
+                    )
+                default:
+                    return(
+                        {
+                            sucesso: false,
+                            pacote: { severity: 'error', summary: 'Erro no Cadastro', detail: err.response.data.message, life: msgLife }
+                        }
+                    )
+            }
+        }
+        if(err.request){
+            return(
+                {
+                    sucesso: false,
                     pacote: {severity: 'error', summary: 'Erro Inesperado', detail: 'Tente novamente mais tarde', life: msgLife}
                 }
             )
