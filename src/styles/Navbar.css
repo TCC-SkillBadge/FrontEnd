@@ -7,6 +7,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
+  padding-left: 25px;
+  padding-right: 25px;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   font-family: 'Inter', sans-serif;
@@ -41,8 +43,8 @@
 }
 
 .searchInput {
-  height: 40px; /* Aumenta a altura da barra de pesquisa */
-  width: 200px;
+  height: 40px; 
+  width: 400px;
   padding: 5px;
   border-radius: 4px;
   border: 1px solid #E2E2E2;
