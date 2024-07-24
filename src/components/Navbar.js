@@ -1,44 +1,35 @@
 import React from "react";
-import {
-  Navbar as BootstrapNavbar,
-  Nav,
-  Container,
-  Form,
-  FormControl,
-  Button,
-} from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Navbar.css"; // Importa o arquivo CSS
 
-const Navbar = ({ userType }) => {
+const NavBar = ({ userType, user }) => {
   const renderNavItems = () => {
     switch (userType) {
       case "common":
         return (
           <>
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#wallet">Wallet</Nav.Link>
-            <Nav.Link href="#skill-test">Skill Test</Nav.Link>
-            <Nav.Link href="#about">About</Nav.Link>
+            <div className="tab">Home</div>
+            <div className="tab">Wallet</div>
+            <div className="tab">Skill Test</div>
+            <div className="tab">About</div>
           </>
         );
       case "business":
         return (
           <>
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#plans">Plans</Nav.Link>
-            <Nav.Link href="#badges">Badges</Nav.Link>
-            <Nav.Link href="#contact">Contact</Nav.Link>
-            <Nav.Link href="#about">About</Nav.Link>
+            <div className="tab">Home</div>
+            <div className="tab">Plans</div>
+            <div className="tab">Badges</div>
+            <div className="tab">Contact</div>
+            <div className="tab">About</div>
           </>
         );
       case "admin":
         return (
           <>
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#service-request">Service Request</Nav.Link>
-            <Nav.Link href="#skills">Skills</Nav.Link>
-            <Nav.Link href="#service-plans">Service Plans</Nav.Link>
+            <div className="tab">Home</div>
+            <div className="tab">Service Request</div>
+            <div className="tab">Skills</div>
+            <div className="tab">Service Plans</div>
           </>
         );
       default:
@@ -47,40 +38,26 @@ const Navbar = ({ userType }) => {
   };
 
   return (
-    <BootstrapNavbar
-      bg="dark"
-      variant="dark"
-      expand="lg"
-      className="custom-navbar"
-    >
-      <Container>
-        <BootstrapNavbar.Brand href="#home">Brand</BootstrapNavbar.Brand>
-        <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
-        <BootstrapNavbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">{renderNavItems()}</Nav>
-          <Form className="d-flex">
-            <FormControl
-              type="search"
-              placeholder="Buscar"
-              className="me-2 search-input"
-              aria-label="Search"
-            />
-            <Button variant="outline-light" className="search-button">
-              Search
-            </Button>
-          </Form>
-          <Nav>
-            <Nav.Link className="signin" href="#signin">
-              Sign In
-            </Nav.Link>
-            <Nav.Link className="signup" href="#signup">
-              Sign Up
-            </Nav.Link>
-          </Nav>
-        </BootstrapNavbar.Collapse>
-      </Container>
-    </BootstrapNavbar>
+    <div className="navbar">
+      <div className="navLinks">{renderNavItems()}</div>
+      <div className="authSection">
+        <div className="searchSection">
+          <input className="searchInput" type="text" placeholder="Buscar" />
+        </div>
+        <div className="authButtons">
+          {user ? (
+            <img src={user.image} alt="User" className="userImage" />
+          ) : (
+            <>
+              <div className="signIn">Sign In</div>
+              <div className="signUp">Sign Up</div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Navbar;
+export default NavBar;
+

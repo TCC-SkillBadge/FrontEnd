@@ -9,11 +9,14 @@ import "primeicons/primeicons.css";
 import Navbar from "../components/Navbar";
 
 function App() {
-  const userType = "common"; // Pode ser 'common', 'business' ou 'admin'
+  const userType = "common";
+  const user = {
+    image: "https://example.com/user.jpg", // Substitua com a URL da imagem do usuário
+  };
 
   return (
-    <div>
-      <Navbar userType={userType} />
+    <div className="app">
+      <Navbar userType={userType} user={user} />
     </div>
   );
 }
