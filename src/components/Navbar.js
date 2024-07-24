@@ -1,74 +1,133 @@
 import React from "react";
 import "../styles/Navbar.css" 
 import "bootstrap-icons/font/bootstrap-icons.css"; // Importa os ícones do Bootstrap
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const NavBar = ({ userType, user }) => {
+  const [showMenu, setShowMenu] = useState(false);
+
   const renderNavItems = () => {
     switch (userType) {
       case "common":
         return (
           <>
-            <div className="tab">Home</div>
-            <div className="tab">Wallet</div>
-            <div className="tab">Skill Test</div>
-            <div className="tab">About</div>
+            <Link to="/home" className="tab">
+              Home
+            </Link>
+            <Link to="/wallet" className="tab">
+              Wallet
+            </Link>
+            <Link to="/skill-test" className="tab">
+              Skill Test
+            </Link>
+            <Link to="/about" className="tab">
+              About
+            </Link>
           </>
         );
       case "business":
         return (
           <>
-            <div className="tab">Home</div>
-            <div className="tab">Plans</div>
-            <div className="tab">Badges</div>
-            <div className="tab">Contact</div>
-            <div className="tab">About</div>
+            <Link to="/home" className="tab">
+              Home
+            </Link>
+            <Link to="/plans" className="tab">
+              Plans
+            </Link>
+            <Link to="/badges" className="tab">
+              Badges
+            </Link>
+            <Link to="/contact" className="tab">
+              Contact
+            </Link>
+            <Link to="/about" className="tab">
+              About
+            </Link>
           </>
         );
       case "admin":
         return (
           <>
-            <div className="tab">Home</div>
-            <div className="tab">Service Request</div>
-            <div className="tab">Skills</div>
-            <div className="tab">Service Plans</div>
+            <Link to="/home" className="tab">
+              Home
+            </Link>
+            <Link to="/service-request" className="tab">
+              Service Request
+            </Link>
+            <Link to="/skills" className="tab">
+              Skills
+            </Link>
+            <Link to="/service-plans" className="tab">
+              Service Plans
+            </Link>
           </>
         );
       default:
-        return null;
+        return (
+          <>
+            <Link to="/home" className="tab">
+              Home
+            </Link>
+            <Link to="/about" className="tab">
+              About
+            </Link>
+          </>
+        );
     }
   };
 
   const renderUserMenu = () => {
-    if (!user) return null;
-
     let menuItems;
     switch (userType) {
       case "common":
         menuItems = (
           <>
-            <div className="menuItem">Profile</div>
-            <div className="menuItem">Config</div>
-            <div className="menuItem">Portfolio</div>
-            <div className="menuItem">Log Out</div>
+            <Link to="/profile" className="menuItem">
+              <i className="bi bi-person"></i> Profile
+            </Link>
+            <Link to="/config" className="menuItem">
+              <i className="bi bi-gear"></i> Config
+            </Link>
+            <Link to="/portfolio" className="menuItem">
+              <i className="bi bi-briefcase"></i> Portfolio
+            </Link>
+            <Link to="/logout" className="menuItem">
+              <i className="bi bi-box-arrow-right"></i> Log Out
+            </Link>
           </>
         );
         break;
       case "business":
         menuItems = (
           <>
-            <div className="menuItem">Profile</div>
-            <div className="menuItem">Config</div>
-            <div className="menuItem">Analysis</div>
-            <div className="menuItem">Log Out</div>
+            <Link to="/profile" className="menuItem">
+              <i className="bi bi-person"></i> Profile
+            </Link>
+            <Link to="/config" className="menuItem">
+              <i className="bi bi-gear"></i> Config
+            </Link>
+            <Link to="/analysis" className="menuItem">
+              <i className="bi bi-bar-chart"></i> Analysis
+            </Link>
+            <Link to="/logout" className="menuItem">
+              <i className="bi bi-box-arrow-right"></i> Log Out
+            </Link>
           </>
         );
         break;
       case "admin":
         menuItems = (
           <>
-            <div className="menuItem">Profile</div>
-            <div className="menuItem">Config</div>
-            <div className="menuItem">Log Out</div>
+            <Link to="/profile" className="menuItem">
+              <i className="bi bi-person"></i> Profile
+            </Link>
+            <Link to="/config" className="menuItem">
+              <i className="bi bi-gear"></i> Config
+            </Link>
+            <Link to="/logout" className="menuItem">
+              <i className="bi bi-box-arrow-right"></i> Log Out
+            </Link>
           </>
         );
         break;
@@ -87,18 +146,26 @@ const NavBar = ({ userType, user }) => {
       </div>
       <div className="authButtons">
         {user ? (
-          <div className="userIcon">
+          <div
+            className="userIcon"
+            onMouseEnter={() => setShowMenu(true)}
+            onMouseLeave={() => setShowMenu(false)}
+          >
             {user.image ? (
               <img src={user.image} alt="User" className="userImage" />
             ) : (
               <i className="bi bi-person-circle userAvatar"></i>
             )}
-            {renderUserMenu()}
+            {showMenu && renderUserMenu()}
           </div>
         ) : (
           <>
-            <div className="signIn">Sign In</div>
-            <div className="signUp">Sign Up</div>
+            <Link to="/sign-in" className="signIn">
+              Sign In
+            </Link>
+            <Link to="/sign-up" className="signUp">
+              Sign Up
+            </Link>
           </>
         )}
       </div>

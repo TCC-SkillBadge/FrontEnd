@@ -1,14 +1,12 @@
-
+/* Navbar.css */
 .navbar {
   width: 100%;
   height: 87px;
-  background-color: rgba(0, 0, 0, 0.7); 
+  background-color: rgba(0, 0, 0, 0.7); /* Preto com 70% de opacidade */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  padding-left: 20px;
-  padding-right: 20px;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   font-family: 'Inter', sans-serif;
@@ -23,6 +21,11 @@
   color: white;
   font-size: 18px;
   font-weight: 800;
+  text-decoration: none;
+}
+
+.tab:hover {
+  text-decoration: underline;
 }
 
 .authSection {
@@ -38,8 +41,8 @@
 }
 
 .searchInput {
-  height: 40px; 
-  width: 400px;
+  height: 40px; /* Aumenta a altura da barra de pesquisa */
+  width: 200px;
   padding: 5px;
   border-radius: 4px;
   border: 1px solid #E2E2E2;
@@ -62,6 +65,7 @@
   color: white;
   font-size: 18px;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .signUp {
@@ -84,26 +88,40 @@
 }
 
 .userMenu {
-  display: none;
   position: absolute;
   top: 50px;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.8);
-  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.9);
+  border-radius: 8px;
   padding: 10px;
   text-align: left;
+  width: 200px; /* Aumenta a largura do menu */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.userIcon:hover .userMenu {
-  display: block;
-}
-
-.menuItem {
+.userMenu .menuItem {
+  display: flex;
+  align-items: center;
   color: white;
-  padding: 5px 10px;
+  padding: 10px 15px;
   cursor: pointer;
+  text-decoration: none;
 }
 
-.menuItem:hover {
+.userMenu .menuItem:hover {
   background-color: rgba(255, 255, 255, 0.1);
+}
+
+.userMenu .menuItem i {
+  margin-right: 10px;
+}
+
+.userMenu::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  border-width: 0 10px 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
 }

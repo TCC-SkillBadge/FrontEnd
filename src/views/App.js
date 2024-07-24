@@ -12,7 +12,7 @@ function App() {
   const userType = "common";
   const user = {
     image:
-      "https://img.freepik.com/fotos-gratis/pessoa-de-origem-indiana-se-divertindo_23-2150285283.jpg", // Substitua com a URL da imagem do usuário
+      "https://img.freepik.com/fotos-gratis/pessoa-de-origem-indiana-se-divertindo_23-2150285283.jpg", 
   };
 
   return (
