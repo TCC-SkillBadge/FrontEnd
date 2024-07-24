@@ -11,7 +11,8 @@ import Navbar from "../components/Navbar";
 function App() {
   const userType = "common";
   const user = {
-    image: "https://example.com/user.jpg", // Substitua com a URL da imagem do usuário
+    image:
+      "https://img.freepik.com/fotos-gratis/pessoa-de-origem-indiana-se-divertindo_23-2150285283.jpg", // Substitua com a URL da imagem do usuário
   };
 
   return (

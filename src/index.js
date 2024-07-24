@@ -4,6 +4,8 @@ import "./styles/index.css";
 import App from "./views/App";
 import reportWebVitals from "./reportWebVitals";
 import { RouterProvider, createHashRouter } from "react-router-dom";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
 
 const router = createHashRouter([
   {

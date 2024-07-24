@@ -1,5 +1,6 @@
 import React from "react";
-import "../styles/Navbar.css"; // Importa o arquivo CSS
+import "../styles/Navbar.css" 
+import "bootstrap-icons/font/bootstrap-icons.css"; // Importa os ícones do Bootstrap
 
 const NavBar = ({ userType, user }) => {
   const renderNavItems = () => {
@@ -37,27 +38,72 @@ const NavBar = ({ userType, user }) => {
     }
   };
 
+  const renderUserMenu = () => {
+    if (!user) return null;
+
+    let menuItems;
+    switch (userType) {
+      case "common":
+        menuItems = (
+          <>
+            <div className="menuItem">Profile</div>
+            <div className="menuItem">Config</div>
+            <div className="menuItem">Portfolio</div>
+            <div className="menuItem">Log Out</div>
+          </>
+        );
+        break;
+      case "business":
+        menuItems = (
+          <>
+            <div className="menuItem">Profile</div>
+            <div className="menuItem">Config</div>
+            <div className="menuItem">Analysis</div>
+            <div className="menuItem">Log Out</div>
+          </>
+        );
+        break;
+      case "admin":
+        menuItems = (
+          <>
+            <div className="menuItem">Profile</div>
+            <div className="menuItem">Config</div>
+            <div className="menuItem">Log Out</div>
+          </>
+        );
+        break;
+      default:
+        menuItems = null;
+    }
+
+    return <div className="userMenu">{menuItems}</div>;
+  };
+
   return (
     <div className="navbar">
       <div className="navLinks">{renderNavItems()}</div>
-      <div className="authSection">
-        <div className="searchSection">
-          <input className="searchInput" type="text" placeholder="Buscar" />
-        </div>
-        <div className="authButtons">
-          {user ? (
-            <img src={user.image} alt="User" className="userImage" />
-          ) : (
-            <>
-              <div className="signIn">Sign In</div>
-              <div className="signUp">Sign Up</div>
-            </>
-          )}
-        </div>
+      <div className="searchSection">
+        <input className="searchInput" type="text" placeholder="Buscar" />
+      </div>
+      <div className="authButtons">
+        {user ? (
+          <div className="userIcon">
+            {user.image ? (
+              <img src={user.image} alt="User" className="userImage" />
+            ) : (
+              <i className="bi bi-person-circle userAvatar"></i>
+            )}
+            {renderUserMenu()}
+          </div>
+        ) : (
+          <>
+            <div className="signIn">Sign In</div>
+            <div className="signUp">Sign Up</div>
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export default NavBar;
-
