@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar"; // Certifique-se de que o caminho está correto
+import "../styles/Home.css"; // Certifique-se de criar este arquivo de estilo
 
 const Home = () => {
   const [userType, setUserType] = useState(null);
@@ -9,22 +10,6 @@ const Home = () => {
     const usuarioEmpresarial = sessionStorage.getItem("usuarioEmpresarial");
     const usuarioComum = sessionStorage.getItem("usuarioComum");
     const usuarioAdmin = sessionStorage.getItem("usuarioAdmin");
-
-    if (usuarioEmpresarial || usuarioComum || usuarioAdmin) {
-      document.querySelector("#atividadesGerais").style.display = "none";
-    } else {
-      document.querySelector("#atividadesGerais").style.display = "block";
-    }
-
-    document.querySelector("#atividadesUA").style.display = usuarioAdmin
-      ? "block"
-      : "none";
-    document.querySelector("#atividadesUE").style.display = usuarioEmpresarial
-      ? "block"
-      : "none";
-    document.querySelector("#atividadesUC").style.display = usuarioComum
-      ? "block"
-      : "none";
 
     if (usuarioEmpresarial) {
       setUserType("business");
@@ -49,21 +34,18 @@ const Home = () => {
   return (
     <div>
       <Navbar userType={userType} user={user} />
-      <div id="atividadesGerais">
-        <h2>Atividades Gerais</h2>
-        <p>Conteúdo visível quando nenhum usuário está logado.</p>
-      </div>
-      <div id="atividadesUA" style={{ display: "none" }}>
-        <h2>Atividades do Admin</h2>
-        <p>Conteúdo visível apenas para o Admin.</p>
-      </div>
-      <div id="atividadesUE" style={{ display: "none" }}>
-        <h2>Atividades Empresariais</h2>
-        <p>Conteúdo visível apenas para Usuários Empresariais.</p>
-      </div>
-      <div id="atividadesUC" style={{ display: "none" }}>
-        <h2>Atividades Comuns</h2>
-        <p>Conteúdo visível apenas para Usuários Comuns.</p>
+      <div className="home-content">
+        <div className="text-container">
+          <h1 className="home-title">
+            Suas medalhas com a segurança da nossa Blockchain.
+          </h1>
+          <p className="home-subtitle">
+            Um único lugar para <span className="emitir">emitir</span>,{" "}
+            <span className="conquistar">conquistar</span> e{" "}
+            <span className="armazenar">armazenar</span> todas as suas medalhas
+            de maneira segura.
+          </p>
+        </div>
       </div>
     </div>
   );

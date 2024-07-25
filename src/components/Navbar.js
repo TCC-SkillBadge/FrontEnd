@@ -1,77 +1,78 @@
-import React from "react";
-import "../styles/Navbar.css" 
-import "bootstrap-icons/font/bootstrap-icons.css"; // Importa os ícones do Bootstrap
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import "../styles/Navbar.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import { NavLink } from "react-router-dom";
 
 const NavBar = ({ userType, user }) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const renderNavItems = () => {
+    const navLinkClasses = ({ isActive }) => (isActive ? "tab active" : "tab");
+
     switch (userType) {
       case "common":
         return (
           <>
-            <Link to="/home" className="tab">
+            <NavLink to="/home" className={navLinkClasses}>
               Home
-            </Link>
-            <Link to="/wallet" className="tab">
+            </NavLink>
+            <NavLink to="/wallet" className={navLinkClasses}>
               Wallet
-            </Link>
-            <Link to="/skill-test" className="tab">
+            </NavLink>
+            <NavLink to="/skill-test" className={navLinkClasses}>
               Skill Test
-            </Link>
-            <Link to="/about" className="tab">
+            </NavLink>
+            <NavLink to="/about" className={navLinkClasses}>
               About
-            </Link>
+            </NavLink>
           </>
         );
       case "business":
         return (
           <>
-            <Link to="/home" className="tab">
+            <NavLink to="/home" className={navLinkClasses}>
               Home
-            </Link>
-            <Link to="/plans" className="tab">
+            </NavLink>
+            <NavLink to="/plans" className={navLinkClasses}>
               Plans
-            </Link>
-            <Link to="/badges" className="tab">
+            </NavLink>
+            <NavLink to="/badges" className={navLinkClasses}>
               Badges
-            </Link>
-            <Link to="/contact" className="tab">
+            </NavLink>
+            <NavLink to="/contact" className={navLinkClasses}>
               Contact
-            </Link>
-            <Link to="/about" className="tab">
+            </NavLink>
+            <NavLink to="/about" className={navLinkClasses}>
               About
-            </Link>
+            </NavLink>
           </>
         );
       case "admin":
         return (
           <>
-            <Link to="/home" className="tab">
+            <NavLink to="/home" className={navLinkClasses}>
               Home
-            </Link>
-            <Link to="/service-request" className="tab">
+            </NavLink>
+            <NavLink to="/service-request" className={navLinkClasses}>
               Service Request
-            </Link>
-            <Link to="/skills" className="tab">
+            </NavLink>
+            <NavLink to="/skills" className={navLinkClasses}>
               Skills
-            </Link>
-            <Link to="/service-plans" className="tab">
+            </NavLink>
+            <NavLink to="/service-plans" className={navLinkClasses}>
               Service Plans
-            </Link>
+            </NavLink>
           </>
         );
       default:
         return (
           <>
-            <Link to="/home" className="tab">
+            <NavLink to="/home" className={navLinkClasses}>
               Home
-            </Link>
-            <Link to="/about" className="tab">
+            </NavLink>
+            <NavLink to="/about" className={navLinkClasses}>
               About
-            </Link>
+            </NavLink>
           </>
         );
     }
@@ -83,51 +84,51 @@ const NavBar = ({ userType, user }) => {
       case "common":
         menuItems = (
           <>
-            <Link to="/profile" className="menuItem">
+            <NavLink to="/profile" className="menuItem">
               <i className="bi bi-person"></i> Profile
-            </Link>
-            <Link to="/config" className="menuItem">
+            </NavLink>
+            <NavLink to="/config" className="menuItem">
               <i className="bi bi-gear"></i> Config
-            </Link>
-            <Link to="/portfolio" className="menuItem">
+            </NavLink>
+            <NavLink to="/portfolio" className="menuItem">
               <i className="bi bi-briefcase"></i> Portfolio
-            </Link>
-            <Link to="/logout" className="menuItem">
+            </NavLink>
+            <NavLink to="/logout" className="menuItem">
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </Link>
+            </NavLink>
           </>
         );
         break;
       case "business":
         menuItems = (
           <>
-            <Link to="/profile" className="menuItem">
+            <NavLink to="/profile" className="menuItem">
               <i className="bi bi-person"></i> Profile
-            </Link>
-            <Link to="/config" className="menuItem">
+            </NavLink>
+            <NavLink to="/config" className="menuItem">
               <i className="bi bi-gear"></i> Config
-            </Link>
-            <Link to="/analysis" className="menuItem">
+            </NavLink>
+            <NavLink to="/analysis" className="menuItem">
               <i className="bi bi-bar-chart"></i> Analysis
-            </Link>
-            <Link to="/logout" className="menuItem">
+            </NavLink>
+            <NavLink to="/logout" className="menuItem">
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </Link>
+            </NavLink>
           </>
         );
         break;
       case "admin":
         menuItems = (
           <>
-            <Link to="/profile" className="menuItem">
+            <NavLink to="/profile" className="menuItem">
               <i className="bi bi-person"></i> Profile
-            </Link>
-            <Link to="/config" className="menuItem">
+            </NavLink>
+            <NavLink to="/config" className="menuItem">
               <i className="bi bi-gear"></i> Config
-            </Link>
-            <Link to="/logout" className="menuItem">
+            </NavLink>
+            <NavLink to="/logout" className="menuItem">
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </Link>
+            </NavLink>
           </>
         );
         break;
@@ -160,12 +161,12 @@ const NavBar = ({ userType, user }) => {
           </div>
         ) : (
           <>
-            <Link to="/sign-in" className="signIn">
+            <NavLink to="/sign-in" className="signIn">
               Sign In
-            </Link>
-            <Link to="/sign-up" className="signUp">
+            </NavLink>
+            <NavLink to="/sign-up" className="signUp">
               Sign Up
-            </Link>
+            </NavLink>
           </>
         )}
       </div>
