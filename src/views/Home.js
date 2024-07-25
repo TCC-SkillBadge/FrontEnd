@@ -105,9 +105,21 @@ const Home = () => {
         </div>
       </div>
       <div className="divisoria2">
-        <img className="iconSmall" alt="New Icon 1" src="/icons/home/slhield1.svg" />
-        <img className="iconLarge" alt="New Icon 2" src="/icons/home/slhield1.svg" />
-        <img className="iconSmall" alt="New Icon 3" src="/icons/home/slhield1.svg" />
+        <img
+          className="iconSmall"
+          alt="New Icon 1"
+          src="/icons/home/slhield1.svg"
+        />
+        <img
+          className="iconLarge"
+          alt="New Icon 2"
+          src="/icons/home/slhield1.svg"
+        />
+        <img
+          className="iconSmall"
+          alt="New Icon 3"
+          src="/icons/home/slhield1.svg"
+        />
       </div>
       <div className="container">
         <div className="credibilidade-seguranca">
@@ -174,6 +186,23 @@ const Home = () => {
             por aquela instituição.
           </FeatureCard>
         </div>
+      </div>
+      <div className="divisoria4">
+        <img
+          className="iconSmall"
+          alt="Divisoria Icon 1"
+          src="/icons/home/shield4.svg"
+        />
+        <img
+          className="iconLarge"
+          alt="Divisoria Icon 2"
+          src="/icons/home/shield4.svg"
+        />
+        <img
+          className="iconSmall"
+          alt="Divisoria Icon 3"
+          src="/icons/home/shield4.svg"
+        />
       </div>
     </div>
   );
