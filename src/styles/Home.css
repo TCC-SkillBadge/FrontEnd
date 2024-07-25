@@ -1,3 +1,11 @@
+/* body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: url('/images/background-image.png') no-repeat center center fixed;
+  background-size: cover;
+} */
+
 .home-content {
   margin: 50px 0;
   display: flex;
@@ -48,6 +56,169 @@
   color: #8dfd8b;
 }
 
+/* Estilo para a primeira divisória */
+.divisoria1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.iconShieldSmall {
+  width: 30px;
+  height: 30px;
+  margin: 0 10px;
+}
+
+.iconShieldLarge {
+  width: 50px;
+  height: 50px;
+  margin: 0 20px;
+}
+
+/* Estilo para a nova seção */
+.why-digital-medals {
+  margin-top: 50px;
+  padding: 40px;
+  background-color: rgba(0, 0, 0, 0.25); /* Preto com 25% de opacidade */
+  border-radius: 8px; /* Borda arredondada */
+  color: white;
+  text-align: center;
+  max-width: 900px;
+  margin: 50px auto; /* Centraliza a div horizontalmente */
+  border: 2px solid; /* Borda com gradiente */
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1; /* Ajuste a direção do gradiente */
+}
+
+.why-digital-medals h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.why-digital-medals h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+.why-digital-medals p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+/* Estilo para a segunda divisória */
+.divisoria2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.iconSmall {
+  width: 30px;
+  height: 30px;
+  margin: 0 10px;
+}
+
+.iconLarge {
+  width: 50px;
+  height: 50px;
+  margin: 0 20px;
+}
+
+/* Estilo para a seção de Credibilidade e Segurança */
+.credibilidade-seguranca {
+  margin-top: 50px;
+  padding: 40px;
+  background-color: rgba(0, 0, 0, 0.25); /* Preto com 25% de opacidade */
+  border-radius: 8px; /* Borda arredondada */
+  color: white;
+  text-align: left;
+  max-width: 900px;
+  margin: 50px auto; /* Centraliza a div horizontalmente */
+  border: 2px solid; /* Borda com gradiente */
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1; /* Ajuste a direção do gradiente */
+}
+
+.credibilidade-seguranca h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.credibilidade-seguranca p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+/* Estilo para a terceira divisória */
+.divisoria3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.iconSmall {
+  width: 30px;
+  height: 30px;
+  margin: 0 10px;
+}
+
+.iconLarge {
+  width: 50px;
+  height: 50px;
+  margin: 0 20px;
+}
+
+/* Estilo para a nova seção de Features */
+.features-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 50px 0;
+}
+
+.feature-card {
+  background-color: rgba(0, 0, 0, 0.25); /* Preto com 25% de opacidade */
+  border-radius: 8px; /* Borda arredondada */
+  color: white;
+  text-align: center;
+  flex: 0 0 calc(33.333% - 20px); /* Três cartões por linha */
+  padding: 20px;
+  border: 2px solid; /* Borda com gradiente */
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+}
+
+.feature-card img.feature-icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 20px;
+}
+
+.feature-card h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
 /* Responsividade */
 @media (max-width: 1200px) {
   .text-container {
@@ -60,6 +231,10 @@
 
   .home-subtitle {
     font-size: 1.75rem;
+  }
+
+  .feature-card {
+    flex: 0 0 calc(33.333% - 15px); /* Ajuste a largura dos cartões para telas menores */
   }
 }
 
@@ -75,6 +250,10 @@
   .home-subtitle {
     font-size: 1.5rem;
   }
+
+  .feature-card {
+    flex: 0 0 calc(50% - 20px); /* Dois cartões por linha */
+  }
 }
 
 @media (max-width: 768px) {
@@ -89,6 +268,26 @@
   .home-subtitle {
     font-size: 1.25rem;
   }
+
+  .why-digital-medals {
+    padding: 20px;
+  }
+
+  .why-digital-medals h2 {
+    font-size: 2rem;
+  }
+
+  .why-digital-medals h3 {
+    font-size: 1.5rem;
+  }
+
+  .why-digital-medals p {
+    font-size: 1rem;
+  }
+
+  .feature-card {
+    flex: 0 0 calc(50% - 10px); /* Dois cartões por linha */
+  }
 }
 
 @media (max-width: 576px) {
@@ -102,5 +301,59 @@
 
   .home-subtitle {
     font-size: 1rem;
+  }
+
+  .why-digital-medals {
+    padding: 15px;
+  }
+
+  .why-digital-medals h2 {
+    font-size: 1.75rem;
+  }
+
+  .why-digital-medals h3 {
+    font-size: 1.25rem;
+  }
+
+  .why-digital-medals p {
+    font-size: 0.875rem;
+  }
+
+  .credibilidade-seguranca {
+    padding: 15px;
+  }
+
+  .credibilidade-seguranca h2 {
+    font-size: 1.75rem;
+  }
+
+  .credibilidade-seguranca p {
+    font-size: 0.875rem;
+  }
+
+  .divisoria3 {
+    margin: 10px 0;
+  }
+
+  .iconSmall {
+    width: 25px;
+    height: 25px;
+    margin: 0 5px;
+  }
+
+  .iconLarge {
+    width: 40px;
+    height: 40px;
+    margin: 0 10px;
+  }
+
+  .features-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature-card {
+    width: 90%; /* Um cartão por linha */
+    margin-bottom: 20px;
   }
 }

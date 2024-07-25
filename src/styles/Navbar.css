@@ -6,8 +6,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  padding-left: 25px;
-  padding-right: 25px;
+  padding-left: 35px;
+  padding-right: 35px;
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   font-family: 'Inter', sans-serif;
@@ -65,6 +65,7 @@
 .searchInput::placeholder {
   color: white;
   font-weight: 300;
+  padding-left: 10px  ;
 }
 
 .authButtons {
