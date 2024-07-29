@@ -161,10 +161,10 @@ const NavBar = ({ userType, user }) => {
           </div>
         ) : (
           <>
-            <NavLink to="/sign-in" className="signIn">
+            <NavLink to="/login" className="signIn">
               Sign In
             </NavLink>
-            <NavLink to="/sign-up" className="signUp">
+            <NavLink to="/cadastro" className="signUp">
               Sign Up
             </NavLink>
           </>

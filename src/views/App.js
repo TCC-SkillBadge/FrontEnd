@@ -1,3 +1,5 @@
+// App.js
+import React from "react";
 import "../styles/App.css";
 import "primeflex/primeflex.css";
 import "primeflex/themes/primeone-dark.css";
@@ -19,7 +21,7 @@ import ListarUEs from "../components/UserAdmin/ListarUEs";
 
 function App() {
   return (
-    <div>
+    <div className="App">
       <Routes>
         <Route exact path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />

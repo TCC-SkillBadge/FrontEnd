@@ -1,0 +1,31 @@
+.cadastro-container {
+  background-color: #191A2E;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cadastro-inner {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid;
+  border-image: linear-gradient(45deg, #D273FF, #8DFD8B) 1;
+}
+
+.cadastro-title {
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  text-align: center;
+}
+
+.cadastro-label {
+  color: #8DFD8B;
+}
+
+.cadastro-button {
+  background-color: #8DFD8B;
+  border-color: #8DFD8B;
+  margin-top: 10px;
+}

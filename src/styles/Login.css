@@ -1,0 +1,127 @@
+
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: transparent; /* Permite que a cor de fundo global apareça */
+}
+
+.login-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid;
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+}
+
+.login-container h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-container .form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.login-container .input-icon {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: 2px solid #8DFD8B;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  color: #8DFD8B;
+}
+
+.login-container .input-icon input{
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #8DFD8B;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.input-icon input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+.login-container .input-icon input::placeholder {
+  color: #8DFD8B;
+}
+
+.login-container .input-icon svg {
+  margin-right: 10px;
+  color: #8DFD8B;
+}
+
+.login-container .form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.login-container .form-check-label {
+  color: white;
+}
+
+.login-container .form-check-input {
+  background-color: transparent;
+  border: 2px solid #8DFD8B;
+}
+
+.login-container .forgot-password {
+  color: white;
+  text-decoration: none;
+}
+
+.login-container .forgot-password:hover {
+  text-decoration: underline;
+}
+
+.login-container .btn {
+  width: 100%;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #D273FF;
+  font-weight: bold;
+  border: 2px solid #D273FF;
+  padding: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.login-container .btn:hover {
+  background-color: #D273FF;
+  border-color: #D273FF;
+  color: white;
+}
+
+.login-container .signup-options {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.login-container .dont-have-account {
+  color: white;
+}
+
+.login-container .sign-up {
+  color: #8DFD8B;
+  text-decoration: none;
+}
+
+.login-container .sign-up:hover {
+  text-decoration: underline;
+}
