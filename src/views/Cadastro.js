@@ -25,6 +25,7 @@ const Cadastro = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    validationCode: "",
   });
   const [companyData, setCompanyData] = useState({
     nomeEmpresa: "",
@@ -112,13 +113,11 @@ const Cadastro = () => {
         });
       } else if (userType === "admin") {
         response = await axios.post("http://localhost:7004/cadastrar", {
-          email: formData.email,
-          password: formData.password,
-          fullName: formData.fullName,
-          occupation: formData.occupation,
-          phoneNumber: formData.phone,
-          country: formData.country,
-          role: formData.occupation,
+          email_admin: formData.email,
+          senha: formData.password,
+          nome_admin: formData.fullName,
+          cargo: formData.occupation,
+          codigo_validacao: formData.validationCode,
         });
       }
 
@@ -484,6 +483,20 @@ const Cadastro = () => {
                       id="occupation"
                       placeholder="Role"
                       value={formData.occupation}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <div className="input-icon">
+                    <LockFill />
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="validationCode"
+                      placeholder="Validation Code"
+                      value={formData.validationCode}
                       onChange={handleChange}
                       required
                     />
