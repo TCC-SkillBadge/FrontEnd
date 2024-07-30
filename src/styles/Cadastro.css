@@ -7,13 +7,33 @@
   background-color: transparent; /* Permite que a cor de fundo global apareça */
 }
 
+.user-type-switcher {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.user-type-switcher button {
+  margin: 5px;
+  padding: 10px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.user-type-switcher button.active {
+  background-color: #D273FF;
+}
+
 .cadastro-container {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   border: 2px solid;
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
 }
