@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap-icons";
 import axios from "axios";
 import { Dropdown } from "react-bootstrap";
-import Navbar from "../components/Navbar"; // Importe o componente Navbar
+import Navbar from "../components/Navbar";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 
@@ -28,11 +28,13 @@ const Cadastro = () => {
   });
   const [companyData, setCompanyData] = useState({
     nomeEmpresa: "",
+    cnpj: "",
     cep: "",
     rua: "",
     bairro: "",
     cidade: "",
     complemento: "",
+    numeroContato: "",
   });
 
   const navigate = useNavigate();
@@ -46,17 +48,18 @@ const Cadastro = () => {
     if (cnpj.length === 14) {
       try {
         const response = await axios.get(
-          `https://www.receitaws.com.br/v1/cnpj/${cnpj}`
+          `http://localhost:7003/api/validarCNPJ?cnpj=${cnpj}`
         );
         const data = response.data;
-        setCompanyData({
+        setCompanyData((prevData) => ({
+          ...prevData,
           nomeEmpresa: data.nome,
           cep: data.cep,
           rua: data.logradouro,
           bairro: data.bairro,
           cidade: data.municipio,
           complemento: data.complemento,
-        });
+        }));
       } catch (error) {
         console.error("Erro ao buscar dados da empresa:", error);
       }
@@ -72,6 +75,11 @@ const Cadastro = () => {
     setFormData((prevData) => ({ ...prevData, phone: value, country }));
   };
 
+  const handleCompanyChange = (e) => {
+    const { id, value } = e.target;
+    setCompanyData((prevData) => ({ ...prevData, [id]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -79,14 +87,41 @@ const Cadastro = () => {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:7000/api/user/register", {
-        email: formData.email,
-        password: formData.password,
-        fullName: formData.fullName,
-        occupation: formData.occupation,
-        phoneNumber: formData.phone,
-        country: formData.country,
-      });
+      let response;
+      if (userType === "common") {
+        response = await axios.post("http://localhost:7000/api/user/register", {
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.fullName,
+          occupation: formData.occupation,
+          phoneNumber: formData.phone,
+          country: formData.country,
+        });
+      } else if (userType === "business") {
+        response = await axios.post("http://localhost:7003/api/cadastrar", {
+          email_comercial: formData.email,
+          senha: formData.password,
+          razao_social: companyData.nomeEmpresa,
+          cnpj: companyData.cnpj,
+          cep: companyData.cep,
+          logradouro: companyData.rua,
+          bairro: companyData.bairro,
+          municipio: companyData.cidade,
+          suplemento: companyData.complemento,
+          numero_contato: companyData.numeroContato,
+        });
+      } else if (userType === "admin") {
+        response = await axios.post("http://localhost:7004/cadastrar", {
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.fullName,
+          occupation: formData.occupation,
+          phoneNumber: formData.phone,
+          country: formData.country,
+          role: formData.occupation,
+        });
+      }
+
       if (response.status === 201) {
         alert("User registered successfully");
         navigate("/login");
@@ -224,8 +259,11 @@ const Cadastro = () => {
                     <input
                       type="email"
                       className="form-control"
-                      id="businessEmail"
+                      id="email"
                       placeholder="Business Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -237,6 +275,9 @@ const Cadastro = () => {
                       className="form-control"
                       id="password"
                       placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -248,6 +289,9 @@ const Cadastro = () => {
                       className="form-control"
                       id="confirmPassword"
                       placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -257,9 +301,11 @@ const Cadastro = () => {
                     <input
                       type="text"
                       className="form-control"
-                      id="companyName"
+                      id="nomeEmpresa"
                       placeholder="Company Name"
                       value={companyData.nomeEmpresa}
+                      onChange={handleCompanyChange}
+                      required
                     />
                   </div>
                 </div>
@@ -272,6 +318,9 @@ const Cadastro = () => {
                       id="cnpj"
                       placeholder="CNPJ"
                       onBlur={handleCNPJBlur}
+                      value={companyData.cnpj}
+                      onChange={handleCompanyChange}
+                      required
                     />
                   </div>
                 </div>
@@ -285,6 +334,8 @@ const Cadastro = () => {
                         id="cep"
                         placeholder="CEP"
                         value={companyData.cep}
+                        onChange={handleCompanyChange}
+                        required
                       />
                     </div>
                   </div>
@@ -294,9 +345,11 @@ const Cadastro = () => {
                       <input
                         type="text"
                         className="form-control"
-                        id="street"
+                        id="rua"
                         placeholder="Street"
                         value={companyData.rua}
+                        onChange={handleCompanyChange}
+                        required
                       />
                     </div>
                   </div>
@@ -308,9 +361,11 @@ const Cadastro = () => {
                       <input
                         type="text"
                         className="form-control"
-                        id="neighborhood"
+                        id="bairro"
                         placeholder="Neighborhood"
                         value={companyData.bairro}
+                        onChange={handleCompanyChange}
+                        required
                       />
                     </div>
                   </div>
@@ -320,9 +375,11 @@ const Cadastro = () => {
                       <input
                         type="text"
                         className="form-control"
-                        id="city"
+                        id="cidade"
                         placeholder="City"
                         value={companyData.cidade}
+                        onChange={handleCompanyChange}
+                        required
                       />
                     </div>
                   </div>
@@ -333,9 +390,10 @@ const Cadastro = () => {
                     <input
                       type="text"
                       className="form-control"
-                      id="complement"
+                      id="complemento"
                       placeholder="Complement"
                       value={companyData.complemento}
+                      onChange={handleCompanyChange}
                     />
                   </div>
                 </div>
@@ -344,9 +402,12 @@ const Cadastro = () => {
                     <Phone />
                     <PhoneInput
                       defaultCountry="BR"
-                      value={formData.phone}
+                      value={companyData.numeroContato}
                       onChange={(value, country) =>
-                        handlePhoneChange(value, country.iso2)
+                        setCompanyData((prevData) => ({
+                          ...prevData,
+                          numeroContato: value,
+                        }))
                       }
                       placeholder="Business Phone"
                       containerClassName="intl-phone-input"
@@ -364,8 +425,11 @@ const Cadastro = () => {
                     <input
                       type="email"
                       className="form-control"
-                      id="adminEmail"
+                      id="email"
                       placeholder="Admin Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -377,6 +441,9 @@ const Cadastro = () => {
                       className="form-control"
                       id="password"
                       placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -388,6 +455,9 @@ const Cadastro = () => {
                       className="form-control"
                       id="confirmPassword"
                       placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -397,8 +467,11 @@ const Cadastro = () => {
                     <input
                       type="text"
                       className="form-control"
-                      id="adminName"
+                      id="fullName"
                       placeholder="Admin Name"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
@@ -408,8 +481,11 @@ const Cadastro = () => {
                     <input
                       type="text"
                       className="form-control"
-                      id="role"
+                      id="occupation"
                       placeholder="Role"
+                      value={formData.occupation}
+                      onChange={handleChange}
+                      required
                     />
                   </div>
                 </div>
