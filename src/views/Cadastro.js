@@ -11,6 +11,8 @@ import {
 } from "react-bootstrap-icons";
 import axios from "axios";
 import InputMask from "react-input-mask";
+import { Dropdown } from "react-bootstrap";
+import Navbar from "../components/Navbar"; // Importe o componente Navbar
 
 const Cadastro = () => {
   const [userType, setUserType] = useState("common");
@@ -51,28 +53,32 @@ const Cadastro = () => {
 
   return (
     <div className="cadastro-page">
-      <div className="user-type-switcher">
-        <button
-          onClick={() => handleUserTypeChange("common")}
-          className={userType === "common" ? "active" : ""}
-        >
-          Common
-        </button>
-        <button
-          onClick={() => handleUserTypeChange("business")}
-          className={userType === "business" ? "active" : ""}
-        >
-          Business
-        </button>
-        <button
-          onClick={() => handleUserTypeChange("admin")}
-          className={userType === "admin" ? "active" : ""}
-        >
-          Admin
-        </button>
-      </div>
+      <Navbar />
       <div className="cadastro-container">
         <h2>Register</h2>
+        <div className="dropdown-container">
+          <Dropdown>
+            <Dropdown.Toggle
+              variant="secondary"
+              id="dropdown-basic"
+              className="custom-dropdown"
+            >
+              {userType.charAt(0).toUpperCase() + userType.slice(1)}
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              <Dropdown.Item onClick={() => handleUserTypeChange("common")}>
+                Common
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleUserTypeChange("business")}>
+                Business
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleUserTypeChange("admin")}>
+                Admin
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
         <form>
           {userType === "common" && (
             <>
@@ -312,6 +318,28 @@ const Cadastro = () => {
                     className="form-control"
                     id="confirmPassword"
                     placeholder="Confirm Password"
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="input-icon">
+                  <PersonFill />
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="adminName"
+                    placeholder="Admin Name"
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="input-icon">
+                  <PersonFill />
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="role"
+                    placeholder="Role"
                   />
                 </div>
               </div>

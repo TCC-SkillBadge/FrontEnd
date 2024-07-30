@@ -1,30 +1,49 @@
 /* Cadastro.css */
 .cadastro-page {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   height: 100vh;
   background-color: transparent; /* Permite que a cor de fundo global apareça */
 }
 
-.user-type-switcher {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.dropdown-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
-.user-type-switcher button {
-  margin: 5px;
-  padding: 10px;
-  border: none;
-  background-color: rgba(0, 0, 0, 0.3);
+.custom-dropdown {
+  background-color: transparent;
   color: white;
-  cursor: pointer;
-  border-radius: 5px;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
 }
 
-.user-type-switcher button.active {
+.custom-dropdown::after {
+  display: none;
+}
+
+.dropdown-toggle::after {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.dropdown-menu {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.dropdown-item {
+  color: white;
+}
+
+.dropdown-item:hover {
   background-color: #D273FF;
+  color: white;
 }
 
 .cadastro-container {
@@ -36,6 +55,8 @@
   max-width: 600px;
   border: 2px solid;
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  margin-top: 40px;
+  margin-bottom: 40px;
 }
 
 .cadastro-container h2 {

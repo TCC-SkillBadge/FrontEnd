@@ -3,6 +3,7 @@ import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { NavLink } from "react-router-dom";
 
+
 const NavBar = ({ userType, user }) => {
   const [showMenu, setShowMenu] = useState(false);
 
