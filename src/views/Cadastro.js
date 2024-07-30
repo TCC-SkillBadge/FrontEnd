@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../styles/Cadastro.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
@@ -10,12 +10,22 @@ import {
   Phone,
 } from "react-bootstrap-icons";
 import axios from "axios";
-import InputMask from "react-input-mask";
 import { Dropdown } from "react-bootstrap";
 import Navbar from "../components/Navbar"; // Importe o componente Navbar
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 
 const Cadastro = () => {
   const [userType, setUserType] = useState("common");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    occupation: "",
+    phone: "",
+    country: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [companyData, setCompanyData] = useState({
     nomeEmpresa: "",
     cep: "",
@@ -24,6 +34,8 @@ const Cadastro = () => {
     cidade: "",
     complemento: "",
   });
+
+  const navigate = useNavigate();
 
   const handleUserTypeChange = (type) => {
     setUserType(type);
@@ -51,309 +63,368 @@ const Cadastro = () => {
     }
   };
 
-  return (
-    <div className="cadastro-page">
-      <Navbar />
-      <div className="cadastro-container">
-        <h2>Register</h2>
-        <div className="dropdown-container">
-          <Dropdown>
-            <Dropdown.Toggle
-              variant="secondary"
-              id="dropdown-basic"
-              className="custom-dropdown"
-            >
-              {userType.charAt(0).toUpperCase() + userType.slice(1)}
-            </Dropdown.Toggle>
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [id]: value }));
+  };
 
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => handleUserTypeChange("common")}>
-                Common
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleUserTypeChange("business")}>
-                Business
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => handleUserTypeChange("admin")}>
-                Admin
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-        <form>
-          {userType === "common" && (
-            <>
-              <div className="form-group">
-                <div className="input-icon">
-                  <PersonFill />
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="fullName"
-                    placeholder="Full Name"
-                  />
+  const handlePhoneChange = (value, country) => {
+    setFormData((prevData) => ({ ...prevData, phone: value, country }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    try {
+      const response = await axios.post("http://localhost:7000/api/user/register", {
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.fullName,
+        occupation: formData.occupation,
+        phoneNumber: formData.phone,
+        country: formData.country,
+      });
+      if (response.status === 201) {
+        alert("User registered successfully");
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Error registering user:", error);
+      alert("Error registering user");
+    }
+  };
+
+  return (
+    <div>
+      <Navbar />
+      <div className="cadastro-page">
+        <div className="cadastro-container">
+          <h2>Register</h2>
+          <div className="dropdown-container">
+            <Dropdown>
+              <Dropdown.Toggle
+                variant="secondary"
+                id="dropdown-basic"
+                className="custom-dropdown"
+              >
+                {userType.charAt(0).toUpperCase() + userType.slice(1)}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleUserTypeChange("common")}>
+                  Common
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleUserTypeChange("business")}>
+                  Business
+                </Dropdown.Item>
+                <Dropdown.Item onClick={() => handleUserTypeChange("admin")}>
+                  Admin
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+          <form onSubmit={handleSubmit}>
+            {userType === "common" && (
+              <>
+                <div className="form-group">
+                  <div className="input-icon">
+                    <PersonFill />
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="fullName"
+                      placeholder="Full Name"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <PersonFill />
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="occupation"
-                    placeholder="Occupation"
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <PersonFill />
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="occupation"
+                      placeholder="Occupation"
+                      value={formData.occupation}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <Phone />
-                  <InputMask
-                    mask="(99) 99999-9999"
-                    className="form-control"
-                    id="phone"
-                    placeholder="Phone Number"
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <Phone />
+                    <PhoneInput
+                      defaultCountry="BR"
+                      value={formData.phone}
+                      onChange={(value, country) =>
+                        handlePhoneChange(value, country.iso2)
+                      }
+                      placeholder="Phone Number"
+                      containerClassName="intl-phone-input"
+                      inputClassName="intl-phone-input"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <EnvelopeFill />
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="email"
-                    placeholder="Email"
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <EnvelopeFill />
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="email"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <LockFill />
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="password"
-                    placeholder="Password"
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <LockFill />
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="password"
+                      placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <LockFill />
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="confirmPassword"
-                    placeholder="Confirm Password"
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <LockFill />
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="confirmPassword"
+                      placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
-          {userType === "business" && (
-            <>
-              <div className="form-group">
-                <div className="input-icon">
-                  <EnvelopeFill />
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="businessEmail"
-                    placeholder="Business Email"
-                  />
+              </>
+            )}
+            {userType === "business" && (
+              <>
+                <div className="form-group">
+                  <div className="input-icon">
+                    <EnvelopeFill />
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="businessEmail"
+                      placeholder="Business Email"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <LockFill />
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="password"
-                    placeholder="Password"
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <LockFill />
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="password"
+                      placeholder="Password"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <LockFill />
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="confirmPassword"
-                    placeholder="Confirm Password"
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <LockFill />
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="confirmPassword"
+                      placeholder="Confirm Password"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <Building />
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="companyName"
-                    placeholder="Company Name"
-                    value={companyData.nomeEmpresa}
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <Building />
-                  <InputMask
-                    mask="99.999.999/9999-99"
-                    className="form-control"
-                    id="cnpj"
-                    placeholder="CNPJ"
-                    onBlur={handleCNPJBlur}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 form-group">
+                <div className="form-group">
                   <div className="input-icon">
                     <Building />
                     <input
                       type="text"
                       className="form-control"
-                      id="cep"
-                      placeholder="CEP"
-                      value={companyData.cep}
+                      id="companyName"
+                      placeholder="Company Name"
+                      value={companyData.nomeEmpresa}
                     />
                   </div>
                 </div>
-                <div className="col-md-6 form-group">
+                <div className="form-group">
                   <div className="input-icon">
                     <Building />
                     <input
                       type="text"
                       className="form-control"
-                      id="street"
-                      placeholder="Street"
-                      value={companyData.rua}
+                      id="cnpj"
+                      placeholder="CNPJ"
+                      onBlur={handleCNPJBlur}
                     />
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6 form-group">
+                <div className="row">
+                  <div className="col-md-6 form-group">
+                    <div className="input-icon">
+                      <Building />
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="cep"
+                        placeholder="CEP"
+                        value={companyData.cep}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 form-group">
+                    <div className="input-icon">
+                      <Building />
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="street"
+                        placeholder="Street"
+                        value={companyData.rua}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6 form-group">
+                    <div className="input-icon">
+                      <Building />
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="neighborhood"
+                        placeholder="Neighborhood"
+                        value={companyData.bairro}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-6 form-group">
+                    <div className="input-icon">
+                      <Building />
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="city"
+                        placeholder="City"
+                        value={companyData.cidade}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="form-group">
                   <div className="input-icon">
                     <Building />
                     <input
                       type="text"
                       className="form-control"
-                      id="neighborhood"
-                      placeholder="Neighborhood"
-                      value={companyData.bairro}
+                      id="complement"
+                      placeholder="Complement"
+                      value={companyData.complemento}
                     />
                   </div>
                 </div>
-                <div className="col-md-6 form-group">
+                <div className="form-group">
                   <div className="input-icon">
-                    <Building />
+                    <Phone />
+                    <PhoneInput
+                      defaultCountry="BR"
+                      value={formData.phone}
+                      onChange={(value, country) =>
+                        handlePhoneChange(value, country.iso2)
+                      }
+                      placeholder="Business Phone"
+                      containerClassName="intl-phone-input"
+                      inputClassName="intl-phone-input"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+            {userType === "admin" && (
+              <>
+                <div className="form-group">
+                  <div className="input-icon">
+                    <EnvelopeFill />
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="adminEmail"
+                      placeholder="Admin Email"
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <div className="input-icon">
+                    <LockFill />
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="password"
+                      placeholder="Password"
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <div className="input-icon">
+                    <LockFill />
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="confirmPassword"
+                      placeholder="Confirm Password"
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <div className="input-icon">
+                    <PersonFill />
                     <input
                       type="text"
                       className="form-control"
-                      id="city"
-                      placeholder="City"
-                      value={companyData.cidade}
+                      id="adminName"
+                      placeholder="Admin Name"
                     />
                   </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <Building />
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="complement"
-                    placeholder="Complement"
-                    value={companyData.complemento}
-                  />
+                <div className="form-group">
+                  <div className="input-icon">
+                    <PersonFill />
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="role"
+                      placeholder="Role"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <Phone />
-                  <InputMask
-                    mask="(99) 99999-9999"
-                    className="form-control"
-                    id="businessPhone"
-                    placeholder="Business Phone"
-                  />
-                </div>
-              </div>
-            </>
-          )}
-          {userType === "admin" && (
-            <>
-              <div className="form-group">
-                <div className="input-icon">
-                  <EnvelopeFill />
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="adminEmail"
-                    placeholder="Admin Email"
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <LockFill />
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="password"
-                    placeholder="Password"
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <LockFill />
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="confirmPassword"
-                    placeholder="Confirm Password"
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <PersonFill />
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="adminName"
-                    placeholder="Admin Name"
-                  />
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="input-icon">
-                  <PersonFill />
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="role"
-                    placeholder="Role"
-                  />
-                </div>
-              </div>
-            </>
-          )}
-          <button type="submit" className="btn btn-primary">
-            Sign Up
-          </button>
-        </form>
-        <div className="login-options">
-          <span className="have-account">Already have an account?</span>
-          <Link to="/login" className="login-link">
-            Log In
-          </Link>
+              </>
+            )}
+            <button type="submit" className="btn btn-primary">
+              Sign Up
+            </button>
+          </form>
+          <div className="login-options">
+            <span className="have-account">Already have an account?</span>
+            <Link to="/login" className="login-link">
+              Log In
+            </Link>
+          </div>
         </div>
       </div>
     </div>
