@@ -1,17 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
-
-const NavBar = ({ userType, user }) => {
+const NavBar = () => {
   const [showMenu, setShowMenu] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUserType = sessionStorage.getItem("tipoUsuario");
+    const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+
+    if (storedUserType) {
+      setUserType(storedUserType);
+    }
+
+    if (storedUserInfo) {
+      setUser(storedUserInfo);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/login");
+  };
 
   const renderNavItems = () => {
     const navLinkClasses = ({ isActive }) => (isActive ? "tab active" : "tab");
 
     switch (userType) {
-      case "common":
+      case "UC":
         return (
           <>
             <NavLink to="/home" className={navLinkClasses}>
@@ -28,7 +48,7 @@ const NavBar = ({ userType, user }) => {
             </NavLink>
           </>
         );
-      case "business":
+      case "UE":
         return (
           <>
             <NavLink to="/home" className={navLinkClasses}>
@@ -48,7 +68,7 @@ const NavBar = ({ userType, user }) => {
             </NavLink>
           </>
         );
-      case "admin":
+      case "UA":
         return (
           <>
             <NavLink to="/home" className={navLinkClasses}>
@@ -82,7 +102,7 @@ const NavBar = ({ userType, user }) => {
   const renderUserMenu = () => {
     let menuItems;
     switch (userType) {
-      case "common":
+      case "UC":
         menuItems = (
           <>
             <NavLink to="/profile" className="menuItem">
@@ -94,13 +114,13 @@ const NavBar = ({ userType, user }) => {
             <NavLink to="/portfolio" className="menuItem">
               <i className="bi bi-briefcase"></i> Portfolio
             </NavLink>
-            <NavLink to="/logout" className="menuItem">
+            <div className="menuItem" onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </NavLink>
+            </div>
           </>
         );
         break;
-      case "business":
+      case "UE":
         menuItems = (
           <>
             <NavLink to="/profile" className="menuItem">
@@ -112,13 +132,13 @@ const NavBar = ({ userType, user }) => {
             <NavLink to="/analysis" className="menuItem">
               <i className="bi bi-bar-chart"></i> Analysis
             </NavLink>
-            <NavLink to="/logout" className="menuItem">
+            <div className="menuItem" onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </NavLink>
+            </div>
           </>
         );
         break;
-      case "admin":
+      case "UA":
         menuItems = (
           <>
             <NavLink to="/profile" className="menuItem">
@@ -127,9 +147,9 @@ const NavBar = ({ userType, user }) => {
             <NavLink to="/config" className="menuItem">
               <i className="bi bi-gear"></i> Config
             </NavLink>
-            <NavLink to="/logout" className="menuItem">
+            <div className="menuItem" onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </NavLink>
+            </div>
           </>
         );
         break;

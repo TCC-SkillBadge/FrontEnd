@@ -144,7 +144,10 @@ const Cadastro = () => {
                 id="dropdown-basic"
                 className="custom-dropdown"
               >
+                <i class="bi bi-caret-down-fill"></i>
+                
                 {userType.charAt(0).toUpperCase() + userType.slice(1)}
+                
               </Dropdown.Toggle>
 
               <Dropdown.Menu>

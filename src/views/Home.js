@@ -8,28 +8,24 @@ const Home = () => {
   const [user, setUser] = useState(null);
 
   const verificaLogin = () => {
-    const usuarioEmpresarial = sessionStorage.getItem("usuarioEmpresarial");
-    const usuarioComum = sessionStorage.getItem("usuarioComum");
-    const usuarioAdmin = sessionStorage.getItem("usuarioAdmin");
+    const tipoUsuario = sessionStorage.getItem("tipoUsuario");
+    const userInfo = sessionStorage.getItem("userInfo");
 
-    if (usuarioEmpresarial) {
-      setUserType("business");
-      setUser(JSON.parse(usuarioEmpresarial));
-    } else if (usuarioComum) {
-      setUserType("common");
-      setUser(JSON.parse(usuarioComum));
-    } else if (usuarioAdmin) {
-      setUserType("admin");
-      setUser(JSON.parse(usuarioAdmin));
-    } else {
-      setUserType(null);
-      setUser(null);
+    if (tipoUsuario) {
+      setUserType(tipoUsuario);
+    }
+
+    if (userInfo) {
+      setUser(JSON.parse(userInfo));
     }
   };
 
   useEffect(() => {
     verificaLogin();
-    window.onstorage = verificaLogin;
+    window.addEventListener("storage", verificaLogin);
+    return () => {
+      window.removeEventListener("storage", verificaLogin);
+    };
   }, []);
 
   return (

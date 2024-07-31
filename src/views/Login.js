@@ -3,13 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { EnvelopeFill, LockFill } from "react-bootstrap-icons";
-import Navbar from "../components/Navbar"; // Importe o componente Navbar
-import axios from 'axios';
+import Navbar from "../components/Navbar";
+import axios from "axios";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const navigate = useNavigate();
 
@@ -18,21 +18,94 @@ const Login = () => {
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (
+    url,
+    data,
+    method = "post",
+    params = {},
+    headers = {}
+  ) => {
     try {
-      const response = await axios.post('http://localhost:7000/user/login', {
-        email: formData.email,
-        password: formData.password,
+      const response = await axios({
+        url,
+        method,
+        data,
+        params,
+        headers,
       });
       if (response.status === 200) {
-        alert('Login successful');
-        navigate('/home');
+        const { token, tipoUsuario } = response.data;
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("tipoUsuario", tipoUsuario);
+
+        let userInfoResponse;
+        if (tipoUsuario === "UC") {
+          userInfoResponse = await axios.get(
+            `http://localhost:7000/api/user/info?email=${formData.email}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } else if (tipoUsuario === "UE") {
+          userInfoResponse = await axios.get(
+            `http://localhost:7003/api/acessar-info-usuario-jwt`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        }
+
+        if (userInfoResponse && userInfoResponse.status === 200) {
+          const userInfo = userInfoResponse.data;
+          sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+          alert("Login successful");
+          navigate("/home");
+          return true;
+        }
       }
     } catch (error) {
-      console.error('Error logging in user:', error);
-      alert('Error logging in user');
+      console.error(`Error logging in at ${url}:`, error);
     }
+    return false;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const loginEndpoints = [
+      {
+        url: "http://localhost:7000/api/user/login",
+        data: { email: formData.email, password: formData.password },
+        method: "post",
+      },
+      {
+        url: "http://localhost:7004/login",
+        data: {},
+        params: { email_admin: formData.email, senha: formData.password },
+        method: "get",
+      },
+      {
+        url: "http://localhost:7003/api/login",
+        data: { email_comercial: formData.email, senha: formData.password },
+        method: "post", // Mudança para POST
+      },
+    ];
+
+    for (let i = 0; i < loginEndpoints.length; i++) {
+      const success = await handleLogin(
+        loginEndpoints[i].url,
+        loginEndpoints[i].data,
+        loginEndpoints[i].method,
+        loginEndpoints[i].params
+      );
+      if (success) return;
+    }
+
+    alert("Error logging in user");
   };
 
   return (
