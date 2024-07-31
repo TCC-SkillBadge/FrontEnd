@@ -71,7 +71,7 @@ const Wallet = () => {
 
   const renderMedalsInSlides = (medals) => {
     const slides = [];
-    const itemsPerSlide = 3; // Define quantos cartões por slide
+    const itemsPerSlide = 3;
 
     for (let i = 0; i < medals.length; i += itemsPerSlide) {
       slides.push(
@@ -141,6 +141,7 @@ const Wallet = () => {
             showThumbs={false}
             showStatus={false}
             emulateTouch={true}
+            className="wallet-carousel"
           >
             {renderMedalsInSlides(getSortedMedals())}
           </Carousel>

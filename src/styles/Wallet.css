@@ -1,3 +1,5 @@
+/* Wallet.css */
+
 body {
   margin: 0;
   padding: 0;
@@ -28,6 +30,13 @@ body {
   align-items: center;
   margin-bottom: 20px;
   width: 100%;
+  flex-wrap: wrap;
+}
+
+.wallet-search-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .wallet-search {
@@ -37,13 +46,13 @@ body {
   border: 1px solid #fff;
   background-color: #D9D9D94D;
   width: 250px;
-  margin-right: 30px;
 }
 
 .wallet-order {
   display: flex;
   align-items: center;
   color: white;
+  margin-top: 10px;
 }
 
 .wallet-select {
@@ -89,6 +98,7 @@ body {
   padding: 20px;
   border-radius: 8px;
   width: 100%;
+  max-width: 100%;
 }
 
 .wallet-medals .carousel .slide {
@@ -102,6 +112,7 @@ body {
   justify-content: space-evenly;
   align-items: center;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .wallet-medal-card {
@@ -118,7 +129,6 @@ body {
   align-items: center;
   box-sizing: border-box;
   margin: 10px;
-  margin-bottom: 30px;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -184,6 +194,11 @@ body {
   background: rgba(255, 255, 255, 0.5);
 }
 
+.wallet-carousel {
+  width: 100%;
+  max-width: 100%;
+}
+
 @media (max-width: 1200px) {
   .wallet-medal-card {
     width: calc(33.333% - 20px);
@@ -208,6 +223,6 @@ body {
   }
 
   .wallet-medal-card {
-    width: 100%;
+    width: calc(100% - 20px);
   }
 }
