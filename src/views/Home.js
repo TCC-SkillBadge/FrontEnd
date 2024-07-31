@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar"; // Certifique-se de que o caminho está correto
+import Footer from "../components/Footer";
 import FeatureCard from "../components/FeatureCard"; // Importe o novo componente
 import "../styles/Home.css"; // Certifique-se de criar este arquivo de estilo
 
@@ -200,6 +201,7 @@ const Home = () => {
           src="/icons/home/shield4.svg"
         />
       </div>
+      <Footer />
     </div>
   );
 };
