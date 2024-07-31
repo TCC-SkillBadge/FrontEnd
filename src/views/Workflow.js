@@ -41,16 +41,16 @@ const Workflow = () => {
           Track the progress of your badge request through our streamlined workflow.
         </p>
         <div className="row workflow-section">
-          <WorkflowCard icon="/icons/workflow/icon-apply.svg" title="Requested">
+          <WorkflowCard icon="bi bi-journal-check fs-1" title="Requested">
             Your badge request has been submitted.
           </WorkflowCard>
-          <WorkflowCard icon="/icons/workflow/icon-approve.svg" title="In production">
+          <WorkflowCard icon="bi bi-fan fs-1" title="In production">
             Your badge is being manufactured.
           </WorkflowCard>
-          <WorkflowCard icon="/icons/workflow/icon-award.svg" title="Review">
+          <WorkflowCard icon="bi bi-eye fs-1" title="Review">
             Your badge is being reviewed.
           </WorkflowCard>
-          <WorkflowCard icon="/icons/workflow/icon-award.svg" title="Issued">
+          <WorkflowCard icon="bi bi-check2 fs-1" title="Issued">
             Your badge has been issued.
           </WorkflowCard>
         </div>

@@ -4,7 +4,7 @@ import "../styles/WorkflowCard.css";
 const WorkflowCard = ({ icon, title, children }) => {
   return (
     <div className="workflow-card">
-      <img className="workflow-icon" alt={title} src={icon} />
+      <i className={`workflow-icon ${icon}`} alt={title} ></i>
       <h3>{title}</h3>
       <p>{children}</p>
     </div>

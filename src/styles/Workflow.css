@@ -17,6 +17,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-grow: 1;
+  flex-wrap: wrap;
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -49,4 +50,40 @@ body {
   justify-content: space-between;
   gap: 50px;
   margin: 50px 0;
+}
+
+@media (max-width: 1200px) {
+  .workflow-container {
+    padding: 15px;
+  }
+
+  .workflow-title {
+    font-size: 2.5rem;
+  }
+
+  .workflow-subtitle {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .workflow-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .workflow-title {
+    font-size: 2rem;
+  }
+
+  .workflow-subtitle {
+    font-size: 0.55rem;
+  }
+}
+
+@media (max-width: 510px) {
+  .workflow-container {
+    padding: 5px;
+  }
+
 }

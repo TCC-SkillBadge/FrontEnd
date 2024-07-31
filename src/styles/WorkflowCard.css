@@ -5,13 +5,14 @@
   text-align: center;
   flex: 0 0 calc(20% - 20px);
   max-width: 317px;
+  min-width: 200px;
   padding: 20px;
   border: 1px solid; 
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
   margin: 10px;
 }
 
-.workflow-card img.workflow-icon {
+.workflow-card i.workflow-icon {
   width: 44px;
   height: 44px;
   margin-bottom: 30px;
@@ -34,4 +35,10 @@
   font-weight: 300;
   margin-top: 10px;
   text-align: justify;
+}
+
+@media (max-width: 510px) {
+  .workflow-card {
+    margin: 10px auto;
+  }
 }
