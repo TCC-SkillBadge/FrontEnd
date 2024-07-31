@@ -22,6 +22,7 @@
   font-weight: 800;
   position: relative;
   padding: 0 10px;
+  transition: color 0.3s, border-bottom 0.3s;
 }
 
 .navbar .nav-link.active::after {
@@ -32,6 +33,11 @@
   left: 0;
   background-color: #d273ff;
   height: 3.9px;
+}
+
+.navbar .nav-link:hover {
+  color: #d273ff !important;
+  border-bottom: 2px solid #d273ff;
 }
 
 .searchSection {
@@ -61,16 +67,27 @@
   font-size: 18px;
   font-weight: 600;
   text-decoration: none;
+  transition: color 0.3s, border 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .signIn:hover, .signUp:hover {
   text-decoration: none;
+  color: #d273ff !important;
 }
 
 .signUp {
-  border: 1px solid white;
-  padding: 5px 10px;
-  border-radius: 4px;
+  border: 2px solid white; /* Borda branca visível o tempo todo */
+  padding: 5px 20px; /* Ajuste o padding para criar mais espaço */
+  border-radius: 8px; /* Ajuste o border-radius para bordas mais arredondadas */
+  background: transparent; /* Fundo transparente */
+}
+
+.signUp:hover {
+  border-color: #d273ff;
+  background: transparent; /* Mantém o fundo transparente no hover */
 }
 
 .userAvatar {

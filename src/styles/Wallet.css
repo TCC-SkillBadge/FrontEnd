@@ -187,7 +187,7 @@ body {
 
 /* Ajuste a posição dos indicadores do carrossel */
 .carousel .control-dots {
-  bottom: -10px; /* Move os indicadores para baixo */
+  bottom: -15px; /* Move os indicadores para baixo */
 }
 
 .carousel .control-dots .dot {
