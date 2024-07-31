@@ -92,6 +92,9 @@ const Wallet = () => {
             infiniteLoop={true}
             showThumbs={false}
             showStatus={false}
+            centerMode={true}
+            centerSlidePercentage={33.33} // 3 cards por seção
+            emulateTouch={true}
           >
             {getSortedMedals().map((medal) => (
               <div key={medal.id} className="wallet-medal-card">
