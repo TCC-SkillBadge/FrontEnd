@@ -1,8 +1,9 @@
 .workflow-card {
-  background-color: #000000CC;
+  background-color: rgba(0, 0, 0, 0.8);
   border-radius: 8px;
   color: white;
   text-align: center;
+  flex: 0 0 calc(20% - 20px);
   max-width: 317px;
   padding: 20px;
   border: 1px solid; 
@@ -18,17 +19,19 @@
 
 .workflow-card h3 {
   font-family: 'Inter', sans-serif;
-  font-size: 28px;
+  font-size: 1.5rem;
   font-weight: 600;
   line-height: 33.89px;
   text-align: center;
   color: white;
   margin-bottom: 10px;
+  text-align: justify;
 }
 
 .workflow-card p {
   font-family: 'Inter', sans-serif;
-  font-size: 16px;
+  font-size: 0.8rem;
   font-weight: 300;
   margin-top: 10px;
+  text-align: justify;
 }
