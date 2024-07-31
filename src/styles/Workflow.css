@@ -1,0 +1,52 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-size: cover;
+}
+
+.workflow-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.workflow-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.workflow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;  
+}
+
+.workflow-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 60px; 
+  font-weight: 800;
+  line-height: 72.61px; 
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.workflow-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px; 
+  font-weight: 400;
+  line-height: 19.36px; 
+  text-align: center;
+  color: white;
+  font-weight: bold;
+}

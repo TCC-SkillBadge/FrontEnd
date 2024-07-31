@@ -1,0 +1,34 @@
+.workflow-card {
+  background-color: #000000CC;
+  border-radius: 8px;
+  color: white;
+  text-align: center;
+  max-width: 317px;
+  padding: 20px;
+  border: 1px solid; 
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  margin: 10px;
+}
+
+.workflow-card img.workflow-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 30px;
+}
+
+.workflow-card h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 33.89px;
+  text-align: center;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.workflow-card p {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  margin-top: 10px;
+}
