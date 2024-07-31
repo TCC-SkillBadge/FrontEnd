@@ -5,17 +5,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  padding-left: 35px;
-  padding-right: 35px;
+  padding: 0 50px; /* Aumenta o padding nas laterais */
+  box-sizing: border-box; /* Garante que o padding seja incluído na largura total */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   font-family: 'Inter', sans-serif;
+  position: fixed; /* Faz a navbar ficar fixa no topo */
+  top: 0; /* Posiciona a navbar no topo */
+  z-index: 1000; /* Garante que a navbar fique acima de outros elementos */
 }
 
 .navLinks {
   display: flex;
-  gap: 20px;
+  gap: 30px; /* Ajuste o valor do gap conforme necessário */
 }
 
 .tab {
@@ -24,6 +26,7 @@
   font-weight: 800;
   text-decoration: none;
   position: relative;
+  padding: 0 10px; /* Adiciona padding aos lados de cada link */
 }
 
 .tab.active::after {
@@ -50,6 +53,8 @@
   display: flex;
   align-items: center;
   margin-right: 20px;
+  padding-left: 20px; /* Adiciona padding à esquerda */
+  padding-right: 20px; /* Adiciona padding à direita */
 }
 
 .searchInput {
@@ -65,7 +70,7 @@
 .searchInput::placeholder {
   color: white;
   font-weight: 300;
-  padding-left: 10px  ;
+  padding-left: 10px;
 }
 
 .authButtons {
@@ -95,14 +100,14 @@
 }
 
 .userImage, .userAvatar {
-  width: 40px;
-  height: 40px;
+  width: 60px; /* Aumenta a largura do ícone do usuário */
+  height: 60px; /* Aumenta a altura do ícone do usuário */
   border-radius: 50%;
 }
 
 .userMenu {
   position: absolute;
-  top: 50px;
+  top: 70px; /* Ajusta a posição do menu abaixo do ícone do usuário */
   right: 0;
   background-color: rgba(0, 0, 0, 0.9);
   border-radius: 8px;

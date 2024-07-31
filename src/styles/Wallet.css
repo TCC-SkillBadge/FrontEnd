@@ -120,6 +120,12 @@ body {
   margin: 10px;
   margin-bottom: 30px;
   overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.wallet-medal-card:hover {
+  transform: translateY(-10px); /* Move o card para cima */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Adiciona sombra ao card */
 }
 
 .wallet-medal-card .medal-img {
