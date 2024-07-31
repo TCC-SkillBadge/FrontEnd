@@ -97,6 +97,13 @@ body {
   align-items: center;
 }
 
+.wallet-medal-slide {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+}
+
 .wallet-medal-card {
   background-color: rgba(0, 0, 0, 0.25);
   border-radius: 8px;

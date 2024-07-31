@@ -7,8 +7,10 @@ import "../styles/Wallet.css";
 
 const Wallet = () => {
   const [medals, setMedals] = useState([]);
+  const [filteredMedals, setFilteredMedals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [orderBy, setOrderBy] = useState("assigned-last");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchBadges = async () => {
@@ -18,6 +20,7 @@ const Wallet = () => {
           `http://localhost:7000/api/badges?email=${email}`
         );
         setMedals(response.data);
+        setFilteredMedals(response.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching badges:", error);
@@ -32,22 +35,63 @@ const Wallet = () => {
     setOrderBy(e.target.value);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    filterMedals(e.target.value);
+  };
+
+  const filterMedals = (term) => {
+    if (!term) {
+      setFilteredMedals(medals);
+    } else {
+      const filtered = medals.filter((medal) =>
+        medal.descricao.toLowerCase().includes(term.toLowerCase())
+      );
+      setFilteredMedals(filtered);
+    }
+  };
+
   const getSortedMedals = () => {
     switch (orderBy) {
       case "assigned-first":
-        return [...medals].sort(
+        return [...filteredMedals].sort(
           (a, b) => new Date(a.dt_emissao) - new Date(b.dt_emissao)
         );
       case "name":
-        return [...medals].sort((a, b) =>
+        return [...filteredMedals].sort((a, b) =>
           a.descricao.localeCompare(b.descricao)
         );
       case "assigned-last":
       default:
-        return [...medals].sort(
+        return [...filteredMedals].sort(
           (a, b) => new Date(b.dt_emissao) - new Date(a.dt_emissao)
         );
     }
+  };
+
+  const renderMedalsInSlides = (medals) => {
+    const slides = [];
+    const itemsPerSlide = 3; // Define quantos cartões por slide
+
+    for (let i = 0; i < medals.length; i += itemsPerSlide) {
+      slides.push(
+        <div className="wallet-medal-slide" key={`slide-${i}`}>
+          {medals.slice(i, i + itemsPerSlide).map((medal) => (
+            <div key={medal.id} className="wallet-medal-card">
+              <img
+                src={medal.imagem_b}
+                alt={medal.descricao}
+                className="medal-img"
+              />
+              <h3>{medal.descricao}</h3>
+              <button>Details</button>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return slides;
   };
 
   if (loading) {
@@ -64,6 +108,8 @@ const Wallet = () => {
               type="text"
               className="wallet-search"
               placeholder="Search by name"
+              value={searchTerm}
+              onChange={handleSearchChange}
             />
             <input
               type="text"
@@ -84,7 +130,9 @@ const Wallet = () => {
             </select>
           </div>
         </div>
-        <div className="wallet-info">You have {medals.length} medals</div>
+        <div className="wallet-info">
+          You have {filteredMedals.length} medals
+        </div>
         <div className="wallet-divider"></div>
         <div className="wallet-medals">
           <Carousel
@@ -92,21 +140,9 @@ const Wallet = () => {
             infiniteLoop={true}
             showThumbs={false}
             showStatus={false}
-            centerMode={true}
-            centerSlidePercentage={33.33} // 3 cards por seção
             emulateTouch={true}
           >
-            {getSortedMedals().map((medal) => (
-              <div key={medal.id} className="wallet-medal-card">
-                <img
-                  src={medal.imagem_b}
-                  alt={medal.descricao}
-                  className="medal-img"
-                />
-                <h3>{medal.descricao}</h3>
-                <button>Details</button>
-              </div>
-            ))}
+            {renderMedalsInSlides(getSortedMedals())}
           </Carousel>
         </div>
       </div>
