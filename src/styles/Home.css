@@ -1,6 +1,6 @@
 /* Home.css */
 .home-content {
-  margin: 50px 0;
+  margin-top: 87px; /* Adiciona margem para evitar que o conteúdo fique atrás da navbar fixa */
   display: flex;
 }
 
@@ -26,7 +26,7 @@
   font-family: 'Inter', sans-serif;
   font-size: 2rem; /* Ajuste para responsividade */
   font-weight: 500;
-  line-height: 1.2; /* Ajuste para responsividade */
+  line-height: 1.2; /* Ajuste para reduzir o espaço entre o título e o subtítulo */
   text-align: left;
   color: white;
   margin-top: 0; /* Ajuste para reduzir o espaço entre o título e o subtítulo */
