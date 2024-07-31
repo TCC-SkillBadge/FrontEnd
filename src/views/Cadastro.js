@@ -112,7 +112,7 @@ const Cadastro = () => {
           numero_contato: companyData.numeroContato,
         });
       } else if (userType === "admin") {
-        response = await axios.post("http://localhost:7004/cadastrar", {
+        response = await axios.post("http://localhost:7004/admin/cadastrar", {
           email_admin: formData.email,
           senha: formData.password,
           nome_admin: formData.fullName,
@@ -144,10 +144,8 @@ const Cadastro = () => {
                 id="dropdown-basic"
                 className="custom-dropdown"
               >
-                <i class="bi bi-caret-down-fill"></i>
-                
+                <i className="bi bi-caret-down-fill"></i>
                 {userType.charAt(0).toUpperCase() + userType.slice(1)}
-                
               </Dropdown.Toggle>
 
               <Dropdown.Menu>

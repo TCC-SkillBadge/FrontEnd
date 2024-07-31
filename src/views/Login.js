@@ -57,6 +57,16 @@ const Login = () => {
               },
             }
           );
+        } else if (tipoUsuario === "UA") {
+          // Adicionando verificação para usuário admin
+          userInfoResponse = await axios.get(
+            `http://localhost:7004/admin/acessa-info`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
         }
 
         if (userInfoResponse && userInfoResponse.status === 200) {
@@ -83,15 +93,14 @@ const Login = () => {
         method: "post",
       },
       {
-        url: "http://localhost:7004/login",
-        data: {},
-        params: { email_admin: formData.email, senha: formData.password },
-        method: "get",
+        url: "http://localhost:7004/admin/login", // Atualizar a URL do admin
+        data: { email_admin: formData.email, senha: formData.password }, // Atualizar os dados do admin
+        method: "post",
       },
       {
         url: "http://localhost:7003/api/login",
         data: { email_comercial: formData.email, senha: formData.password },
-        method: "post", // Mudança para POST
+        method: "post",
       },
     ];
 
