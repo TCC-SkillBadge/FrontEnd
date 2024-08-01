@@ -1,49 +1,43 @@
+/* navbar.css */
 .navbar {
   width: 100%;
   height: 87px;
-  background-color: rgba(0, 0, 0, 0.7); /* Preto com 70% de opacidade */
+  background-color: rgba(0, 0, 0, 0.7) !important; /* Preto com 70% de opacidade */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  padding-left: 35px;
-  padding-right: 35px;
+  padding: 0 20px; /* Diminui o padding nas laterais */
+  box-sizing: border-box; /* Garante que o padding seja incluído na largura total */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   font-family: 'Inter', sans-serif;
+  position: fixed; /* Faz a navbar ficar fixa no topo */
+  top: 0; /* Posiciona a navbar no topo */
+  z-index: 1000; /* Garante que a navbar fique acima de outros elementos */
 }
 
-.navLinks {
-  display: flex;
-  gap: 20px;
-}
-
-.tab {
-  color: white;
+.navbar .nav-link {
+  color: white !important;
   font-size: 18px;
   font-weight: 800;
-  text-decoration: none;
   position: relative;
+  padding: 0 10px;
+  transition: color 0.3s, border-bottom 0.3s;
 }
 
-.tab.active::after {
+.navbar .nav-link.active::after {
   content: "";
   width: 100%;
   position: absolute;
-  bottom: -8px; /* Ajuste conforme necessário para criar espaço */
+  bottom: -8px;
   left: 0;
   background-color: #d273ff;
   height: 3.9px;
 }
 
-.tab:hover::after {
-  width: 100%;
-}
-
-.authSection {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+.navbar .nav-link:hover {
+  color: #d273ff !important;
+  border-bottom: 2px solid #d273ff;
 }
 
 .searchSection {
@@ -54,7 +48,7 @@
 
 .searchInput {
   height: 40px; 
-  width: 400px;
+  width: 200px;
   padding: 5px;
   border-radius: 4px;
   border: 1px solid #E2E2E2;
@@ -65,56 +59,50 @@
 .searchInput::placeholder {
   color: white;
   font-weight: 300;
-  padding-left: 10px  ;
-}
-
-.authButtons {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+  padding-left: 10px;
 }
 
 .signIn, .signUp {
-  color: white;
+  color: white !important;
   font-size: 18px;
   font-weight: 600;
   text-decoration: none;
+  transition: color 0.3s, border 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signIn:hover, .signUp:hover {
+  text-decoration: none;
+  color: #d273ff !important;
 }
 
 .signUp {
-  border: 1px solid white;
-  padding: 5px 10px;
-  border-radius: 4px;
+  border: 2px solid white; /* Borda branca visível o tempo todo */
+  padding: 5px 20px; /* Ajuste o padding para criar mais espaço */
+  border-radius: 8px; /* Ajuste o border-radius para bordas mais arredondadas */
+  background: transparent; /* Fundo transparente */
 }
 
-.userIcon {
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+.signUp:hover {
+  border-color: #d273ff;
+  background: transparent; /* Mantém o fundo transparente no hover */
 }
 
-.userImage, .userAvatar {
+.userAvatar {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
 }
 
 .userMenu {
-  position: absolute;
-  top: 50px;
-  right: 0;
   background-color: rgba(0, 0, 0, 0.9);
   border-radius: 8px;
   padding: 10px;
   text-align: left;
-  width: 200px; /* Aumenta a largura do menu */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .userMenu .menuItem {
-  display: flex;
-  align-items: center;
   color: white;
   padding: 10px 15px;
   cursor: pointer;
@@ -129,54 +117,7 @@
   margin-right: 10px;
 }
 
-.userMenu::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  border-width: 0 10px 10px 10px;
-  border-style: solid;
-  border-color: transparent transparent rgba(0, 0, 0, 0.9) transparent;
-}
-
-.App {
-  background-color: #191A2E;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.navbar-nav .dropdown-menu {
+  right: 0 !important;
+  left: auto !important;
 }
