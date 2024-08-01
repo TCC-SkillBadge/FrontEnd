@@ -1,9 +1,16 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { PencilFill } from "react-bootstrap-icons";
 import "../styles/PlanCard.css";
 
-const PlanCard = ({ plan }) => {
+const PlanCard = ({ plan, isAdmin }) => {
   return (
     <div className={`plan-card ${plan.prioridade ? "highlight" : ""}`}>
+      {isAdmin && (
+        <Link to={`/edit-plan/${plan.id}`} className="edit-icon">
+          <PencilFill />
+        </Link>
+      )}
       <div className="icon-container">
         <i className="bi bi-check-circle icon"></i>
       </div>

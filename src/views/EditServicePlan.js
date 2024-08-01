@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import axios from "axios";
-import "../styles/CreateServicePlan.css";
+import { useParams, useNavigate } from "react-router-dom";
+import "../styles/CreateServicePlan.css"; // Importando o CSS
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Modal, Button } from "react-bootstrap";
 
-const CreateServicePlan = () => {
+const EditServicePlan = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     tituloPlanoServico: "",
     descricaoPlano: "",
@@ -14,17 +17,32 @@ const CreateServicePlan = () => {
     precoPlanoServico: "",
     prazoPagamentos: "",
     sugestoesUpgrades: "",
-    prioridade: false, // Novo campo para prioridade
+    prioridade: false,
   });
-
-  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
+    // Verifica se o usuário é administrador
     const userType = sessionStorage.getItem("tipoUsuario");
     if (userType !== "UA") {
       navigate("/home"); // Redireciona para a página inicial se o usuário não for administrador
+    } else {
+      const fetchPlan = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:9090/api/plans/${id}`
+          );
+          if (response.status === 200) {
+            setFormData(response.data);
+          }
+        } catch (error) {
+          console.error("There was an error fetching the plan!", error);
+        }
+      };
+
+      fetchPlan();
     }
-  }, [navigate]);
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
@@ -46,26 +64,38 @@ const CreateServicePlan = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:9090/api/plans",
+      const response = await axios.put(
+        `http://localhost:9090/api/plans/${id}`,
         formData
       );
       if (response.status === 200) {
-        alert("Plan created successfully");
-        setFormData({
-          tituloPlanoServico: "",
-          descricaoPlano: "",
-          funcDisponibilizadas: "",
-          funcNaoDisponibilizadas: "",
-          precoPlanoServico: "",
-          prazoPagamentos: "",
-          sugestoesUpgrades: "",
-          prioridade: false,
-        });
+        alert("Plan updated successfully");
+        navigate("/price");
       }
     } catch (error) {
-      console.error("There was an error creating the plan!", error);
+      console.error("There was an error updating the plan!", error);
     }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:9090/api/plans/${id}`
+      );
+      if (response.status === 204) {
+        alert("Plan deleted successfully");
+        navigate("/price");
+      }
+    } catch (error) {
+      console.error("There was an error deleting the plan!", error);
+    }
+  };
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const handleConfirmDelete = () => {
+    handleDelete();
+    setShowModal(false);
   };
 
   return (
@@ -73,7 +103,7 @@ const CreateServicePlan = () => {
       <Navbar />
       <div className="create-plan-page">
         <div className="create-plan-container">
-          <h2>Create Service Plan</h2>
+          <h2>Edit Service Plan</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="tituloPlanoServico" className="form-label">
@@ -192,12 +222,44 @@ const CreateServicePlan = () => {
               <button type="submit" className="btn btn-primary save-button">
                 Save Plan
               </button>
+              <button
+                type="button"
+                className="btn btn-danger delete-button"
+                onClick={handleShowModal}
+              >
+                Delete Plan
+              </button>
             </div>
           </form>
         </div>
       </div>
+
+      <Modal show={showModal} onHide={handleCloseModal} centered>
+        <Modal.Header closeButton className="modal-header-custom">
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="modal-body-custom">
+          Are you sure you want to delete this plan?
+        </Modal.Body>
+        <Modal.Footer className="modal-footer-custom">
+          <Button
+            variant="secondary"
+            onClick={handleCloseModal}
+            className="modal-button-custom"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleConfirmDelete}
+            className="modal-button-custom"
+          >
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
 
-export default CreateServicePlan;
+export default EditServicePlan;

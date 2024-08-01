@@ -1,4 +1,3 @@
-// App.js
 import React from "react";
 import "../styles/App.css";
 import "primeflex/primeflex.css";
@@ -18,7 +17,8 @@ import PesquisaEmpr from "../components/UserEmpresarial/PesquisaEmpr";
 import PesquisaAdmin from "../components/UserAdmin/PesquisaAdmin";
 import ListarUCs from "../components/UserAdmin/ListarUCs";
 import ListarUEs from "../components/UserAdmin/ListarUEs";
-import CreateServicePlan from "./CreateServicePlan"; // Import the new component
+import CreateServicePlan from "./CreateServicePlan";
+import EditServicePlan from "./EditServicePlan"; // Import the new component
 import Price from "./Price";
 
 function App() {
@@ -37,8 +37,10 @@ function App() {
         <Route path="/pesquisaAdmin" element={<PesquisaAdmin />} />
         <Route path="/listarUCs" element={<ListarUCs />} />
         <Route path="/listarUEs" element={<ListarUEs />} />
-        <Route path="/createServicePlan" element={<CreateServicePlan />} />
         <Route path="/price" element={<Price />} />
+        <Route path="/createServicePlan" element={<CreateServicePlan />} />
+        <Route path="/edit-plan/:id" element={<EditServicePlan />} />{" "}
+        {/* Add this route */}
       </Routes>
     </div>
   );

@@ -99,6 +99,20 @@
   color: white;
 }
 
+.create-plan-container .delete-button {
+  background-color: transparent;
+  border-color: #FF6B6B;
+  color: #FF6B6B;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.create-plan-container .delete-button:hover {
+  background-color: #FF6B6B;
+  border-color: #FF6B6B;
+  color: white;
+}
+
 .form-check {
   display: flex;
   align-items: center;
@@ -107,4 +121,34 @@
 
 .form-check-input {
   margin-right: 10px;
+}
+
+/* Modal Custom Styles */
+.modal-header-custom {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid #D273FF;
+  color: #000000; /* Preto forte */
+}
+
+.modal-body-custom {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+}
+
+.modal-footer-custom {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-top: 1px solid #D273FF;
+}
+
+.modal-button-custom {
+  background-color: transparent;
+  border-color: #D273FF;
+  color: #D273FF;
+  font-weight: bold;
+}
+
+.modal-button-custom:hover {
+  background-color: #D273FF;
+  border-color: #D273FF;
+  color: white;
 }
