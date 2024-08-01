@@ -1,0 +1,101 @@
+.create-plan-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 87px); /* Ajusta a altura para excluir a altura da navbar */
+  background-color: transparent; /* Permite que a cor de fundo global apareça */
+}
+
+.create-plan-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 600px;
+  border: 2px solid;
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+}
+
+.create-plan-container h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.create-plan-container .form-group {
+  margin-bottom: 20px;
+}
+
+.create-plan-container .form-control {
+  background-color: transparent;
+  border: 2px solid #8DFD8B;
+  border-radius: 5px;
+  padding: 10px;
+  color: #ffffff;
+}
+
+.create-plan-container .form-control::placeholder {
+  color: #b0b0b0; /* Define a cor do texto dentro dos placeholders como cinza */
+}
+
+.create-plan-container .form-label {
+  color: #ffffff; /* Define a cor dos labels como branco */
+}
+
+.create-plan-container .form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.create-plan-container .form-group.col-md-6 {
+  flex: 0 0 48%;
+  max-width: 48%;
+}
+
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown {
+  appearance: none;
+  background-color: transparent;
+  border-radius: 5px;
+  padding: 10px;
+  color: #ffffff;
+  width: 100%;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #ffffff;
+}
+
+.dropdown option {
+  background-color: #000000; /* Preto */
+  color: #ffffff;
+}
+
+.dropdown option:hover {
+  background-color: #d273ff; /* Hover rosa */
+}
+
+.create-plan-container .save-button {
+  background-color: transparent;
+  border-color: #D273FF;
+  color: #D273FF;
+  font-weight: bold;
+}
+
+.create-plan-container .save-button:hover {
+  background-color: #D273FF;
+  border-color: #D273FF;
+  color: white;
+}
+
+
