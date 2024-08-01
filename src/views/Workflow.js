@@ -32,31 +32,78 @@ const Workflow = () => {
     window.onstorage = verificaLogin;
   }, []);
 
-  return (
-    <div className="workflow-page">
-      <Navbar userType={userType} user={user}/>
-      <div className="workflow-container">
-        <h1 className="workflow-title">Badge Issuance Workflow</h1>
-        <p className="workflow-subtitle">
-          Track the progress of your badge request through our streamlined workflow.
-        </p>
-        <div className="row workflow-section">
-          <WorkflowCard icon="bi bi-journal-check fs-1" title="Requested">
-            Your badge request has been submitted.
-          </WorkflowCard>
-          <WorkflowCard icon="bi bi-fan fs-1" title="In production">
-            Your badge is being manufactured.
-          </WorkflowCard>
-          <WorkflowCard icon="bi bi-eye fs-1" title="Review">
-            Your badge is being reviewed.
-          </WorkflowCard>
-          <WorkflowCard icon="bi bi-check2 fs-1" title="Issued">
-            Your badge has been issued.
-          </WorkflowCard>
+  if (userType === "business") {
+    return (
+      <div className="workflow-page">
+        <Navbar userType={userType} user={user} />
+        <div className="workflow-container">
+          <h1 className="workflow-title">Badge Issuance Workflow</h1>
+          <p className="workflow-subtitle">
+            Track the progress of your badge request through our streamlined workflow.
+          </p>
+          <div className="row workflow-section">
+            <WorkflowCard
+              icon="bi bi-journal-check fs-1"
+              title="Requested"
+              children="Your badge request has been submitted."
+            />
+            <WorkflowCard
+              icon="bi bi-fan fs-1"
+              title="In production"
+              children="Your badge is being manufactured."
+            />
+            <WorkflowCard
+              icon="bi bi-eye fs-1"
+              title="Review"
+              children="Your badge is being reviewed."
+            />
+            <WorkflowCard
+              icon="bi bi-check2 fs-1"
+              title="Issued"
+              children="Your badge has been issued."
+            />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+  //else if (userType === "admin") {
+  else {
+    return (
+      <div className="workflow-page">
+        <Navbar userType={userType} user={user} />
+        <div className="workflow-container-adm">
+          <h1 className="workflow-title-adm">Badge  Workflow  </h1>
+          <div className="row workflow-section-adm">
+            <WorkflowCard
+              icon="bi bi-journal-bookmark-fill fs-1"
+              title="Requested"
+              children="Your badge request has been submitted."
+              button="Move to Production"
+            />
+            <WorkflowCard
+              icon="bi bi-power fs-1"
+              title="In production"
+              children="Your badge is currently being produced."
+              button="Move to Analysist"
+            />
+            <WorkflowCard
+              icon="bi bi-eye fs-1"
+              title="Analysis"
+              children="Your badge is being reviewed for quality and accuracy."
+              button="Move to Issued"
+            />
+            <WorkflowCard
+              icon="bi bi-award fs-1"
+              title="Issued"
+              children="Your badge has been successfully issued."
+              button="End Flow"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default Workflow;
