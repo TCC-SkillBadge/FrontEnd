@@ -19,6 +19,7 @@ import PesquisaAdmin from "../components/UserAdmin/PesquisaAdmin";
 import ListarUCs from "../components/UserAdmin/ListarUCs";
 import ListarUEs from "../components/UserAdmin/ListarUEs";
 import CreateServicePlan from "./CreateServicePlan"; // Import the new component
+import Price from "./Price";
 
 function App() {
   return (
@@ -36,8 +37,8 @@ function App() {
         <Route path="/pesquisaAdmin" element={<PesquisaAdmin />} />
         <Route path="/listarUCs" element={<ListarUCs />} />
         <Route path="/listarUEs" element={<ListarUEs />} />
-        <Route path="/createServicePlan" element={<CreateServicePlan />} />{" "}
-        
+        <Route path="/createServicePlan" element={<CreateServicePlan />} />
+        <Route path="/price" element={<Price />} />
       </Routes>
     </div>
   );

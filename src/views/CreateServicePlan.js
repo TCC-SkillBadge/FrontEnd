@@ -1,21 +1,27 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
+import axios from "axios";
 import "../styles/CreateServicePlan.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const CreateServicePlan = () => {
   const [formData, setFormData] = useState({
-    planTitle: "",
-    availableFeatures: "",
-    unavailableFeatures: "",
-    planPrice: "",
-    paymentTerm: "",
-    upgradeSuggestions: "",
+    tituloPlanoServico: "",
+    descricaoPlano: "",
+    funcDisponibilizadas: "",
+    funcNaoDisponibilizadas: "",
+    precoPlanoServico: "",
+    prazoPagamentos: "",
+    sugestoesUpgrades: "",
+    prioridade: false, // Novo campo para prioridade
   });
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [id]: value }));
+    const { id, value, type, checked } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handlePriceChange = (e) => {
@@ -24,13 +30,32 @@ const CreateServicePlan = () => {
     value = value.replace(/\D/g, "");
     // Add formatting
     value = (value / 100).toFixed(2).toString();
-    setFormData((prevData) => ({ ...prevData, planPrice: value }));
+    setFormData((prevData) => ({ ...prevData, precoPlanoServico: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Logic to handle form submission
-    console.log(formData);
+    try {
+      const response = await axios.post(
+        "http://localhost:9090/api/plans",
+        formData
+      );
+      if (response.status === 200) {
+        alert("Plan created successfully");
+        setFormData({
+          tituloPlanoServico: "",
+          descricaoPlano: "",
+          funcDisponibilizadas: "",
+          funcNaoDisponibilizadas: "",
+          precoPlanoServico: "",
+          prazoPagamentos: "",
+          sugestoesUpgrades: "",
+          prioridade: false,
+        });
+      }
+    } catch (error) {
+      console.error("There was an error creating the plan!", error);
+    }
   };
 
   return (
@@ -41,69 +66,82 @@ const CreateServicePlan = () => {
           <h2>Create Service Plan</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="planTitle" className="form-label">
+              <label htmlFor="tituloPlanoServico" className="form-label">
                 Plan Title
               </label>
               <input
                 type="text"
                 className="form-control"
-                id="planTitle"
+                id="tituloPlanoServico"
                 placeholder="Enter plan title"
-                value={formData.planTitle}
+                value={formData.tituloPlanoServico}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="form-group">
-              <label htmlFor="availableFeatures" className="form-label">
+              <label htmlFor="descricaoPlano" className="form-label">
+                Plan Description
+              </label>
+              <textarea
+                className="form-control"
+                id="descricaoPlano"
+                placeholder="Describe the plan"
+                value={formData.descricaoPlano}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="funcDisponibilizadas" className="form-label">
                 Available Features
               </label>
               <textarea
                 className="form-control"
-                id="availableFeatures"
+                id="funcDisponibilizadas"
                 placeholder="List the features included in this plan"
-                value={formData.availableFeatures}
+                value={formData.funcDisponibilizadas}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="form-group">
-              <label htmlFor="unavailableFeatures" className="form-label">
+              <label htmlFor="funcNaoDisponibilizadas" className="form-label">
                 Unavailable Features
               </label>
               <textarea
                 className="form-control"
-                id="unavailableFeatures"
+                id="funcNaoDisponibilizadas"
                 placeholder="List the features not included in this plan"
-                value={formData.unavailableFeatures}
+                value={formData.funcNaoDisponibilizadas}
                 onChange={handleChange}
                 required
               />
             </div>
             <div className="form-row">
               <div className="form-group col-md-6">
-                <label htmlFor="planPrice" className="form-label">
+                <label htmlFor="precoPlanoServico" className="form-label">
                   Plan Price
                 </label>
                 <input
                   type="text"
                   className="form-control"
-                  id="planPrice"
+                  id="precoPlanoServico"
                   placeholder="0.00"
-                  value={formData.planPrice}
+                  value={formData.precoPlanoServico}
                   onChange={handlePriceChange}
                   required
                 />
               </div>
               <div className="form-group col-md-6">
-                <label htmlFor="paymentTerm" className="form-label">
+                <label htmlFor="prazoPagamentos" className="form-label">
                   Payment Term
                 </label>
                 <div className="dropdown-container">
                   <select
                     className="form-control dropdown"
-                    id="paymentTerm"
-                    value={formData.paymentTerm}
+                    id="prazoPagamentos"
+                    value={formData.prazoPagamentos}
                     onChange={handleChange}
                     required
                   >
@@ -116,17 +154,29 @@ const CreateServicePlan = () => {
               </div>
             </div>
             <div className="form-group">
-              <label htmlFor="upgradeSuggestions" className="form-label">
+              <label htmlFor="sugestoesUpgrades" className="form-label">
                 Upgrade Suggestions
               </label>
               <textarea
                 className="form-control"
-                id="upgradeSuggestions"
+                id="sugestoesUpgrades"
                 placeholder="Provide upgrade recommendations for this plan"
-                value={formData.upgradeSuggestions}
+                value={formData.sugestoesUpgrades}
                 onChange={handleChange}
                 required
               />
+            </div>
+            <div className="form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="prioridade"
+                checked={formData.prioridade}
+                onChange={handleChange}
+              />
+              <label className="form-check-label" htmlFor="prioridade">
+                Priority Plan
+              </label>
             </div>
             <div className="text-right">
               <button type="submit" className="btn btn-primary save-button">

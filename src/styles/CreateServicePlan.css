@@ -5,6 +5,7 @@
   justify-content: center;
   height: calc(100vh - 87px); /* Ajusta a altura para excluir a altura da navbar */
   background-color: transparent; /* Permite que a cor de fundo global apareça */
+  padding-top: 100px; /* Adiciona padding-top para evitar que o conteúdo fique por trás da navbar */
 }
 
 .create-plan-container {
@@ -98,4 +99,12 @@
   color: white;
 }
 
+.form-check {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
+.form-check-input {
+  margin-right: 10px;
+}

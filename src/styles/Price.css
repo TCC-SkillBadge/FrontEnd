@@ -1,0 +1,36 @@
+.price-page {
+  text-align: center;
+  padding: 20px;
+  color: white;
+}
+
+.title {
+  font-size: 2.5em;
+  font-weight: 700; /* Adicionando font-weight */
+}
+
+.highlight {
+  color: #D273FF;
+}
+
+.subtitle {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.plans-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.plan-card-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.plan-card.highlight {
+  order: -1; /* Garante que o plano destacado fique no meio */
+}
