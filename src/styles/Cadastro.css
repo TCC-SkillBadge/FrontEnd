@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - 87px); /* Ajusta a altura para excluir a altura da navbar */
+  min-height: calc(100vh - 87px); /* Ajusta a altura para excluir a altura da navbar */
   background-color: transparent; /* Permite que a cor de fundo global apareça */
   margin-top: 20px;
   margin-bottom: 20px;
@@ -64,6 +64,8 @@
   color: white;
   text-align: center;
   margin-bottom: 20px;
+  font-weight: 700;
+  margin-top: 20px;
 }
 
 .cadastro-container .form-group {
@@ -100,6 +102,10 @@
 .cadastro-container .input-icon svg {
   margin-right: 10px;
   color: #8DFD8B;
+}
+
+.cadastro-container .btn.btn-primary {
+  margin-top: 40px;
 }
 
 .cadastro-container .btn {

@@ -1,79 +1,106 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  Navbar,
+  Nav,
+  NavDropdown,
+  Container,
+  Form,
+  FormControl,
+  Image,
+} from "react-bootstrap";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { NavLink } from "react-router-dom";
 
-
-const NavBar = ({ userType, user }) => {
+const NavBar = () => {
   const [showMenu, setShowMenu] = useState(false);
+  const [userType, setUserType] = useState(null);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUserType = sessionStorage.getItem("tipoUsuario");
+    const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+
+    if (storedUserType) {
+      setUserType(storedUserType);
+    }
+
+    if (storedUserInfo) {
+      setUser(storedUserInfo);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate("/login");
+  };
 
   const renderNavItems = () => {
-    const navLinkClasses = ({ isActive }) => (isActive ? "tab active" : "tab");
-
     switch (userType) {
-      case "common":
+      case "UC":
         return (
           <>
-            <NavLink to="/home" className={navLinkClasses}>
+            <Nav.Link as={NavLink} to="/home">
               Home
-            </NavLink>
-            <NavLink to="/wallet" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/wallet">
               Wallet
-            </NavLink>
-            <NavLink to="/skill-test" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/skill-test">
               Skill Test
-            </NavLink>
-            <NavLink to="/about" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/about">
               About
-            </NavLink>
+            </Nav.Link>
           </>
         );
-      case "business":
+      case "UE":
         return (
           <>
-            <NavLink to="/home" className={navLinkClasses}>
+            <Nav.Link as={NavLink} to="/home">
               Home
-            </NavLink>
-            <NavLink to="/plans" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/plans">
               Plans
-            </NavLink>
-            <NavLink to="/badges" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/badges">
               Badges
-            </NavLink>
-            <NavLink to="/contact" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/contact">
               Contact
-            </NavLink>
-            <NavLink to="/about" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/about">
               About
-            </NavLink>
+            </Nav.Link>
           </>
         );
-      case "admin":
+      case "UA":
         return (
           <>
-            <NavLink to="/home" className={navLinkClasses}>
+            <Nav.Link as={NavLink} to="/home">
               Home
-            </NavLink>
-            <NavLink to="/service-request" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/service-request">
               Service Request
-            </NavLink>
-            <NavLink to="/skills" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/skills">
               Skills
-            </NavLink>
-            <NavLink to="/service-plans" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/service-plans">
               Service Plans
-            </NavLink>
+            </Nav.Link>
           </>
         );
       default:
         return (
           <>
-            <NavLink to="/home" className={navLinkClasses}>
+            <Nav.Link as={NavLink} to="/home">
               Home
-            </NavLink>
-            <NavLink to="/about" className={navLinkClasses}>
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/about">
               About
-            </NavLink>
+            </Nav.Link>
           </>
         );
     }
@@ -82,54 +109,57 @@ const NavBar = ({ userType, user }) => {
   const renderUserMenu = () => {
     let menuItems;
     switch (userType) {
-      case "common":
+      case "UC":
         menuItems = (
           <>
-            <NavLink to="/profile" className="menuItem">
+            <NavDropdown.Item as={NavLink} to="/profile">
               <i className="bi bi-person"></i> Profile
-            </NavLink>
-            <NavLink to="/config" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/config">
               <i className="bi bi-gear"></i> Config
-            </NavLink>
-            <NavLink to="/portfolio" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/portfolio">
               <i className="bi bi-briefcase"></i> Portfolio
-            </NavLink>
-            <NavLink to="/logout" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </NavLink>
+            </NavDropdown.Item>
           </>
         );
         break;
-      case "business":
+      case "UE":
         menuItems = (
           <>
-            <NavLink to="/profile" className="menuItem">
+            <NavDropdown.Item as={NavLink} to="/profile">
               <i className="bi bi-person"></i> Profile
-            </NavLink>
-            <NavLink to="/config" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/config">
               <i className="bi bi-gear"></i> Config
-            </NavLink>
-            <NavLink to="/analysis" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/analysis">
               <i className="bi bi-bar-chart"></i> Analysis
-            </NavLink>
-            <NavLink to="/logout" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </NavLink>
+            </NavDropdown.Item>
           </>
         );
         break;
-      case "admin":
+      case "UA":
         menuItems = (
           <>
-            <NavLink to="/profile" className="menuItem">
+            <NavDropdown.Item as={NavLink} to="/profile">
               <i className="bi bi-person"></i> Profile
-            </NavLink>
-            <NavLink to="/config" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/config">
               <i className="bi bi-gear"></i> Config
-            </NavLink>
-            <NavLink to="/logout" className="menuItem">
+            </NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out
-            </NavLink>
+            </NavDropdown.Item>
           </>
         );
         break;
@@ -137,41 +167,56 @@ const NavBar = ({ userType, user }) => {
         menuItems = null;
     }
 
-    return <div className="userMenu">{menuItems}</div>;
+    return (
+      <NavDropdown
+        title={
+          user && user.image ? (
+            <Image src={user.image} roundedCircle width="40" height="40" />
+          ) : (
+            <i className="bi bi-person-circle userAvatar"></i>
+          )
+        }
+        id="user-menu"
+        alignRight
+      >
+        {menuItems}
+      </NavDropdown>
+    );
   };
 
   return (
-    <div className="navbar">
-      <div className="navLinks">{renderNavItems()}</div>
-      <div className="searchSection">
-        <input className="searchInput" type="text" placeholder="Buscar" />
-      </div>
-      <div className="authButtons">
-        {user ? (
-          <div
-            className="userIcon"
-            onMouseEnter={() => setShowMenu(true)}
-            onMouseLeave={() => setShowMenu(false)}
-          >
-            {user.image ? (
-              <img src={user.image} alt="User" className="userImage" />
+    <Navbar expand="lg" className="navbar">
+      <Container fluid>
+        <Navbar.Brand as={NavLink} to="/home">
+          Brand
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">{renderNavItems()}</Nav>
+          <Form className="d-flex mx-auto searchSection">
+            <FormControl
+              type="text"
+              placeholder="Buscar"
+              className="searchInput"
+            />
+          </Form>
+          <Nav>
+            {user ? (
+              renderUserMenu()
             ) : (
-              <i className="bi bi-person-circle userAvatar"></i>
+              <>
+                <Nav.Link as={NavLink} to="/login" className="signIn">
+                  Sign In
+                </Nav.Link>
+                <Nav.Link as={NavLink} to="/cadastro" className="signUp">
+                  Sign Up
+                </Nav.Link>
+              </>
             )}
-            {showMenu && renderUserMenu()}
-          </div>
-        ) : (
-          <>
-            <NavLink to="/login" className="signIn">
-              Sign In
-            </NavLink>
-            <NavLink to="/cadastro" className="signUp">
-              Sign Up
-            </NavLink>
-          </>
-        )}
-      </div>
-    </div>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 };
 
