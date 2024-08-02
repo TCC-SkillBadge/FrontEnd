@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal component
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ const Login = () => {
     password: "",
   });
   const [loginFailed, setLoginFailed] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State to control the confirmation modal
+  const [confirmationMessage, setConfirmationMessage] = useState(""); // State to hold the confirmation message
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -127,6 +130,45 @@ const Login = () => {
     );
   };
 
+  const handleForgotPassword = async () => {
+    const promise = axios.post(
+      "http://localhost:7000/api/user/request-password-reset",
+      {
+        email: formData.email,
+      }
+    );
+
+    toast.promise(promise, {
+      pending: "Sending reset link...",
+      success: "A link to reset your password has been sent to your email.",
+      error: "Error sending password reset link",
+    });
+
+    try {
+      const response = await promise;
+      if (response.status === 200) {
+        setShowConfirmationModal(false); // Hide the confirmation modal
+      }
+    } catch (error) {
+      // Handle the error case in the toast.promise
+    }
+  };
+
+  const handleForgotPasswordClick = () => {
+    if (!formData.email) {
+      toast.error("Please enter your email address before proceeding.");
+      return;
+    }
+    setConfirmationMessage(
+      `Send the reset link to this email: ${formData.email}`
+    );
+    setShowConfirmationModal(true); // Show the confirmation modal when forgot password is clicked
+  };
+
+  const confirmForgotPassword = () => {
+    handleForgotPassword(); // Call the forgot password handler
+  };
+
   return (
     <div>
       <Navbar />
@@ -173,9 +215,17 @@ const Login = () => {
                   Remember me
                 </label>
               </div>
-              <Link to="/forgot-password" className="forgot-password">
+              <span
+                className="forgot-password"
+                onClick={handleForgotPasswordClick}
+                style={{
+                  cursor: "pointer",
+                  color: "white",
+                  textDecoration: "underline",
+                }}
+              >
                 Forgot password?
-              </Link>
+              </span>
             </div>
             <button type="submit" className="btn btn-primary">
               Sign In
@@ -200,6 +250,16 @@ const Login = () => {
         draggable
         pauseOnHover
         theme="dark"
+      />
+      <ConfirmationModal
+        show={showConfirmationModal}
+        onHide={() => setShowConfirmationModal(false)}
+        onConfirm={confirmForgotPassword}
+        title="Confirm Password Reset"
+        body={confirmationMessage}
+        confirmButtonText="Yes, reset it"
+        cancelButtonText="Cancel"
+        showButtons={true}
       />
     </div>
   );

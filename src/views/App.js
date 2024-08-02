@@ -18,8 +18,9 @@ import PesquisaAdmin from "../components/UserAdmin/PesquisaAdmin";
 import ListarUCs from "../components/UserAdmin/ListarUCs";
 import ListarUEs from "../components/UserAdmin/ListarUEs";
 import CreateServicePlan from "./CreateServicePlan";
-import EditServicePlan from "./EditServicePlan"; // Import the new component
+import EditServicePlan from "./EditServicePlan";
 import Price from "./Price";
+import ResetPassword from "./ResetPassword"; // Import the new component
 
 function App() {
   return (
@@ -39,7 +40,8 @@ function App() {
         <Route path="/listarUEs" element={<ListarUEs />} />
         <Route path="/price" element={<Price />} />
         <Route path="/createServicePlan" element={<CreateServicePlan />} />
-        <Route path="/edit-plan/:id" element={<EditServicePlan />} />{" "}
+        <Route path="/edit-plan/:id" element={<EditServicePlan />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />{" "}
         {/* Add this route */}
       </Routes>
     </div>
