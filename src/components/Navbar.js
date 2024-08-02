@@ -178,6 +178,9 @@ const NavBar = () => {
         }
         id="user-menu"
         alignRight
+        show={showMenu}
+        onClick={() => setShowMenu(!showMenu)}
+        className={showMenu ? "show" : "hide"}
       >
         {menuItems}
       </NavDropdown>
