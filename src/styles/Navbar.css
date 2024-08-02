@@ -121,3 +121,18 @@
   right: 0 !important;
   left: auto !important;
 }
+/* navbar.css */
+.navbar-nav .dropdown-menu {
+  background-color: rgba(0, 0, 0, 0.8) !important; /* Preto com 80% de opacidade */
+  border: none; /* Remove a borda padrão */
+  border-radius: 8px; /* Aplica bordas arredondadas */
+}
+
+.navbar-nav .dropdown-menu .dropdown-item {
+  color: white !important; /* Define a cor do texto como branca */
+}
+
+.navbar-nav .dropdown-menu .dropdown-item:hover {
+  background-color: rgba(210, 115, 255) !important; /* Cor de fundo rosa com 80% de opacidade ao passar o mouse */
+  color: white !important; /* Cor do texto ao passar o mouse */
+}
