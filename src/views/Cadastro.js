@@ -2,20 +2,15 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../styles/Cadastro.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  PersonFill,
-  EnvelopeFill,
-  LockFill,
-  Building,
-  Phone,
-} from "react-bootstrap-icons";
-import axios from "axios";
 import { Dropdown } from "react-bootstrap";
+import axios from "axios";
 import Navbar from "../components/Navbar";
-import { PhoneInput } from "react-international-phone";
-import "react-international-phone/style.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import CommonUserForm from "../components/CommonUserForm";
+import BusinessUserForm from "../components/BusinessUserForm";
+import AdminUserForm from "../components/AdminUserForm";
 
 const Cadastro = () => {
   const [userType, setUserType] = useState("common");
@@ -142,13 +137,8 @@ const Cadastro = () => {
         <div className="cadastro-container">
           <h2>Register</h2>
           <div className="dropdown-container">
-            <Dropdown>
-              <Dropdown.Toggle
-                variant="secondary"
-                id="dropdown-basic"
-                className="custom-dropdown"
-              >
-                <i className="bi bi-caret-down-fill"></i>
+            <Dropdown className="custom-dropdown">
+              <Dropdown.Toggle variant="secondary" id="dropdown-basic">
                 {userType.charAt(0).toUpperCase() + userType.slice(1)}
               </Dropdown.Toggle>
 
@@ -167,347 +157,24 @@ const Cadastro = () => {
           </div>
           <form onSubmit={handleSubmit}>
             {userType === "common" && (
-              <>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <PersonFill />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="fullName"
-                      placeholder="Full Name"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <PersonFill />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="occupation"
-                      placeholder="Occupation"
-                      value={formData.occupation}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <Phone />
-                    <PhoneInput
-                      defaultCountry="BR"
-                      value={formData.phone}
-                      onChange={(value, country) =>
-                        handlePhoneChange(value, country.iso2)
-                      }
-                      placeholder="Phone Number"
-                      containerClassName="intl-phone-input"
-                      inputClassName="intl-phone-input"
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <EnvelopeFill />
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <LockFill />
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password"
-                      placeholder="Password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <LockFill />
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="confirmPassword"
-                      placeholder="Confirm Password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-              </>
+              <CommonUserForm
+                formData={formData}
+                handleChange={handleChange}
+                handlePhoneChange={handlePhoneChange}
+              />
             )}
             {userType === "business" && (
-              <>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <EnvelopeFill />
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email"
-                      placeholder="Business Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <LockFill />
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password"
-                      placeholder="Password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <LockFill />
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="confirmPassword"
-                      placeholder="Confirm Password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <Building />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="nomeEmpresa"
-                      placeholder="Company Name"
-                      value={companyData.nomeEmpresa}
-                      onChange={handleCompanyChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <Building />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="cnpj"
-                      placeholder="CNPJ"
-                      onBlur={handleCNPJBlur}
-                      value={companyData.cnpj}
-                      onChange={handleCompanyChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6 form-group">
-                    <div className="input-icon">
-                      <Building />
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="cep"
-                        placeholder="CEP"
-                        value={companyData.cep}
-                        onChange={handleCompanyChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6 form-group">
-                    <div className="input-icon">
-                      <Building />
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="rua"
-                        placeholder="Street"
-                        value={companyData.rua}
-                        onChange={handleCompanyChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="col-md-6 form-group">
-                    <div className="input-icon">
-                      <Building />
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="bairro"
-                        placeholder="Neighborhood"
-                        value={companyData.bairro}
-                        onChange={handleCompanyChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="col-md-6 form-group">
-                    <div className="input-icon">
-                      <Building />
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="cidade"
-                        placeholder="City"
-                        value={companyData.cidade}
-                        onChange={handleCompanyChange}
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <Building />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="complemento"
-                      placeholder="Complement"
-                      value={companyData.complemento}
-                      onChange={handleCompanyChange}
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <Phone />
-                    <PhoneInput
-                      defaultCountry="BR"
-                      value={companyData.numeroContato}
-                      onChange={(value, country) =>
-                        setCompanyData((prevData) => ({
-                          ...prevData,
-                          numeroContato: value,
-                        }))
-                      }
-                      placeholder="Business Phone"
-                      containerClassName="intl-phone-input"
-                      inputClassName="intl-phone-input"
-                    />
-                  </div>
-                </div>
-              </>
+              <BusinessUserForm
+                formData={formData}
+                companyData={companyData}
+                handleChange={handleChange}
+                handleCompanyChange={handleCompanyChange}
+                handleCNPJBlur={handleCNPJBlur}
+                setCompanyData={setCompanyData}
+              />
             )}
             {userType === "admin" && (
-              <>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <EnvelopeFill />
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email"
-                      placeholder="Admin Email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <LockFill />
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password"
-                      placeholder="Password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <LockFill />
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="confirmPassword"
-                      placeholder="Confirm Password"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <PersonFill />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="fullName"
-                      placeholder="Admin Name"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <PersonFill />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="occupation"
-                      placeholder="Role"
-                      value={formData.occupation}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-group">
-                  <div className="input-icon">
-                    <LockFill />
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="validationCode"
-                      placeholder="Validation Code"
-                      value={formData.validationCode}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                </div>
-              </>
+              <AdminUserForm formData={formData} handleChange={handleChange} />
             )}
             <button type="submit" className="btn btn-primary">
               Sign Up
@@ -531,7 +198,7 @@ const Cadastro = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark" // Adiciona o tema escuro
+        theme="dark"
       />
     </div>
   );
