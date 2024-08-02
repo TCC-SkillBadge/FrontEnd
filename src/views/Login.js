@@ -5,12 +5,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { EnvelopeFill, LockFill } from "react-bootstrap-icons";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [loginFailed, setLoginFailed] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -58,7 +61,6 @@ const Login = () => {
             }
           );
         } else if (tipoUsuario === "UA") {
-          // Adicionando verificação para usuário admin
           userInfoResponse = await axios.get(
             `http://localhost:7004/admin/acessa-info`,
             {
@@ -72,8 +74,6 @@ const Login = () => {
         if (userInfoResponse && userInfoResponse.status === 200) {
           const userInfo = userInfoResponse.data;
           sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
-          alert("Login successful");
-          navigate("/home");
           return true;
         }
       }
@@ -85,6 +85,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginFailed(false);
 
     const loginEndpoints = [
       {
@@ -93,8 +94,8 @@ const Login = () => {
         method: "post",
       },
       {
-        url: "http://localhost:7004/admin/login", // Atualizar a URL do admin
-        data: { email_admin: formData.email, senha: formData.password }, // Atualizar os dados do admin
+        url: "http://localhost:7004/admin/login",
+        data: { email_admin: formData.email, senha: formData.password },
         method: "post",
       },
       {
@@ -104,17 +105,26 @@ const Login = () => {
       },
     ];
 
-    for (let i = 0; i < loginEndpoints.length; i++) {
-      const success = await handleLogin(
-        loginEndpoints[i].url,
-        loginEndpoints[i].data,
-        loginEndpoints[i].method,
-        loginEndpoints[i].params
-      );
-      if (success) return;
-    }
+    const loginPromises = loginEndpoints.map((endpoint) =>
+      handleLogin(endpoint.url, endpoint.data, endpoint.method, endpoint.params)
+    );
 
-    alert("Error logging in user");
+    toast.promise(
+      Promise.all(loginPromises).then((results) => {
+        if (results.some((success) => success)) {
+          toast.success("Login successful");
+          setTimeout(() => {
+            navigate("/home");
+          }, 2000);
+        } else {
+          setLoginFailed(true);
+          toast.error("Error logging in user");
+        }
+      }),
+      {
+        pending: "Logging in...",
+      }
+    );
   };
 
   return (
@@ -179,6 +189,18 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   );
 };

@@ -1,0 +1,34 @@
+/* Modal Custom Styles */
+.modal-header-custom {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(to right, #D273FF, #8DFD8B) 1;
+  color: #ffffff; /* Define a cor do texto como branco */
+}
+
+.modal-body-custom {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #ffffff;
+  border-top: 2px solid transparent;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(to right, #D273FF, #8DFD8B) 1;
+}
+
+.modal-footer-custom {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-top: 2px solid transparent;
+  border-image: linear-gradient(to right, #D273FF, #8DFD8B) 1;
+}
+
+.modal-button-custom {
+  background-color: transparent;
+  border-color: #D273FF;
+  color: #D273FF;
+  font-weight: bold;
+}
+
+.modal-button-custom:hover {
+  background-color: #D273FF;
+  border-color: #D273FF;
+  color: white;
+}

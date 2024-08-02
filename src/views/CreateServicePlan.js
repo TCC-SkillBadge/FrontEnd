@@ -4,6 +4,8 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/CreateServicePlan.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreateServicePlan = () => {
   const [formData, setFormData] = useState({
@@ -45,13 +47,20 @@ const CreateServicePlan = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const createPlanPromise = axios.post(
+      "http://localhost:9090/api/plans",
+      formData
+    );
+
+    toast.promise(createPlanPromise, {
+      pending: "Creating plan...",
+      success: "Plan created successfully!",
+      error: "There was an error creating the plan.",
+    });
+
     try {
-      const response = await axios.post(
-        "http://localhost:9090/api/plans",
-        formData
-      );
+      const response = await createPlanPromise;
       if (response.status === 200) {
-        alert("Plan created successfully");
         setFormData({
           tituloPlanoServico: "",
           descricaoPlano: "",
@@ -196,6 +205,18 @@ const CreateServicePlan = () => {
           </form>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark" // Adiciona o tema escuro
+      />
     </div>
   );
 };

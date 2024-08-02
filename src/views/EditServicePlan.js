@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/CreateServicePlan.css"; // Importando o CSS
+import ConfirmationModal from "../components/ConfirmationModal"; // Import the ConfirmationModal
+import "../styles/CreateServicePlan.css"; // Importing the CSS
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Modal, Button } from "react-bootstrap";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EditServicePlan = () => {
   const { id } = useParams();
@@ -63,14 +65,23 @@ const EditServicePlan = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const updatePlanPromise = axios.put(
+      `http://localhost:9090/api/plans/${id}`,
+      formData
+    );
+
+    toast.promise(updatePlanPromise, {
+      pending: "Updating plan...",
+      success: "Plan updated successfully!",
+      error: "There was an error updating the plan.",
+    });
+
     try {
-      const response = await axios.put(
-        `http://localhost:9090/api/plans/${id}`,
-        formData
-      );
+      const response = await updatePlanPromise;
       if (response.status === 200) {
-        alert("Plan updated successfully");
-        navigate("/price");
+        setTimeout(() => {
+          navigate("/price");
+        }, 2000);
       }
     } catch (error) {
       console.error("There was an error updating the plan!", error);
@@ -83,11 +94,14 @@ const EditServicePlan = () => {
         `http://localhost:9090/api/plans/${id}`
       );
       if (response.status === 204) {
-        alert("Plan deleted successfully");
-        navigate("/price");
+        toast.success("Plan deleted successfully");
+        setTimeout(() => {
+          navigate("/price");
+        }, 2000);
       }
     } catch (error) {
       console.error("There was an error deleting the plan!", error);
+      toast.error("There was an error deleting the plan.");
     }
   };
 
@@ -234,30 +248,28 @@ const EditServicePlan = () => {
         </div>
       </div>
 
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton className="modal-header-custom">
-          <Modal.Title>Confirm Delete</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="modal-body-custom">
-          Are you sure you want to delete this plan?
-        </Modal.Body>
-        <Modal.Footer className="modal-footer-custom">
-          <Button
-            variant="secondary"
-            onClick={handleCloseModal}
-            className="modal-button-custom"
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="danger"
-            onClick={handleConfirmDelete}
-            className="modal-button-custom"
-          >
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ConfirmationModal
+        show={showModal}
+        onHide={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        title="Confirm Delete"
+        body="Are you sure you want to delete this plan?"
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+        showButtons={true}
+      />
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   );
 };

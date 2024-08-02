@@ -14,6 +14,8 @@ import { Dropdown } from "react-bootstrap";
 import Navbar from "../components/Navbar";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Cadastro = () => {
   const [userType, setUserType] = useState("common");
@@ -84,7 +86,7 @@ const Cadastro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
     try {
@@ -122,12 +124,14 @@ const Cadastro = () => {
       }
 
       if (response.status === 201) {
-        alert("User registered successfully");
-        navigate("/login");
+        toast.success("User registered successfully");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
       }
     } catch (error) {
       console.error("Error registering user:", error);
-      alert("Error registering user");
+      toast.error("Error registering user");
     }
   };
 
@@ -517,6 +521,18 @@ const Cadastro = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark" // Adiciona o tema escuro
+      />
     </div>
   );
 };

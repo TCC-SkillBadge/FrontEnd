@@ -5,18 +5,22 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/Price.css";
 import PlanCard from "../components/PlanCard";
+import { ClipLoader } from "react-spinners"; // Importando o ClipLoader do react-spinners
 
 const Price = () => {
   const [plans, setPlans] = useState([]);
   const [userType, setUserType] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPlans = async () => {
       try {
         const response = await axios.get("http://localhost:9090/api/plans");
         setPlans(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("There was an error fetching the plans!", error);
+        setLoading(false);
       }
     };
 
@@ -39,21 +43,39 @@ const Price = () => {
         </h1>
         <h2 className="subtitle">How often do you want to pay?</h2>
         <div className="plans-container">
-          {otherPlans
-            .slice(0, Math.floor(otherPlans.length / 2))
-            .map((plan) => (
-              <PlanCard key={plan.id} plan={plan} isAdmin={userType === "UA"} />
-            ))}
-          {highlightedPlan && (
-            <PlanCard
-              key={highlightedPlan.id}
-              plan={highlightedPlan}
-              isAdmin={userType === "UA"}
-            />
+          {loading ? (
+            <div className="loading-spinner">
+              <ClipLoader size={150} color={"#123abc"} loading={loading} />
+            </div>
+          ) : (
+            <>
+              {otherPlans
+                .slice(0, Math.floor(otherPlans.length / 2))
+                .map((plan) => (
+                  <PlanCard
+                    key={plan.id}
+                    plan={plan}
+                    isAdmin={userType === "UA"}
+                  />
+                ))}
+              {highlightedPlan && (
+                <PlanCard
+                  key={highlightedPlan.id}
+                  plan={highlightedPlan}
+                  isAdmin={userType === "UA"}
+                />
+              )}
+              {otherPlans
+                .slice(Math.floor(otherPlans.length / 2))
+                .map((plan) => (
+                  <PlanCard
+                    key={plan.id}
+                    plan={plan}
+                    isAdmin={userType === "UA"}
+                  />
+                ))}
+            </>
           )}
-          {otherPlans.slice(Math.floor(otherPlans.length / 2)).map((plan) => (
-            <PlanCard key={plan.id} plan={plan} isAdmin={userType === "UA"} />
-          ))}
         </div>
         {userType === "UA" && (
           <Link to="/createServicePlan" className="add-plan-button">

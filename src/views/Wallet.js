@@ -3,6 +3,7 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import { ClipLoader } from "react-spinners";
 import "../styles/Wallet.css";
 
 const Wallet = () => {
@@ -94,10 +95,6 @@ const Wallet = () => {
     return slides;
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className="wallet-page">
       <Navbar />
@@ -134,18 +131,24 @@ const Wallet = () => {
           You have {filteredMedals.length} medals
         </div>
         <div className="wallet-divider"></div>
-        <div className="wallet-medals">
-          <Carousel
-            showArrows={true}
-            infiniteLoop={true}
-            showThumbs={false}
-            showStatus={false}
-            emulateTouch={true}
-            className="wallet-carousel"
-          >
-            {renderMedalsInSlides(getSortedMedals())}
-          </Carousel>
-        </div>
+        {loading ? (
+          <div className="loading-spinner">
+            <ClipLoader size={150} color={"#123abc"} loading={loading} />
+          </div>
+        ) : (
+          <div className="wallet-medals">
+            <Carousel
+              showArrows={true}
+              infiniteLoop={true}
+              showThumbs={false}
+              showStatus={false}
+              emulateTouch={true}
+              className="wallet-carousel"
+            >
+              {renderMedalsInSlides(getSortedMedals())}
+            </Carousel>
+          </div>
+        )}
       </div>
     </div>
   );
