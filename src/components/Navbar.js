@@ -156,6 +156,10 @@ const NavBar = () => {
             <NavDropdown.Item as={NavLink} to="/config">
               <i className="bi bi-gear"></i> Config
             </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/analytics">
+              <i className="bi bi-bar-chart"></i> Analytics
+            </NavDropdown.Item>{" "}
+            {/* Link de Analytics adicionado */}
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out

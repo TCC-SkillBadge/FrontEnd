@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Aside from "../components/Aside";
+import Navbar from "../components/Navbar";
+// import Aside from "../components/Aside"; // Aside comentada
 import axios from "axios";
 import "../styles/Orders.css";
 
@@ -107,7 +108,8 @@ const Orders = () => {
 
   return (
     <div className="orders-page">
-      <Aside userType={userType} />
+      <Navbar />
+      {/* <Aside userType={userType} /> */}
       <div className="container orders-container">
         <div className="orders-header">
           <div className="orders-search-group">
