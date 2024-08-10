@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-// import Aside from "../components/Aside"; // Aside comentada
 import axios from "axios";
-import { ClipLoader } from "react-spinners"; // Importação do ClipLoader
+import { ClipLoader } from "react-spinners";
 import "../styles/Orders.css";
 
 const Orders = () => {
@@ -114,7 +113,6 @@ const Orders = () => {
   return (
     <div className="orders-page">
       <Navbar />
-      {/* <Aside userType={userType} /> */}
       <div className="container orders-container">
         <div className="orders-header">
           <div className="orders-search-group">
@@ -151,32 +149,34 @@ const Orders = () => {
           You have {filteredOrders.length} orders
         </div>
         <div className="orders-divider"></div>
-        <table className="orders-table">
-          <thead>
-            <tr>
-              <th>Order Number</th>
-              <th>Date</th>
-              <th>Channel</th>
-              <th>Priority</th>
-              <th>Status</th>
-              <th>Client</th>
-              <th>Badge ID</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOrders.map((order) => (
-              <tr key={order.numero_pedido}>
-                <td>{order.numero_pedido}</td>
-                <td>{order.data}</td>
-                <td>{order.canal}</td>
-                <td>{order.prioridade}</td>
-                <td>{order.status}</td>
-                <td>{order.cliente}</td>
-                <td>{order.badgeId}</td>
+        <div className="orders-table-container">
+          <table className="orders-table">
+            <thead>
+              <tr>
+                <th>Order Number</th>
+                <th>Date</th>
+                <th>Channel</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Client</th>
+                <th>Badge ID</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredOrders.map((order) => (
+                <tr key={order.numero_pedido}>
+                  <td>{order.numero_pedido}</td>
+                  <td>{order.data}</td>
+                  <td>{order.canal}</td>
+                  <td>{order.prioridade}</td>
+                  <td>{order.status}</td>
+                  <td>{order.cliente}</td>
+                  <td>{order.badgeId}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
