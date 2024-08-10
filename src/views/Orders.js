@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 // import Aside from "../components/Aside"; // Aside comentada
 import axios from "axios";
+import { ClipLoader } from "react-spinners"; // Importação do ClipLoader
 import "../styles/Orders.css";
 
 const Orders = () => {
@@ -99,7 +100,11 @@ const Orders = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return (
+      <div className="loading-spinner">
+        <ClipLoader size={150} color={"#123abc"} loading={loading} />
+      </div>
+    );
   }
 
   if (error) {
