@@ -61,7 +61,7 @@ const NavBar = () => {
             <Nav.Link as={NavLink} to="/home">
               Home
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/plans">
+            <Nav.Link as={NavLink} to="/price">
               Plans
             </Nav.Link>
             <Nav.Link as={NavLink} to="/badges">

@@ -21,6 +21,7 @@ import CreateServicePlan from "./CreateServicePlan";
 import EditServicePlan from "./EditServicePlan";
 import Price from "./Price";
 import ResetPassword from "./ResetPassword"; // Import the new component
+import Orders from "./Orders";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/edit-plan/:id" element={<EditServicePlan />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />{" "}
         {/* Add this route */}
+        <Route path="/orders" element={<Orders />} />
       </Routes>
     </div>
   );
