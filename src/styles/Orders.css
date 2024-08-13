@@ -1,15 +1,16 @@
 .orders-page {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
+  align-items: center; /* Centraliza o conteúdo horizontalmente */
+  width: 100%; /* Garante que ocupe toda a largura da página */
+  
 }
 
 .orders-container {
-  max-width: 1200px;
-  width: 100%;
+  max-width: 1200px; /* Limita a largura máxima do conteúdo */
+  width: 100%; /* Garante que o conteúdo ocupe toda a largura disponível */
   padding: 20px;
-  margin: 0 auto;
+  margin: 0 auto; /* Centraliza horizontalmente */
 }
 
 .orders-header {
@@ -81,11 +82,6 @@
   margin-bottom: 20px;
 }
 
-.orders-table-container {
-  width: 100%;
-  overflow-x: auto;
-}
-
 .orders-table {
   width: 100%;
   border-collapse: collapse;
@@ -120,13 +116,6 @@
   font-size: 1rem;
 }
 
-.loading-spinner {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px;
-}
-
 @media (max-width: 768px) {
   .orders-container {
     padding: 10px;
@@ -140,21 +129,5 @@
   .orders-search {
     width: 100%;
     margin-bottom: 10px;
-  }
-
-  .orders-select {
-    width: 100%;
-    margin-top: 10px;
-  }
-
-  .orders-table-container {
-    width: 100%;
-    overflow-x: auto;
-  }
-
-  .orders-table th,
-  .orders-table td {
-    padding: 10px;
-    font-size: 0.9rem;
   }
 }

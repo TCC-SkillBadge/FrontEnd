@@ -21,7 +21,9 @@ import CreateServicePlan from "./CreateServicePlan";
 import EditServicePlan from "./EditServicePlan";
 import Price from "./Price";
 import ResetPassword from "./ResetPassword"; // Import the new component
-import Orders from "./Orders";
+import Orders from "./Order";
+
+
 
 function App() {
   return (
@@ -43,8 +45,7 @@ function App() {
         <Route path="/createServicePlan" element={<CreateServicePlan />} />
         <Route path="/edit-plan/:id" element={<EditServicePlan />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />{" "}
-        {/* Add this route */}
-        <Route path="/orders" element={<Orders />} />
+        <Route path="/orders" element={<Orders/>} />
       </Routes>
     </div>
   );
