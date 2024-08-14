@@ -1,5 +1,5 @@
 import React from "react";
-import { EnvelopeFill, LockFill, Building, Phone } from "react-bootstrap-icons";
+import { EnvelopeFill, LockFill, Building, Phone, GeoAltFill } from "react-bootstrap-icons";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 
@@ -87,7 +87,7 @@ const BusinessUserForm = ({
       <div className="row">
         <div className="col-md-6 form-group">
           <div className="input-icon">
-            <Building />
+            <GeoAltFill />
             <input
               type="text"
               className="form-control"
@@ -101,7 +101,7 @@ const BusinessUserForm = ({
         </div>
         <div className="col-md-6 form-group">
           <div className="input-icon">
-            <Building />
+            <GeoAltFill />
             <input
               type="text"
               className="form-control"
@@ -117,7 +117,7 @@ const BusinessUserForm = ({
       <div className="row">
         <div className="col-md-6 form-group">
           <div className="input-icon">
-            <Building />
+            <GeoAltFill />
             <input
               type="text"
               className="form-control"
@@ -131,7 +131,7 @@ const BusinessUserForm = ({
         </div>
         <div className="col-md-6 form-group">
           <div className="input-icon">
-            <Building />
+            <GeoAltFill />
             <input
               type="text"
               className="form-control"
@@ -146,7 +146,7 @@ const BusinessUserForm = ({
       </div>
       <div className="form-group">
         <div className="input-icon">
-          <Building />
+          <GeoAltFill />
           <input
             type="text"
             className="form-control"

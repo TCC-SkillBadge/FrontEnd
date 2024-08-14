@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar"; // Adicionando o componente Navbar
+import Navbar from "../components/Navbar";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "../styles/Orders.css";
+import "../styles/Pedidos.css";
 
-const Orders = () => {
+const Pedidos = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,8 +12,6 @@ const Orders = () => {
   const [searchBadgeId, setSearchBadgeId] = useState("");
   const [orderBy, setOrderBy] = useState("date-desc");
 
-  const userType = sessionStorage.getItem("tipoUsuario");
-
   useEffect(() => {
     const fetchOrders = async () => {
       const token = sessionStorage.getItem("token");
@@ -23,7 +19,7 @@ const Orders = () => {
       try {
         const response = await axios.post(
           "http://localhost:7004/admin/meus-pedidos",
-          { token }, // Enviando o token no corpo da requisição
+          {},
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -31,18 +27,15 @@ const Orders = () => {
           }
         );
 
-
         if (response.status === 200) {
           setOrders(response.data);
           setFilteredOrders(response.data);
         } else {
           setError("Failed to load orders");
-          toast.error("Failed to load orders. Please try again later.");
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
         setError("Failed to load orders");
-        toast.error("Failed to load orders. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -110,33 +103,35 @@ const Orders = () => {
     return <p>Loading...</p>;
   }
 
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
-    <div>
-      <Navbar userType={userType} /> {/* Adicionando o Navbar */}
-      <div className="container orders-container">
-        <ToastContainer />
-        {/* <Aside userType={userType} /> Componente Aside comentado */}
-        <div className="orders-header">
-          <div className="orders-search-group">
+    <div className="pedidos-page">
+      <Navbar />
+      <div className="container pedidos-container">
+        <div className="pedidos-header">
+          <div className="pedidos-search-group">
             <input
               type="text"
-              className="orders-search"
+              className="pedidos-search"
               placeholder="Search by client"
               value={searchTerm}
               onChange={handleSearchTermChange}
             />
             <input
               type="text"
-              className="orders-search"
+              className="pedidos-search"
               placeholder="Search by badge ID"
               value={searchBadgeId}
               onChange={handleSearchBadgeIdChange}
             />
           </div>
-          <div className="orders-order">
+          <div className="pedidos-order">
             <span>Order by:</span>
             <select
-              className="orders-select"
+              className="pedidos-select"
               value={orderBy}
               onChange={handleOrderChange}
             >
@@ -147,11 +142,11 @@ const Orders = () => {
             </select>
           </div>
         </div>
-        <div className="orders-info">
+        <div className="pedidos-info">
           You have {filteredOrders.length} orders
         </div>
-        <div className="orders-divider"></div>
-        <table className="orders-table">
+        <div className="pedidos-divider"></div>
+        <table className="pedidos-table">
           <thead>
             <tr>
               <th>Order Number</th>
@@ -182,4 +177,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default Pedidos;
