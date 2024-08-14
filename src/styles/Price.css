@@ -1,0 +1,63 @@
+.price-page {
+  text-align: center;
+  padding: 20px;
+  color: white;
+  position: relative;
+}
+
+.title {
+  font-size: 2.5em;
+  font-weight: 700; /* Adicionando font-weight */
+}
+
+.highlight {
+  color: #D273FF;
+}
+
+.subtitle {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.plans-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.plan-card-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.plan-card.highlight {
+  order: -1; /* Garante que o plano destacado fique no meio */
+}
+
+.add-plan-button {
+  position: fixed; /* Mudando para fixed para que fique sempre visível no canto inferior direito */
+  bottom: 20px;
+  right: 20px;
+  background-color: transparent; /* Deixar o fundo transparente */
+  border: 2px solid #D273FF; /* Borda delineada */
+  color: #D273FF;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s, color 0.3s; /* Adicionando transição suave */
+}
+
+.add-plan-button:hover {
+  background-color: #D273FF; /* Cor de fundo ao passar o mouse */
+  color: white; /* Cor do texto ao passar o mouse */
+}
+
+.add-plan-button .icon {
+  margin-right: 10px;
+  font-size: 1.2em;
+}

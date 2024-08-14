@@ -5,12 +5,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { EnvelopeFill, LockFill } from "react-bootstrap-icons";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal component
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [loginFailed, setLoginFailed] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State to control the confirmation modal
+  const [confirmationMessage, setConfirmationMessage] = useState(""); // State to hold the confirmation message
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -58,7 +64,6 @@ const Login = () => {
             }
           );
         } else if (tipoUsuario === "UA") {
-          // Adicionando verificação para usuário admin
           userInfoResponse = await axios.get(
             `http://localhost:7004/admin/acessa-info`,
             {
@@ -72,8 +77,6 @@ const Login = () => {
         if (userInfoResponse && userInfoResponse.status === 200) {
           const userInfo = userInfoResponse.data;
           sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
-          alert("Login successful");
-          navigate("/home");
           return true;
         }
       }
@@ -85,6 +88,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoginFailed(false);
 
     const loginEndpoints = [
       {
@@ -93,8 +97,8 @@ const Login = () => {
         method: "post",
       },
       {
-        url: "http://localhost:7004/admin/login", // Atualizar a URL do admin
-        data: { email_admin: formData.email, senha: formData.password }, // Atualizar os dados do admin
+        url: "http://localhost:7004/admin/login",
+        data: { email_admin: formData.email, senha: formData.password },
         method: "post",
       },
       {
@@ -104,17 +108,65 @@ const Login = () => {
       },
     ];
 
-    for (let i = 0; i < loginEndpoints.length; i++) {
-      const success = await handleLogin(
-        loginEndpoints[i].url,
-        loginEndpoints[i].data,
-        loginEndpoints[i].method,
-        loginEndpoints[i].params
-      );
-      if (success) return;
-    }
+    const loginPromises = loginEndpoints.map((endpoint) =>
+      handleLogin(endpoint.url, endpoint.data, endpoint.method, endpoint.params)
+    );
 
-    alert("Error logging in user");
+    toast.promise(
+      Promise.all(loginPromises).then((results) => {
+        if (results.some((success) => success)) {
+          toast.success("Login successful");
+          setTimeout(() => {
+            navigate("/home");
+          }, 2000);
+        } else {
+          setLoginFailed(true);
+          toast.error("Error logging in user");
+        }
+      }),
+      {
+        pending: "Logging in...",
+      }
+    );
+  };
+
+  const handleForgotPassword = async () => {
+    const promise = axios.post(
+      "http://localhost:7000/api/user/request-password-reset",
+      {
+        email: formData.email,
+      }
+    );
+
+    toast.promise(promise, {
+      pending: "Sending reset link...",
+      success: "A link to reset your password has been sent to your email.",
+      error: "Error sending password reset link",
+    });
+
+    try {
+      const response = await promise;
+      if (response.status === 200) {
+        setShowConfirmationModal(false); // Hide the confirmation modal
+      }
+    } catch (error) {
+      // Handle the error case in the toast.promise
+    }
+  };
+
+  const handleForgotPasswordClick = () => {
+    if (!formData.email) {
+      toast.error("Please enter your email address before proceeding.");
+      return;
+    }
+    setConfirmationMessage(
+      `Send the reset link to this email: ${formData.email}`
+    );
+    setShowConfirmationModal(true); // Show the confirmation modal when forgot password is clicked
+  };
+
+  const confirmForgotPassword = () => {
+    handleForgotPassword(); // Call the forgot password handler
   };
 
   return (
@@ -163,9 +215,17 @@ const Login = () => {
                   Remember me
                 </label>
               </div>
-              <Link to="/forgot-password" className="forgot-password">
+              <span
+                className="forgot-password"
+                onClick={handleForgotPasswordClick}
+                style={{
+                  cursor: "pointer",
+                  color: "white",
+                  textDecoration: "underline",
+                }}
+              >
                 Forgot password?
-              </Link>
+              </span>
             </div>
             <button type="submit" className="btn btn-primary">
               Sign In
@@ -179,6 +239,28 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <ConfirmationModal
+        show={showConfirmationModal}
+        onHide={() => setShowConfirmationModal(false)}
+        onConfirm={confirmForgotPassword}
+        title="Confirm Password Reset"
+        body={confirmationMessage}
+        confirmButtonText="Yes, reset it"
+        cancelButtonText="Cancel"
+        showButtons={true}
+      />
     </div>
   );
 };

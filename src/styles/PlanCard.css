@@ -1,0 +1,130 @@
+.plan-card {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 2px solid #8DFD8B;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  height: 600px; /* Definindo uma altura fixa maior */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.plan-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+}
+
+.plan-card.highlight {
+  border-color: #FFD700; /* Cor de destaque para planos prioritários */
+  background-color: rgba(40, 40, 40, 0.9); /* Fundo mais escuro para destacar */
+  color: #FFD700; /* Cor dourada para o texto */
+  transform: scale(1.05); /* Aumenta um pouco o tamanho do plano destacado */
+}
+
+.plan-card.highlight:hover {
+  transform: scale(1.08) translateY(-10px);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+}
+.edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ffd700;
+  cursor: pointer;
+}
+
+.edit-icon:hover {
+  color: #ffdd57;
+}
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.icon {
+  font-size: 2em;
+  color: #8DFD8B;
+}
+
+.plan-title {
+  font-size: 1.5em;
+  margin: 10px 0;
+  text-align: center; /* Centralizando o nome do plano */
+  color: inherit; /* Herdar cor para planos destacados */
+}
+
+.description {
+  font-size: 1em;
+  margin: 10px 0;
+  color: inherit; /* Herdar cor para planos destacados */
+}
+
+.features {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.features li {
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  color: inherit; /* Herdar cor para planos destacados */
+}
+
+.feature-icon {
+  margin-right: 8px;
+  color: #8DFD8B;
+}
+
+.features.unavailable .feature-icon {
+  color: #ff6b6b;
+}
+
+.features.unavailable li {
+  opacity: 0.5;
+  color: inherit; /* Herdar cor para planos destacados */
+}
+
+.price {
+  font-size: 1.2em;
+  margin: 20px 0;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: inherit; /* Herdar cor para planos destacados */
+}
+
+.buy-button {
+  background-color: #D273FF;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: auto;
+  align-self: center; /* Centralizando o botão */
+}
+
+.buy-button:hover {
+  background-color: #8DFD8B;
+  color: black;
+}
+
+.plan-card.highlight .buy-button {
+  background-color: #FFD700; /* Dourado para o botão de compra em planos prioritários */
+  color: black;
+}
+
+.plan-card.highlight .buy-button:hover {
+  background-color: #8DFD8B; /* Cor de hover para o botão de compra em planos prioritários */
+  color: white;
+}
