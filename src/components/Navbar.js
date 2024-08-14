@@ -248,46 +248,50 @@ const NavBar = () => {
     );
   };
 
-  const renderNotifications = () => (
-    <Dropdown
-      show={dropdownOpen}
-      onToggle={() => setDropdownOpen(!dropdownOpen)}
-      align="end"
-    >
-      <Dropdown.Toggle
-        variant="link"
-        id="dropdown-notifications"
-        className="notification-toggle"
-      >
-        <i className="bi bi-bell"></i>
-        {notifications.length > 0 && (
-          <Badge pill bg="danger" className="notification-badge">
-            {notifications.length}
-          </Badge>
-        )}
-      </Dropdown.Toggle>
+  const renderNotifications = () => {
+    if (!user) return null; // Não renderiza o sino se não houver usuário conectado
 
-      <Dropdown.Menu className="notifications-dropdown">
-        {notifications.length === 0 ? (
-          <Dropdown.Item disabled>No new notifications</Dropdown.Item>
-        ) : (
-          <>
-            {notifications.map((notification) => (
-              <Dropdown.Item key={notification.id}>
-                <strong>{notification.canal}:</strong> {notification.mensagem}
+    return (
+      <Dropdown
+        show={dropdownOpen}
+        onToggle={() => setDropdownOpen(!dropdownOpen)}
+        align="end"
+      >
+        <Dropdown.Toggle
+          variant="link"
+          id="dropdown-notifications"
+          className="notification-toggle"
+        >
+          <i className="bi bi-bell"></i>
+          {notifications.length > 0 && (
+            <Badge pill bg="danger" className="notification-badge">
+              {notifications.length}
+            </Badge>
+          )}
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className="notifications-dropdown">
+          {notifications.length === 0 ? (
+            <Dropdown.Item disabled>No new notifications</Dropdown.Item>
+          ) : (
+            <>
+              {notifications.map((notification) => (
+                <Dropdown.Item key={notification.id}>
+                  <strong>{notification.canal}:</strong> {notification.mensagem}
+                </Dropdown.Item>
+              ))}
+              <Dropdown.Divider />
+              <Dropdown.Item as="div" className="text-center">
+                <Button variant="link" onClick={handleClearNotifications}>
+                  Clear Notifications
+                </Button>
               </Dropdown.Item>
-            ))}
-            <Dropdown.Divider />
-            <Dropdown.Item as="div" className="text-center">
-              <Button variant="link" onClick={handleClearNotifications}>
-                Clear Notifications
-              </Button>
-            </Dropdown.Item>
-          </>
-        )}
-      </Dropdown.Menu>
-    </Dropdown>
-  );
+            </>
+          )}
+        </Dropdown.Menu>
+      </Dropdown>
+    );
+  };
 
   return (
     <Navbar expand="lg" className="navbar">
@@ -306,7 +310,8 @@ const NavBar = () => {
             />
           </Form>
           <Nav>
-            {renderNotifications()}
+            {user && renderNotifications()}{" "}
+            {/* Exibe o sino de notificações apenas se houver usuário */}
             {user ? (
               renderUserMenu()
             ) : (
@@ -324,6 +329,7 @@ const NavBar = () => {
       </Container>
     </Navbar>
   );
+
 };
 
 export default NavBar;
