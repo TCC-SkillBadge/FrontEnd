@@ -7,8 +7,12 @@ import {
   Form,
   FormControl,
   Image,
+  Badge,
+  Dropdown,
+  Button,
 } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -16,11 +20,14 @@ const NavBar = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
+  const [notifications, setNotifications] = useState([]); // Estado para notificações
+  const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para o dropdown
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedUserType = sessionStorage.getItem("tipoUsuario");
     const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+    const token = sessionStorage.getItem("token");
 
     if (storedUserType) {
       setUserType(storedUserType);
@@ -29,11 +36,62 @@ const NavBar = () => {
     if (storedUserInfo) {
       setUser(storedUserInfo);
     }
+
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:7004/admin/notificacoes",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          setNotifications(response.data);
+        } else {
+          console.error("Failed to fetch notifications");
+        }
+      } catch (error) {
+        console.error("Error fetching notifications", error);
+      }
+    };
+
+    fetchNotifications();
+
+    const interval = setInterval(fetchNotifications, 60000); // Checa a cada 60 segundos
+
+    return () => clearInterval(interval); // Limpa o intervalo ao desmontar o componente
   }, []);
 
   const handleLogout = () => {
     sessionStorage.clear();
     navigate("/login");
+  };
+
+  const handleClearNotifications = async () => {
+    const token = sessionStorage.getItem("token");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:7004/admin/limpar-notificacoes",
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setNotifications([]); // Limpa as notificações no frontend
+      } else {
+        console.error("Failed to clear notifications");
+      }
+    } catch (error) {
+      console.error("Error clearing notifications", error);
+    }
   };
 
   const renderNavItems = () => {
@@ -159,7 +217,6 @@ const NavBar = () => {
             <NavDropdown.Item as={NavLink} to="/analytics">
               <i className="bi bi-bar-chart"></i> Analytics
             </NavDropdown.Item>{" "}
-            {/* Link de Analytics adicionado */}
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={handleLogout}>
               <i className="bi bi-box-arrow-right"></i> Log Out
@@ -191,6 +248,47 @@ const NavBar = () => {
     );
   };
 
+  const renderNotifications = () => (
+    <Dropdown
+      show={dropdownOpen}
+      onToggle={() => setDropdownOpen(!dropdownOpen)}
+      align="end"
+    >
+      <Dropdown.Toggle
+        variant="link"
+        id="dropdown-notifications"
+        className="notification-toggle"
+      >
+        <i className="bi bi-bell"></i>
+        {notifications.length > 0 && (
+          <Badge pill bg="danger" className="notification-badge">
+            {notifications.length}
+          </Badge>
+        )}
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu className="notifications-dropdown">
+        {notifications.length === 0 ? (
+          <Dropdown.Item disabled>No new notifications</Dropdown.Item>
+        ) : (
+          <>
+            {notifications.map((notification) => (
+              <Dropdown.Item key={notification.id}>
+                <strong>{notification.canal}:</strong> {notification.mensagem}
+              </Dropdown.Item>
+            ))}
+            <Dropdown.Divider />
+            <Dropdown.Item as="div" className="text-center">
+              <Button variant="link" onClick={handleClearNotifications}>
+                Clear Notifications
+              </Button>
+            </Dropdown.Item>
+          </>
+        )}
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+
   return (
     <Navbar expand="lg" className="navbar">
       <Container fluid>
@@ -208,6 +306,7 @@ const NavBar = () => {
             />
           </Form>
           <Nav>
+            {renderNotifications()}
             {user ? (
               renderUserMenu()
             ) : (

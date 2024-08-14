@@ -44,17 +44,20 @@
   display: flex;
   align-items: center;
   margin-right: 20px;
+  flex-grow: 0; /* Impede que a barra de pesquisa cresça demais */
+  max-width: 300px; /* Define uma largura máxima para a barra de pesquisa */
 }
 
 .searchInput {
   height: 40px; 
-  width: 200px;
+  width: 100%; /* Faz com que a barra de pesquisa ocupe toda a largura disponível dentro do seu container */
   padding: 5px;
   border-radius: 4px;
   border: 1px solid #E2E2E2;
   background: rgba(217, 217, 217, 0.3);
   color: white;
 }
+
 
 .searchInput::placeholder {
   color: white;
@@ -68,9 +71,10 @@
   font-weight: 600;
   text-decoration: none;
   transition: color 0.3s, border 0.3s;
-  display: flex;
+  display: inline-flex; /* Garante que os botões fiquem em linha */
   align-items: center;
   justify-content: center;
+  white-space: nowrap; /* Impede quebra de linha dentro dos botões */
 }
 
 .signIn:hover, .signUp:hover {
@@ -83,6 +87,7 @@
   padding: 5px 20px; /* Ajuste o padding para criar mais espaço */
   border-radius: 8px; /* Ajuste o border-radius para bordas mais arredondadas */
   background: transparent; /* Fundo transparente */
+  margin-left: 10px; /* Adiciona espaço entre Sign In e Sign Up */
 }
 
 .signUp:hover {
@@ -121,7 +126,7 @@
   right: 0 !important;
   left: auto !important;
 }
-/* navbar.css */
+
 .navbar-nav .dropdown-menu {
   background-color: rgba(0, 0, 0, 0.8) !important; /* Preto com 80% de opacidade */
   border: none; /* Remove a borda padrão */
@@ -135,6 +140,30 @@
 .navbar-nav .dropdown-menu .dropdown-item:hover {
   background-color: rgba(210, 115, 255) !important; /* Cor de fundo rosa com 80% de opacidade ao passar o mouse */
   color: white !important; /* Cor do texto ao passar o mouse */
+}
+
+.notification-toggle::after {
+  display: none !important; /* Remove a seta, garantido com !important */
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px; /* Levanta o badge acima do sino */
+  right: -10px; /* Move o badge mais para a direita */
+  font-size: 0.5rem; /* Reduz ainda mais o tamanho do texto */
+  padding: 2px 4px; /* Diminui o padding para tornar o badge menor */
+  border-radius: 50%; /* Garante que o badge seja circular */
+  min-width: 18px; /* Define uma largura mínima para o badge */
+  min-height: 18px; /* Define uma altura mínima para o badge */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdown-item .btn-link {
+  padding: 0;
+  color: #007bff;
+  text-decoration: none;
 }
 
 @keyframes slideDown {

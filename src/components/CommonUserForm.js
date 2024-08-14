@@ -4,6 +4,7 @@ import {
   EnvelopeFill,
   LockFill,
   Phone,
+  Briefcase
 } from "react-bootstrap-icons";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
@@ -27,7 +28,7 @@ const CommonUserForm = ({ formData, handleChange, handlePhoneChange }) => {
       </div>
       <div className="form-group">
         <div className="input-icon">
-          <PersonFill />
+          <Briefcase />
           <input
             type="text"
             className="form-control"
