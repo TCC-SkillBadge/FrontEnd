@@ -1,0 +1,108 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #191A2E;
+  height: 100vh;
+  color: white;
+}
+
+.profile-container {
+  width: 80%;
+  max-width: 1200px;
+  margin: 20px auto;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  border: 2px solid;
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #8DFD8B;
+  margin-right: 30px;
+}
+
+.profile-info {
+  flex-grow: 1;
+}
+
+.profile-name {
+  font-size: 2rem;
+  margin-bottom: 5px;
+  color: #D273FF;
+}
+
+.profile-title {
+  font-size: 1.2rem;
+  color: #8DFD8B;
+}
+
+.edit-button {
+  background-color: transparent;
+  color: #D273FF;
+  font-weight: bold;
+  border: 2px solid #D273FF;
+  padding: 5px 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-section {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #8DFD8B;
+}
+
+.profile-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-section .section-icon {
+  margin-left: 10px;
+  color: #8DFD8B;
+}
+
+.profile-about-input,
+.profile-education-input,
+.profile-experience-input,
+.profile-languages-input {
+  background-color: transparent;
+  border: 2px solid #8DFD8B;
+  border-radius: 5px;
+  padding: 10px;
+  color: #ffffff;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 10px;
+  min-height: 60px;
+}
+
+.save-button {
+  background-color: #8DFD8B;
+  color: black;
+  font-weight: bold;
+  border: 2px solid #8DFD8B;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}

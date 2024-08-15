@@ -125,6 +125,18 @@
   color: white;
 }
 
+.input-icon input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #8DFD8B;
+  box-shadow: 0 0 0px 1000px #191A2E inset;
+}
+
 .cadastro-container .login-options {
   display: flex;
   justify-content: space-evenly;

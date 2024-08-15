@@ -59,11 +59,10 @@
   color: #8DFD8B;
 }
 
-.login-container .form-options {
+.login-container .form-options{
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 7px;
 }
 
 .login-container .form-check-label {
