@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/UserProfile.css";
 import { PencilSquare, Trash, PlusSquare } from "react-bootstrap-icons";
+import { ClipLoader } from "react-spinners"; // Import spinner
+import { ToastContainer, toast } from "react-toastify"; // Import toastify
+import "react-toastify/dist/ReactToastify.css";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -43,6 +46,7 @@ const UserProfile = () => {
         setLoading(false);
       } catch (error) {
         setError("Failed to load user data");
+        toast.error("Failed to load user data"); // Display error toast
         setLoading(false);
       }
     };
@@ -98,16 +102,20 @@ const UserProfile = () => {
       if (response.status === 200) {
         setUserData(formValues);
         setIsEditing(false);
-        alert("User updated successfully");
+        toast.success("User updated successfully"); // Display success toast
       }
     } catch (error) {
       console.error("Error updating user data:", error);
-      alert("Failed to update user data");
+      toast.error("Failed to update user data"); // Display error toast
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="spinner-container">
+        <ClipLoader color="#D273FF" loading={loading} size={150} />
+      </div>
+    );
   }
 
   if (error) {
@@ -116,6 +124,7 @@ const UserProfile = () => {
 
   return (
     <div className="profile-page">
+      <ToastContainer position="top-center" autoClose={5000} hideProgressBar />
       <div className="profile-container">
         <div className="profile-header">
           <img

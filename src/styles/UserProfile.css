@@ -5,8 +5,16 @@
   flex-direction: column;
   align-items: center;
   background-color: #191A2E;
-  height: 100vh;
+  min-height: 100vh;
   color: white;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #191A2E; /* Para combinar com o resto do design */
 }
 
 .profile-container {
