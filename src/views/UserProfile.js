@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../styles/UserProfile.css";
 import {
   PencilSquare,
   Trash,
@@ -12,7 +11,9 @@ import {
   Flag,
   PersonFill,
   MortarboardFill,
-} from "react-bootstrap-icons"; // Importando ícones do Bootstrap
+  ShareFill, // Ícone de compartilhar
+} from "react-bootstrap-icons";
+import "../styles/UserProfile.css";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -23,11 +24,6 @@ const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [formValues, setFormValues] = useState({
-    education: [],
-    professionalExperience: [],
-    languages: [],
-  });
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -41,7 +37,6 @@ const UserProfile = () => {
             },
           }
         );
-
         const userInfo = {
           ...response.data,
           education: response.data.education || [],
@@ -50,7 +45,6 @@ const UserProfile = () => {
         };
 
         setUserData(userInfo);
-        setFormValues(userInfo);
         setLoading(false);
       } catch (error) {
         setError("Failed to load user data");
@@ -67,11 +61,11 @@ const UserProfile = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+    setUserData({ ...userData, [name]: value });
   };
 
   const handleArrayChange = (e, index, key, arrayKey) => {
-    const updatedArray = [...formValues[arrayKey]];
+    const updatedArray = [...userData[arrayKey]];
 
     if (arrayKey === "languages") {
       updatedArray[index] = e.target.value; // Para languages, atualiza diretamente a string
@@ -79,48 +73,47 @@ const UserProfile = () => {
       updatedArray[index][key] = e.target.value;
     }
 
-    setFormValues({ ...formValues, [arrayKey]: updatedArray });
+    setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
   const handleAddItem = (arrayKey, newItem) => {
-    setFormValues({
-      ...formValues,
-      [arrayKey]: [...formValues[arrayKey], newItem],
+    setUserData({
+      ...userData,
+      [arrayKey]: [...userData[arrayKey], newItem],
     });
   };
 
   const handleRemoveItem = (index, arrayKey) => {
-    const updatedArray = formValues[arrayKey].filter((_, i) => i !== index);
-    setFormValues({ ...formValues, [arrayKey]: updatedArray });
+    const updatedArray = userData[arrayKey].filter((_, i) => i !== index);
+    setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
   const handleSaveChanges = async () => {
     try {
       const token = sessionStorage.getItem("token");
-      const response = await axios.put(
-        "http://localhost:7000/api/user/update",
-        formValues,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (response.status === 200) {
-        setUserData(formValues);
-        setIsEditing(false);
-        alert("User updated successfully");
-      }
+      await axios.put("http://localhost:7000/api/user/update", userData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setIsEditing(false);
+      alert("User updated successfully");
     } catch (error) {
       console.error("Error updating user data:", error);
       alert("Failed to update user data");
     }
   };
 
+  const handleShareProfile = () => {
+    const encodedEmail = btoa(userData.email); // Codifica o e-mail em base64
+    const publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
+    navigator.clipboard.writeText(publicProfileUrl).then(() => {
+      alert("Profile URL copied to clipboard!");
+    });
+  };
+
   if (loading) {
-    return (
-      <div className="spinner-container">{/* Spinner de carregamento */}</div>
-    );
+    return <div className="spinner-container">Loading...</div>;
   }
 
   if (error) {
@@ -141,7 +134,7 @@ const UserProfile = () => {
               <input
                 type="text"
                 name="fullName"
-                value={formValues.fullName || ""}
+                value={userData.fullName || ""}
                 onChange={handleInputChange}
                 className="profile-name-input"
               />
@@ -151,31 +144,39 @@ const UserProfile = () => {
             <p className="profile-title">
               {userData.occupation || "Occupation not provided"}
             </p>
-            <button onClick={handleEditToggle} className="edit-button">
-              <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
-            </button>
+            <div className="profile-actions">
+              <button onClick={handleEditToggle} className="edit-button">
+                <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+              </button>
+              <button onClick={handleShareProfile} className="share-button">
+                <ShareFill /> Compartilhar
+              </button>
+            </div>
           </div>
         </div>
 
+        {/* Seção de Edição ou Exibição */}
         {isEditing ? (
-          <>
+          <div className="profile-sections">
+            {/* Edição de About */}
             <div className="profile-section">
               <label>
                 <PersonFill className="icon" /> About
               </label>
               <textarea
                 name="about"
-                value={formValues.about || ""}
+                value={userData.about || ""}
                 onChange={handleInputChange}
                 className="profile-about-input"
               />
             </div>
 
+            {/* Edição de Educação */}
             <div className="profile-section">
               <h3>
                 <MortarboardFill className="icon" /> Education
               </h3>
-              {formValues.education.map((edu, index) => (
+              {userData.education.map((edu, index) => (
                 <div key={index} className="profile-array-item">
                   <Building className="icon" />
                   <input
@@ -228,11 +229,12 @@ const UserProfile = () => {
               </button>
             </div>
 
+            {/* Edição de Experiência Profissional */}
             <div className="profile-section">
               <h3>
                 <Briefcase className="icon" /> Professional Experience
               </h3>
-              {formValues.professionalExperience.map((exp, index) => (
+              {userData.professionalExperience.map((exp, index) => (
                 <div key={index} className="profile-array-item">
                   <Building className="icon" />
                   <input
@@ -302,11 +304,12 @@ const UserProfile = () => {
               </button>
             </div>
 
+            {/* Edição de Idiomas */}
             <div className="profile-section">
               <h3>
                 <Globe className="icon" /> Languages
               </h3>
-              {formValues.languages.map((language, index) => (
+              {userData.languages.map((language, index) => (
                 <div key={index} className="profile-array-item">
                   <Flag className="icon" />
                   <input
@@ -337,9 +340,9 @@ const UserProfile = () => {
             <button onClick={handleSaveChanges} className="save-button">
               Save Changes
             </button>
-          </>
+          </div>
         ) : (
-          <>
+          <div className="profile-sections">
             <div className="profile-section">
               <h3>
                 <PersonFill className="icon" /> About
@@ -414,7 +417,7 @@ const UserProfile = () => {
                 <p>No languages provided.</p>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

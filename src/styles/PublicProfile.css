@@ -7,14 +7,6 @@
   color: white;
 }
 
-.spinner-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #191A2E;
-}
-
 .profile-container {
   width: 80%;
   max-width: 1200px;
@@ -57,24 +49,6 @@
   color: #8DFD8B;
 }
 
-.edit-button, .add-button, .delete-button, .share-button {
-  background-color: transparent;
-  color: #D273FF;
-  font-weight: bold;
-  border: 2px solid #D273FF;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-}
-
-.edit-button:hover, .add-button:hover, .delete-button:hover, .share-button:hover {
-  background-color: #D273FF;
-  color: white;
-}
-
 .profile-section {
   margin-bottom: 20px;
   padding-bottom: 10px;
@@ -88,57 +62,8 @@
   align-items: center;
 }
 
-.profile-section h3 .bi {
-  font-size: 1.2rem;
-  margin-right: 8px;
-  color: white;
-}
-
-.profile-about-input,
-.profile-education-input,
-.profile-experience-input,
-.profile-languages-input,
-.profile-input {
-  background-color: transparent;
-  border: 2px solid #8DFD8B;
-  border-radius: 5px;
-  padding: 10px;
-  color: #ffffff;
-  font-size: 1rem;
-  width: 100%;
-  margin-top: 10px;
-  min-height: 40px;
-}
-
-.profile-array-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.profile-array-item input {
-  flex: 1;
-  margin-right: 10px;
-}
-
-.save-button {
-  background-color: #8DFD8B;
-  color: black;
-  font-weight: bold;
-  border: 2px solid #8DFD8B;
-  padding: 10px;
-  width: 100%;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-.save-button:hover {
-  background-color: #72c974;
-}
-
 .profile-section h3 .icon {
-  font-size: 1.2rem;
+  font-size: 1.2rem; 
   margin-right: 8px;
   color: white;
 }
@@ -164,7 +89,7 @@
 .education-degree {
   font-size: 1rem;
   color: #ffffff;
-  margin-left: 24px;
+  margin-left: 24px; 
   display: flex;
   align-items: center;
 }
@@ -194,10 +119,5 @@
   .profile-photo {
     margin-right: 0;
     margin-bottom: 15px;
-  }
-
-  .edit-button, .add-button, .delete-button, .share-button {
-    width: 100%;
-    justify-content: center;
   }
 }

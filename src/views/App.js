@@ -24,6 +24,7 @@ import Price from "./Price";
 import ResetPassword from "./ResetPassword"; // Import the new component
 import Orders from "./Order";
 import UserProfile from "./UserProfile";
+import PublicProfile from "./PublicProfile";
 
 /*um comentario
  */ 
@@ -50,6 +51,10 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />{" "}
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route
+          path="/public-profile/:encodedEmail"
+          element={<PublicProfile />}
+        />
       </Routes>
     </div>
   );
