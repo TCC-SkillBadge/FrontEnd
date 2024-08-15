@@ -14,7 +14,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #191A2E; /* Para combinar com o resto do design */
+  background-color: #191A2E;
 }
 
 .profile-container {
@@ -89,6 +89,12 @@
   align-items: center;
 }
 
+.profile-section h3 .bi {
+  font-size: 1.2rem; /* Reduzir o tamanho dos ícones */
+  margin-right: 8px;
+  color: white; /* Definir a cor dos ícones como branco */
+}
+
 .profile-about-input,
 .profile-education-input,
 .profile-experience-input,
@@ -130,6 +136,17 @@
 
 .save-button:hover {
   background-color: #72c974;
+}
+
+.profile-section h3 .icon {
+  font-size: 1.2rem; /* Reduzir o tamanho dos ícones */
+  margin-right: 8px;
+  color: white; /* Definir a cor dos ícones como branco */
+}
+
+.profile-info-row .icon {
+  font-size: 1rem; /* Tamanho dos ícones nos detalhes */
+  color: white; /* Cor branca para os ícones */
 }
 
 @media (max-width: 600px) {

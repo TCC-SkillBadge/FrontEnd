@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../styles/UserProfile.css";
-import { PencilSquare, Trash, PlusSquare } from "react-bootstrap-icons";
-import { ClipLoader } from "react-spinners"; // Import spinner
-import { ToastContainer, toast } from "react-toastify"; // Import toastify
-import "react-toastify/dist/ReactToastify.css";
+import {
+  PencilSquare,
+  Trash,
+  PlusSquare,
+  MortarboardFill,
+  Building,
+  Briefcase,
+  Globe,
+  Flag,
+  PersonFill,
+  AwardFill, // Importando o ícone AwardFill do Bootstrap
+} from "react-bootstrap-icons"; // Importando ícones do Bootstrap
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -46,7 +54,6 @@ const UserProfile = () => {
         setLoading(false);
       } catch (error) {
         setError("Failed to load user data");
-        toast.error("Failed to load user data"); // Display error toast
         setLoading(false);
       }
     };
@@ -102,19 +109,17 @@ const UserProfile = () => {
       if (response.status === 200) {
         setUserData(formValues);
         setIsEditing(false);
-        toast.success("User updated successfully"); // Display success toast
+        alert("User updated successfully");
       }
     } catch (error) {
       console.error("Error updating user data:", error);
-      toast.error("Failed to update user data"); // Display error toast
+      alert("Failed to update user data");
     }
   };
 
   if (loading) {
     return (
-      <div className="spinner-container">
-        <ClipLoader color="#D273FF" loading={loading} size={150} />
-      </div>
+      <div className="spinner-container">{/* Spinner de carregamento */}</div>
     );
   }
 
@@ -124,7 +129,6 @@ const UserProfile = () => {
 
   return (
     <div className="profile-page">
-      <ToastContainer position="top-center" autoClose={5000} hideProgressBar />
       <div className="profile-container">
         <div className="profile-header">
           <img
@@ -156,7 +160,9 @@ const UserProfile = () => {
         {isEditing ? (
           <>
             <div className="profile-section">
-              <label>About</label>
+              <label>
+                <PersonFill className="icon" /> About
+              </label>
               <textarea
                 name="about"
                 value={formValues.about || ""}
@@ -166,24 +172,28 @@ const UserProfile = () => {
             </div>
 
             <div className="profile-section">
-              <h3>Education</h3>
+              <h3>
+                <MortarboardFill className="icon" /> Education
+              </h3>
               {formValues.education.map((edu, index) => (
                 <div key={index} className="profile-array-item">
-                  <input
-                    type="text"
-                    value={edu.degree}
-                    placeholder="Degree"
-                    onChange={(e) =>
-                      handleArrayChange(e, index, "degree", "education")
-                    }
-                    className="profile-input"
-                  />
+                  <Building className="icon" />
                   <input
                     type="text"
                     value={edu.institution}
                     placeholder="Institution"
                     onChange={(e) =>
                       handleArrayChange(e, index, "institution", "education")
+                    }
+                    className="profile-input"
+                  />
+                  <AwardFill className="icon" />
+                  <input
+                    type="text"
+                    value={edu.degree}
+                    placeholder="Degree"
+                    onChange={(e) =>
+                      handleArrayChange(e, index, "degree", "education")
                     }
                     className="profile-input"
                   />
@@ -219,23 +229,12 @@ const UserProfile = () => {
             </div>
 
             <div className="profile-section">
-              <h3>Professional Experience</h3>
+              <h3>
+                <Briefcase className="icon" /> Professional Experience
+              </h3>
               {formValues.professionalExperience.map((exp, index) => (
                 <div key={index} className="profile-array-item">
-                  <input
-                    type="text"
-                    value={exp.position}
-                    placeholder="Position"
-                    onChange={(e) =>
-                      handleArrayChange(
-                        e,
-                        index,
-                        "position",
-                        "professionalExperience"
-                      )
-                    }
-                    className="profile-input"
-                  />
+                  <Building className="icon" />
                   <input
                     type="text"
                     value={exp.company}
@@ -245,6 +244,21 @@ const UserProfile = () => {
                         e,
                         index,
                         "company",
+                        "professionalExperience"
+                      )
+                    }
+                    className="profile-input"
+                  />
+                  <Briefcase className="icon" />
+                  <input
+                    type="text"
+                    value={exp.position}
+                    placeholder="Position"
+                    onChange={(e) =>
+                      handleArrayChange(
+                        e,
+                        index,
+                        "position",
                         "professionalExperience"
                       )
                     }
@@ -289,9 +303,12 @@ const UserProfile = () => {
             </div>
 
             <div className="profile-section">
-              <h3>Languages</h3>
+              <h3>
+                <Globe className="icon" /> Languages
+              </h3>
               {formValues.languages.map((language, index) => (
                 <div key={index} className="profile-array-item">
+                  <Flag className="icon" />
                   <input
                     type="text"
                     value={language}
@@ -324,41 +341,68 @@ const UserProfile = () => {
         ) : (
           <>
             <div className="profile-section">
-              <h3>About</h3>
+              <h3>
+                <PersonFill className="icon" /> About
+              </h3>
               <p>{userData.about || "No description provided."}</p>
             </div>
             <div className="profile-section">
-              <h3>Education</h3>
+              <h3>
+                <MortarboardFill className="icon" /> Education
+              </h3>
               {Array.isArray(userData.education) &&
               userData.education.length > 0 ? (
                 userData.education.map((edu, index) => (
-                  <p key={index}>
-                    {edu.degree} - {edu.institution} ({edu.year})
-                  </p>
+                  <div key={index}>
+                    <div className="profile-info-row">
+                      <Building className="icon" />
+                      <span className="profile-info-text">
+                        {edu.institution} ({edu.year})
+                      </span>
+                    </div>
+                    <div className="profile-info-row">
+                      <AwardFill className="icon" />
+                      <span className="profile-info-text">{edu.degree}</span>
+                    </div>
+                  </div>
                 ))
               ) : (
                 <p>No education details provided.</p>
               )}
             </div>
             <div className="profile-section">
-              <h3>Professional Experience</h3>
+              <h3>
+                <Briefcase className="icon" /> Professional Experience
+              </h3>
               {Array.isArray(userData.professionalExperience) &&
               userData.professionalExperience.length > 0 ? (
                 userData.professionalExperience.map((exp, index) => (
-                  <p key={index}>
-                    {exp.position} - {exp.company} ({exp.dates})
-                  </p>
+                  <div key={index}>
+                    <div className="profile-info-row">
+                      <Building className="icon" />
+                      <span className="profile-info-text">{exp.company}</span>
+                    </div>
+                    <div className="profile-info-row">
+                      <Briefcase className="icon" />
+                      <span className="profile-info-text">{exp.position}</span>
+                    </div>
+                  </div>
                 ))
               ) : (
                 <p>No work experience details provided.</p>
               )}
             </div>
             <div className="profile-section">
-              <h3>Languages</h3>
+              <h3>
+                <Globe className="icon" /> Languages
+              </h3>
               {Array.isArray(userData.languages) &&
               userData.languages.length > 0 ? (
                 userData.languages.map((language, index) => (
-                  <p key={index}>{language}</p>
+                  <div key={index} className="profile-info-row">
+                    <Flag className="icon" />
+                    <span className="profile-info-text">{language}</span>
+                  </div>
                 ))
               ) : (
                 <p>No languages provided.</p>
