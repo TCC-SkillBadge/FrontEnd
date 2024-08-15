@@ -1,150 +1,162 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import axios from "axios";
-import "../styles/UserProfile.css"; // CSS para o perfil do usuário
+import "../styles/UserProfile.css"; // O caminho pode variar dependendo da sua estrutura de pastas
 import { PencilSquare } from "react-bootstrap-icons"; // Ícone para edição
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const isCurrentUser = true; // Supondo que você vai definir isso baseado no login do usuário
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [formValues, setFormValues] = useState({});
 
   useEffect(() => {
-    // Supondo que os dados do usuário foram armazenados no sessionStorage
-    const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
-    setUserData(storedUserInfo);
-  }, []);
+    // Fetch user info when component mounts
+    const fetchUserInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        const response = await axios.get("http://localhost:7000/api/user/info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserData(response.data);
+        setFormValues(response.data); // Initialize form values
+        setLoading(false);
+      } catch (error) {
+        setError("Failed to load user data");
+        setLoading(false);
+      }
+    };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+    fetchUserInfo();
+  }, []);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
   const handleSaveChanges = async () => {
-    // Função para salvar as mudanças (enviar ao backend)
     try {
+      const token = sessionStorage.getItem("token");
       const response = await axios.put(
-        "http://localhost:9090/api/user/update",
-        userData
+        "http://localhost:7000/api/user/update",
+        formValues,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
       );
       if (response.status === 200) {
-        setIsEditing(false);
+        setUserData(formValues); // Update the displayed data
+        setIsEditing(false); // Exit edit mode
+        alert("User updated successfully");
       }
     } catch (error) {
-      console.error("Erro ao salvar as alterações:", error);
+      console.error("Error updating user data:", error);
+      alert("Failed to update user data");
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <div className="profile-page">
-      <Navbar />
       <div className="profile-container">
         <div className="profile-header">
-          <img
-            src={userData.photo || "/default-avatar.png"}
-            alt="User Avatar"
-            className="profile-photo"
-          />
+          <img src={userData.photo || "/default-avatar.png"} alt="User Avatar" className="profile-photo" />
           <div className="profile-info">
             {isEditing ? (
               <input
                 type="text"
-                name="name"
-                value={userData.name || ""}
+                name="fullName"
+                value={formValues.fullName || ""}
                 onChange={handleInputChange}
                 className="profile-name-input"
               />
             ) : (
-              <h2 className="profile-name">{userData.name}</h2>
+              <h2 className="profile-name">{userData.fullName}</h2>
             )}
-            <p className="profile-title">
-              {userData.title || "Software Engineer at Acme Inc."}
-            </p>
-            {isCurrentUser && (
-              <button onClick={handleEditToggle} className="edit-button">
-                <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
-              </button>
-            )}
+            <p className="profile-title">{userData.occupation || "Occupation not provided"}</p>
+            <button onClick={handleEditToggle} className="edit-button">
+              <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+            </button>
           </div>
         </div>
 
-        <div className="profile-section">
-          <h3>
-            About <PencilSquare className="section-icon" />
-          </h3>
-          {isEditing ? (
-            <textarea
-              name="about"
-              value={userData.about || ""}
-              onChange={handleInputChange}
-              className="profile-about-input"
-            />
-          ) : (
-            <p>{userData.about || "I am a passionate software engineer..."}</p>
-          )}
-        </div>
-
-        <div className="profile-section">
-          <h3>
-            Education <PencilSquare className="section-icon" />
-          </h3>
-          {isEditing ? (
-            <textarea
-              name="education"
-              value={userData.education || ""}
-              onChange={handleInputChange}
-              className="profile-education-input"
-            />
-          ) : (
-            <p>
-              {userData.education || "University of California, Berkeley..."}
-            </p>
-          )}
-        </div>
-
-        <div className="profile-section">
-          <h3>
-            Work Experience <PencilSquare className="section-icon" />
-          </h3>
-          {isEditing ? (
-            <textarea
-              name="professional_experience"
-              value={userData.professional_experience || ""}
-              onChange={handleInputChange}
-              className="profile-experience-input"
-            />
-          ) : (
-            <p>{userData.professional_experience || "Acme Inc..."}</p>
-          )}
-        </div>
-
-        <div className="profile-section">
-          <h3>
-            Languages <PencilSquare className="section-icon" />
-          </h3>
-          {isEditing ? (
-            <textarea
-              name="languages"
-              value={userData.languages || ""}
-              onChange={handleInputChange}
-              className="profile-languages-input"
-            />
-          ) : (
-            <p>{userData.languages || "English, Spanish..."}</p>
-          )}
-        </div>
-
-        {isCurrentUser && isEditing && (
-          <button onClick={handleSaveChanges} className="save-button">
-            Save Changes
-          </button>
+        {isEditing ? (
+          <>
+            <div className="profile-section">
+              <label>About</label>
+              <textarea
+                name="about"
+                value={formValues.about || ""}
+                onChange={handleInputChange}
+                className="profile-about-input"
+              />
+            </div>
+            <div className="profile-section">
+              <label>Education</label>
+              <textarea
+                name="education"
+                value={formValues.education || ""}
+                onChange={handleInputChange}
+                className="profile-education-input"
+              />
+            </div>
+            <div className="profile-section">
+              <label>Professional Experience</label>
+              <textarea
+                name="professional_experience"
+                value={formValues.professional_experience || ""}
+                onChange={handleInputChange}
+                className="profile-experience-input"
+              />
+            </div>
+            <div className="profile-section">
+              <label>Languages</label>
+              <textarea
+                name="languages"
+                value={formValues.languages || ""}
+                onChange={handleInputChange}
+                className="profile-languages-input"
+              />
+            </div>
+            <button onClick={handleSaveChanges} className="save-button">
+              Save Changes
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="profile-section">
+              <h3>About</h3>
+              <p>{userData.about || "No description provided."}</p>
+            </div>
+            <div className="profile-section">
+              <h3>Education</h3>
+              <p>{userData.education || "No education details provided."}</p>
+            </div>
+            <div className="profile-section">
+              <h3>Professional Experience</h3>
+              <p>{userData.professional_experience || "No work experience details provided."}</p>
+            </div>
+            <div className="profile-section">
+              <h3>Languages</h3>
+              <p>{userData.languages || "No languages details provided."}</p>
+            </div>
+          </>
         )}
       </div>
     </div>
