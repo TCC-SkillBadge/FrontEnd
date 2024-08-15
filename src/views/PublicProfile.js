@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import {
+  AwardFill,
+  Building,
+  Briefcase,
+  Globe,
+  Flag,
+  PersonFill,
+  MortarboardFill,
+} from "react-bootstrap-icons"; // Importando os ícones
 import "../styles/PublicProfile.css";
 
 const PublicProfile = () => {
@@ -56,19 +65,25 @@ const PublicProfile = () => {
           </div>
         </div>
         <div className="profile-section">
-          <h3>About</h3>
+          <h3>
+            <PersonFill className="icon" /> About
+          </h3>
           <p>{userData.about || "No description provided."}</p>
         </div>
         <div className="profile-section">
-          <h3>Education</h3>
+          <h3>
+            <MortarboardFill className="icon" /> Education
+          </h3>
           {Array.isArray(userData.education) &&
           userData.education.length > 0 ? (
             userData.education.map((edu, index) => (
               <div key={index} className="education-item">
                 <div className="profile-info-row">
+                  <Building className="icon" />
                   <span className="institution-name">{edu.institution}</span>
                 </div>
                 <div className="profile-info-row">
+                  <AwardFill className="icon" />
                   <span className="education-degree">{edu.degree}</span>
                 </div>
                 <div className="profile-info-row">
@@ -81,15 +96,19 @@ const PublicProfile = () => {
           )}
         </div>
         <div className="profile-section">
-          <h3>Professional Experience</h3>
+          <h3>
+            <Briefcase className="icon" /> Professional Experience
+          </h3>
           {Array.isArray(userData.professionalExperience) &&
           userData.professionalExperience.length > 0 ? (
             userData.professionalExperience.map((exp, index) => (
               <div key={index}>
                 <div className="profile-info-row">
+                  <Building className="icon" />
                   <span className="profile-info-text">{exp.company}</span>
                 </div>
                 <div className="profile-info-row">
+                  <Briefcase className="icon" />
                   <span className="profile-info-text">{exp.position}</span>
                 </div>
                 <div className="profile-info-row">
@@ -102,11 +121,14 @@ const PublicProfile = () => {
           )}
         </div>
         <div className="profile-section">
-          <h3>Languages</h3>
+          <h3>
+            <Globe className="icon" /> Languages
+          </h3>
           {Array.isArray(userData.languages) &&
           userData.languages.length > 0 ? (
             userData.languages.map((language, index) => (
               <div key={index} className="profile-info-row">
+                <Flag className="icon" />
                 <span className="profile-info-text">{language}</span>
               </div>
             ))
