@@ -5,13 +5,13 @@ import {
   PencilSquare,
   Trash,
   PlusSquare,
-  MortarboardFill,
+  AwardFill,
   Building,
   Briefcase,
   Globe,
   Flag,
   PersonFill,
-  AwardFill, // Importando o ícone AwardFill do Bootstrap
+  MortarboardFill,
 } from "react-bootstrap-icons"; // Importando ícones do Bootstrap
 
 const UserProfile = () => {
@@ -353,16 +353,19 @@ const UserProfile = () => {
               {Array.isArray(userData.education) &&
               userData.education.length > 0 ? (
                 userData.education.map((edu, index) => (
-                  <div key={index}>
+                  <div key={index} className="education-item">
                     <div className="profile-info-row">
                       <Building className="icon" />
-                      <span className="profile-info-text">
-                        {edu.institution} ({edu.year})
+                      <span className="institution-name">
+                        {edu.institution}
                       </span>
                     </div>
                     <div className="profile-info-row">
                       <AwardFill className="icon" />
-                      <span className="profile-info-text">{edu.degree}</span>
+                      <span className="education-degree">{edu.degree}</span>
+                    </div>
+                    <div className="profile-info-row">
+                      <span className="education-dates">{edu.year}</span>
                     </div>
                   </div>
                 ))
@@ -385,6 +388,9 @@ const UserProfile = () => {
                     <div className="profile-info-row">
                       <Briefcase className="icon" />
                       <span className="profile-info-text">{exp.position}</span>
+                    </div>
+                    <div className="profile-info-row">
+                      <span className="education-dates">{exp.dates}</span>
                     </div>
                   </div>
                 ))
