@@ -57,7 +57,12 @@
   color: #8DFD8B;
 }
 
-.edit-button, .add-button, .delete-button, .share-button {
+.profile-actions {
+  display: flex;
+  gap: 10px; /* Adiciona espaço entre os botões */
+}
+
+.edit-button, .add-button, .delete-button, .share-button, .download-button {
   background-color: transparent;
   color: #D273FF;
   font-weight: bold;
@@ -67,10 +72,9 @@
   border-radius: 5px;
   display: flex;
   align-items: center;
-  margin-left: 10px;
 }
 
-.edit-button:hover, .add-button:hover, .delete-button:hover, .share-button:hover {
+.edit-button:hover, .add-button:hover, .delete-button:hover, .share-button:hover, .download-button:hover {
   background-color: #D273FF;
   color: white;
 }

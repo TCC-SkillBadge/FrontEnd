@@ -11,9 +11,13 @@ import {
   Flag,
   PersonFill,
   MortarboardFill,
-  ShareFill, // Ícone de compartilhar
+  ShareFill,
+  FileEarmarkArrowDownFill, // Ícone de download
 } from "react-bootstrap-icons";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import "../styles/UserProfile.css";
+import NavBar from "../components/Navbar"; // Importe o componente NavBar
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -112,6 +116,64 @@ const UserProfile = () => {
     });
   };
 
+  const handleDownloadPortfolio = async () => {
+    const doc = new jsPDF("p", "pt", "a4");
+
+    // Exemplo de adicionar um título ao PDF
+    doc.setFontSize(20);
+    doc.text("User Portfolio", 40, 50);
+
+    // Adicionando informações pessoais
+    doc.setFontSize(12);
+    doc.text(`Name: ${userData.fullName}`, 40, 90);
+    doc.text(`Occupation: ${userData.occupation}`, 40, 110);
+    doc.text(`About: ${userData.about}`, 40, 130);
+
+    // Renderizando a seção de educação
+    doc.setFontSize(16);
+    doc.text("Education:", 40, 160);
+    userData.education.forEach((edu, index) => {
+      doc.setFontSize(12);
+      doc.text(
+        `${edu.institution}, ${edu.degree}, ${edu.year}`,
+        60,
+        180 + index * 20
+      );
+    });
+
+    // Renderizando a seção de experiência profissional
+    doc.setFontSize(16);
+    doc.text("Professional Experience:", 40, 240);
+    userData.professionalExperience.forEach((exp, index) => {
+      doc.setFontSize(12);
+      doc.text(
+        `${exp.company}, ${exp.position}, ${exp.dates}`,
+        60,
+        260 + index * 20
+      );
+    });
+
+    // Renderizando a seção de idiomas
+    doc.setFontSize(16);
+    doc.text("Languages:", 40, 320);
+    userData.languages.forEach((language, index) => {
+      doc.setFontSize(12);
+      doc.text(`${language}`, 60, 340 + index * 20);
+    });
+
+    // Adicionando a imagem do usuário (se disponível)
+    if (userData.photo) {
+      const imgData = await html2canvas(
+        document.querySelector(".profile-photo")
+      );
+      const imgDataUrl = imgData.toDataURL("image/png");
+      doc.addImage(imgDataUrl, "PNG", 400, 40, 100, 100);
+    }
+
+    // Salvando o PDF
+    doc.save("portfolio.pdf");
+  };
+
   if (loading) {
     return <div className="spinner-container">Loading...</div>;
   }
@@ -122,6 +184,7 @@ const UserProfile = () => {
 
   return (
     <div className="profile-page">
+      <NavBar /> {/* Adiciona o NavBar aqui */}
       <div className="profile-container">
         <div className="profile-header">
           <img
@@ -150,6 +213,12 @@ const UserProfile = () => {
               </button>
               <button onClick={handleShareProfile} className="share-button">
                 <ShareFill /> Compartilhar
+              </button>
+              <button
+                onClick={handleDownloadPortfolio}
+                className="download-button"
+              >
+                <FileEarmarkArrowDownFill /> Download Portfolio
               </button>
             </div>
           </div>
