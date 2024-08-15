@@ -12,12 +12,15 @@ import {
   PersonFill,
   MortarboardFill,
   ShareFill,
-  FileEarmarkArrowDownFill, // Ícone de download
+  FileEarmarkArrowDownFill,
 } from "react-bootstrap-icons";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../styles/UserProfile.css";
-import NavBar from "../components/Navbar"; // Importe o componente NavBar
+import NavBar from "../components/Navbar"; // Importe o NavBar
+import { ToastContainer, toast } from "react-toastify"; // Importe o ReactToastify
+import "react-toastify/dist/ReactToastify.css";
+import { ClipLoader } from "react-spinners"; // Importe ReactSpinners
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -101,10 +104,10 @@ const UserProfile = () => {
         },
       });
       setIsEditing(false);
-      alert("User updated successfully");
+      toast.success("User updated successfully");
     } catch (error) {
       console.error("Error updating user data:", error);
-      alert("Failed to update user data");
+      toast.error("Failed to update user data");
     }
   };
 
@@ -112,7 +115,7 @@ const UserProfile = () => {
     const encodedEmail = btoa(userData.email); // Codifica o e-mail em base64
     const publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
     navigator.clipboard.writeText(publicProfileUrl).then(() => {
-      alert("Profile URL copied to clipboard!");
+      toast.info("Profile URL copied to clipboard!");
     });
   };
 
@@ -172,18 +175,25 @@ const UserProfile = () => {
 
     // Salvando o PDF
     doc.save("portfolio.pdf");
+    toast.success("Portfolio downloaded successfully");
   };
 
   if (loading) {
-    return <div className="spinner-container">Loading...</div>;
+    return (
+      <div className="spinner-container">
+        <ClipLoader color="#8DFD8B" size={150} />{" "}
+        {/* Mostra o spinner de carregamento */}
+      </div>
+    );
   }
 
   if (error) {
-    return <div>{error}</div>;
+    toast.error(error);
   }
 
   return (
     <div className="profile-page">
+      <ToastContainer /> {/* Contêiner para os toasts */}
       <NavBar /> {/* Adiciona o NavBar aqui */}
       <div className="profile-container">
         <div className="profile-header">
