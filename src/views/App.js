@@ -12,6 +12,7 @@ import Login from "./Login";
 import Cadastro from "./Cadastro";
 import Wallet from "./Wallet";
 import Workflow from "./Workflow";
+import Badge from "./Badge";
 import ContaUA from "../components/UserAdmin/ContaUA";
 import ContaUE from "../components/UserEmpresarial/ContaUE";
 import ContaUC from "../components/UserComum/ContaUC";
@@ -29,6 +30,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/workflow" element={<Workflow />} />
+        <Route path="/badge" element={<Badge />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/contaUE" element={<ContaUE />} />
         <Route path="/contaUC" element={<ContaUC />} />
