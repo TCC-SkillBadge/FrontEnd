@@ -17,16 +17,17 @@ import {
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../styles/UserProfile.css";
-import NavBar from "../components/Navbar"; // Importe o NavBar
-import { ToastContainer, toast } from "react-toastify"; // Importe o ReactToastify
+import NavBar from "../components/Navbar";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ClipLoader } from "react-spinners"; // Importe ReactSpinners
+import { ClipLoader } from "react-spinners";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
     education: [],
     professionalExperience: [],
     languages: [],
+    imageUrl: "",
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -51,16 +52,16 @@ const UserProfile = () => {
             ? response.data.education
             : [],
           professionalExperience: Array.isArray(
-            response.data.professionalExperience
+            response.data.professional_experience
           )
-            ? response.data.professionalExperience
+            ? response.data.professional_experience
             : [],
           languages: Array.isArray(response.data.languages)
             ? response.data.languages
             : [],
         };
 
-        console.log(userInfo); // Verifique os dados recebidos no console
+        console.log("User Info: ", userInfo); // Verificando os dados carregados
 
         setUserData(userInfo);
         setLoading(false);
@@ -86,7 +87,7 @@ const UserProfile = () => {
     const updatedArray = [...userData[arrayKey]];
 
     if (arrayKey === "languages") {
-      updatedArray[index] = e.target.value; // Para languages, atualiza diretamente a string
+      updatedArray[index] = e.target.value;
     } else {
       updatedArray[index][key] = e.target.value;
     }
@@ -106,13 +107,17 @@ const UserProfile = () => {
     setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
+  const handleFileChange = (e) => {
+    setUserData({ ...userData, photo: e.target.files[0] });
+  };
+
   const handleSaveChanges = async () => {
     try {
       const token = sessionStorage.getItem("token");
 
       const formData = new FormData();
       if (userData.photo) {
-        formData.append("photo", userData.photo); // Adiciona a foto apenas se ela existir
+        formData.append("photo", userData.photo);
       }
       formData.append("fullName", userData.fullName || "");
       formData.append("occupation", userData.occupation || "");
@@ -142,7 +147,7 @@ const UserProfile = () => {
   };
 
   const handleShareProfile = () => {
-    const encodedEmail = btoa(userData.email); // Codifica o e-mail em base64
+    const encodedEmail = btoa(userData.email);
     const publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
     navigator.clipboard.writeText(publicProfileUrl).then(() => {
       toast.info("Profile URL copied to clipboard!");
@@ -204,13 +209,17 @@ const UserProfile = () => {
   if (loading) {
     return (
       <div className="spinner-container">
-        <ClipLoader color="#8DFD8B" size={150} />{" "}
+        <ClipLoader color="#8DFD8B" size={150} />
       </div>
     );
   }
 
   if (error) {
-    toast.error(error);
+    return (
+      <div className="error-container">
+        <p>{error}</p>
+      </div>
+    );
   }
 
   return (
@@ -219,11 +228,27 @@ const UserProfile = () => {
       <NavBar />
       <div className="profile-container">
         <div className="profile-header">
-          <img
-            src={userData.imageUrl || "/default-avatar.png"}
-            alt="User Avatar"
-            className="profile-photo"
-          />
+          <div className="profile-photo-wrapper">
+            <img
+              src={userData.imageUrl || "/default-avatar.png"}
+              alt="User Avatar"
+              className="profile-photo"
+            />
+            {isEditing && (
+              <>
+                <label htmlFor="upload-photo" className="edit-photo-icon">
+                  <PencilSquare />
+                </label>
+                <input
+                  type="file"
+                  id="upload-photo"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+              </>
+            )}
+          </div>
           <div className="profile-info">
             {isEditing ? (
               <input
@@ -336,7 +361,7 @@ const UserProfile = () => {
                   <Building className="icon" />
                   <input
                     type="text"
-                    value={exp.company}
+                    value={exp.company || ""}
                     placeholder="Company"
                     onChange={(e) =>
                       handleArrayChange(
@@ -351,7 +376,7 @@ const UserProfile = () => {
                   <Briefcase className="icon" />
                   <input
                     type="text"
-                    value={exp.position}
+                    value={exp.position || ""}
                     placeholder="Position"
                     onChange={(e) =>
                       handleArrayChange(
@@ -365,7 +390,7 @@ const UserProfile = () => {
                   />
                   <input
                     type="text"
-                    value={exp.dates}
+                    value={exp.dates || ""}
                     placeholder="Dates"
                     onChange={(e) =>
                       handleArrayChange(
@@ -390,8 +415,8 @@ const UserProfile = () => {
               <button
                 onClick={() =>
                   handleAddItem("professionalExperience", {
-                    position: "",
                     company: "",
+                    position: "",
                     dates: "",
                   })
                 }
