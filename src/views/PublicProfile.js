@@ -53,7 +53,7 @@ const PublicProfile = () => {
       <div className="profile-container">
         <div className="profile-header">
           <img
-            src={userData.photo || "/default-avatar.png"}
+            src={userData.imageUrl || "/default-avatar.png"} // Use imageUrl ao invés de photo
             alt="User Avatar"
             className="profile-photo"
           />
