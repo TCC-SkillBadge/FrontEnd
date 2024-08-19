@@ -27,42 +27,57 @@ const UserProfile = () => {
     education: [],
     professionalExperience: [],
     languages: [],
+    photo: null,
+    fullName: "",
+    occupation: "",
+    country: "",
+    phoneNumber: "",
+    about: "",
   });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchUserInfo = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await axios.get("http://localhost:7000/api/user/info", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userInfo = {
+        ...response.data,
+        education: Array.isArray(response.data.education)
+          ? response.data.education
+          : [],
+        professionalExperience: Array.isArray(
+          response.data.professionalExperience
+        )
+          ? response.data.professionalExperience
+          : [],
+        languages: Array.isArray(response.data.languages)
+          ? response.data.languages
+          : [],
+      };
+
+      setUserData(userInfo);
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to load user data");
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        const response = await axios.get(
-          "http://localhost:7000/api/user/info",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const userInfo = {
-          ...response.data,
-          education: response.data.education || [],
-          professionalExperience: response.data.professionalExperience || [],
-          languages: response.data.languages || [],
-        };
-
-        setUserData(userInfo);
-        setLoading(false);
-      } catch (error) {
-        setError("Failed to load user data");
-        setLoading(false);
-      }
-    };
-
     fetchUserInfo();
   }, []);
 
   const handleEditToggle = () => {
+    if (isEditing) {
+      // Recarrega os dados do usuário para reverter alterações não salvas
+      fetchUserInfo();
+    }
     setIsEditing(!isEditing);
   };
 
@@ -95,21 +110,56 @@ const UserProfile = () => {
     setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
-  const handleSaveChanges = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      await axios.put("http://localhost:7000/api/user/update", userData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setIsEditing(false);
-      toast.success("User updated successfully");
-    } catch (error) {
-      console.error("Error updating user data:", error);
-      toast.error("Failed to update user data");
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUserData({ ...userData, photo: file });
     }
   };
+
+const handleSaveChanges = async () => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    // Preparação dos dados para o envio
+    const formData = new FormData();
+    if (userData.photo) {
+      formData.append("photo", userData.photo); // Adiciona a foto apenas se ela existir
+    }
+    formData.append("fullName", userData.fullName || "");
+    formData.append("occupation", userData.occupation || "");
+    formData.append("country", userData.country || "");
+    formData.append("phoneNumber", userData.phoneNumber || "");
+    formData.append("about", userData.about || "");
+    formData.append("education", JSON.stringify(userData.education || []));
+    formData.append(
+      "professionalExperience",
+      JSON.stringify(userData.professionalExperience || [])
+    );
+    formData.append("languages", JSON.stringify(userData.languages || []));
+
+    // Adiciona logs para depuração
+    console.log(
+      "Form Data being sent:",
+      Object.fromEntries(formData.entries())
+    );
+
+    // Envio dos dados para o backend
+    await axios.put("http://localhost:7000/api/user/update", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    setIsEditing(false);
+    toast.success("User updated successfully");
+  } catch (error) {
+    console.error("Error updating user data:", error);
+    toast.error("Failed to update user data");
+  }
+};
+
 
   const handleShareProfile = () => {
     const encodedEmail = btoa(userData.email); // Codifica o e-mail em base64
@@ -198,10 +248,15 @@ const UserProfile = () => {
       <div className="profile-container">
         <div className="profile-header">
           <img
-            src={userData.photo || "/default-avatar.png"}
+            src={
+              userData.photo
+                ? URL.createObjectURL(userData.photo)
+                : "/default-avatar.png"
+            }
             alt="User Avatar"
             className="profile-photo"
           />
+          {isEditing && <input type="file" onChange={handlePhotoChange} />}
           <div className="profile-info">
             {isEditing ? (
               <input

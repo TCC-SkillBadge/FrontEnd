@@ -24,67 +24,69 @@ const Login = () => {
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
-  const handleLogin = async (
-    url,
-    data,
-    method = "post",
-    params = {},
-    headers = {}
-  ) => {
-    try {
-      const response = await axios({
-        url,
-        method,
-        data,
-        params,
-        headers,
-      });
-      if (response.status === 200) {
-        const { token, tipoUsuario } = response.data;
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("tipoUsuario", tipoUsuario);
+const handleLogin = async (
+  url,
+  data,
+  method = "post",
+  params = {},
+  headers = {}
+) => {
+  try {
+    const response = await axios({
+      url,
+      method,
+      data,
+      params,
+      headers,
+    });
+    if (response.status === 200) {
+      const { token, tipoUsuario } = response.data;
+      sessionStorage.setItem("token", token);
+      sessionStorage.setItem("tipoUsuario", tipoUsuario);
 
-        let userInfoResponse;
-        if (tipoUsuario === "UC") {
-          userInfoResponse = await axios.get(
-            `http://localhost:7000/api/user/info?email=${formData.email}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-        } else if (tipoUsuario === "UE") {
-          userInfoResponse = await axios.get(
-            `http://localhost:7003/api/acessar-info-usuario-jwt`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-        } else if (tipoUsuario === "UA") {
-          userInfoResponse = await axios.get(
-            `http://localhost:7004/admin/acessa-info`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-        }
-
-        if (userInfoResponse && userInfoResponse.status === 200) {
-          const userInfo = userInfoResponse.data;
-          sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
-          return true;
-        }
+      let userInfoResponse;
+      if (tipoUsuario === "UC") {
+        userInfoResponse = await axios.get(
+          `http://localhost:7000/api/user/info`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (tipoUsuario === "UE") {
+        userInfoResponse = await axios.get(
+          `http://localhost:7003/api/acessar-info-usuario-jwt`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (tipoUsuario === "UA") {
+        userInfoResponse = await axios.get(
+          `http://localhost:7004/admin/acessa-info`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
-    } catch (error) {
-      console.error(`Error logging in at ${url}:`, error);
+
+      if (userInfoResponse && userInfoResponse.status === 200) {
+        const userInfo = userInfoResponse.data;
+        sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+        return true;
+      }
     }
-    return false;
-  };
+  } catch (error) {
+    console.error(`Error logging in at ${url}:`, error);
+  }
+  return false;
+};
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
