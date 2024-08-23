@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import "../styles/Badge.css";
+import "../../styles/Badge.css";
 import axios from "axios";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   TagFill,
   JournalText,
@@ -11,15 +11,27 @@ import {
   ShieldFill,
 } from "react-bootstrap-icons";
 
-const Badge = () => {
+const EditBadge = () => {
+  const { id_badge } = useParams(); 
   const [userType, setUserType] = useState(null);
   let [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({
+  const [badge, setBadge] = useState({
+    id_badge: 0,
     name_badge: "",
     desc_badge: "",
     validity_badge: 0,
+    image_url: "",
   });
   const [image_badge, setImageBadge] = useState(null);
+
+  const fetchBadge = async () => {
+    try {
+      const response = await axios.get(`http://localhost:7001/badge/consultar?id_badge=${id_badge}`);
+      setBadge(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar a badge:', error);
+    }
+  };
 
   const verificaLogin = () => {
     const usuarioEmpresarial = sessionStorage.getItem("usuarioEmpresarial");
@@ -39,17 +51,17 @@ const Badge = () => {
 
   const handleNameChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, name_badge: value }));
+    setBadge((prevData) => ({ ...prevData, name_badge: value }));
   };
 
   const handleDescChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, desc_badge: value }));
+    setBadge((prevData) => ({ ...prevData, desc_badge: value }));
   };
 
   const handleValidityChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, validity_badge: value }));
+    setBadge((prevData) => ({ ...prevData, validity_badge: value }));
   };
 
   const handleImageChange = (e) => {
@@ -69,8 +81,20 @@ const Badge = () => {
             src={image_badge ? URL.createObjectURL(image_badge) : ""}            
             className="badge-preview"
           />
-          <h3>{formData.name_badge}</h3>
-          <button type="button" title={`link that will direct to detailed description: ` + formData.desc_badge}>Details</button>
+          <h3>{badge.name_badge}</h3>
+          <button type="button" title={`link that will direct to detailed description: ` + badge.desc_badge}>Details</button>
+        </div>
+      )
+    }
+    else{
+      return (
+        <div className="badge-card">
+          <img
+            src={badge.image_url ? badge.image_url : ""}            
+            className="badge-preview"
+          />
+          <h3>{badge.name_badge}</h3>
+          <button type="button" title={`link that will direct to detailed description: ` + badge.desc_badge}>Details</button>
         </div>
       )
     }
@@ -84,23 +108,24 @@ const Badge = () => {
     }
 
     const formDataToSend = new FormData();
-    formDataToSend.append('institution', user.email);
-    formDataToSend.append('name_badge', formData.name_badge);
-    formDataToSend.append('desc_badge', formData.desc_badge);
-    formDataToSend.append('validity_badge', formData.validity_badge);
+    formDataToSend.append('id_badge', badge.id_badge);
+    formDataToSend.append('name_badge', badge.name_badge);
+    formDataToSend.append('desc_badge', badge.desc_badge);
+    formDataToSend.append('validity_badge', badge.validity_badge);
     formDataToSend.append('image_badge', image_badge);
-    formDataToSend.append('created_user', user.email);
+    formDataToSend.append('updated_user', user.email);
 
     try {
-      let response = await axios.post("http://localhost:7001/badge/cadastrar", formDataToSend, {
+      let response = await axios.post("http://localhost:7001/badge/atualizar", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
-      if (response.status === 201) {
-        alert("Badge registered successfully");
-        navigate("/badge");
+      if (response.status === 200) {
+        alert("Badge updated successfully");
+        navigate("/badge/edit/" + id_badge);
+        //navigate("/badge/consult/");
       }
     } catch (error) {
       console.error("Error registering badge:", error);
@@ -111,14 +136,15 @@ const Badge = () => {
   useEffect(() => {
     verificaLogin();
     window.onstorage = verificaLogin;
-  }, []);
+    fetchBadge();
+  }, [id_badge]);
 
   return (
     <div>
       <Navbar />
       <div className="badge-page">
         <div className="badge-container">
-          <h2>Create Badge</h2>
+          <h2>Edit Badge</h2>
           <form onSubmit={handleSubmit}>
             <>
               <div className="form-group">
@@ -132,7 +158,7 @@ const Badge = () => {
                     className="form-control"
                     id="name_badge"
                     placeholder="Enter badge title"
-                    value={formData.name_badge}
+                    value={badge.name_badge}
                     onChange={handleNameChange}
                     required
                   />
@@ -148,7 +174,7 @@ const Badge = () => {
                     className="form-control"
                     id="desc_badge"
                     placeholder="Enter badge description"
-                    value={formData.desc_badge}
+                    value={badge.desc_badge}
                     onChange={handleDescChange}
                     required
                   />
@@ -165,7 +191,7 @@ const Badge = () => {
                     className="form-control"
                     id="validity_badge"
                     placeholder="Enter badge validity"
-                    value={formData.validity_badge}
+                    value={badge.validity_badge}
                     onChange={handleValidityChange}
                   />
                 </div>
@@ -185,7 +211,6 @@ const Badge = () => {
                     className="form-control"
                     id="image_badge"
                     onChange={handleImageChange}
-                    required
                   />
                 </div>
               </div>
@@ -193,7 +218,7 @@ const Badge = () => {
             </>
             <div className="btn-container">
               <button type="submit" className="btn btn-primary">
-                Save badge
+                Update badge
               </button>
             </div>
           </form>
@@ -204,4 +229,4 @@ const Badge = () => {
   );
 };
 
-export default Badge;
+export default EditBadge;
