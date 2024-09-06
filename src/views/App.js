@@ -25,6 +25,10 @@ import ResetPassword from "./ResetPassword"; // Import the new component
 import Orders from "./Order";
 import UserProfile from "./UserProfile";
 import PublicProfile from "./PublicProfile";
+import ManageTest from "../components/UserAdmin/ManageTest";
+import ListSoftSkills from "../components/UserAdmin/ListSoftSkills";
+import ProficiencyTest from "../components/UserComum/ProficiencyTest";
+import ResultScreen from "../components/UserComum/ResultScreen";
 
 /*um comentario
  */ 
@@ -48,13 +52,14 @@ function App() {
         <Route path="/price" element={<Price />} />
         <Route path="/createServicePlan" element={<CreateServicePlan />} />
         <Route path="/edit-plan/:id" element={<EditServicePlan />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />{" "}
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<UserProfile />} />
-        <Route
-          path="/public-profile/:encodedEmail"
-          element={<PublicProfile />}
-        />
+        <Route path="/public-profile/:encodedEmail" element={<PublicProfile />}/>
+        <Route path="/manage-test" element={<ManageTest />} />
+        <Route path="/list-soft-skills" element={<ListSoftSkills />} />
+        <Route path="/proficiency-test" element={<ProficiencyTest />} />
+        <Route path="/result-screen" element={<ResultScreen />} />
       </Routes>
     </div>
   );

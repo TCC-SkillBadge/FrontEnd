@@ -1,0 +1,115 @@
+.d-test-box{
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    width: 80%;
+    margin: auto;
+    border: 2px solid;
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    color: white;
+    padding: 1%;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+}
+
+.d-test-box .btn-success{
+    min-height: 3rem;
+    min-width: 12rem;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #32CD32;
+    font-weight: bold;
+    border: 2px solid #32CD32;
+    padding: 7px;
+}
+
+.d-test-box .btn-success:hover{
+    background-color: #32CD32;
+    color: white;
+}
+
+.d-test-box .btn-danger{
+    min-height: 3rem;
+    min-width: 12rem;
+    border-radius: 5px;
+    background-color: transparent;
+    color: #FF6347;
+    font-weight: bold;
+    border: 2px solid #FF6347;
+    padding: 7px;
+}
+
+.d-test-box .btn-danger:hover{
+    background-color: #FF6347;
+    color: white;
+}
+
+.d-test-skill-box{
+    background-color: #1c193b;
+    padding: 4%;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+}
+
+.d-question-box{
+    background-color: #36315a;
+    border-radius: 10px;
+    padding: 2%;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.alts-r{
+    background-color: #484271;
+    border-radius: 10px;
+    padding: 1%;
+    margin-bottom: 1%;
+}
+
+.alts-r .btn-primary{
+    background-color: #595191;
+    border: 1px solid #484271;
+}
+
+.alts-r .btn-primary:hover{
+    background-color: #484271;
+    border: 1px solid #595191;
+}
+
+.d-test-box .p-message-error{
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    font-size: larger;
+    color: white;
+}
+
+.d-test-box .p-message-icon{
+    color: white;
+}
+
+
+.loading-box{
+    padding: 20px;
+    border-radius: 10px;
+    width: 60%;
+    border: 2px solid;
+    background-color: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+}
+
+.loading-box .p-dialog-header{
+    background-color: transparent;
+    padding: 3px;
+}
+
+.loading-box .p-dialog-content{
+    background-color: #0a0b16;
+    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    color: white;
+    padding: 3%;
+}

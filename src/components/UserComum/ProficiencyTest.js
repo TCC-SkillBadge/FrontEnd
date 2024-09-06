@@ -1,0 +1,565 @@
+import React, {useEffect, useState, useRef} from 'react';
+import axios from 'axios';
+import Navbar from "../Navbar";
+import { Divider } from 'primereact/divider';
+import { useNavigate } from 'react-router-dom';
+import ClipLoader from "react-spinners/ClipLoader";
+import { roundScore } from '../../utils/general-functions/RoundScore';
+import { selectionSortObject } from '../../utils/general-functions/SelectionSortObject';
+import { Messages } from 'primereact/messages';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { RadioButton } from 'primereact/radiobutton';
+import { ConfirmPopup } from 'primereact/confirmpopup';
+import { Dialog } from 'primereact/dialog';
+import { confirmPopup } from 'primereact/confirmpopup';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
+import '../../styles/ProficiencyTest.css';
+
+const baseUrlServicosGeraisSS = axios.create({
+    baseURL: 'http://localhost:6004/softskills'
+});
+
+const baseUrlServicosGeraisTeste = axios.create({
+    baseURL: 'http://localhost:6004/teste'
+});
+
+const baseURLUC = axios.create({
+    baseURL: 'http://localhost:7000/api'
+});
+
+export const ProficiencyTest = () => {
+    const [softSkills, setSoftSkills] = useState([]);
+    const [respostas, setRespostas] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [tudoOK, setTudoOK] = useState(false);
+    const [timerMinutos, setTimerMinutos] = useState(35);
+    const [timerSegundos, setTimerSegundos] = useState(0);
+    const [carregandoResultados, setCarregandoResultados] = useState(false);
+    
+    const navigate = useNavigate();
+
+    let messages = useRef(null);
+
+    const token = sessionStorage.getItem('token');
+    const tipoUsuario = sessionStorage.getItem('tipoUsuario');
+    const userInfo = sessionStorage.getItem('userInfo');
+
+    useEffect(() => {
+        if(!token || !tipoUsuario || !userInfo){
+            toast.error('Usuário não autenticado! Você não conseguirá fazer o que quer enquanto não se autenticar.');
+            return;
+        }
+        
+        const fetchSoftSkills = async () => {
+            try{
+                const response = (await baseUrlServicosGeraisSS.get('/listar',
+                    {
+                        headers: {Authorization: `Bearer ${token}`},
+                        params: {tipoUsuario}
+                    }
+                )).data;
+                return Promise.resolve(response);
+            }
+            catch(error){
+                let msg
+                if(error.response) msg = error.response.data.message
+                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                return Promise.reject(msg);
+            }
+        };
+
+        const fetchTeste = async () => {
+            try{
+                const response = (await baseUrlServicosGeraisTeste.get('/fetch',
+                    {
+                        headers: {Authorization: `Bearer ${token}`},
+                        params: {tipoUsuario}
+                    }
+                )).data;
+                const {
+                    questoes,
+                    alternativasMultiplaEscolha,
+                    alternativasRankeamento,
+                    alternativasMultiplaEscolhaComValores
+                } = response;
+                return Promise.resolve({questoes, alternativasMultiplaEscolha, alternativasRankeamento, alternativasMultiplaEscolhaComValores});
+            }
+            catch(error){
+                let msg
+                if(error.response) msg = error.response.data.message
+                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                return Promise.reject(msg);
+            }
+        };
+
+        const fluxo = async () => {
+            try{
+                const SSs = await fetchSoftSkills();
+                const response = await fetchTeste();
+                const {
+                    questoes,
+                    alternativasMultiplaEscolha,
+                    alternativasRankeamento,
+                    alternativasMultiplaEscolhaComValores
+                } = response;
+                setSoftSkills(SSs);
+                setTudoOK(true);
+
+                const resps = [];
+                const alts = [
+                    { tpQ: 'multipla_escolha', alts: [...alternativasMultiplaEscolha] },
+                    { tpQ: 'rankeamento', alts: [...alternativasRankeamento] },
+                    { tpQ: 'multipla_escolha_com_valores', alts: [...alternativasMultiplaEscolhaComValores] }
+                ];
+                for(let i= 0; i < alts.length; i++){
+                    for(let j = 0; j < questoes.length; j++){
+                        if(questoes[j].tipo_questao === alts[i].tpQ){
+                            const aux = alts[i].alts.filter((alt) => alt.id_questao === questoes[j].id_questao);
+                            if(alts[i].tpQ === 'multipla_escolha' || alts[i].tpQ === 'multipla_escolha_com_valores'){
+                                for(let k = 0; k < aux.length; k++){
+                                    aux[k].escolha_feita = false;
+                                }
+                            }
+                            const resp = {
+                                ...questoes[j],
+                                alternativas: aux
+                            };
+                            resps.push(resp);
+                        }
+                    };
+                };
+                setRespostas(resps);
+                return Promise.resolve();
+            }
+            catch(error){
+                messages.replace({severity: 'error', summary: 'Erro', detail: `${error}`, sticky: true, closable: false});
+                return Promise.reject();
+            }
+            finally{
+                setCarregando(false);
+            }
+        };
+
+        const timer = fluxo().then(() => setInterval(() => setTimerSegundos((prev) => prev - 1), 1000)).catch(() => {return null});
+
+        return () => {
+            clearInterval(timer);
+        };
+    }, []);
+
+    useEffect(() => {
+        if(timerSegundos === -1){
+            setTimerMinutos((prev) => prev - 1);
+            setTimerSegundos(59);
+        }
+        if(timerMinutos === 0 && timerSegundos === 0) finalizar();
+    }, [timerSegundos, timerMinutos]);
+    
+    const finalizarDoUsuario = () => {
+        if(realizarVerificacoes()) finalizar();
+    }
+
+    const realizarVerificacoes = () => {
+        for(let i = 0; i < respostas.length; i++){
+            if(respostas[i].tipo_questao === 'multipla_escolha' || respostas[i].tipo_questao === 'multipla_escolha_com_valores'){
+                const escolhas = respostas[i].alternativas.filter((alt) => alt.escolha_feita);
+                if(escolhas.length === 0){
+                    toast.error(`Responda todas as questões.`);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    const finalizar = () => {
+        const { resultShow, resultSend } = calcularNotas();
+        
+        const email_user = JSON.parse(userInfo).email;
+
+        setCarregandoResultados(true);
+        baseURLUC.post('/user/register-test-scores', {
+            email_user,
+            resultados: resultSend,
+            dt_realizacao: new Date()
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then(() => {
+            setTimeout(() => {
+                setCarregandoResultados(false);
+                navigate(`/result-screen`, { state: resultShow });
+            }, 2000);
+        })
+        .catch((error) => {
+            setCarregandoResultados(false);
+            let msg;
+            if(error.response) msg = error.response.data.message;
+            else if(error.request) msg = 'Erro ao tentar acessar servidor';
+            toast.error(msg);
+        });
+    };
+
+    const calcularNotas = () => {
+        const pegarNotasMaximas = (SSs) => {
+            const notasMaximas = [];
+            for(let i = 0; i < SSs.length; i++){
+                const obj = {
+                    id_soft_skill: SSs[i].id_soft_skill,
+                    maxNota: SSs[i].max_nota_soft_skill
+                };
+                notasMaximas.push(obj);
+            }
+            return notasMaximas;
+        };
+
+        const NM = pegarNotasMaximas(softSkills);
+
+        const calcularNotasFinais = (SSs, resps) => {
+            const notasFinais = [];
+            for(let i = 0; i < SSs.length; i++){
+                let aux = 0;
+                for(let j = 0; j < resps.length; j++){
+                    if(SSs[i].id_soft_skill === resps[j].id_soft_skill){
+                       switch(resps[j].tipo_questao){
+                            case 'multipla_escolha':
+                                let acertou = false;
+                                for(let k = 0; k < resps[j].alternativas.length; k++){
+                                    if(resps[j].alternativas[k].correta && resps[j].alternativas[k].escolha_feita) acertou = true;
+                                }
+                                if(acertou) aux += resps[j].valor_questao;
+                                break;
+                            case 'rankeamento':
+                                const auxAlternativas = selectionSortObject(resps[j].alternativas, 'valor_alternativa');
+                                const maxCombinacao = (array) => {
+                                    let max = 0;
+                                    for(let k = 0; k < array.length; k++){
+                                        max += array[k].valor_alternativa * ((array.length - 1) - k);
+                                    }
+                                    return max;
+                                };
+                                const max = maxCombinacao(auxAlternativas);
+                                const contarPontos = (array) => {
+                                    let nota = 0;
+                                    for(let k = 0; k < array.length; k++){
+                                        nota += array[k].valor_alternativa * ((array.length - 1) - k);
+                                    }
+                                    return nota;
+                                };
+                                const pontos = contarPontos(resps[j].alternativas);
+                                const porcentagem = pontos / max;
+                                const auxNota = resps[j].valor_questao * porcentagem;
+                                aux += roundScore(auxNota);
+                                break;
+                            case 'multipla_escolha_com_valores':
+                                for(let k = 0; k < resps[j].alternativas.length; k++){
+                                    if(resps[j].alternativas[k].escolha_feita){
+                                        const result = resps[j].alternativas[k].porcentagem * resps[j].valor_questao / 100;
+                                        aux += roundScore(result);
+                                    }
+                                };
+                            default:
+                       };
+                    }
+                }
+                const obj = {
+                    id_soft_skill: SSs[i].id_soft_skill,
+                    notaF: aux
+                };
+                notasFinais.push(obj);
+            }
+            return notasFinais;
+        };
+
+        const NF = calcularNotasFinais(softSkills, respostas);
+
+        const montarResultados = (NM, NF, SSs) => {
+            const resultShow = [], resultSend = [];
+            for(let i = 0; i < SSs.length; i++){
+                const notaShow = roundScore((NF[i].notaF / NM[i].maxNota) * 100);
+                const obj1 = {
+                    id_soft_skill: SSs[i].id_soft_skill,
+                    nome_soft_skill: SSs[i].nome_soft_skill,
+                    descricao_soft_skill: SSs[i].descricao_soft_skill,
+                    cor_soft_skill: SSs[i].cor_soft_skill,
+                    notaShow
+                };
+                resultShow.push(obj1);
+
+                const obj2 = {
+                    id_soft_skill: SSs[i].id_soft_skill,
+                    nota: NF[i].notaF,
+                    nota_max: NM[i].maxNota
+                };
+                resultSend.push(obj2);
+            }
+            return { resultShow, resultSend };
+        };
+
+        const { resultShow, resultSend } = montarResultados(NM, NF, softSkills);
+
+        return { resultShow, resultSend };
+    };
+
+    const confimarCancelar = (e) => {
+        confirmPopup({
+            target: e.currentTarget,
+            message: 'Deseja mesmo cancelar a prova?',
+            icon: 'pi pi-exclamation-circle',
+            acceptLabel: 'Sim',
+            rejectLabel: 'Não',
+            accept: () => cancelar(),
+        });
+    };
+
+    const cancelar = () => navigate('/');
+
+    const handleChangeEscolhaFeita = (idQ, idA) => {
+        const resps = [...respostas];
+        const resp = resps.find((resp) => resp.id_questao === idQ);
+        
+        const alts = resp.alternativas;
+        for(let i = 0; i < alts.length; i++){
+            if(alts[i].escolha_feita){
+                alts[i].escolha_feita = false;
+            }
+        }
+
+        const alt = resp.alternativas.find((alt) => alt.id_alternativa === idA);
+        alt.escolha_feita = true;
+        setRespostas(resps);
+    }
+
+    const handleChangeOrdem = (idQ, alts) => {
+        const resps = [...respostas];
+        const resp = resps.find((resp) => resp.id_questao === idQ);
+        resp.alternativas = alts;
+        setRespostas(resps);
+    };
+
+    return (
+        <div>
+            <Navbar/>
+            <div className='d-test-box'>
+                <h1>Avaliação de Competências</h1>
+                <Divider/>
+                <div className='flex justify-content-center'>
+                    <Messages ref={(el) => messages = el}/>
+                    <ClipLoader color='#F8F8FF' loading={carregando} size={150}/>
+                </div>
+                {
+                    tudoOK &&
+                    <div>
+                        <div className='flex flex-row justify-content-between'>
+                            <div>
+                                A prova possui duração de 35 minutos.
+                            </div>
+                            <div>
+                                <i className='pi pi-clock mr-2'/>
+                                <span>{timerMinutos < 10 ? `0${timerMinutos}` : timerMinutos}:{timerSegundos < 10 ? `0${timerSegundos}` : timerSegundos}</span>
+                            </div>
+                        </div>
+                        <div className='d-test-skill-box'>
+                            {
+                                softSkills.map((softSkill) => {
+                                    return (
+                                        <div key={softSkill.id_soft_skill}>
+                                            <h2 className='text-center'>{softSkill.nome_soft_skill}</h2>
+                                            {
+                                                respostas.filter((resp) => resp.id_soft_skill === softSkill.id_soft_skill).map((resp) => {
+                                                    return (
+                                                        <Answer
+                                                        key={resp.id_questao}
+                                                        resposta={resp}
+                                                        handleChangeEscolhaFeita={handleChangeEscolhaFeita}
+                                                        handleChangeOrdem={handleChangeOrdem}/>
+                                                    );
+                                                })
+                                            }
+                                        </div>
+                                    );
+                                })
+                            }
+                        </div>
+                        <div className='flex flex-row justify-content-between'>
+                            <button className='btn btn-danger' onClick={(e) => confimarCancelar(e)}>Cancelar</button>
+                            <button className='btn btn-success' onClick={finalizarDoUsuario}>Finalizar</button>
+                        </div>
+                    </div>
+                }
+                <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"/>
+                <ConfirmPopup/>
+            </div>
+            <Dialog
+            className='loading-box'
+            visible={carregandoResultados}
+            closable={false}
+            onHide={() => {if (!carregandoResultados) return; setCarregandoResultados(false);}}>
+                <div className='flex flex-column align-items-center'>
+                    <ClipLoader color='#F8F8FF' loading={carregandoResultados} size={150}/>
+                    <h2 className='text-center'>Calculando resultados...</h2>
+                </div>
+            </Dialog>
+        </div>
+    )
+};
+
+const Answer = (props) => {
+    const resposta = props.resposta;
+
+    const montarAlternativas = (tpQ) => {
+        switch(tpQ){
+            case 'multipla_escolha':
+                return (
+                    <AlternativesM
+                    alternativas={resposta.alternativas}
+                    handleChangeEscolhaFeita={props.handleChangeEscolhaFeita}/>
+                );
+            case 'rankeamento':
+                return (
+                    <AlternativesR
+                    idQuestao={resposta.id_questao}
+                    alternativas={resposta.alternativas}
+                    handleChangeOrdem={props.handleChangeOrdem}/>
+                )
+            case 'multipla_escolha_com_valores':
+                return (
+                    <AlternativesMV
+                    alternativas={resposta.alternativas}
+                    handleChangeEscolhaFeita={props.handleChangeEscolhaFeita}/>
+                )
+            default:
+        };
+    };
+
+    return (
+        <div className='d-question-box'>
+            <div className='mb-4' key={resposta.id_questao}>
+                <h3 className='mb-3'>{resposta.enunciado_questao}</h3>
+                {montarAlternativas(resposta.tipo_questao)}
+            </div>
+        </div>
+    )
+};
+
+const AlternativesM = (props) => {
+    return (
+        <div>
+            {
+                props.alternativas.map((alt) => {
+                    return (
+                        <div className='flex flex-row align-items-center' key={alt.id_alternativa}>
+                            <RadioButton
+                            id={`rb-${alt.id_questao}:${alt.id_alternativa}`}
+                            className='mr-3'
+                            checked={alt.escolha_feita}
+                            onChange={() => props.handleChangeEscolhaFeita(alt.id_questao, alt.id_alternativa)}/>
+                            <label htmlFor={`rb-${alt.id_questao}:${alt.id_alternativa}`}>
+                                <h4>{alt.texto_alternativa}</h4>
+                            </label>
+                        </div>
+                    );
+                })
+            }
+        </div>
+    )
+};
+
+const AlternativesMV = (props) => {
+    return (
+        <div>
+            {
+                props.alternativas.map((alt) => {
+                    return (
+                        <div className='flex flex-row align-items-center' key={alt.id_alternativa}>
+                            <RadioButton
+                            className='mr-3'
+                            checked={alt.escolha_feita}
+                            onChange={() => props.handleChangeEscolhaFeita(alt.id_questao, alt.id_alternativa)}/>
+                            <h4>{alt.texto_alternativa}</h4>
+                        </div>
+                    );
+                })
+            }
+        </div>
+    )
+};
+
+const AlternativesR = (props) => {
+    const onDragEnd = (result) => {
+        const {destination, source} = result;
+
+        if(!destination) return;
+        if(destination.index === source.index) return;
+
+        const newAlts = [...props.alternativas];
+        const alt = newAlts[source.index];
+        newAlts.splice(source.index, 1);
+        newAlts.splice(destination.index, 0, alt);
+
+        props.handleChangeOrdem(props.idQuestao, newAlts);
+    };
+
+    return (
+        <div>
+            <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId={`${props.idQuestao}`} direction='vertical'>
+                    {
+                        (provided) => (
+                            <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}>
+                                {
+                                    props.alternativas.map((alt, index) => {
+                                        return (
+                                            <AltR
+                                            key={alt.id_alternativa}
+                                            alt={alt}
+                                            index={index}/>
+                                        );
+                                    })
+                                }
+                                {provided.placeholder}
+                            </div>
+                        )
+                    }
+                </Droppable>
+            </DragDropContext>
+        </div>
+    )
+};
+
+const AltR = ({alt, index}) => {
+    return (
+        <Draggable draggableId={`${alt.id_alternativa}`} index={index}>
+            {
+                (provided) => (
+                    <div
+                    className='alts-r flex flex-row align-items-center p-4'
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}>
+                       <h4>{alt.texto_alternativa}</h4>
+                    </div>
+                )
+            }
+        </Draggable>
+        
+    )
+}
+
+export default ProficiencyTest;

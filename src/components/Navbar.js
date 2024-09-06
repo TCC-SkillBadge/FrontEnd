@@ -105,7 +105,7 @@ const NavBar = () => {
             <Nav.Link as={NavLink} to="/wallet">
               Wallet
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/skill-test">
+            <Nav.Link as={NavLink} to="/proficiency-test">
               Skill Test
             </Nav.Link>
             <Nav.Link as={NavLink} to="/about">
@@ -142,8 +142,11 @@ const NavBar = () => {
             <Nav.Link as={NavLink} to="/orders">
               Service Request
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/skills">
+            <Nav.Link as={NavLink} to="/list-soft-skills">
               Skills
+            </Nav.Link>
+            <Nav.Link as={NavLink} to="/manage-test">
+              Test
             </Nav.Link>
             <Nav.Link as={NavLink} to="/price">
               Service Plans
