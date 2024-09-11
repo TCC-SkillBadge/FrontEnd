@@ -121,7 +121,7 @@ export const ManageTest = () => {
         if(salvo && (countComeco > 1)) setSalvo(false);
         if(countComeco <= 1) setCountComeco(countComeco + 1);
     }, [questoes, alternativasM, alternativasR, alternativasMV]); // eslint-disable-line
-
+    //teste
     useEffect(() => {
         if(!salvo){
             if(!window.onbeforeunload){
