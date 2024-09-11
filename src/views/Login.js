@@ -133,27 +133,61 @@ const handleLogin = async (
   };
 
   const handleForgotPassword = async () => {
-    const promise = axios.post(
+    const endpoints = [
       "http://localhost:7000/api/user/request-password-reset",
-      {
-        email: formData.email,
-      }
+      "http://localhost:7003/api/request-password-reset",
+    ]
+
+    const resetPasswordPromises = endpoints.map((endpoint) => 
+      axios.post(endpoint, {
+        email: formData.email
+      })
     );
 
-    toast.promise(promise, {
-      pending: "Sending reset link...",
-      success: "A link to reset your password has been sent to your email.",
-      error: "Error sending password reset link",
-    });
-
-    try {
-      const response = await promise;
-      if (response.status === 200) {
-        setShowConfirmationModal(false); // Hide the confirmation modal
+    const loading = toast.loading("Sending reset link...");
+    Promise.allSettled(resetPasswordPromises)
+    .then((results) => {
+      console.log(results);
+      if (results.some((response) => response.status >= 200 && response.status < 300)) {
+        toast.update(loading, {
+          render: "A link to reset your password has been sent to your email.",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+        setShowConfirmationModal(false);
       }
-    } catch (error) {
-      // Handle the error case in the toast.promise
-    }
+      else {
+        toast.update(loading, {
+          render: "Error sending password reset link",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
+    })
+
+    // const promise = axios.post(
+    //   "http://localhost:7000/api/user/request-password-reset",
+    //   {
+    //     email: formData.email,
+    //   }
+    // );
+
+    // toast.promise(promise, {
+    //   pending: "Sending reset link...",
+    //   success: "A link to reset your password has been sent to your email.",
+    //   error: "Error sending password reset link",
+    // });
+
+    // try {
+    //   const response = await promise;
+    //   if (response.status === 200) {
+    //     setShowConfirmationModal(false); // Hide the confirmation modal
+    //   }
+    // } catch (error) {
+    //   // Handle the error case in the toast.promise
+    // }
   };
 
   const handleForgotPasswordClick = () => {

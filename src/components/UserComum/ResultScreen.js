@@ -56,7 +56,7 @@ const ResultScreen = () => {
                             labels: {
                                 show: true,
                                 style: {
-                                    colors: 'white',
+                                    colors: 'white'
                                 }
                             }
                         },

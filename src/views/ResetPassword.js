@@ -27,26 +27,24 @@ const ResetPassword = () => {
       return;
     }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:7000/api/user/reset-password",
-        {
-          token,
-          newPassword: formData.newPassword,
-        }
-      );
+    const endpoints = [
+      "http://localhost:7000/api/user/reset-password",
+      "http://localhost:7003/api//reset-password",
+    ]
 
-      if (response.status === 200) {
+    Promise.allSettled(endpoints.map(endpoint => axios.post(endpoint, { token, newPassword: formData.newPassword })))
+    .then(results => {
+      console.log(results);
+      if(results.some(result => result.status >= 200 && result.status < 300)) {
         toast.success("Password reset successfully");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-      } else {
+      }
+      else {
         toast.error("Failed to reset password");
       }
-    } catch (error) {
+    })
+    .catch(() => {
       toast.error("Error resetting password");
-    }
+    });
   };
 
   return (

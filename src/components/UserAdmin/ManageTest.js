@@ -187,6 +187,11 @@ export const ManageTest = () => {
 
     const removerQuestao = (idQ, tpQ) => {
         const newQuestoes = questoes.filter((questao) => questao.id_questao !== idQ);
+        for(let i = 0; i < newQuestoes.length; i++){
+            if(newQuestoes[i].id_questao > idQ){
+                newQuestoes[i].id_questao -= 1;
+            }
+        }
         setQuestoes(newQuestoes);
 
         const alters = [
@@ -330,12 +335,6 @@ export const ManageTest = () => {
     const realizarVerificacoes = () => {
         for(let i = 0; i < softSkills.length; i++){
             const questsSS = questoes.filter((questao) => questao.id_soft_skill === softSkills[i].id_soft_skill);
-            if(questsSS.length === 0){
-                toast.error(`A Soft Skill [${softSkills[i].nome_soft_skill}] não possui questões!`, {
-                    autoClose: 5000
-                });
-                return false;
-            }
             for(let j = 0; j < questsSS.length; j++){
                 if(questsSS[j].enunciado_questao === ''){
                 toast.error(`A questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] não possui enunciado!`, {
@@ -487,6 +486,15 @@ export const ManageTest = () => {
         setAlternativasM(newAlternativasM);
     };
 
+    const layoutBotoesAdd = () => {
+        if(screenWidth > 1100){
+            return 'flex flex-row justify-content-center';
+        }
+        else{
+            return 'flex flex-column align-items-center';
+        }
+    };
+
     return (
         <div>
             <Navbar/>
@@ -520,22 +528,22 @@ export const ManageTest = () => {
                                     handleChangeValorAlternativa={handleChangeValorAlternativa}
                                     handleChangePorcentagemAlternativa={handleChangePorcentagemAlternativa}
                                     screenWidth={screenWidth}/>
-                                    <div className='grid justify-content-center mt-4'>
+                                    <div className={layoutBotoesAdd() + ' mt-4'}>
                                         <button
                                         id='btn-add-qm'
-                                        className='btn xl:col-2 lg:col-4 md:col-12 sm:col-12 mb-3'
+                                        className='btn mb-3'
                                         onClick={() => adicionarQuestaoM(softSkill.id_soft_skill)}>
                                             <i className='pi pi-plus'/> Múltipla Escolha
                                         </button>
                                         <button
                                         id='btn-add-qmv'
-                                        className='btn xl:col-3 lg:col-4 md:col-12 sm:col-12 mb-3'
+                                        className='btn mb-3'
                                         onClick={() => adicionarQuestaoMV(softSkill.id_soft_skill)}>
                                             <i className='pi pi-plus'/> Múltipla Escolha com Valores
                                         </button>
                                         <button
                                         id='btn-add-qr'
-                                        className='btn xl:col-2 lg:col-4 md:col-12 sm:col-12 mb-3'
+                                        className='btn mb-3'
                                         onClick={() => adicionarQuestaoR(softSkill.id_soft_skill)}>
                                             <i className='pi pi-plus'/> Rankeamento
                                         </button>
@@ -661,6 +669,33 @@ const Quests = (props) => {
         };
     };
 
+    const layoutTipoQuestao = (tpQ) => {
+        switch(tpQ){
+            case 'multipla_escolha':
+                return (
+                    {
+                        enunciado: 'flex flex-column xl:col-8 lg:col-6 md:col-12 sm:col-12',
+                        valorEtipo: 'flex flex-column xl:col-4 lg:col-6 md:col-12 sm:col-12'
+                    }
+                );
+            case 'rankeamento':
+                return (
+                    {
+                        enunciado: 'flex flex-column xl:col-8 lg:col-6 md:col-12 sm:col-12',
+                        valorEtipo: 'flex flex-column xl:col-4 lg:col-6 md:col-12 sm:col-12'
+                    }
+                );
+            case 'multipla_escolha_com_valores':
+                return (
+                    {
+                        enunciado: 'flex flex-column xl:col-7 lg:col-5 md:col-12 sm:col-12',
+                        valorEtipo: 'flex flex-column xl:col-5 lg:col-7 md:col-12 sm:col-12'
+                    }
+                );
+            default:
+        };
+    }
+
     return (
         <div>
             {
@@ -679,13 +714,13 @@ const Quests = (props) => {
                             </button>
                         </div>
                         <div className='grid align-items-center mt-3 mb-3'>
-                            <div className='flex flex-column xl:col-8 lg:col-6 md:col-12 sm:col-12'>
+                            <div className={layoutTipoQuestao(item.tipo_questao).enunciado}>
                                 <label>Enunciado:</label>
                                 <InputTextarea
                                 value={item.enunciado_questao}
                                 onChange={e => props.handleChangeEnunciado(e, item.id_questao)}/>  
                             </div>
-                            <div className='flex flex-column xl:col-4 lg:col-6 md:col-12 sm:col-12'>
+                            <div className={layoutTipoQuestao(item.tipo_questao).valorEtipo}>
                                 <div className='p-inputgroup mb-2'>
                                     <span className='p-inputgroup-addon'>
                                         Tipo de Questão:

@@ -95,7 +95,7 @@ export const ProficiencyTest = () => {
 
         const fluxo = async () => {
             try{
-                const SSs = await fetchSoftSkills();
+                const auxSSs = await fetchSoftSkills();
                 const response = await fetchTeste();
                 const {
                     questoes,
@@ -103,8 +103,16 @@ export const ProficiencyTest = () => {
                     alternativasRankeamento,
                     alternativasMultiplaEscolhaComValores
                 } = response;
-                setSoftSkills(SSs);
-                setTudoOK(true);
+                
+                const SSs = [];
+                for(let i = 0; i < auxSSs.length; i++){
+                    for(let j = 0; j < questoes.length; j++){
+                        if(auxSSs[i].id_soft_skill === questoes[j].id_soft_skill){
+                            SSs.push(auxSSs[i]);
+                            break;
+                        }
+                    }
+                };
 
                 const resps = [];
                 const alts = [
@@ -129,7 +137,10 @@ export const ProficiencyTest = () => {
                         }
                     };
                 };
+
+                setTudoOK(true);
                 setRespostas(resps);
+                setSoftSkills(SSs);
                 return Promise.resolve();
             }
             catch(error){
@@ -366,11 +377,12 @@ export const ProficiencyTest = () => {
                         <div className='d-test-skill-box'>
                             {
                                 softSkills.map((softSkill) => {
+                                    const resps = respostas.filter((resp) => resp.id_soft_skill === softSkill.id_soft_skill);
                                     return (
                                         <div key={softSkill.id_soft_skill}>
                                             <h2 className='text-center'>{softSkill.nome_soft_skill}</h2>
                                             {
-                                                respostas.filter((resp) => resp.id_soft_skill === softSkill.id_soft_skill).map((resp) => {
+                                                resps.map((resp) => {
                                                     return (
                                                         <Answer
                                                         key={resp.id_questao}
