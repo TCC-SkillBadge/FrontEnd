@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from "../Navbar";
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { InputNumber } from 'primereact/inputnumber';
 import { Divider } from 'primereact/divider';
 import { ConfirmPopup } from 'primereact/confirmpopup';
 import { confirmPopup } from 'primereact/confirmpopup';
@@ -35,9 +36,10 @@ export const ManageTest = () => {
 
     const token = sessionStorage.getItem('token');
     const tipoUsuario = sessionStorage.getItem('tipoUsuario');
+    const userInfo = sessionStorage.getItem('userInfo');
 
     useEffect(() => {
-        if(!token || !tipoUsuario) {
+        if(!token || !tipoUsuario || !userInfo){
             toast.error('Usuário não autenticado! Você não conseguirá fazer o que quer enquanto não se autenticar.');
         }
 
@@ -121,7 +123,7 @@ export const ManageTest = () => {
         if(salvo && (countComeco > 1)) setSalvo(false);
         if(countComeco <= 1) setCountComeco(countComeco + 1);
     }, [questoes, alternativasM, alternativasR, alternativasMV]); // eslint-disable-line
-    //teste
+
     useEffect(() => {
         if(!salvo){
             if(!window.onbeforeunload){
@@ -138,10 +140,23 @@ export const ManageTest = () => {
         return () => { if(window.onbeforeunload) window.onbeforeunload = null };
     }, [salvo]);
 
+    const gerarIdQuestao = () => {
+        if(questoes.length === 0) return 1;
+        else{
+            let max = 0;
+            for(let i = 0; i < questoes.length; i++){
+                if(questoes[i].id_questao > max){
+                    max = questoes[i].id_questao;
+                }
+            }
+            return max + 1;
+        }
+    };
+
     const adicionarQuestaoM = (idSS) => {
         const newQuestoes = [...questoes];
         newQuestoes.push({
-            id_questao: questoes.length + 1,
+            id_questao: gerarIdQuestao(),
             enunciado_questao: '',
             tipo_questao: 'multipla_escolha',
             valor_questao: 0,
@@ -153,7 +168,7 @@ export const ManageTest = () => {
     const adicionarQuestaoR = (idSS) => {
         const newQuestoes = [...questoes];
         newQuestoes.push({
-            id_questao: questoes.length + 1,
+            id_questao: gerarIdQuestao(),
             enunciado_questao: '',
             tipo_questao: 'rankeamento',
             valor_questao: 0,
@@ -165,7 +180,7 @@ export const ManageTest = () => {
     const adicionarQuestaoMV = (idSS) => {
         const newQuestoes = [...questoes];
         newQuestoes.push({
-            id_questao: questoes.length + 1,
+            id_questao: gerarIdQuestao(),
             enunciado_questao: '',
             tipo_questao: 'multipla_escolha_com_valores',
             valor_questao: 0,
@@ -187,67 +202,69 @@ export const ManageTest = () => {
 
     const removerQuestao = (idQ, tpQ) => {
         const newQuestoes = questoes.filter((questao) => questao.id_questao !== idQ);
-        for(let i = 0; i < newQuestoes.length; i++){
-            if(newQuestoes[i].id_questao > idQ){
-                newQuestoes[i].id_questao -= 1;
-            }
-        }
         setQuestoes(newQuestoes);
 
-        const alters = [
-            { tpQ: 'multipla_escolha', alts: [...alternativasM], func: setAlternativasM },
-            { tpQ: 'rankeamento', alts: [...alternativasR], func: setAlternativasR },
-            { tpQ: 'multipla_escolha_com_valores', alts: [...alternativasMV], func: setAlternativasMV }
-        ];
-        for(let i = 0; i < alters.length; i++){
-            if(alters[i].tpQ === tpQ){
-                alters[i].alts = alters[i].alts.filter((alternativa) => alternativa.id_questao !== idQ);
+        switch(tpQ){
+            case 'multipla_escolha':
+                setAlternativasM(alternativasM.filter((alternativa) => alternativa.id_questao !== idQ));
                 break;
-            };
+            case 'rankeamento':
+                setAlternativasR(alternativasR.filter((alternativa) => alternativa.id_questao !== idQ));
+                break;
+            case 'multipla_escolha_com_valores':
+                setAlternativasMV(alternativasMV.filter((alternativa) => alternativa.id_questao !== idQ));
+                break;
+            default:
         };
-        for(let i = 0; i < alters.length; i++){
-            for(let j = 0; j < alters[i].alts.length; j++){
-                if(alters[i].alts[j].id_questao > idQ){
-                    alters[i].alts[j].id_questao -= 1;
+    };
+
+    const gerarIdAlternativa = (idQ, tpQ) => {
+        let alternativas;
+        switch(tpQ){
+            case 'multipla_escolha':
+                alternativas = alternativasM.filter((alternativa) => alternativa.id_questao === idQ);
+                break;
+            case 'rankeamento':
+                alternativas = alternativasR.filter((alternativa) => alternativa.id_questao === idQ);
+                break;
+            case 'multipla_escolha_com_valores':
+                alternativas = alternativasMV.filter((alternativa) => alternativa.id_questao === idQ);
+                break;
+            default:
+        };
+        if(alternativas.length === 0) return 1;
+        else{
+            let max = 0;
+            for(let i = 0; i < alternativas.length; i++){
+                if(alternativas[i].id_alternativa > max){
+                    max = alternativas[i].id_alternativa;
                 }
             }
-        };
-        for(let i = 0; i < alters.length; i++){
-            alters[i].func(alters[i].alts);
+            return max + 1;
         }
     };
 
-    const adicionarAlternativaM = (idQ) => {
-        const newAlternativasM = [...alternativasM];
-        newAlternativasM.push({
+    const adicionarAlternativa = (idQ, tpQ) => {
+        let obj = {
             id_questao: idQ,
-            id_alternativa: alternativasM.filter((alternativa) => alternativa.id_questao === idQ).length + 1,
+            id_alternativa: gerarIdAlternativa(idQ, tpQ),
             texto_alternativa: '',
-            correta: false,
-        });
-        setAlternativasM(newAlternativasM);
-    };
-
-    const adicionarAlternativaR = (idQ) => {
-        const newAlternativasR = [...alternativasR];
-        newAlternativasR.push({
-            id_questao: idQ,
-            id_alternativa: alternativasR.filter((alternativa) => alternativa.id_questao === idQ).length + 1,
-            texto_alternativa: '',
-            valor_alternativa: 0,
-        });
-        setAlternativasR(newAlternativasR);
-    };
-
-    const adicionarAlternativaMV = (idQ) => {
-        const newAlternativasMV = [...alternativasMV];
-        newAlternativasMV.push({
-            id_questao: idQ,
-            id_alternativa: alternativasMV.filter((alternativa) => alternativa.id_questao === idQ).length + 1,
-            texto_alternativa: '',
-            porcentagem: 0,
-        });
-        setAlternativasMV(newAlternativasMV);
+        };
+        switch(tpQ){
+            case 'multipla_escolha':
+                obj.correta = false;
+                setAlternativasM([...alternativasM, obj]);
+                break;
+            case 'rankeamento':
+                obj.valor_alternativa = 0;
+                setAlternativasR([...alternativasR, obj]);
+                break;
+            case 'multipla_escolha_com_valores':
+                obj.porcentagem = 0;
+                setAlternativasMV([...alternativasMV, obj]);
+                break;
+            default:
+        };
     };
 
     const confirmarRemoverAlternativa = (e, idQ, idA, tpQ) => {
@@ -262,28 +279,18 @@ export const ManageTest = () => {
     };
 
     const removerAlternativa = (idQ, idA, tpQ) => {
-        let newAlternativas, func;
         switch(tpQ){
             case 'multipla_escolha':
-                newAlternativas = alternativasM.filter((alternativa) => alternativa.id_questao !== idQ || alternativa.id_alternativa !== idA);
-                func = setAlternativasM;
+                setAlternativasM(alternativasM.filter((alternativa) => alternativa.id_questao !== idQ || alternativa.id_alternativa !== idA));
                 break;
             case 'rankeamento':
-                newAlternativas = alternativasR.filter((alternativa) => alternativa.id_questao !== idQ || alternativa.id_alternativa !== idA);
-                func = setAlternativasR;
+                setAlternativasR(alternativasR.filter((alternativa) => alternativa.id_questao !== idQ || alternativa.id_alternativa !== idA));
                 break;
             case 'multipla_escolha_com_valores':
-                newAlternativas = alternativasMV.filter((alternativa) => alternativa.id_questao !== idQ || alternativa.id_alternativa !== idA);
-                func = setAlternativasMV;
+                setAlternativasMV(alternativasMV.filter((alternativa) => alternativa.id_questao !== idQ || alternativa.id_alternativa !== idA));
                 break;
             default:
         };
-        for(let i = 0; i < newAlternativas.length; i++){
-            if(newAlternativas[i].id_questao === idQ && newAlternativas[i].id_alternativa > idA){
-                newAlternativas[i].id_alternativa -= 1;
-            }
-        };
-        func(newAlternativas);
     };
 
     const confirmarSalvarAlteracoes = (e) => {
@@ -299,8 +306,13 @@ export const ManageTest = () => {
 
     const salvarAlteracoes = async () => {
         if(!realizarVerificacoes()) return;
+
+        const { email_admin } = JSON.parse(userInfo);
+
         const salvando = toast.loading('Salvando Alterações...');
         baseUrlServicosGerais.post('/teste/gerir', {
+            email_admin,
+            data_alteracao: new Date(),
             questoes: questoes,
             alternativasMultiplaEscolha: alternativasM,
             alternativasRankeamento: alternativasR,
@@ -387,45 +399,33 @@ export const ManageTest = () => {
                             }
                         }
                     }
-                    if(questsSS[j].tipo_questao === 'rankeamento' && alts[k].valor_alternativa === 0){
-                        toast.error(`A alternativa [${k + 1}] da questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] não possui valor!`, {
-                            autoClose: 5000
-                        });
-                        return false;
-                    }
-                    if(questsSS[j].tipo_questao === 'multipla_escolha_com_valores' && alts[k].porcentagem === 0){
-                        toast.error(`A alternativa [${k + 1}] da questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] não possui porcentagem!`, {
-                            autoClose: 5000
-                        });
-                        return false;
-                    }
                 };
             }
         }
         return true;
     };
 
-    const handleChangeEnunciado = (e, idQ) => {
+    const handleChangeEnunciado = (val, idQ) => {
         const newQuestoes = [...questoes];
         newQuestoes[
             newQuestoes.findIndex((questao) => 
                 questao.id_questao === idQ
             )
-        ].enunciado_questao = e.target.value;
+        ].enunciado_questao = val;
         setQuestoes(newQuestoes);
     };
 
-    const handleChangeValor = (e, idQ) => {
+    const handleChangeValor = (val, idQ) => {
         const newQuestoes = [...questoes];
         newQuestoes[
             newQuestoes.findIndex((questao) =>
                 questao.id_questao === idQ
             )
-        ].valor_questao = parseFloat(e.target.value);
+        ].valor_questao = val;
         setQuestoes(newQuestoes);
     };
 
-    const handleChangeTextoAlternativa = (e, idQ, idA, tpQ) => {
+    const handleChangeTextoAlternativa = (val, idQ, idA, tpQ) => {
         let newAlternativas, func;
         switch(tpQ){
             case 'multipla_escolha':
@@ -446,27 +446,27 @@ export const ManageTest = () => {
             newAlternativas.findIndex((alternativa) => 
                 alternativa.id_questao === idQ && alternativa.id_alternativa === idA
             )
-        ].texto_alternativa = e.target.value;
+        ].texto_alternativa = val;
         func(newAlternativas);
     };
 
-    const handleChangeValorAlternativa = (e, idQ, idA) => {
+    const handleChangeValorAlternativa = (val, idQ, idA) => {
         const newAlternativasR = [...alternativasR];
         newAlternativasR[
             newAlternativasR.findIndex((alternativa) =>
                 alternativa.id_questao === idQ && alternativa.id_alternativa === idA
             )
-        ].valor_alternativa = parseInt(e.target.value);
+        ].valor_alternativa = val;
         setAlternativasR(newAlternativasR);
     };
 
-    const handleChangePorcentagemAlternativa = (e, idQ, idA) => {
+    const handleChangePorcentagemAlternativa = (val, idQ, idA) => {
         const newAlternativasMV = [...alternativasMV];
         newAlternativasMV[
             newAlternativasMV.findIndex((alternativa) =>
                 alternativa.id_questao === idQ && alternativa.id_alternativa === idA
             )
-        ].porcentagem = parseInt(e.target.value);
+        ].porcentagem = val;
         setAlternativasMV(newAlternativasMV);
     };
 
@@ -516,9 +516,7 @@ export const ManageTest = () => {
                                     alternativasM={alternativasM}
                                     alternativasR={alternativasR}
                                     alternativasMV={alternativasMV}
-                                    adicionarAlternativaM={adicionarAlternativaM}
-                                    adicionarAlternativaR={adicionarAlternativaR}
-                                    adicionarAlternativaMV={adicionarAlternativaMV}
+                                    adicionarAlternativa={adicionarAlternativa}
                                     confirmarRemoverQuestao={confirmarRemoverQuestao}
                                     confirmarRemoverAlternativa={confirmarRemoverAlternativa}
                                     handleChangeEnunciado={handleChangeEnunciado}
@@ -526,8 +524,7 @@ export const ManageTest = () => {
                                     handleChangeTextoAlternativa={handleChangeTextoAlternativa}
                                     handleChangeCorreta={handleChangeCorreta}
                                     handleChangeValorAlternativa={handleChangeValorAlternativa}
-                                    handleChangePorcentagemAlternativa={handleChangePorcentagemAlternativa}
-                                    screenWidth={screenWidth}/>
+                                    handleChangePorcentagemAlternativa={handleChangePorcentagemAlternativa}/>
                                     <div className={layoutBotoesAdd() + ' mt-4'}>
                                         <button
                                         id='btn-add-qm'
@@ -628,8 +625,7 @@ const Quests = (props) => {
                     handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
                     handleChangeValorAlternativa={props.handleChangeValorAlternativa}
                     confirmarRemoverAlternativa={props.confirmarRemoverAlternativa}
-                    tpQ={item.tipo_questao}
-                    screenWidth={props.screenWidth}/>
+                    tpQ={item.tipo_questao}/>
                 );
             case 'multipla_escolha_com_valores':
                 return (
@@ -638,21 +634,8 @@ const Quests = (props) => {
                     handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
                     handleChangePorcentagemAlternativa={props.handleChangePorcentagemAlternativa}
                     confirmarRemoverAlternativa={props.confirmarRemoverAlternativa}
-                    tpQ={item.tipo_questao}
-                    screenWidth={props.screenWidth}/>
+                    tpQ={item.tipo_questao}/>
                 );
-            default:
-        };
-    };
-
-    const adicionarAlternativa = (item) => {
-        switch(item.tipo_questao){
-            case 'multipla_escolha':
-                return props.adicionarAlternativaM(item.id_questao);
-            case 'rankeamento':
-                return props.adicionarAlternativaR(item.id_questao);
-            case 'multipla_escolha_com_valores':
-                return props.adicionarAlternativaMV(item.id_questao);
             default:
         };
     };
@@ -671,30 +654,15 @@ const Quests = (props) => {
 
     const layoutTipoQuestao = (tpQ) => {
         switch(tpQ){
-            case 'multipla_escolha':
-                return (
-                    {
-                        enunciado: 'flex flex-column xl:col-8 lg:col-6 md:col-12 sm:col-12',
-                        valorEtipo: 'flex flex-column xl:col-4 lg:col-6 md:col-12 sm:col-12'
-                    }
-                );
-            case 'rankeamento':
-                return (
-                    {
-                        enunciado: 'flex flex-column xl:col-8 lg:col-6 md:col-12 sm:col-12',
-                        valorEtipo: 'flex flex-column xl:col-4 lg:col-6 md:col-12 sm:col-12'
-                    }
-                );
             case 'multipla_escolha_com_valores':
-                return (
-                    {
-                        enunciado: 'flex flex-column xl:col-7 lg:col-5 md:col-12 sm:col-12',
-                        valorEtipo: 'flex flex-column xl:col-5 lg:col-7 md:col-12 sm:col-12'
-                    }
-                );
+                return 'w-26rem';
+            case 'rankeamento':
+                return 'w-19rem';
+            case 'multipla_escolha':
+                return 'w-20rem';
             default:
         };
-    }
+    };
 
     return (
         <div>
@@ -713,14 +681,49 @@ const Quests = (props) => {
                                 X
                             </button>
                         </div>
-                        <div className='grid align-items-center mt-3 mb-3'>
-                            <div className={layoutTipoQuestao(item.tipo_questao).enunciado}>
-                                <label>Enunciado:</label>
-                                <InputTextarea
-                                value={item.enunciado_questao}
-                                onChange={e => props.handleChangeEnunciado(e, item.id_questao)}/>  
+                        <div className='mt-4 mb-3'>
+                            <div className='flex flex-row align-items-center mb-2'>
+                                <div className='flex-1 mr-3'>
+                                    <label>Enunciado:</label>
+                                    <InputTextarea
+                                    value={item.enunciado_questao}
+                                    onChange={e => props.handleChangeEnunciado(e.target.value, item.id_questao)}/>  
+                                </div>
+                                <div className={layoutTipoQuestao(item.tipo_questao) + ' xl:block lg:block md:hidden sm:hidden'}>
+                                    <div className='p-inputgroup mb-2'>
+                                        <span className='p-inputgroup-addon'>
+                                            Tipo de Questão:
+                                        </span>
+                                        <InputText
+                                        className='text-center'
+                                        style={{fontWeight: 'bold'}}
+                                        value={valorTipoQuestao(item.tipo_questao)}
+                                        disabled/>
+                                    </div>
+                                    <div className='p-inputgroup'>
+                                        <span className='p-inputgroup-addon'>
+                                            Valor da Questão:
+                                        </span>
+                                        <InputNumber
+                                        locale='pt-BR'
+                                        maxFractionDigits={0}
+                                        min={0}
+                                        allowEmpty={false}
+                                        showButtons
+                                        buttonLayout='horizontal'
+                                        decrementButtonIcon='pi pi-minus'
+                                        incrementButtonIcon='pi pi-plus'
+                                        value={item.valor_questao}
+                                        onValueChange={e => props.handleChangeValor(e.value, item.id_questao)}
+                                        pt={{
+                                            root: {className: 'flex flex-row'},
+                                            incrementButton: {className: 'btn btn-primary'},
+                                            decrementButton: {className: 'btn btn-primary'},
+                                        }}/>
+                                    </div>
+                                </div>
                             </div>
-                            <div className={layoutTipoQuestao(item.tipo_questao).valorEtipo}>
+                            <div className={layoutTipoQuestao(item.tipo_questao) + ' xl:hidden lg:hidden md:block sm:block'}>
                                 <div className='p-inputgroup mb-2'>
                                     <span className='p-inputgroup-addon'>
                                         Tipo de Questão:
@@ -735,13 +738,22 @@ const Quests = (props) => {
                                     <span className='p-inputgroup-addon'>
                                         Valor da Questão:
                                     </span>
-                                    <InputText
-                                    className='text-center'
-                                    type='number'
-                                    step={1}
+                                    <InputNumber
+                                    locale='pt-BR'
+                                    maxFractionDigits={0}
                                     min={0}
+                                    allowEmpty={false}
+                                    showButtons
+                                    buttonLayout='horizontal'
+                                    decrementButtonIcon='pi pi-minus'
+                                    incrementButtonIcon='pi pi-plus'
                                     value={item.valor_questao}
-                                    onChange={e => props.handleChangeValor(e, item.id_questao)}/>
+                                    onValueChange={e => props.handleChangeValor(e.value, item.id_questao)}
+                                    pt={{
+                                        root: {className: 'flex flex-row'},
+                                        incrementButton: {className: 'btn btn-primary'},
+                                        decrementButton: {className: 'btn btn-primary'},
+                                    }}/>
                                 </div>
                             </div>
                         </div>
@@ -750,8 +762,8 @@ const Quests = (props) => {
                         </div>
                         <div className='flex justify-content-center'>
                             <button
-                            className='btn btn-primary'
-                            onClick={() => adicionarAlternativa(item)}>
+                            className='btn btn-primary pr-3 pl-3'
+                            onClick={() => props.adicionarAlternativa(item.id_questao, item.tipo_questao)}>
                                 <i className='pi pi-plus'/> Alternativa
                             </button>
                         </div>
@@ -777,26 +789,39 @@ const AlternativesME = (props) => {
                     item &&
                     <animated.div
                     style={style}
-                    className='flex flex-row align-items-center mb-3'
+                    className='mb-4'
                     key={item.id_alternativa}>
-                        <i className='pi pi-circle-on mr-4'/>
-                        <InputTextarea
-                        className='w-6 mr-3'
-                        value={item.texto_alternativa}
-                        onChange={e => props.handleChangeTextoAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}/>
-                        <div className='mr-2'>
-                            <RadioButton
-                            className='mr-2'
-                            inputId={`rbCorreta-${item.id_questao}`}
-                            checked={item.correta}
-                            onChange={() => props.handleChangeCorreta(item.id_questao, item.id_alternativa)}/>
-                            <label htmlFor={`rbCorreta-${item.id_questao}`}>Correta</label>
+                        <div className='flex flex-row align-items-center mb-3'>
+                            <i className='pi pi-circle-on mr-4'/>
+                            <InputTextarea
+                            className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
+                            value={item.texto_alternativa}
+                            onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
+                            <div className='mr-2 xl:block lg:block md:hidden sm:hidden'>
+                                <RadioButton
+                                className='mr-2'
+                                inputId={`rbCorreta-${item.id_questao}`}
+                                checked={item.correta}
+                                onChange={() => props.handleChangeCorreta(item.id_questao, item.id_alternativa)}/>
+                                <label htmlFor={`rbCorreta-${item.id_questao}`}>Correta</label>
+                            </div>
+                            <button
+                            className='btn btn-danger'
+                            onClick={e => props.confirmarRemoverAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}>
+                                X
+                            </button>
                         </div>
-                        <button
-                        className='btn btn-danger'
-                        onClick={e => props.confirmarRemoverAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}>
-                            X
-                        </button>
+                        <div className='xl:hidden lg:hidden md:block sm:block'>
+                            <div className='flex flex-row align-items-center'>
+                                <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
+                                <RadioButton
+                                className='mr-2'
+                                inputId={`rbCorreta-${item.id_questao}`}
+                                checked={item.correta}
+                                onChange={() => props.handleChangeCorreta(item.id_questao, item.id_alternativa)}/>
+                                <label htmlFor={`rbCorreta-${item.id_questao}`}>Correta</label>
+                            </div>
+                        </div>
                     </animated.div>
                 )
             }
@@ -819,33 +844,75 @@ const AlternativesMV = (props) => {
                     item &&
                     <animated.div
                     style={style}
-                    className='flex flex-row align-items-center mb-3'
+                    className='mb-4'
                     key={item.id_alternativa}>
-                        <i className='pi pi-circle-on mr-4'/>
-                        <InputTextarea
-                        className='w-6 mr-3'
-                        value={item.texto_alternativa}
-                        onChange={e => props.handleChangeTextoAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}/>
-                        <div className='flex mr-2'>
-                            <div className='p-inputgroup max-w-15rem'>
-                            <span className='p-inputgroup-addon'>
-                                {props.screenWidth > 1100 ? 'Porcentagem da Nota:' : '%:'}
-                            </span>
-                            <InputText
-                            className='text-center max-w-4rem'
-                            type='number'
-                            value={item.porcentagem}
-                            step={1}
-                            min={0}
-                            max={100}
-                            onChange={e => props.handleChangePorcentagemAlternativa(e, item.id_questao, item.id_alternativa)}/>
+                        <div className='flex flex-row align-items-center mb-2'>
+                            <i className='pi pi-circle-on mr-4'/>
+                            <InputTextarea
+                            className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
+                            value={item.texto_alternativa}
+                            onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
+                            <div className='flex mr-2 xl:block lg:block md:hidden sm:hidden'>
+                                <div className='p-inputgroup max-w-23rem'>
+                                    <span className='p-inputgroup-addon'>
+                                        Porcentagem da Nota:
+                                    </span>
+                                    <InputNumber
+                                    locale='pt-BR'
+                                    maxFractionDigits={0}
+                                    min={0}
+                                    max={100}
+                                    suffix='%'
+                                    showButtons
+                                    buttonLayout='horizontal'
+                                    decrementButtonIcon='pi pi-minus'
+                                    incrementButtonIcon='pi pi-plus'
+                                    allowEmpty={false}
+                                    value={item.porcentagem}
+                                    onValueChange={e => props.handleChangePorcentagemAlternativa(e.value, item.id_questao, item.id_alternativa)}
+                                    pt={{
+                                        root: {className: 'flex flex-row'},
+                                        incrementButton: {className: 'btn btn-primary'},
+                                        decrementButton: {className: 'btn btn-primary'},
+                                    }}/>
+                                </div>
+                            </div>
+                            <button
+                            className='btn btn-danger'
+                            onClick={e => props.confirmarRemoverAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}>
+                                X
+                            </button>
+                        </div>
+                        <div className='xl:hidden lg:hidden md:block sm:block'>
+                            <div className='flex flex-row align-items-center'>
+                               <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
+                                <div className='flex flex-row align-items-center'>
+                                    <div className='p-inputgroup max-w-23rem'>
+                                        <span className='p-inputgroup-addon'>
+                                            Porcentagem da Nota:
+                                        </span>
+                                        <InputNumber
+                                        locale='pt-BR'
+                                        maxFractionDigits={0}
+                                        min={0}
+                                        max={100}
+                                        suffix='%'
+                                        showButtons
+                                        buttonLayout='horizontal'
+                                        decrementButtonIcon='pi pi-minus'
+                                        incrementButtonIcon='pi pi-plus'
+                                        allowEmpty={false}
+                                        value={item.porcentagem}
+                                        onValueChange={e => props.handleChangePorcentagemAlternativa(e.value, item.id_questao, item.id_alternativa)}
+                                        pt={{
+                                            root: {className: 'flex flex-row'},
+                                            incrementButton: {className: 'btn btn-primary'},
+                                            decrementButton: {className: 'btn btn-primary'},
+                                        }}/>
+                                    </div>
+                                </div> 
                             </div>
                         </div>
-                        <button
-                        className='btn btn-danger'
-                        onClick={e => props.confirmarRemoverAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}>
-                            X
-                        </button>
                     </animated.div>
                 )
             }
@@ -867,33 +934,70 @@ const AlternativesR = (props) => {
                 transicao((style, item) =>
                     item &&
                     <animated.div
+                    className=' mb-4'
                     style={style}
-                    className='flex flex-row align-items-center mb-3'
                     key={item.id_alternativa}>
-                        <i className='pi pi-circle-on mr-4'/>
-                        <InputTextarea
-                        className='w-6 mr-3'
-                        value={item.texto_alternativa}
-                        onChange={e => props.handleChangeTextoAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}/>
-                        <div className='flex mr-2'>
-                            <div className='p-inputgroup max-w-15rem'>
-                            <span className='p-inputgroup-addon'>
-                                {props.screenWidth > 1100 ? 'Valor da Alternativa:' : 'V:'}
-                            </span>
-                            <InputText
-                            className='text-center max-w-4rem'
-                            type='number'
-                            value={item.valor_alternativa}
-                            step={1}
-                            min={0}
-                            onChange={e => props.handleChangeValorAlternativa(e, item.id_questao, item.id_alternativa)}/>
+                        <div className='flex flex-row align-items-center mb-2'>
+                            <i className='pi pi-circle-on mr-4'/>
+                            <InputTextarea
+                            className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
+                            value={item.texto_alternativa}
+                            onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
+                            <div className='flex mr-2 xl:block lg:block md:hidden sm:hidden'>
+                                <div className='p-inputgroup max-w-21rem'>
+                                    <span className='p-inputgroup-addon'>
+                                        Valor da Alternativa:
+                                    </span>
+                                    <InputNumber
+                                    locale='pt-BR'
+                                    maxFractionDigits={0}
+                                    min={0}
+                                    allowEmpty={false}
+                                    showButtons
+                                    buttonLayout='horizontal'
+                                    decrementButtonIcon='pi pi-minus'
+                                    incrementButtonIcon='pi pi-plus'
+                                    value={item.valor_alternativa}
+                                    onValueChange={e => props.handleChangeValorAlternativa(e.value, item.id_questao, item.id_alternativa)}
+                                    pt={{
+                                        root: {className: 'flex flex-row'},
+                                        incrementButton: {className: 'btn btn-primary'},
+                                        decrementButton: {className: 'btn btn-primary'},
+                                    }}/>
+                                </div>
+                            </div>
+                            <button
+                            className='btn btn-danger'
+                            onClick={e => props.confirmarRemoverAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}>
+                                X
+                            </button>
+                        </div>
+                        <div className='xl:hidden lg:hidden md:block sm:block'>
+                            <div className='flex flex-row align-items-center'>
+                                <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
+                                <div className='p-inputgroup max-w-21rem'>
+                                    <span className='p-inputgroup-addon'>
+                                        Valor da Alternativa:
+                                    </span>
+                                    <InputNumber
+                                    locale='pt-BR'
+                                    maxFractionDigits={0}
+                                    min={0}
+                                    allowEmpty={false}
+                                    showButtons
+                                    buttonLayout='horizontal'
+                                    decrementButtonIcon='pi pi-minus'
+                                    incrementButtonIcon='pi pi-plus'
+                                    value={item.valor_alternativa}
+                                    onValueChange={e => props.handleChangeValorAlternativa(e.value, item.id_questao, item.id_alternativa)}
+                                    pt={{
+                                        root: {className: 'flex flex-row'},
+                                        incrementButton: {className: 'btn btn-primary'},
+                                        decrementButton: {className: 'btn btn-primary'},
+                                    }}/>
+                                </div>
                             </div>
                         </div>
-                        <button
-                        className='btn btn-danger'
-                        onClick={e => props.confirmarRemoverAlternativa(e, item.id_questao, item.id_alternativa, props.tpQ)}>
-                            X
-                        </button>
                     </animated.div>
                 )
             }

@@ -24,6 +24,11 @@
     border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
 }
 
+.m-test-skill-box .p-inputnumber-input{
+    width: 100%;
+    text-align: center;
+}
+
 .me-quest-box{
     border-style: solid;
     border-radius: 8px;

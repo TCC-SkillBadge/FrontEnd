@@ -277,9 +277,9 @@ export const ListSoftSkills = () => {
                         !carregando &&
                         <div className='flex justify-content-center'>
                             <button
-                            className='btn btn-success'
+                            className='btn btn-success pl-4 pr-4'
                             onClick={() => setMostraPopUp(true)}>
-                                Adicionar Soft Skill
+                                <i className='pi pi-plus'/> Soft Skill
                             </button>
                         </div>
                     }
