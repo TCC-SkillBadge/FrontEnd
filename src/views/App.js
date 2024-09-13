@@ -11,6 +11,9 @@ import Login from "./Login";
 import Cadastro from "./Cadastro";
 import Wallet from "./Wallet";
 import Workflow from "./Workflow";
+import BadgeConsult from "./badge/Consult";
+import BadgeCreate from "./badge/Create";
+import BadgeEdit from "./badge/Edit";
 import ContaUA from "../components/UserAdmin/ContaUA";
 import ContaUE from "../components/UserEmpresarial/ContaUE";
 import ContaUC from "../components/UserComum/ContaUC";
@@ -37,6 +40,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/workflow" element={<Workflow />} />
+        <Route path="/badge" element={<BadgeConsult />} />
+        <Route path="/badge/create" element={<BadgeCreate />} />
+        <Route path="/badge/edit/:id_badge" element={<BadgeEdit />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/contaUE" element={<ContaUE />} />
         <Route path="/contaUC" element={<ContaUC />} />
