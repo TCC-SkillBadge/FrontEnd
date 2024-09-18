@@ -4,13 +4,15 @@ import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Carousel } from "react-responsive-carousel";
+import { Link } from "react-router-dom";
+import { PencilFill } from "react-bootstrap-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const Consult = () => {
   const [badges, setBadges] = useState([]);
   const [filteredBadges, setFilteredBadges] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [orderBy, setOrderBy] = useState("assigned-last");
+  const [orderBy, setOrderBy] = useState("created-last");
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -46,7 +48,7 @@ const Consult = () => {
       setFilteredBadges(badges);
     } else {
       const filtered = badges.filter((badge) =>
-        badge.descricao.toLowerCase().includes(term.toLowerCase())
+        badge.name_badge.toLowerCase().includes(term.toLowerCase())
       );
       setFilteredBadges(filtered);
     }
@@ -54,7 +56,7 @@ const Consult = () => {
 
   const getSortedBadges = () => {
     switch (orderBy) {
-      case "assigned-first":
+      case "created-first":
         return [...filteredBadges].sort(
           (a, b) => new Date(a.created_date) - new Date(b.created_date)
         );
@@ -62,7 +64,7 @@ const Consult = () => {
         return [...filteredBadges].sort((a, b) =>
           a.name_badge.localeCompare(b.name_badge)
         );
-      case "assigned-last":
+      case "created-last":
       default:
         return [...filteredBadges].sort(
           (a, b) => new Date(b.created_date) - new Date(a.created_date)
@@ -73,12 +75,16 @@ const Consult = () => {
   const renderBadgesInSlides = (badges) => {
     const slides = [];
     const itemsPerSlide = 3;
+    console.log(badges);
 
     for (let i = 0; i < badges.length; i += itemsPerSlide) {
       slides.push(
         <div className="badge-slide" key={`slide-${i}`}>
           {badges.slice(i, i + itemsPerSlide).map((badge) => (
-            <div key={badge.id} className="badge-card">
+            <div key={badge.id_badge} className="badge-card">
+              <Link to={`/badge/edit/${badge.id_badge}`} className="edit-icon">
+                <PencilFill />
+              </Link>
               <img
                 src={badge.image_url}
                 alt={badge.name_badge}
@@ -112,11 +118,6 @@ const Consult = () => {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <input
-              type="text"
-              className="badge-search"
-              placeholder="Search by code"
-            />
           </div>
           <div className="badge-order">
             <span>Order by:</span>
@@ -125,8 +126,8 @@ const Consult = () => {
               value={orderBy}
               onChange={handleOrderChange}
             >
-              <option value="assigned-last">assigned last</option>
-              <option value="assigned-first">assigned first</option>
+              <option value="created-last">created last</option>
+              <option value="created-first">created first</option>
               <option value="name">name</option>
             </select>
           </div>

@@ -203,6 +203,7 @@ body {
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   margin: 10px auto;
+  position: relative;
 }
 
 .badge-card .badge-preview {
@@ -330,6 +331,7 @@ body {
   align-items: center;
   width: 100%;
   flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .carousel .control-arrow {
@@ -356,4 +358,17 @@ body {
 .badge-carousel {
   width: 100%;
   max-width: 100%;
+}
+
+.edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ffd700;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.edit-icon:hover {
+  color: #ffdd57;
 }
