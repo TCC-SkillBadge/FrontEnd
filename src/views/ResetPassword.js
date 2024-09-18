@@ -32,19 +32,25 @@ const ResetPassword = () => {
       "http://localhost:7003/api//reset-password",
     ]
 
-    Promise.allSettled(endpoints.map(endpoint => axios.post(endpoint, { token, newPassword: formData.newPassword })))
+    const resetPasswordPromises = endpoints.map(endpoint => 
+      axios.post(endpoint, 
+        {
+          token,
+          newPassword: formData.newPassword
+        }
+      )
+    );
+
+    const loading = toast.loading("Resetting password...");
+    Promise.allSettled(resetPasswordPromises)
     .then(results => {
-      console.log(results);
-      if(results.some(result => result.status >= 200 && result.status < 300)) {
-        toast.success("Password reset successfully");
+      if(results.some(result => result.status === "fulfilled")) {
+        toast.update(loading, { render: "Password reset successfully", type: "success", isLoading: false, autoClose: 2000 });
       }
       else {
-        toast.error("Failed to reset password");
+        toast.update(loading, { render: "Fail to reset password", type: "error", isLoading: false, autoClose: 2000 });
       }
     })
-    .catch(() => {
-      toast.error("Error resetting password");
-    });
   };
 
   return (

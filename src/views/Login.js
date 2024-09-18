@@ -147,24 +147,23 @@ const handleLogin = async (
     const loading = toast.loading("Sending reset link...");
     Promise.allSettled(resetPasswordPromises)
     .then((results) => {
-      console.log(results);
-      if (results.some((response) => response.status >= 200 && response.status < 300)) {
+      if (results.some((response) => response.status === "fulfilled")) {
         toast.update(loading, {
           render: "A link to reset your password has been sent to your email.",
           type: "success",
           isLoading: false,
           autoClose: 3000,
         });
-        setShowConfirmationModal(false);
       }
       else {
         toast.update(loading, {
-          render: "Error sending password reset link",
+          render: "Fail to send password reset link",
           type: "error",
           isLoading: false,
           autoClose: 3000,
         });
       }
+      setShowConfirmationModal(false);
     })
 
     // const promise = axios.post(
@@ -205,6 +204,15 @@ const handleLogin = async (
     handleForgotPassword(); // Call the forgot password handler
   };
 
+  const showPassword = () => {
+    const passwordInput = document.getElementById("password");
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+    } else {
+      passwordInput.type = "password";
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -238,6 +246,7 @@ const handleLogin = async (
                   onChange={handleChange}
                   required
                 />
+                
               </div>
             </div>
             <div className="form-options">

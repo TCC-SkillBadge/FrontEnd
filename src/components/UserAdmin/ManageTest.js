@@ -153,41 +153,30 @@ export const ManageTest = () => {
         }
     };
 
-    const adicionarQuestaoM = (idSS) => {
+    const adicionarQuestao = (idSS, tpQ) => {
         const newQuestoes = [...questoes];
-        newQuestoes.push({
+        let obj = {
             id_questao: gerarIdQuestao(),
-            enunciado_questao: '',
-            tipo_questao: 'multipla_escolha',
-            valor_questao: 0,
             id_soft_skill: idSS,
-        });
-        setQuestoes(newQuestoes);
-    };
-
-    const adicionarQuestaoR = (idSS) => {
-        const newQuestoes = [...questoes];
-        newQuestoes.push({
-            id_questao: gerarIdQuestao(),
             enunciado_questao: '',
-            tipo_questao: 'rankeamento',
             valor_questao: 0,
-            id_soft_skill: idSS,
-        });
+            tipo_questao: '',
+        };
+        switch(tpQ){
+            case 'ME':
+                obj.tipo_questao = 'multipla_escolha';
+                break;
+            case 'R':
+                obj.tipo_questao = 'rankeamento';
+                break;
+            case 'MV':
+                obj.tipo_questao = 'multipla_escolha_com_valores';
+                break;
+            default:
+        }
+        newQuestoes.push(obj);
         setQuestoes(newQuestoes);
-    };
-
-    const adicionarQuestaoMV = (idSS) => {
-        const newQuestoes = [...questoes];
-        newQuestoes.push({
-            id_questao: gerarIdQuestao(),
-            enunciado_questao: '',
-            tipo_questao: 'multipla_escolha_com_valores',
-            valor_questao: 0,
-            id_soft_skill: idSS,
-        });
-        setQuestoes(newQuestoes);
-    };
+    }
 
     const confirmarRemoverQuestao = (e, idQ, tpQ) => {
         confirmPopup({
@@ -529,19 +518,19 @@ export const ManageTest = () => {
                                         <button
                                         id='btn-add-qm'
                                         className='btn mb-3'
-                                        onClick={() => adicionarQuestaoM(softSkill.id_soft_skill)}>
+                                        onClick={() => adicionarQuestao(softSkill.id_soft_skill, 'ME')}>
                                             <i className='pi pi-plus'/> Múltipla Escolha
                                         </button>
                                         <button
                                         id='btn-add-qmv'
                                         className='btn mb-3'
-                                        onClick={() => adicionarQuestaoMV(softSkill.id_soft_skill)}>
+                                        onClick={() => adicionarQuestao(softSkill.id_soft_skill, 'MV')}>
                                             <i className='pi pi-plus'/> Múltipla Escolha com Valores
                                         </button>
                                         <button
                                         id='btn-add-qr'
                                         className='btn mb-3'
-                                        onClick={() => adicionarQuestaoR(softSkill.id_soft_skill)}>
+                                        onClick={() => adicionarQuestao(softSkill.id_soft_skill, 'R')}>
                                             <i className='pi pi-plus'/> Rankeamento
                                         </button>
                                     </div>
@@ -852,7 +841,7 @@ const AlternativesMV = (props) => {
                             className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
                             value={item.texto_alternativa}
                             onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
-                            <div className='flex mr-2 xl:block lg:block md:hidden sm:hidden'>
+                            <div className='flex mr-2 xl:block lg:hidden md:hidden sm:hidden'>
                                 <div className='p-inputgroup max-w-23rem'>
                                     <span className='p-inputgroup-addon'>
                                         Porcentagem da Nota:
@@ -883,7 +872,7 @@ const AlternativesMV = (props) => {
                                 X
                             </button>
                         </div>
-                        <div className='xl:hidden lg:hidden md:block sm:block'>
+                        <div className='xl:hidden lg:block md:block sm:block'>
                             <div className='flex flex-row align-items-center'>
                                <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
                                 <div className='flex flex-row align-items-center'>
@@ -943,7 +932,7 @@ const AlternativesR = (props) => {
                             className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
                             value={item.texto_alternativa}
                             onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
-                            <div className='flex mr-2 xl:block lg:block md:hidden sm:hidden'>
+                            <div className='flex mr-2 xl:block lg:hidden md:hidden sm:hidden'>
                                 <div className='p-inputgroup max-w-21rem'>
                                     <span className='p-inputgroup-addon'>
                                         Valor da Alternativa:
@@ -972,7 +961,7 @@ const AlternativesR = (props) => {
                                 X
                             </button>
                         </div>
-                        <div className='xl:hidden lg:hidden md:block sm:block'>
+                        <div className='xl:hidden lg:block md:block sm:block'>
                             <div className='flex flex-row align-items-center'>
                                 <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
                                 <div className='p-inputgroup max-w-21rem'>

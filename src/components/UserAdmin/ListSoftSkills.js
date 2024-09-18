@@ -19,16 +19,18 @@ const baseUrlServicosGerais = axios.create({
 });
 
 export const ListSoftSkills = () => {
-    const [softSkills, setSoftSkills] = useState([]);
-    const [carregando, setCarregando] = useState(true);
-    const [mostraPopUp, setMostraPopUp] = useState(false);
-    const [editando, setEditando] = useState(false);
-    const [managedSS, setManagedSS] = useState({
+    const objSSInit = {
         id_soft_skill: 0,
         nome_soft_skill: '',
         descricao_soft_skill: '',
         cor_soft_skill: 'ffffff'
-    });
+    };
+
+    const [softSkills, setSoftSkills] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [mostraPopUp, setMostraPopUp] = useState(false);
+    const [editando, setEditando] = useState(false);
+    const [managedSS, setManagedSS] = useState(objSSInit);
 
     let messages = useRef(null);
 
@@ -106,12 +108,7 @@ export const ListSoftSkills = () => {
         .then(() => {
             setMostraPopUp(false);
             setEditando(false);
-            setManagedSS({
-                id_soft_skill: 0,
-                nome_soft_skill: '',
-                descricao_soft_skill: '',
-                cor_soft_skill: 'ffffff'
-            });
+            setManagedSS(objSSInit);
             toast.update(editando, {
                 render: 'Soft Skill editada com sucesso!',
                 type: 'success',
@@ -196,12 +193,7 @@ export const ListSoftSkills = () => {
         })
         .then(() => {
             setMostraPopUp(false);
-            setManagedSS({
-                id_soft_skill: 0,
-                nome_soft_skill: '',
-                descricao_soft_skill: '',
-                cor_soft_skill: 'ffffff'
-            });
+            setManagedSS(objSSInit);
             toast.update(registrando, {
                 render: 'Soft Skill registrada com sucesso!',
                 type: 'success',
@@ -347,12 +339,7 @@ export const ListSoftSkills = () => {
                         className='btn btn-danger'
                         onClick={() => {
                             setMostraPopUp(false)
-                            setManagedSS({
-                                id_soft_skill: 0,
-                                nome_soft_skill: '',
-                                descricao_soft_skill: '',
-                                cor_soft_skill: 'ffffff'
-                            })
+                            setManagedSS(objSSInit)
                             if(editando) setEditando(false)
                         }}>
                             Cancelar
