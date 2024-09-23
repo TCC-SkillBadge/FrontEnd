@@ -1,10 +1,21 @@
+:root {
+  --background-dark: #191A2E;
+  --color-primary: #D273FF;
+  --color-secondary: #8DFD8B;
+  --color-text-light: #ffffff;
+  --color-text-muted: #cccccc;
+  --box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5);
+  --border-radius: 10px;
+  --transition: all 0.3s ease;
+}
+
 .profile-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #191A2E;
+  background-color: var(--background-dark);
   min-height: 100vh;
-  color: white;
+  color: var(--color-text-light);
 }
 
 .spinner-container {
@@ -12,7 +23,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #191A2E;
+  background-color: var(--background-dark);
 }
 
 .profile-container {
@@ -21,10 +32,11 @@
   margin: 20px auto;
   background-color: rgba(0, 0, 0, 0.6);
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
   border: 2px solid;
-  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  border-image: linear-gradient(to bottom, var(--color-primary), var(--color-secondary)) 1;
+  transition: var(--transition);
 }
 
 .profile-header {
@@ -38,8 +50,13 @@
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #8DFD8B;
+  border: 2px solid var(--color-secondary);
   margin-right: 30px;
+  transition: var(--transition);
+}
+
+.profile-photo:hover {
+  box-shadow: 0px 0px 10px rgba(141, 253, 139, 0.5);
 }
 
 .profile-info {
@@ -49,40 +66,45 @@
 .profile-name {
   font-size: 2rem;
   margin-bottom: 5px;
-  color: #D273FF;
+  color: var(--color-primary);
+  transition: var(--transition);
 }
 
 .profile-title {
   font-size: 1.2rem;
-  color: #8DFD8B;
+  color: var(--color-secondary);
+  transition: var(--transition);
 }
 
 .profile-actions {
   display: flex;
-  gap: 10px; /* Adiciona espaço entre os botões */
+  gap: 10px; /* Espaço entre os botões */
 }
 
 .edit-button, .add-button, .delete-button, .share-button, .download-button {
   background-color: transparent;
-  color: #D273FF;
+  color: var(--color-primary);
   font-weight: bold;
-  border: 2px solid #D273FF;
+  border: 2px solid var(--color-primary);
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 5px;
   display: flex;
   align-items: center;
+  transition: var(--transition);
 }
 
 .edit-button:hover, .add-button:hover, .delete-button:hover, .share-button:hover, .download-button:hover {
-  background-color: #D273FF;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  box-shadow: 0px 4px 15px rgba(210, 115, 255, 0.3);
 }
 
 .profile-section {
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #8DFD8B;
+  border-bottom: 1px solid var(--color-secondary);
+  transition: var(--transition);
 }
 
 .profile-section h3 {
@@ -95,7 +117,7 @@
 .profile-section h3 .bi {
   font-size: 1.2rem;
   margin-right: 8px;
-  color: white;
+  color: var(--color-text-light);
 }
 
 .profile-about-input,
@@ -104,14 +126,24 @@
 .profile-languages-input,
 .profile-input {
   background-color: transparent;
-  border: 2px solid #8DFD8B;
+  border: 2px solid var(--color-secondary);
   border-radius: 5px;
   padding: 10px;
-  color: #ffffff;
+  color: var(--color-text-light);
   font-size: 1rem;
   width: 100%;
   margin-top: 10px;
   min-height: 40px;
+  transition: var(--transition);
+}
+
+.profile-about-input:focus,
+.profile-education-input:focus,
+.profile-experience-input:focus,
+.profile-languages-input:focus,
+.profile-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0px 4px 10px rgba(141, 253, 139, 0.5);
 }
 
 .profile-array-item {
@@ -123,33 +155,36 @@
 .profile-array-item input {
   flex: 1;
   margin-right: 10px;
+  transition: var(--transition);
 }
 
 .save-button {
-  background-color: #8DFD8B;
+  background-color: var(--color-secondary);
   color: black;
   font-weight: bold;
-  border: 2px solid #8DFD8B;
+  border: 2px solid var(--color-secondary);
   padding: 10px;
   width: 100%;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 20px;
+  transition: var(--transition);
 }
 
 .save-button:hover {
   background-color: #72c974;
+  box-shadow: 0px 4px 10px rgba(141, 253, 139, 0.5);
 }
 
 .profile-section h3 .icon {
   font-size: 1.2rem;
   margin-right: 8px;
-  color: white;
+  color: var(--color-text-light);
 }
 
 .profile-info-row .icon {
   font-size: 1rem;
-  color: white;
+  color: var(--color-text-light);
   vertical-align: middle;
 }
 
@@ -160,23 +195,26 @@
 .institution-name {
   font-weight: bold;
   font-size: 1.2rem;
-  color: #ffffff;
+  color: var(--color-text-light);
   display: flex;
   align-items: center;
+  transition: var(--transition);
 }
 
 .education-degree {
   font-size: 1rem;
-  color: #ffffff;
+  color: var(--color-text-light);
   margin-left: 24px;
   display: flex;
   align-items: center;
+  transition: var(--transition);
 }
 
 .education-dates {
   font-size: 0.9rem;
-  color: #cccccc;
+  color: var(--color-text-muted);
   margin-left: 24px;
+  transition: var(--transition);
 }
 
 .profile-info-row {
