@@ -3,7 +3,7 @@ import "../../styles/Badge.css";
 import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   TagFill,
   JournalText,
@@ -33,17 +33,35 @@ const EditBadge = () => {
     }
   };
 
-  const verificaLogin = () => {
-    const usuarioEmpresarial = sessionStorage.getItem("usuarioEmpresarial");
-    const usuarioAdmin = sessionStorage.getItem("usuarioAdmin");
-    if (usuarioEmpresarial) {
+  const verificaLogin = async () => {
+    const token = sessionStorage.getItem("token");
+    const userType = sessionStorage.getItem("tipoUsuario");
+
+    if (userType === "UE") {
+      let userInfoResponse = await axios.get(
+        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUserType("business");
-      setUser(JSON.parse(usuarioEmpresarial));
-    } else if (usuarioAdmin) {
+      setUser(userInfoResponse.data);
+    } else if (userType === "UA") {
+      let userInfoResponse = await axios.get(
+        `http://localhost:7004/admin/acessa-info`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setUserType("admin");
-      setUser(JSON.parse(usuarioAdmin));
-    } else {
-      //navigate("/home")
+      setUser(userInfoResponse.data);
+    }
+    else{
+        navigate("/home")
     }
   };
 
@@ -124,8 +142,7 @@ const EditBadge = () => {
 
       if (response.status === 200) {
         alert("Badge updated successfully");
-        navigate("/badge/edit/" + id_badge);
-        //navigate("/badge/consult/");
+        navigate("/badge");
       }
     } catch (error) {
       console.error("Error registering badge:", error);

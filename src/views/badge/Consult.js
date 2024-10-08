@@ -4,34 +4,70 @@ import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Carousel } from "react-responsive-carousel";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PencilFill } from "react-bootstrap-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const Consult = () => {
   const [badges, setBadges] = useState([]);
+  const [userType, setUserType] = useState(null);
+  const [user, setUser] = useState(null);
   const [filteredBadges, setFilteredBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [orderBy, setOrderBy] = useState("created-last");
   const [searchTerm, setSearchTerm] = useState("");
 
+  const navigate = useNavigate();
+
+  const fetchBadges = async () => {
+    try {
+      const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+      const email = userInfo && (userInfo.email || userInfo.email_admin || userInfo.email_comercial) ? userInfo.email || userInfo.email_admin || userInfo.email_comercial : "teste@email.com";
+      const response = await axios.get(`http://localhost:7001/badge/consultar?pesquisa=${email}`);
+      setBadges(response.data);
+      setFilteredBadges(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching badges:", error);
+      setLoading(false);
+    }
+  };
+
+  const verificaLogin = async () => {
+    const token = sessionStorage.getItem("token");
+    const userType = sessionStorage.getItem("tipoUsuario");
+
+    if (userType === "UE") {
+      let userInfoResponse = await axios.get(
+        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUserType("business");
+      setUser(userInfoResponse.data);
+    } else if (userType === "UA") {
+      let userInfoResponse = await axios.get(
+        `http://localhost:7004/admin/acessa-info`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setUserType("admin");
+      setUser(userInfoResponse.data);
+    }
+    else {
+      navigate("/home")
+    }
+  };
+
   useEffect(() => {
-    const fetchBadges = async () => {
-      try {
-        const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
-        const email = userInfo && userInfo.email ? userInfo.email : "teste@email.com";
-
-        const response = await axios.get(`http://localhost:7001/badge/consultar?pesquisa=${email}`);
-        setBadges(response.data);
-        setFilteredBadges(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching badges:", error);
-        setLoading(false);
-      }
-    };
-
     fetchBadges();
+    verificaLogin();
   }, []);
 
   const handleOrderChange = (e) => {
@@ -75,7 +111,6 @@ const Consult = () => {
   const renderBadgesInSlides = (badges) => {
     const slides = [];
     const itemsPerSlide = 3;
-    console.log(badges);
 
     for (let i = 0; i < badges.length; i += itemsPerSlide) {
       slides.push(
@@ -91,7 +126,9 @@ const Consult = () => {
                 className="badge-img"
               />
               <h3>{badge.name_badge}</h3>
-              <button>Details</button>
+              <Link to={`/badge/details/${badge.id_badge}`}>
+                <button>Details</button>
+              </Link>
             </div>
           ))}
         </div>
@@ -135,8 +172,10 @@ const Consult = () => {
         <div className="badge-info">
           You have {filteredBadges.length} badges
         </div>
-        <div className="badge-divider"></div>
         <div className="badges">
+          <Link to={"/badge/create"} className="badge-button">
+            Create
+          </Link>
           <Carousel
             showArrows={true}
             infiniteLoop={true}
