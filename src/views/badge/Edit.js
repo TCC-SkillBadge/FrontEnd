@@ -48,19 +48,7 @@ const EditBadge = () => {
       );
       setUserType("business");
       setUser(userInfoResponse.data);
-    } else if (userType === "UA") {
-      let userInfoResponse = await axios.get(
-        `http://localhost:7004/admin/acessa-info`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUserType("admin");
-      setUser(userInfoResponse.data);
-    }
-    else{
+    } else{
         navigate("/home")
     }
   };
@@ -131,10 +119,10 @@ const EditBadge = () => {
     formDataToSend.append('desc_badge', badge.desc_badge);
     formDataToSend.append('validity_badge', badge.validity_badge);
     formDataToSend.append('image_badge', image_badge);
-    formDataToSend.append('updated_user', user.email);
+    formDataToSend.append('updated_user', user.email_comercial);
 
     try {
-      let response = await axios.post("http://localhost:7001/badge/atualizar", formDataToSend, {
+      let response = await axios.put("http://localhost:7001/badge/atualizar", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
