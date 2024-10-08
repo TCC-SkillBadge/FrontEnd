@@ -372,3 +372,19 @@ body {
 .edit-icon:hover {
   color: #ffdd57;
 }
+
+.badge-button {
+  text-decoration: none;
+  text-align: center;
+  display: block; 
+  margin: 20px auto; 
+  border-radius: 5px;
+  background-color: transparent;
+  color: #D273FF;
+  font-weight: bold;
+  border: 2px solid #D273FF;
+  padding: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  max-width: 80px;
+}
