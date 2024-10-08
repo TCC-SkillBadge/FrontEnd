@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Carousel } from "react-responsive-carousel";
 import { Link, useNavigate } from "react-router-dom";
-import { PencilFill } from "react-bootstrap-icons";
+import { PencilFill, TrashFill } from "react-bootstrap-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 const Consult = () => {
@@ -29,6 +29,8 @@ const Consult = () => {
       setLoading(false);
     } catch (error) {
       console.error("Error fetching badges:", error);
+      setBadges([]);
+      setFilteredBadges([]);
       setLoading(false);
     }
   };
@@ -108,6 +110,32 @@ const Consult = () => {
     }
   };
 
+  const handleDelete = async (e) => {
+    try {
+      e.preventDefault();
+      const id_badge = e.currentTarget.getAttribute('data-id_badge');
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('id_badge', `${id_badge}`);
+      formDataToSend.append('inactivated_user', `${user.email_comercial}`);
+
+      let response = await axios.post("http://localhost:7001/badge/excluir", formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+        alert("Badge inactivated successfully");
+        fetchBadges();
+      }
+    } catch (error) {
+      console.error("Error inactivated badge:", error);
+      alert("Error inactivated badge");
+    }
+  };
+
+
   const renderBadgesInSlides = (badges) => {
     const slides = [];
     const itemsPerSlide = 3;
@@ -117,6 +145,9 @@ const Consult = () => {
         <div className="badge-slide" key={`slide-${i}`}>
           {badges.slice(i, i + itemsPerSlide).map((badge) => (
             <div key={badge.id_badge} className="badge-card">
+              <Link onClick={handleDelete} data-id_badge={badge.id_badge} className="delete-icon">
+                <TrashFill />
+              </Link>
               <Link to={`/badge/edit/${badge.id_badge}`} className="edit-icon">
                 <PencilFill />
               </Link>
