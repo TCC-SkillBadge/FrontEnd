@@ -119,7 +119,7 @@ const Consult = () => {
       formDataToSend.append('id_badge', `${id_badge}`);
       formDataToSend.append('inactivated_user', `${user.email_comercial}`);
 
-      let response = await axios.post("http://localhost:7001/badge/excluir", formDataToSend, {
+      let response = await axios.put("http://localhost:7001/badge/excluir", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
