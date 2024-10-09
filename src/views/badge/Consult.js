@@ -153,8 +153,7 @@ const Consult = () => {
               </Link>
               <img
                 src={badge.image_url}
-                alt={badge.name_badge}
-                className="badge-img"
+                className="badge-preview"
               />
               <h3>{badge.name_badge}</h3>
               <Link to={`/badge/details/${badge.id_badge}`}>
