@@ -1,0 +1,436 @@
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.badge-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 87px); 
+  background-color: transparent; 
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.badge-page-consult {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.badge-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 600px;
+  border: 2px solid;
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+}
+
+.badge-container-consult {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.badge-container h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 700;
+  margin-top: 20px;
+}
+
+.badge-container .form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.badge-container .form-label {
+  color: white;
+}
+
+.badge-container .input-icon {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: 2px solid #8DFD8B;
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  color: #8DFD8B;
+}
+
+.badge-container .input-icon input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #8DFD8B;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.badge-container .input-icon input::placeholder {
+  color: #8DFD8B;
+}
+
+.badge-container .input-icon textarea {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #8DFD8B;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.badge-container .input-icon textarea::placeholder {
+  color: #8DFD8B;
+}
+
+.badge-container .input-icon input[type="number"] {
+  appearance: none;
+  -webkit-appearance: none; 
+  -moz-appearance: textfield; 
+}
+
+.badge-container .input-icon input[type="number"]::-webkit-inner-spin-button,
+.badge-container .input-icon input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  -webkit-appearance: none; 
+  margin: 0;
+}
+
+.badge-container .input-icon input[type="number"]::before {
+  content: '▲';
+  color: #8DFD8B;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  pointer-events: none;
+}
+
+.badge-container .input-icon input[type="number"]::after {
+  content: '▼';
+  color: #8DFD8B;
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+  pointer-events: none;
+}
+
+.badge-container .input-icon svg {
+  margin-right: 10px;
+  color: #8DFD8B;
+}
+
+.badge-container .input-icon input:focus,
+.badge-container .input-icon textarea:focus {
+  border-color: #8DFD8B; /* Cor da borda quando o input está em foco */
+  box-shadow: 0 0 5px #8DFD8B; /* Adiciona um efeito de sombra verde */
+  outline: none; /* Remove o outline padrão */
+}
+
+.badge-container .input-icon input[type="text"]:-webkit-autofill,
+.badge-container .input-icon input[type="text"]:-webkit-autofill:hover,
+.badge-container .input-icon input[type="text"]:-webkit-autofill:focus,
+.badge-container .input-icon input[type="text"]:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgba(0, 0, 0, 0.8) inset !important; 
+  -webkit-text-fill-color: #8DFD8B !important; 
+  -webkit-border-image: 8px;
+}
+
+.input-icon input[type="file"] {
+  display: none; 
+}
+
+.input-icon .custom-file-upload {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #8DFD8B;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.badge-container .btn-container {
+  display: flex;
+  justify-content: flex-end; 
+}
+
+.badge-container .btn.btn-primary {
+  margin-top: 40px;
+}
+
+.badge-container .btn {
+  width: 30%;
+  border-radius: 5px;
+  background-color: transparent;
+  color: #D273FF;
+  font-weight: bold;
+  border: 2px solid #D273FF;
+  padding: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.badge-container .btn:hover {
+  background-color: #D273FF;
+  border-color: #D273FF;
+  color: white;
+}
+
+.badge-card {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: white;
+  text-align: center;
+  width: 200px;
+  min-height: 210px;
+  border: 2px solid;
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin: 10px auto;
+  position: relative;
+}
+
+.badge-card .badge-preview {
+  border-radius: 8px;
+  height: 180px;
+  object-fit: cover;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin: 10px;
+}
+
+.badge-card h3 {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.badge-card button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: 2px solid #8DFD8B;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 10px;
+}
+
+.badge-card button:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.badge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.badge-search-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badge-search {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #fff;
+  background-color: #D9D9D94D;
+  width: 250px;
+}
+
+.badge-order {
+  display: flex;
+  align-items: center;
+  color: white;
+  margin-top: 10px;
+}
+
+.badge-select {
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-left: 10px;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.8);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 30px;
+  position: relative;
+}
+
+.badge-select::after {
+  content: '▼';
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  color: white;
+}
+
+.badge-info {
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+  color: white;
+  text-align: left;
+  width: 100%;
+}
+
+.badge-divider {
+  width: 100%;
+  height: 2px;
+  background-color: #9C6BB4;
+  margin-bottom: 20px;
+}
+
+.badges {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.badges .carousel .slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.badge-slide {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  min-width: 200px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.badge-slide .badge-card {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: white;
+  text-align: center;
+  width: 200px;
+  min-height: 210px;
+  border: 2px solid;
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin: 10px auto;
+  position: relative;
+}
+
+.badge-slide .badge-card .badge-preview {
+  width: calc(100% - 20px);
+  border-radius: 8px;
+  height: 180px;
+  object-fit: cover;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin: 10px;
+}
+
+.carousel .control-arrow {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.carousel .control-next.control-arrow:before {
+  border-left: 8px solid #fff;
+}
+
+.carousel .control-prev.control-arrow:before {
+  border-right: 8px solid #fff;
+}
+
+.carousel .control-dots {
+  bottom: -15px; 
+}
+
+.carousel .control-dots .dot {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.badge-carousel {
+  width: 100%;
+  max-width: 100%;
+}
+
+.edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #ffd700;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.edit-icon:hover {
+  color: #ffdd57;
+}
+
+/* como deixar o botão de deletar na esquerda */
+
+
+.delete-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #ff0000;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.delete-icon:hover {
+  color: #ff5757;
+}
+
+.badge-button {
+  text-decoration: none;
+  text-align: center;
+  display: block; 
+  margin: 20px auto; 
+  border-radius: 5px;
+  background-color: transparent;
+  color: #D273FF;
+  font-weight: bold;
+  border: 2px solid #D273FF;
+  padding: 10px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  max-width: 80px;
+}
