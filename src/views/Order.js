@@ -16,6 +16,13 @@ const Orders = () => {
 
   const userType = sessionStorage.getItem("tipoUsuario");
 
+  // Mapeamento dos nomes de canais para algo mais intuitivo
+  const channelMap = {
+    criacao_badge: "Criação de Badge",
+    edicao_badge: "Edição de Badge",
+    suporte: "Suporte",
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       const token = sessionStorage.getItem("token");
@@ -168,7 +175,8 @@ const Orders = () => {
                 <td>{order.numero_pedido}</td>
                 <td>{new Date(order.data).toLocaleDateString()}</td>{" "}
                 {/* Formatação de data */}
-                <td>{order.canal}</td>
+                <td>{channelMap[order.canal] || order.canal}</td>{" "}
+                {/* Mapeamento de canal */}
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>
                 <td>{order.cliente}</td>

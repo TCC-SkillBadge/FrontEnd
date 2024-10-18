@@ -41,12 +41,16 @@ const Wallet = () => {
     filterMedals(e.target.value);
   };
 
+  // Função para filtrar as medalhas com base em fragmentos de pesquisa
   const filterMedals = (term) => {
     if (!term) {
       setFilteredMedals(medals);
     } else {
+      const fragments = term.toLowerCase().split("."); // Divide o termo de pesquisa por pontos
       const filtered = medals.filter((medal) =>
-        medal.descricao.toLowerCase().includes(term.toLowerCase())
+        fragments.every((fragment) =>
+          medal.descricao.toLowerCase().includes(fragment)
+        )
       );
       setFilteredMedals(filtered);
     }
