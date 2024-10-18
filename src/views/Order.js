@@ -31,7 +31,6 @@ const Orders = () => {
           }
         );
 
-
         if (response.status === 200) {
           setOrders(response.data);
           setFilteredOrders(response.data);
@@ -167,7 +166,8 @@ const Orders = () => {
             {filteredOrders.map((order) => (
               <tr key={order.numero_pedido}>
                 <td>{order.numero_pedido}</td>
-                <td>{order.data}</td>
+                <td>{new Date(order.data).toLocaleDateString()}</td>{" "}
+                {/* Formatação de data */}
                 <td>{order.canal}</td>
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>

@@ -13,7 +13,7 @@ import {
   MortarboardFill,
   ShareFill,
   FileEarmarkArrowDownFill,
-  GeoAlt, // Substituindo MapPin por GeoAlt
+  GeoAlt,
   Phone,
   CalendarFill,
   PeopleFill,
@@ -28,15 +28,13 @@ import { ClipLoader } from "react-spinners";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
-    // Estado inicial para ambos os tipos de usuário
     fullName: "",
     occupation: "",
-    about: "",
+    sobre: "", // Correção para usar 'sobre' em vez de 'about'
     education: [],
     professionalExperience: [],
     languages: [],
     imageUrl: "",
-    // Campos específicos para usuário empresarial
     razao_social: "",
     cnpj: "",
     municipio: "",
@@ -47,6 +45,7 @@ const UserProfile = () => {
     events: [],
     badges: [],
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("sobre");
   const [loading, setLoading] = useState(true);
@@ -59,7 +58,12 @@ const UserProfile = () => {
       try {
         const token = sessionStorage.getItem("token");
         let response;
-        let userInfo;
+
+        if (!token) {
+          setError("Usuário não autenticado");
+          setLoading(false);
+          return;
+        }
 
         if (tipoUsuario === "UC") {
           response = await axios.get("http://localhost:7000/api/user/info", {
@@ -67,8 +71,7 @@ const UserProfile = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-
-          userInfo = {
+          setUserData({
             ...response.data,
             education: Array.isArray(response.data.education)
               ? response.data.education
@@ -81,7 +84,7 @@ const UserProfile = () => {
             languages: Array.isArray(response.data.languages)
               ? response.data.languages
               : [],
-          };
+          });
         } else if (tipoUsuario === "UE") {
           response = await axios.get(
             "http://localhost:7003/api/acessar-info-usuario-jwt",
@@ -91,21 +94,17 @@ const UserProfile = () => {
               },
             }
           );
-
-          userInfo = {
+          setUserData({
             ...response.data,
-            about: response.data.about || "",
+            sobre: response.data.sobre || "",
             website: response.data.website || "",
             events: response.data.events || [],
             badges: response.data.badges || [],
-          };
+          });
         } else {
           setError("Tipo de usuário inválido");
-          setLoading(false);
-          return;
         }
 
-        setUserData(userInfo);
         setLoading(false);
       } catch (error) {
         console.error("Erro ao buscar informações do usuário:", error);
@@ -117,18 +116,15 @@ const UserProfile = () => {
     fetchUserInfo();
   }, [tipoUsuario]);
 
-  // Função para alternar o modo de edição
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
   };
 
-  // Função para lidar com alterações nos campos de entrada
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserData({ ...userData, [name]: value });
   };
 
-  // Função para lidar com alterações nos arrays (educação, experiência, etc.)
   const handleArrayChange = (e, index, key, arrayKey) => {
     const updatedArray = [...userData[arrayKey]];
 
@@ -141,7 +137,6 @@ const UserProfile = () => {
     setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
-  // Função para adicionar um item a um array
   const handleAddItem = (arrayKey, newItem) => {
     setUserData({
       ...userData,
@@ -149,18 +144,15 @@ const UserProfile = () => {
     });
   };
 
-  // Função para remover um item de um array
   const handleRemoveItem = (index, arrayKey) => {
     const updatedArray = userData[arrayKey].filter((_, i) => i !== index);
     setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
-  // Função para lidar com a mudança de arquivo (upload de foto)
   const handleFileChange = (e) => {
     setUserData({ ...userData, photo: e.target.files[0] });
   };
 
-  // Função para salvar as alterações
   const handleSaveChanges = async () => {
     try {
       const token = sessionStorage.getItem("token");
@@ -174,7 +166,7 @@ const UserProfile = () => {
         formData.append("occupation", userData.occupation || "");
         formData.append("country", userData.country || "");
         formData.append("phoneNumber", userData.phoneNumber || "");
-        formData.append("about", userData.about || "");
+        formData.append("about", userData.sobre || ""); // Ajuste 'about' para 'sobre'
         formData.append("education", JSON.stringify(userData.education || []));
         formData.append(
           "professionalExperience",
@@ -197,9 +189,8 @@ const UserProfile = () => {
         formData.append("municipio", userData.municipio || "");
         formData.append("suplemento", userData.suplemento || "");
         formData.append("numero_contato", userData.numero_contato || "");
-        formData.append("about", userData.about || "");
+        formData.append("sobre", userData.sobre || ""); // Ajuste 'about' para 'sobre'
         formData.append("website", userData.website || "");
-        // Adicione outros campos conforme necessário
 
         await axios.put("http://localhost:7003/api/update", formData, {
           headers: {
@@ -217,7 +208,6 @@ const UserProfile = () => {
     }
   };
 
-  // Função para compartilhar o perfil (usuário comum)
   const handleShareProfile = () => {
     const encodedEmail = btoa(userData.email);
     const publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
@@ -226,7 +216,6 @@ const UserProfile = () => {
     });
   };
 
-  // Função para baixar o portfólio (usuário comum)
   const handleDownloadPortfolio = async () => {
     const doc = new jsPDF("p", "pt", "a4");
 
@@ -236,7 +225,7 @@ const UserProfile = () => {
     doc.setFontSize(12);
     doc.text(`Nome: ${userData.fullName}`, 40, 90);
     doc.text(`Ocupação: ${userData.occupation}`, 40, 110);
-    doc.text(`Sobre: ${userData.about}`, 40, 130);
+    doc.text(`Sobre: ${userData.sobre}`, 40, 130); // Ajuste 'about' para 'sobre'
 
     doc.setFontSize(16);
     doc.text("Educação:", 40, 160);
@@ -283,12 +272,10 @@ const UserProfile = () => {
     toast.success("Portfólio baixado com sucesso");
   };
 
-  // Função para mudar de aba
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
 
-  // Renderização de estados de carregamento e erro
   if (loading) {
     return (
       <div className="spinner-container">
@@ -305,9 +292,7 @@ const UserProfile = () => {
     );
   }
 
-  // Renderização baseada no tipo de usuário
   if (tipoUsuario === "UC") {
-    // Renderização do perfil do usuário comum
     return (
       <div className="profile-page">
         <ToastContainer />
@@ -374,8 +359,8 @@ const UserProfile = () => {
                   <PersonFill className="icon" /> Sobre
                 </label>
                 <textarea
-                  name="about"
-                  value={userData.about || ""}
+                  name="sobre" // Ajuste 'about' para 'sobre'
+                  value={userData.sobre || ""}
                   onChange={handleInputChange}
                   className="profile-about-input"
                 />
@@ -554,7 +539,8 @@ const UserProfile = () => {
                 <h3>
                   <PersonFill className="icon" /> Sobre
                 </h3>
-                <p>{userData.about || "Nenhuma descrição fornecida."}</p>
+                <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>{" "}
+                {/* Ajuste 'about' para 'sobre' */}
               </div>
               <div className="profile-section">
                 <h3>
@@ -632,7 +618,6 @@ const UserProfile = () => {
       </div>
     );
   } else if (tipoUsuario === "UE") {
-    // Renderização do perfil do usuário empresarial
     return (
       <div className="profile-page">
         <ToastContainer />
@@ -696,12 +681,10 @@ const UserProfile = () => {
                 <button onClick={handleEditToggle} className="edit-button">
                   <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
                 </button>
-                {/* Adicione outras ações se necessário */}
               </div>
             </div>
           </div>
 
-          {/* Abas para Sobre, Eventos, Badges */}
           <div className="tabs">
             <button
               onClick={() => handleTabChange("sobre")}
@@ -733,8 +716,8 @@ const UserProfile = () => {
                         <PersonFill className="icon" /> Sobre
                       </label>
                       <textarea
-                        name="about"
-                        value={userData.about || ""}
+                        name="sobre" // Ajuste 'about' para 'sobre'
+                        value={userData.sobre || ""}
                         onChange={handleInputChange}
                         className="profile-about-input"
                       />
@@ -763,7 +746,6 @@ const UserProfile = () => {
                         className="profile-input"
                       />
                     </div>
-                    {/* Adicione outros campos conforme necessário */}
                     <button onClick={handleSaveChanges} className="save-button">
                       Salvar Alterações
                     </button>
@@ -774,7 +756,8 @@ const UserProfile = () => {
                       <h3>
                         <PersonFill className="icon" /> Sobre
                       </h3>
-                      <p>{userData.about || "Nenhuma descrição fornecida."}</p>
+                      <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>{" "}
+                      {/* Ajuste 'about' para 'sobre' */}
                     </div>
                     <div className="profile-section">
                       <h3>
@@ -788,7 +771,6 @@ const UserProfile = () => {
                       </h3>
                       <p>{userData.numero_contato || "Não informado"}</p>
                     </div>
-                    {/* Exiba outros campos conforme necessário */}
                   </>
                 )}
               </div>
@@ -800,7 +782,6 @@ const UserProfile = () => {
                 {userData.events && userData.events.length > 0 ? (
                   userData.events.map((event, index) => (
                     <div key={index} className="event-item">
-                      {/* Renderize os detalhes do evento */}
                       <div className="event-icon">
                         <CalendarFill />
                       </div>
