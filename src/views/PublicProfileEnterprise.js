@@ -7,6 +7,7 @@ import {
   PeopleFill,
   Globe,
   PersonFill,
+  AwardFill,
 } from "react-bootstrap-icons";
 import "../styles/PublicProfileEnterprise.css";
 import { toast } from "react-toastify";
@@ -14,6 +15,7 @@ import { toast } from "react-toastify";
 const PublicProfileEnterprise = () => {
   const { encodedEmail } = useParams();
   const [userData, setUserData] = useState(null);
+  const [activeTab, setActiveTab] = useState("sobre");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ const PublicProfileEnterprise = () => {
   }
 
   return (
-    <div className="public-profile-page">
+    <div className="profile-page">
       <div className="public-profile-container">
         <div className="profile-header">
           <img
@@ -62,67 +64,94 @@ const PublicProfileEnterprise = () => {
                   <GeoAlt /> {userData.municipio}
                 </span>
               )}
-              {/* Descomente se 'segmento' existir no seu modelo
-              {userData.segmento && (
-                <span className="company-badge">
-                  <Briefcase /> {userData.segmento}
-                </span>
-              )}
-              */}
-              {/* Descomente se 'tamanho' existir no seu modelo
-              {userData.tamanho && (
-                <span className="company-badge">
-                  <PeopleFill /> {userData.tamanho}
-                </span>
-              )}
-              */}
+              {/* Outros badges, se aplicável */}
             </div>
           </div>
         </div>
 
-        <div className="profile-section">
-          <h3>
-            <PersonFill className="icon" /> Sobre
-          </h3>
-          <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+        {/* Guias */}
+        <div className="tabs">
+          <button
+            onClick={() => setActiveTab("sobre")}
+            className={activeTab === "sobre" ? "active" : ""}
+          >
+            Sobre
+          </button>
+          <button
+            onClick={() => setActiveTab("eventos")}
+            className={activeTab === "eventos" ? "active" : ""}
+          >
+            Eventos
+          </button>
+          <button
+            onClick={() => setActiveTab("badges")}
+            className={activeTab === "badges" ? "active" : ""}
+          >
+            Badges
+          </button>
         </div>
 
-        <div className="profile-section">
-          <h3>
-            <Globe className="icon" /> Website
-          </h3>
-          <p>
-            {userData.website ? (
-              <a
-                href={userData.website}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {userData.website}
-              </a>
-            ) : (
-              "Não informado"
-            )}
-          </p>
-        </div>
+        {/* Conteúdo das Guias */}
+        <div className="tab-content">
+          {activeTab === "sobre" && (
+            <div className="profile-section">
+              <h3>
+                <PersonFill className="icon" /> Sobre
+              </h3>
+              <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+            </div>
+          )}
 
-        <div className="profile-section">
-          <h3>Eventos Promovidos</h3>
-          {userData.events && userData.events.length > 0 ? (
-            userData.events.map((event, index) => (
-              <div key={index} className="event-item">
-                <p>{event.descricao}</p>
-                {event.imageUrl && (
-                  <img
-                    src={event.imageUrl}
-                    alt="Imagem do Evento"
-                    className="event-image"
-                  />
-                )}
-              </div>
-            ))
-          ) : (
-            <p>Nenhum evento disponível.</p>
+          {activeTab === "eventos" && (
+            <div className="profile-section">
+              <h3>Eventos Promovidos</h3>
+              {userData.events && userData.events.length > 0 ? (
+                userData.events.map((event, index) => (
+                  <div key={index} className="event-item">
+                    <div className="event-header">
+                      <img
+                        src={userData.imageUrl || "/default-company-logo.png"}
+                        alt="Company Logo"
+                        className="event-user-avatar"
+                      />
+                      <span className="event-user-name">
+                        {userData.razao_social}
+                      </span>
+                    </div>
+                    <div className="event-details">
+                      <p>{event.descricao || "Sem descrição"}</p>
+                      {event.imageUrl && (
+                        <img
+                          src={event.imageUrl}
+                          alt="Imagem do Evento"
+                          className="event-image"
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>Nenhum evento disponível.</p>
+              )}
+            </div>
+          )}
+
+          {activeTab === "badges" && (
+            <div className="badges-section">
+              <h3>Badges</h3>
+              {userData.badges && userData.badges.length > 0 ? (
+                <div className="badges-grid">
+                  {userData.badges.map((badge, index) => (
+                    <div key={index} className="badge-item">
+                      <AwardFill className="badge-icon" />
+                      <span>{badge.name}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>Nenhum badge disponível.</p>
+              )}
+            </div>
           )}
         </div>
       </div>
