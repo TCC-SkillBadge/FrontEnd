@@ -806,11 +806,19 @@ const UserProfile = () => {
                 {userData.events && userData.events.length > 0 ? (
                   userData.events.map((event, index) => (
                     <div key={index} className="event-item">
-                      <div className="event-icon">
-                        <CalendarFill />
+                      <div className="event-header">
+                        <img
+                          src={userData.imageUrl || "/default-avatar.png"}
+                          alt="User Avatar"
+                          className="event-user-avatar"
+                        />
+                        <span className="event-user-name">
+                          {userData.razao_social}
+                        </span>
+                        {/* Menu de opções (três pontinhos) será adicionado aqui posteriormente */}
                       </div>
                       <div className="event-details">
-                        <h4>{event.descricao || "Sem descrição"}</h4>
+                        <p>{event.descricao || "Sem descrição"}</p>
                         {event.imageUrl && (
                           <img
                             src={event.imageUrl}

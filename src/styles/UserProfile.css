@@ -9,7 +9,7 @@
   --transition: all 0.3s ease;
 }
 
-/* Estilo Geral (mantido como antes) */
+/* Estilo Geral */
 .profile-page {
   display: flex;
   flex-direction: column;
@@ -45,6 +45,10 @@
   margin-bottom: 20px;
 }
 
+.profile-photo-wrapper {
+  position: relative;
+}
+
 .profile-photo {
   width: 150px;
   height: 150px;
@@ -52,6 +56,17 @@
   object-fit: cover;
   border: 2px solid var(--color-secondary);
   margin-right: 30px;
+}
+
+.edit-photo-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  padding: 5px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 .profile-info {
@@ -69,16 +84,32 @@
   color: var(--color-secondary);
 }
 
+.company-badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.company-badge {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--color-text-light);
+  display: flex;
+  align-items: center;
+}
+
+.company-badge .bi {
+  margin-right: 5px;
+}
+
 .profile-actions {
   display: flex;
   gap: 10px;
+  margin-top: 20px;
 }
 
-.edit-button,
-.add-button,
-.delete-button,
-.share-button,
-.download-button {
+.profile-actions button {
   background-color: transparent;
   color: var(--color-primary);
   font-weight: bold;
@@ -90,13 +121,13 @@
   align-items: center;
 }
 
-.edit-button:hover,
-.add-button:hover,
-.delete-button:hover,
-.share-button:hover,
-.download-button:hover {
+.profile-actions button:hover {
   background-color: var(--color-primary);
   color: var(--color-text-light);
+}
+
+.profile-sections {
+  margin-top: 20px;
 }
 
 .profile-section {
@@ -112,17 +143,24 @@
   align-items: center;
 }
 
-.profile-section h3 .bi {
+.profile-section label {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.profile-section h3 .bi,
+.profile-section label .bi {
   font-size: 1.2rem;
   margin-right: 8px;
   color: var(--color-text-light);
 }
 
 .profile-about-input,
-.profile-education-input,
-.profile-experience-input,
-.profile-languages-input,
-.profile-input {
+.profile-input,
+.profile-array-item input,
+.profile-array-item textarea {
   background-color: transparent;
   border: 2px solid var(--color-secondary);
   border-radius: 5px;
@@ -138,6 +176,11 @@
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+}
+
+.profile-array-item .icon {
+  color: var(--color-text-light);
+  margin-right: 5px;
 }
 
 .profile-array-item input {
@@ -159,12 +202,6 @@
 
 .save-button:hover {
   background-color: #72c974;
-}
-
-.profile-section h3 .icon {
-  font-size: 1.2rem;
-  margin-right: 8px;
-  color: var(--color-text-light);
 }
 
 .profile-info-row .icon {
@@ -236,6 +273,7 @@
   margin-top: 20px;
 }
 
+/* Responsividade */
 @media (max-width: 600px) {
   .profile-container {
     padding: 15px;
@@ -251,38 +289,78 @@
     margin-bottom: 15px;
   }
 
-  .edit-button,
-  .add-button,
-  .delete-button,
-  .share-button {
+  .profile-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .profile-actions button {
     width: 100%;
     justify-content: center;
+    margin-bottom: 10px;
   }
 }
 
+/* Estilização dos Eventos */
 .event-item {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 20px;
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
   border-radius: 5px;
+  margin-bottom: 20px;
+  position: relative;
 }
 
-.event-icon {
-  margin-right: 15px;
-  color: var(--color-secondary);
-  font-size: 2rem;
+.event-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.event-details {
-  flex-grow: 1;
+.event-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
-.event-details h4 {
-  margin: 0 0 10px;
-  font-size: 1.5rem;
-  color: var(--color-primary);
+.event-user-name {
+  margin-left: 10px;
+  font-weight: bold;
+  color: var(--color-text-light);
+}
+
+.event-options {
+  margin-left: auto;
+  position: relative;
+}
+
+.options-icon {
+  cursor: pointer;
+  color: var(--color-text-light);
+}
+
+.options-menu {
+  position: absolute;
+  top: 25px;
+  right: 0;
+  background: rgba(25, 26, 46, 0.9);
+  border: 1px solid var(--color-secondary);
+  border-radius: 5px;
+  z-index: 1;
+}
+
+.options-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: none;
+  text-align: left;
+  color: var(--color-text-light);
+  cursor: pointer;
+}
+
+.options-menu button:hover {
+  background: rgba(141, 253, 139, 0.2);
 }
 
 .event-details p {
@@ -294,4 +372,98 @@
   margin-top: 10px;
   max-width: 100%;
   border-radius: 5px;
+}
+
+/* Estilização do PostForm */
+.post-form {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.post-textarea {
+  width: 100%;
+  min-height: 80px;
+  background-color: transparent;
+  border: 2px solid var(--color-secondary);
+  border-radius: 5px;
+  padding: 10px;
+  color: var(--color-text-light);
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.image-upload-wrapper,
+.share-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--color-text-light);
+  margin-right: 10px;
+}
+
+.photo-icon,
+.share-icon {
+  font-size: 1.5rem;
+}
+
+.submit-post-button {
+  background-color: var(--color-secondary);
+  color: black;
+  font-weight: bold;
+  border: 2px solid var(--color-secondary);
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.submit-post-button:hover {
+  background-color: #72c974;
+}
+
+.image-preview {
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 100%;
+  border-radius: 5px;
+}
+
+/* Estilização dos Badges */
+.badges-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.badges-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.badge-item {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  color: var(--color-text-light);
+}
+
+.badge-icon {
+  font-size: 2rem;
+  color: var(--color-primary);
+  margin-bottom: 5px;
 }
