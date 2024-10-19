@@ -17,6 +17,7 @@ import {
   Phone,
   CalendarFill,
   PeopleFill,
+  ThreeDotsVertical,
 } from "react-bootstrap-icons";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -46,6 +47,67 @@ const UserProfile = () => {
     events: [],
     badges: [],
   });
+
+  // Estado para controlar qual menu de opções está visível
+  const [optionsVisibleIndex, setOptionsVisibleIndex] = useState(null);
+
+  // Estado para controlar o evento em edição
+  const [editingEvent, setEditingEvent] = useState(null);
+
+  // Função para verificar se o post foi criado há menos de 24 horas
+  const isWithin24Hours = (createdAt) => {
+    const eventDate = new Date(createdAt);
+    const now = new Date();
+    const diffInHours = (now - eventDate) / (1000 * 60 * 60);
+    return diffInHours <= 24;
+  };
+
+  // Função para lidar com o clique no ícone de opções
+  const handleOptionsClick = (index) => {
+    setOptionsVisibleIndex(optionsVisibleIndex === index ? null : index);
+  };
+
+  // Função para editar o evento
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+  };
+
+  // Função para excluir o evento
+  const handleDeleteEvent = async (event) => {
+    const confirmDelete = window.confirm(
+      "Deseja realmente excluir este evento?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const token = sessionStorage.getItem("token");
+      await axios.delete(`http://localhost:7003/api/eventos/${event.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      // Atualizar o estado removendo o evento deletado
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        events: prevUserData.events.filter((e) => e.id !== event.id),
+      }));
+      toast.success("Evento excluído com sucesso!");
+    } catch (error) {
+      console.error("Erro ao excluir o evento:", error);
+      toast.error("Falha ao excluir o evento.");
+    }
+  };
+
+  // Função para atualizar o post após edição
+  const handlePostUpdated = (updatedPost) => {
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      events: prevUserData.events.map((event) =>
+        event.id === updatedPost.id ? updatedPost : event
+      ),
+    }));
+    setEditingEvent(null);
+  };
 
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("sobre");
@@ -802,7 +864,16 @@ const UserProfile = () => {
                 {/* Componente para criar novos posts */}
                 <PostForm onPostCreated={handleNewPost} />
 
-                {/* Certifique-se de que os eventos estão sendo renderizados */}
+                {/* Renderizar o PostForm para edição */}
+                {editingEvent && (
+                  <PostForm
+                    existingEvent={editingEvent}
+                    onPostUpdated={handlePostUpdated}
+                    onClose={() => setEditingEvent(null)}
+                  />
+                )}
+
+                {/* Renderização dos eventos */}
                 {userData.events && userData.events.length > 0 ? (
                   userData.events.map((event, index) => (
                     <div key={index} className="event-item">
@@ -815,7 +886,28 @@ const UserProfile = () => {
                         <span className="event-user-name">
                           {userData.razao_social}
                         </span>
-                        {/* Menu de opções (três pontinhos) será adicionado aqui posteriormente */}
+
+                        {/* Ícone de três pontinhos */}
+                        {isWithin24Hours(event.createdAt) && (
+                          <div className="event-options">
+                            <ThreeDotsVertical
+                              className="options-icon"
+                              onClick={() => handleOptionsClick(index)}
+                            />
+                            {optionsVisibleIndex === index && (
+                              <div className="options-menu">
+                                <button onClick={() => handleEditEvent(event)}>
+                                  Editar
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteEvent(event)}
+                                >
+                                  Excluir
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="event-details">
                         <p>{event.descricao || "Sem descrição"}</p>
@@ -856,8 +948,7 @@ const UserProfile = () => {
         </div>
       </div>
     );
-}
-  else {
+  } else {
     return null; // Ou redirecione para o login
   }
 };

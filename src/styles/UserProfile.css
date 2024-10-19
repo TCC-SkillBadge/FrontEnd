@@ -431,6 +431,26 @@
   background-color: #72c974;
 }
 
+/* Estilização do Botão Cancelar */
+.cancel-button {
+  background-color: transparent;
+  border: 2px solid #FF6B6B;
+  color: #FF6B6B;
+  font-weight: bold;
+  margin-left: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.cancel-button:hover {
+  background-color: #FF6B6B;
+  border-color: #FF6B6B;
+  color: white;
+}
+
 .image-preview {
   margin-top: 10px;
 }
