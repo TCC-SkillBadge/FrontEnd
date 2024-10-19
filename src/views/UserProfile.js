@@ -25,6 +25,7 @@ import NavBar from "../components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
+import PostForm from "../components/PostForm";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -52,7 +53,12 @@ const UserProfile = () => {
   const [error, setError] = useState(null);
 
   const tipoUsuario = sessionStorage.getItem("tipoUsuario");
-
+  const handleNewPost = (newPost) => {
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      events: [newPost, ...prevUserData.events],
+    }));
+  };
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -94,13 +100,26 @@ const UserProfile = () => {
               },
             }
           );
+
+          // **Usar o endpoint correto para obter os eventos**
+          const eventsResponse = await axios.get(
+            "http://localhost:7003/api/eventos",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
           setUserData({
             ...response.data,
             sobre: response.data.sobre || "",
             website: response.data.website || "",
-            events: response.data.events || [],
+            events: eventsResponse.data || [],
             badges: response.data.badges || [],
           });
+
+          console.log("Eventos carregados:", eventsResponse.data);
         } else {
           setError("Tipo de usuário inválido");
         }
@@ -779,6 +798,11 @@ const UserProfile = () => {
             {activeTab === "eventos" && (
               <div className="eventos-section">
                 <h3>Eventos Promovidos</h3>
+
+                {/* Componente para criar novos posts */}
+                <PostForm onPostCreated={handleNewPost} />
+
+                {/* Certifique-se de que os eventos estão sendo renderizados */}
                 {userData.events && userData.events.length > 0 ? (
                   userData.events.map((event, index) => (
                     <div key={index} className="event-item">
@@ -786,9 +810,14 @@ const UserProfile = () => {
                         <CalendarFill />
                       </div>
                       <div className="event-details">
-                        <h4>{event.name}</h4>
-                        <p>{event.date}</p>
-                        <p>{event.location}</p>
+                        <h4>{event.descricao || "Sem descrição"}</h4>
+                        {event.imageUrl && (
+                          <img
+                            src={event.imageUrl}
+                            alt="Imagem do evento"
+                            className="event-image"
+                          />
+                        )}
                       </div>
                     </div>
                   ))
@@ -819,7 +848,8 @@ const UserProfile = () => {
         </div>
       </div>
     );
-  } else {
+}
+  else {
     return null; // Ou redirecione para o login
   }
 };

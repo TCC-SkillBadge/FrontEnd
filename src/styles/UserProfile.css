@@ -259,3 +259,39 @@
     justify-content: center;
   }
 }
+
+.event-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.event-icon {
+  margin-right: 15px;
+  color: var(--color-secondary);
+  font-size: 2rem;
+}
+
+.event-details {
+  flex-grow: 1;
+}
+
+.event-details h4 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+}
+
+.event-details p {
+  margin: 0;
+  color: var(--color-text-light);
+}
+
+.event-image {
+  margin-top: 10px;
+  max-width: 100%;
+  border-radius: 5px;
+}
