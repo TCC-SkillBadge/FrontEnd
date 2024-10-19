@@ -25,17 +25,18 @@ import ListarUEs from "../components/UserAdmin/ListarUEs";
 import CreateServicePlan from "./CreateServicePlan";
 import EditServicePlan from "./EditServicePlan";
 import Price from "./Price";
-import ResetPassword from "./ResetPassword"; // Import the new component
+import ResetPassword from "./ResetPassword";
 import Orders from "./Order";
 import UserProfile from "./UserProfile";
 import PublicProfile from "./PublicProfile";
+import PublicProfileEnterprise from "./PublicProfileEnterprise"; // Importação adicionada
 import ManageTest from "../components/UserAdmin/ManageTest";
 import ListSoftSkills from "../components/UserAdmin/ListSoftSkills";
 import ProficiencyTest from "../components/UserComum/ProficiencyTest";
 import ResultScreen from "../components/UserComum/ResultScreen";
 
 /*um comentario
- */ 
+ */
 function App() {
   return (
     <div className="App">
@@ -63,7 +64,14 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<UserProfile />} />
-        <Route path="/public-profile/:encodedEmail" element={<PublicProfile />}/>
+        <Route
+          path="/public-profile/:encodedEmail"
+          element={<PublicProfile />}
+        />
+        <Route
+          path="/public-profile-enterprise/:encodedEmail"
+          element={<PublicProfileEnterprise />}
+        />
         <Route path="/manage-test" element={<ManageTest />} />
         <Route path="/list-soft-skills" element={<ListSoftSkills />} />
         <Route path="/proficiency-test" element={<ProficiencyTest />} />

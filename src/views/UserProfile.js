@@ -175,6 +175,7 @@ const UserProfile = () => {
 
           setUserData({
             ...response.data,
+            email_comercial: response.data.email_comercial, // Adicionado
             sobre: response.data.sobre || "",
             website: response.data.website || "",
             events: eventsResponse.data || [],
@@ -289,13 +290,41 @@ const UserProfile = () => {
     }
   };
 
-  const handleShareProfile = () => {
-    const encodedEmail = btoa(userData.email);
-    const publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
-    navigator.clipboard.writeText(publicProfileUrl).then(() => {
+const handleShareProfile = () => {
+  let encodedEmail;
+  let publicProfileUrl;
+
+  if (tipoUsuario === "UC") {
+    if (!userData.email) {
+      toast.error("Email não disponível.");
+      return;
+    }
+    encodedEmail = btoa(userData.email);
+    publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
+  } else if (tipoUsuario === "UE") {
+    if (!userData.email_comercial) {
+      toast.error("Email comercial não disponível.");
+      return;
+    }
+    encodedEmail = btoa(userData.email_comercial);
+    publicProfileUrl = `${window.location.origin}/public-profile-enterprise/${encodedEmail}`;
+  } else {
+    toast.error("Tipo de usuário inválido.");
+    return;
+  }
+
+  navigator.clipboard
+    .writeText(publicProfileUrl)
+    .then(() => {
       toast.info("URL do perfil copiada para a área de transferência!");
+    })
+    .catch((error) => {
+      console.error("Erro ao copiar o link:", error);
+      toast.error("Não foi possível copiar o link.");
     });
-  };
+};
+
+
 
   const handleDownloadPortfolio = async () => {
     const doc = new jsPDF("p", "pt", "a4");
@@ -761,6 +790,9 @@ const UserProfile = () => {
               <div className="profile-actions">
                 <button onClick={handleEditToggle} className="edit-button">
                   <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+                </button>
+                <button onClick={handleShareProfile} className="share-button">
+                  <ShareFill /> Compartilhar Perfil
                 </button>
               </div>
             </div>
