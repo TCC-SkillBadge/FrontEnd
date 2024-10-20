@@ -61,16 +61,8 @@ const CreateServicePlan = () => {
     try {
       const response = await createPlanPromise;
       if (response.status === 200) {
-        setFormData({
-          tituloPlanoServico: "",
-          descricaoPlano: "",
-          funcDisponibilizadas: "",
-          funcNaoDisponibilizadas: "",
-          precoPlanoServico: "",
-          prazoPagamentos: "",
-          sugestoesUpgrades: "",
-          prioridade: false,
-        });
+        // Após o sucesso da criação do plano, redireciona para a página de preço
+        navigate("/price");
       }
     } catch (error) {
       console.error("There was an error creating the plan!", error);
@@ -215,7 +207,7 @@ const CreateServicePlan = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark" // Adiciona o tema escuro
+        theme="dark"
       />
     </div>
   );
