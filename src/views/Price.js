@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { PlusCircle } from "react-bootstrap-icons";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/Price.css";
 import PlanCard from "../components/PlanCard";
 import { ClipLoader } from "react-spinners";
-import ConfirmationModal from "../components/ConfirmationModal"; // Usando o modal existente
+import { Tooltip, OverlayTrigger } from "react-bootstrap";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 const Price = () => {
   const [plans, setPlans] = useState([]);
   const [userType, setUserType] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false); // Controla a exibição do modal
-  const [planToDelete, setPlanToDelete] = useState(null); // Armazena o ID do plano a ser deletado
+  const [showModal, setShowModal] = useState(false);
+  const [planToDelete, setPlanToDelete] = useState(null);
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -52,16 +54,33 @@ const Price = () => {
       setPlans((prevPlans) =>
         prevPlans.filter((plan) => plan.id !== planToDelete)
       );
-      alert("Plan deleted successfully.");
+      // Mostra o Toastify ao deletar com sucesso
+      toast.success("Plan deleted successfully!", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } catch (error) {
       console.error("There was an error deleting the plan!", error);
     } finally {
-      handleCloseModal(); // Fecha o modal após a confirmação
+      handleCloseModal();
     }
   };
 
   const highlightedPlan = plans.find((plan) => plan.prioridade);
   const otherPlans = plans.filter((plan) => !plan.prioridade);
+
+  // Tooltip para o botão de adicionar plano
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      You cannot have more than 4 plans.
+    </Tooltip>
+  );
 
   return (
     <div>
@@ -85,7 +104,7 @@ const Price = () => {
                     key={plan.id}
                     plan={plan}
                     isAdmin={userType === "UA"}
-                    handleDelete={openConfirmationModal} // Usa a função que abre o modal de confirmação
+                    handleDelete={openConfirmationModal}
                   />
                 ))}
               {highlightedPlan && (
@@ -93,7 +112,7 @@ const Price = () => {
                   key={highlightedPlan.id}
                   plan={highlightedPlan}
                   isAdmin={userType === "UA"}
-                  handleDelete={openConfirmationModal} // Usa a função que abre o modal de confirmação
+                  handleDelete={openConfirmationModal}
                 />
               )}
               {otherPlans
@@ -103,17 +122,35 @@ const Price = () => {
                     key={plan.id}
                     plan={plan}
                     isAdmin={userType === "UA"}
-                    handleDelete={openConfirmationModal} // Usa a função que abre o modal de confirmação
+                    handleDelete={openConfirmationModal}
                   />
                 ))}
             </>
           )}
         </div>
+
+        {/* Adicionar Tooltip e desabilitar o botão se houver quatro ou mais planos */}
         {userType === "UA" && (
-          <Link to="/createServicePlan" className="add-plan-button">
-            <PlusCircle className="icon" />
-            Add Service Plan
-          </Link>
+          <OverlayTrigger
+            placement="top"
+            overlay={plans.length >= 4 ? renderTooltip : <></>}
+          >
+            <button
+              className={`add-plan-button ${
+                plans.length >= 4 ? "disabled" : ""
+              }`}
+              onClick={(e) => {
+                if (plans.length >= 4) {
+                  e.preventDefault();
+                } else {
+                  window.location.href = "/createServicePlan";
+                }
+              }}
+            >
+              <PlusCircle className="icon" />
+              Add Service Plan
+            </button>
+          </OverlayTrigger>
         )}
       </div>
 
@@ -127,6 +164,9 @@ const Price = () => {
         confirmButtonText="Delete"
         cancelButtonText="Cancel"
       />
+
+      {/* Container do ReactToastify */}
+      <ToastContainer />
     </div>
   );
 };

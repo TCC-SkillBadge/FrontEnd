@@ -70,3 +70,9 @@
   position: relative;
   min-height: calc(100vh - 87px); /* Garante que a página preencha a altura total, menos a navbar */
 }
+
+.add-plan-button.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
