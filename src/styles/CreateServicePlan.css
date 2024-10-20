@@ -99,17 +99,35 @@
   color: white;
 }
 
-.create-plan-container .delete-button {
+.button-group {
+  display: flex;
+  justify-content: space-between; /* Botões ficam nas extremidades esquerda e direita */
+  margin-top: 20px; /* Espaço entre o botão "Save Plan" e os outros botões */
+}
+
+.button-group .delete-button {
   background-color: transparent;
   border-color: #FF6B6B;
   color: #FF6B6B;
   font-weight: bold;
-  margin-top: 20px; /* Aumenta a margem à esquerda para criar espaço entre os botões */
 }
 
-.create-plan-container .delete-button:hover {
+.button-group .delete-button:hover {
   background-color: #FF6B6B;
   border-color: #FF6B6B;
+  color: white;
+}
+
+.button-group .cancel-button {
+  background-color: transparent;
+  border-color: #6c757d;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+.button-group .cancel-button:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
   color: white;
 }
 
