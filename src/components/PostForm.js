@@ -9,7 +9,7 @@ const PostForm = ({
   onPostUpdated,
   existingEvent,
   onClose,
-  isEditAllowed,
+  isEditAllowed = true, // Valor padrão definido aqui
 }) => {
   const [postText, setPostText] = useState("");
   const [postImage, setPostImage] = useState(null);
@@ -137,8 +137,10 @@ const PostForm = ({
 
       <div className="post-actions">
         <div
-          className={`image-upload-wrapper ${!isEditAllowed ? "disabled" : ""}`}
-          onClick={isEditAllowed ? handleImageClick : null}
+          className={`image-upload-wrapper ${
+            existingEvent && !isEditAllowed ? "disabled" : ""
+          }`}
+          onClick={handleImageClick}
         >
           <Image className="photo-icon" />
           <input
@@ -147,7 +149,7 @@ const PostForm = ({
             onChange={handleImageChange}
             id="image-upload"
             style={{ display: "none" }}
-            disabled={!isEditAllowed}
+            disabled={existingEvent && !isEditAllowed}
           />
         </div>
 
