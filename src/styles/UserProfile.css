@@ -314,6 +314,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  position: relative; /* Adicionado para posicionar corretamente o menu de opções */
 }
 
 .event-user-avatar {
@@ -326,6 +327,13 @@
   margin-left: 10px;
   font-weight: bold;
   color: var(--color-text-light);
+}
+
+.event-publication-time {
+  display: block;
+  font-size: 0.8em;
+  color: #888;
+  margin-left: 10px;
 }
 
 .event-options {
@@ -363,6 +371,11 @@
   background: rgba(141, 253, 139, 0.2);
 }
 
+.options-menu button:disabled {
+  cursor: not-allowed;
+  color: #aaa;
+}
+
 .event-details p {
   margin: 0;
   color: var(--color-text-light);
@@ -374,12 +387,25 @@
   border-radius: 5px;
 }
 
+/* Estilização da Data e Hora de Publicação */
+.event-publication-time {
+  font-size: 0.8em;
+  color: #cccccc;
+  margin-left: 10px;
+}
+
 /* Estilização do PostForm */
 .post-form {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 20px;
+}
+
+.post-publication-info {
+  margin-bottom: 10px;
+  font-size: 0.9em;
+  color: #cccccc;
 }
 
 .post-textarea {
@@ -409,6 +435,11 @@
   margin-right: 10px;
 }
 
+.image-upload-wrapper.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .photo-icon,
 .share-icon {
   font-size: 1.5rem;
@@ -431,7 +462,11 @@
   background-color: #72c974;
 }
 
-/* Estilização do Botão Cancelar */
+.submit-post-button:disabled {
+  background-color: #94d3a2;
+  cursor: not-allowed;
+}
+
 .cancel-button {
   background-color: transparent;
   border: 2px solid #FF6B6B;
@@ -449,6 +484,11 @@
   background-color: #FF6B6B;
   border-color: #FF6B6B;
   color: white;
+}
+
+.cancel-button:disabled {
+  background-color: rgba(255, 107, 107, 0.6);
+  cursor: not-allowed;
 }
 
 .image-preview {
@@ -486,4 +526,31 @@
   font-size: 2rem;
   color: var(--color-primary);
   margin-bottom: 5px;
+}
+
+/* Estilização Adicional para Eventos */
+.event-publication-time {
+  font-size: 0.8em;
+  color: var(--color-text-muted);
+  margin-left: 10px;
+}
+
+.event-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.event-options {
+  margin-left: auto;
+  position: relative;
+}
+
+.options-menu button {
+  font-size: 0.9em;
+}
+
+.options-menu button:disabled {
+  color: var(--color-text-muted);
 }

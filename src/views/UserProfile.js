@@ -121,6 +121,19 @@ const UserProfile = () => {
       events: [newPost, ...prevUserData.events],
     }));
   };
+
+  const formatDateTime = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    const date = new Date(dateString);
+    return date.toLocaleString("pt-BR", options);
+  };
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -902,6 +915,7 @@ const handleShareProfile = () => {
                     existingEvent={editingEvent}
                     onPostUpdated={handlePostUpdated}
                     onClose={() => setEditingEvent(null)}
+                    isEditAllowed={isWithin24Hours(editingEvent.createdAt)}
                   />
                 )}
 
@@ -919,27 +933,48 @@ const handleShareProfile = () => {
                           {userData.razao_social}
                         </span>
 
-                        {/* Ícone de três pontinhos */}
-                        {isWithin24Hours(event.createdAt) && (
-                          <div className="event-options">
-                            <ThreeDotsVertical
-                              className="options-icon"
-                              onClick={() => handleOptionsClick(index)}
-                            />
-                            {optionsVisibleIndex === index && (
-                              <div className="options-menu">
-                                <button onClick={() => handleEditEvent(event)}>
-                                  Editar
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteEvent(event)}
-                                >
-                                  Excluir
-                                </button>
-                              </div>
-                            )}
-                          </div>
+                        {/* Exibição da Data e Hora de Publicação */}
+                        {event.createdAt && (
+                          <span className="event-publication-time">
+                            {formatDateTime(event.createdAt)}
+                          </span>
                         )}
+
+                        {/* Ícone de três pontinhos sempre visível */}
+                        <div className="event-options">
+                          <ThreeDotsVertical
+                            className="options-icon"
+                            onClick={() => handleOptionsClick(index)}
+                          />
+                          {optionsVisibleIndex === index && (
+                            <div className="options-menu">
+                              {/* Botão "Editar" habilitado apenas se dentro de 24h */}
+                              <button
+                                onClick={() => handleEditEvent(event)}
+                                disabled={!isWithin24Hours(event.createdAt)}
+                                style={{
+                                  cursor: isWithin24Hours(event.createdAt)
+                                    ? "pointer"
+                                    : "not-allowed",
+                                  opacity: isWithin24Hours(event.createdAt)
+                                    ? 1
+                                    : 0.5,
+                                }}
+                                title={
+                                  !isWithin24Hours(event.createdAt)
+                                    ? "Edição disponível apenas nas primeiras 24 horas"
+                                    : "Editar Evento"
+                                }
+                              >
+                                Editar
+                              </button>
+                              {/* Botão "Excluir" sempre habilitado */}
+                              <button onClick={() => handleDeleteEvent(event)}>
+                                Excluir
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="event-details">
                         <p>{event.descricao || "Sem descrição"}</p>
