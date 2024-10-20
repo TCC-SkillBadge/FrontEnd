@@ -3,9 +3,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-top: 200px; /* Adiciona espaço suficiente para evitar que o conteúdo fique atrás da navbar */
   height: calc(100vh - 87px); /* Ajusta a altura para excluir a altura da navbar */
   background-color: transparent; /* Permite que a cor de fundo global apareça */
-  padding-top: 100px; /* Adiciona padding-top para evitar que o conteúdo fique por trás da navbar */
 }
 
 .create-plan-container {
@@ -104,7 +104,7 @@
   border-color: #FF6B6B;
   color: #FF6B6B;
   font-weight: bold;
-  margin-left: 10px;
+  margin-top: 20px; /* Aumenta a margem à esquerda para criar espaço entre os botões */
 }
 
 .create-plan-container .delete-button:hover {
@@ -121,4 +121,8 @@
 
 .form-check-input {
   margin-right: 10px;
+}
+
+.form-check-label {
+  color: #ffffff; /* Define a cor do texto do label como branco */
 }

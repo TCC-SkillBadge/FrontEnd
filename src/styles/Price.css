@@ -61,3 +61,12 @@
   margin-right: 10px;
   font-size: 1.2em;
 }
+
+.price-page {
+  text-align: center;
+  padding: 15px;
+  padding-top: 100px; /* Ajusta a altura para evitar que o conteúdo fique atrás da navbar */
+  color: white;
+  position: relative;
+  min-height: calc(100vh - 87px); /* Garante que a página preencha a altura total, menos a navbar */
+}

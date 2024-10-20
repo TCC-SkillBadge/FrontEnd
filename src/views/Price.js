@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { PlusCircle } from "react-bootstrap-icons"; // Importando o ícone de "+" do react-bootstrap-icons
+import { PlusCircle } from "react-bootstrap-icons";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/Price.css";
 import PlanCard from "../components/PlanCard";
-import { ClipLoader } from "react-spinners"; // Importando o ClipLoader do react-spinners
+import { ClipLoader } from "react-spinners";
 
 const Price = () => {
   const [plans, setPlans] = useState([]);
@@ -30,7 +30,6 @@ const Price = () => {
     setUserType(storedUserType);
   }, []);
 
-  // Reorganize os planos para garantir que o plano com prioridade fique no meio
   const highlightedPlan = plans.find((plan) => plan.prioridade);
   const otherPlans = plans.filter((plan) => !plan.prioridade);
 
