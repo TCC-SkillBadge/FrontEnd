@@ -4,6 +4,8 @@ import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   TagFill,
   JournalText,
@@ -36,8 +38,8 @@ const CreateBadge = () => {
       );
       setUserType("business");
       setUser(userInfoResponse.data);
-    } else{
-        navigate("/home")
+    } else {
+      navigate("/home")
     }
   };
 
@@ -72,10 +74,10 @@ const CreateBadge = () => {
       return (
         <div className="badge-card">
           <img
-            src={image_badge ? URL.createObjectURL(image_badge) : ""}            
+            src={image_badge ? URL.createObjectURL(image_badge) : ""}
             className="badge-preview"
           />
-          <h3>{formData.name_badge}</h3>          
+          <h3>{formData.name_badge}</h3>
         </div>
       )
     }
@@ -83,33 +85,40 @@ const CreateBadge = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if(user == null){
-      user = {email: "teste@email.com"}
-    }
-
-    const formDataToSend = new FormData();
-    formDataToSend.append('institution', user.email_comercial);
-    formDataToSend.append('name_badge', formData.name_badge);
-    formDataToSend.append('desc_badge', formData.desc_badge);
-    formDataToSend.append('validity_badge', formData.validity_badge);
-    formDataToSend.append('image_badge', image_badge);
-    formDataToSend.append('created_user', user.email_comercial);
+    const loadingToastId = toast.loading("Loading...");
 
     try {
+      if (user == null) {
+        user = { email: "teste@email.com" }
+      }
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('institution', user.email_comercial);
+      formDataToSend.append('name_badge', formData.name_badge);
+      formDataToSend.append('desc_badge', formData.desc_badge);
+      formDataToSend.append('validity_badge', formData.validity_badge);
+      formDataToSend.append('image_badge', image_badge);
+      formDataToSend.append('created_user', user.email_comercial);
+
+
       let response = await axios.post("http://localhost:7001/badges/create", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
+      toast.dismiss(loadingToastId);
+
       if (response.status === 201) {
-        alert("Badge registered successfully");
-        navigate("/badges");
+        toast.success("Badge registered successfully");
+        setTimeout(() => {
+          navigate("/badges");
+        }, 2000);
       }
     } catch (error) {
+      toast.dismiss(loadingToastId);
       console.error("Error registering badge:", error);
-      alert("Error registering badge");
+      toast.error("Error registering badge");
     }
   };
 
@@ -204,6 +213,18 @@ const CreateBadge = () => {
           </form>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Footer />
     </div>
   );

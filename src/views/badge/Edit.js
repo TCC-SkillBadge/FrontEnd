@@ -4,6 +4,8 @@ import axios from "axios";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   TagFill,
   JournalText,
@@ -12,7 +14,7 @@ import {
 } from "react-bootstrap-icons";
 
 const EditBadge = () => {
-  const { id_badge } = useParams(); 
+  const { id_badge } = useParams();
   const [userType, setUserType] = useState(null);
   let [user, setUser] = useState(null);
   const [badge, setBadge] = useState({
@@ -48,8 +50,8 @@ const EditBadge = () => {
       );
       setUserType("business");
       setUser(userInfoResponse.data);
-    } else{
-        navigate("/home")
+    } else {
+      navigate("/home")
     }
   };
 
@@ -84,7 +86,7 @@ const EditBadge = () => {
       return (
         <div className="badge-card">
           <img
-            src={image_badge ? URL.createObjectURL(image_badge) : ""}            
+            src={image_badge ? URL.createObjectURL(image_badge) : ""}
             className="badge-preview"
           />
           <h3>{badge.name_badge}</h3>
@@ -92,14 +94,14 @@ const EditBadge = () => {
         </div>
       )
     }
-    else{
+    else {
       return (
         <div className="badge-card">
           <img
-            src={badge.image_url ? badge.image_url : ""}            
+            src={badge.image_url ? badge.image_url : ""}
             className="badge-preview"
           />
-          <h3>{badge.name_badge}</h3>          
+          <h3>{badge.name_badge}</h3>
         </div>
       )
     }
@@ -107,33 +109,39 @@ const EditBadge = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if(user == null){
-      user = {email: "teste@email.com"}
-    }
-
-    const formDataToSend = new FormData();
-    formDataToSend.append('id_badge', badge.id_badge);
-    formDataToSend.append('name_badge', badge.name_badge);
-    formDataToSend.append('desc_badge', badge.desc_badge);
-    formDataToSend.append('validity_badge', badge.validity_badge);
-    formDataToSend.append('image_badge', image_badge);
-    formDataToSend.append('updated_user', user.email_comercial);
+    const loadingToastId = toast.loading("Loading...");
 
     try {
+      if (user == null) {
+        user = { email: "teste@email.com" }
+      }
+
+      const formDataToSend = new FormData();
+      formDataToSend.append('id_badge', badge.id_badge);
+      formDataToSend.append('name_badge', badge.name_badge);
+      formDataToSend.append('desc_badge', badge.desc_badge);
+      formDataToSend.append('validity_badge', badge.validity_badge);
+      formDataToSend.append('image_badge', image_badge);
+      formDataToSend.append('updated_user', user.email_comercial);
+
       let response = await axios.put("http://localhost:7001/badges/update", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
+      toast.dismiss(loadingToastId);
+
       if (response.status === 200) {
-        alert("Badge updated successfully");
-        navigate("/badges");
+        toast.success("Badge updated successfully");
+        setTimeout(() => {
+          navigate("/badges");
+        }, 2000);
       }
     } catch (error) {
+      toast.dismiss(loadingToastId);
       console.error("Error registering badge:", error);
-      alert("Error registering badge");
+      toast.error("Error updating badge");
     }
   };
 
@@ -228,6 +236,18 @@ const EditBadge = () => {
           </form>
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Footer />
     </div>
   );

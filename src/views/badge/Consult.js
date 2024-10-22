@@ -7,6 +7,9 @@ import { Carousel } from "react-responsive-carousel";
 import { Link, useNavigate } from "react-router-dom";
 import { PencilFill, TrashFill } from "react-bootstrap-icons";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ConfirmationModal from "../../components/ConfirmationModal";
 
 const Consult = () => {
   const [badges, setBadges] = useState([]);
@@ -16,6 +19,8 @@ const Consult = () => {
   const [loading, setLoading] = useState(true);
   const [orderBy, setOrderBy] = useState("created-last");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [badgeToInactivate, setBadgeToInactivate] = useState(null);
 
   const navigate = useNavigate();
 
@@ -110,10 +115,20 @@ const Consult = () => {
     }
   };
 
-  const handleDelete = async (e) => {
+  const openConfirmationModal = (e) => {
+    setBadgeToInactivate(e.currentTarget.getAttribute('data-id_badge'));
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setBadgeToInactivate(null);
+  };
+
+  const handleConfirmInactivate = async () => {
+    const loadingToastId = toast.loading("Loading...");
     try {
-      e.preventDefault();
-      const id_badge = e.currentTarget.getAttribute('data-id_badge');
+      const id_badge = badgeToInactivate;
 
       const formDataToSend = new FormData();
       formDataToSend.append('id_badge', `${id_badge}`);
@@ -125,16 +140,22 @@ const Consult = () => {
         }
       });
 
+      toast.dismiss(loadingToastId);
+
       if (response.status === 200) {
-        alert("Badge inactivated successfully");
-        fetchBadges();
+        toast.success("Badge inactivated successfully");
+        setTimeout(() => {
+          fetchBadges();
+        }, 2000);       
       }
     } catch (error) {
+      toast.dismiss(loadingToastId);
       console.error("Error inactivated badge:", error);
-      alert("Error inactivated badge");
+      toast.error("Error inactivated badge");
+    } finally {
+      handleCloseModal();
     }
   };
-
 
   const renderBadgesInSlides = (badges) => {
     const slides = [];
@@ -145,7 +166,7 @@ const Consult = () => {
         <div className="badge-slide" key={`slide-${i}`}>
           {badges.slice(i, i + itemsPerSlide).map((badge) => (
             <div key={badge.id_badge} className="badge-card">
-              <Link onClick={handleDelete} data-id_badge={badge.id_badge} className="delete-icon">
+              <Link onClick={openConfirmationModal} data-id_badge={badge.id_badge} className="delete-icon">
                 <TrashFill />
               </Link>
               <Link to={`/badges/edit/${badge.id_badge}`} className="edit-icon">
@@ -218,6 +239,27 @@ const Consult = () => {
           </Carousel>
         </div>
       </div>
+      <ConfirmationModal
+        show={showModal}
+        onHide={handleCloseModal}
+        onConfirm={handleConfirmInactivate}
+        title="Confirm Plan Deletion"
+        body="Are you sure you want to delete this plan?"
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
+      />
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Footer />
     </div>
   );
