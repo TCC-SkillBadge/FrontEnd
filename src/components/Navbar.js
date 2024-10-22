@@ -122,7 +122,7 @@ const NavBar = () => {
             <Nav.Link as={NavLink} to="/price">
               Plans
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/badge">
+            <Nav.Link as={NavLink} to="/badges">
               Badges
             </Nav.Link>
             <Nav.Link as={NavLink} to="/contact">

@@ -23,7 +23,7 @@ const Consult = () => {
     try {
       const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
       const email = userInfo && (userInfo.email || userInfo.email_admin || userInfo.email_comercial) ? userInfo.email || userInfo.email_admin || userInfo.email_comercial : "teste@email.com";
-      const response = await axios.get(`http://localhost:7001/badge/consultar?pesquisa=${email}`);
+      const response = await axios.get(`http://localhost:7001/badges/consult?search=${email}`);
       setBadges(response.data);
       setFilteredBadges(response.data);
       setLoading(false);
@@ -119,7 +119,7 @@ const Consult = () => {
       formDataToSend.append('id_badge', `${id_badge}`);
       formDataToSend.append('inactivated_user', `${user.email_comercial}`);
 
-      let response = await axios.put("http://localhost:7001/badge/excluir", formDataToSend, {
+      let response = await axios.put("http://localhost:7001/badges/inactivate", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -148,7 +148,7 @@ const Consult = () => {
               <Link onClick={handleDelete} data-id_badge={badge.id_badge} className="delete-icon">
                 <TrashFill />
               </Link>
-              <Link to={`/badge/edit/${badge.id_badge}`} className="edit-icon">
+              <Link to={`/badges/edit/${badge.id_badge}`} className="edit-icon">
                 <PencilFill />
               </Link>
               <img
@@ -156,7 +156,7 @@ const Consult = () => {
                 className="badge-preview"
               />
               <h3>{badge.name_badge}</h3>
-              <Link to={`/badge/details/${badge.id_badge}`}>
+              <Link to={`/badges/details/${badge.id_badge}`}>
                 <button>Details</button>
               </Link>
             </div>
@@ -203,7 +203,7 @@ const Consult = () => {
           You have {filteredBadges.length} badges
         </div>
         <div className="badges">
-          <Link to={"/badge/create"} className="badge-button">
+          <Link to={"/badges/create"} className="badge-button">
             Create
           </Link>
           <Carousel

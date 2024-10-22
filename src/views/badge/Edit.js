@@ -26,10 +26,10 @@ const EditBadge = () => {
 
   const fetchBadge = async () => {
     try {
-      const response = await axios.get(`http://localhost:7001/badge/consultar?id_badge=${id_badge}`);
+      const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
       setBadge(response.data);
     } catch (error) {
-      console.error('Erro ao buscar a badge:', error);
+      console.error('Error fetching the badge:', error);
     }
   };
 
@@ -99,8 +99,7 @@ const EditBadge = () => {
             src={badge.image_url ? badge.image_url : ""}            
             className="badge-preview"
           />
-          <h3>{badge.name_badge}</h3>
-          <button type="button" title={`link that will direct to detailed description: ` + badge.desc_badge}>Details</button>
+          <h3>{badge.name_badge}</h3>          
         </div>
       )
     }
@@ -122,7 +121,7 @@ const EditBadge = () => {
     formDataToSend.append('updated_user', user.email_comercial);
 
     try {
-      let response = await axios.put("http://localhost:7001/badge/atualizar", formDataToSend, {
+      let response = await axios.put("http://localhost:7001/badges/update", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -130,7 +129,7 @@ const EditBadge = () => {
 
       if (response.status === 200) {
         alert("Badge updated successfully");
-        navigate("/badge");
+        navigate("/badges");
       }
     } catch (error) {
       console.error("Error registering badge:", error);

@@ -53,7 +53,7 @@ const Details = () => {
     return (
       <div className="badge-details-page">
         <Navbar userType={userType} user={user} />
-        <BadgeDetails id_badge={id_badge} url_origem="/badge" />
+        <BadgeDetails id_badge={id_badge} url_origem="/badges" />
         <Footer />
       </div>
     );  

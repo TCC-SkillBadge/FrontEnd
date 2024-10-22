@@ -75,8 +75,7 @@ const CreateBadge = () => {
             src={image_badge ? URL.createObjectURL(image_badge) : ""}            
             className="badge-preview"
           />
-          <h3>{formData.name_badge}</h3>
-          <button type="button" title={`link that will direct to detailed description: ` + formData.desc_badge}>Details</button>
+          <h3>{formData.name_badge}</h3>          
         </div>
       )
     }
@@ -98,7 +97,7 @@ const CreateBadge = () => {
     formDataToSend.append('created_user', user.email_comercial);
 
     try {
-      let response = await axios.post("http://localhost:7001/badge/cadastrar", formDataToSend, {
+      let response = await axios.post("http://localhost:7001/badges/create", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -106,7 +105,7 @@ const CreateBadge = () => {
 
       if (response.status === 201) {
         alert("Badge registered successfully");
-        navigate("/badge");
+        navigate("/badges");
       }
     } catch (error) {
       console.error("Error registering badge:", error);

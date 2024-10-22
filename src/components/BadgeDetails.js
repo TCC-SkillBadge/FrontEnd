@@ -31,10 +31,10 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
 
     const fetchBadge = async () => {
         try {
-            const response = await axios.get(`http://localhost:7001/badge/consultar?id_badge=${id_badge}`);
+            const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
             setBadge(response.data);
         } catch (error) {
-            console.error('Erro ao buscar a badge:', error);
+            console.error('Error fetching the badge:', error);
         }
     };
 
@@ -43,7 +43,7 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
             const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
             setUser(storedUserInfo);
         } catch (error) {
-            console.error('Erro ao buscar instituição:', error);
+            console.error('Error fetching institution:', error);
         }
     };
 
