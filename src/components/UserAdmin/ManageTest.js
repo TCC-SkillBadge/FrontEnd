@@ -40,7 +40,7 @@ export const ManageTest = () => {
 
     useEffect(() => {
         if(!token || !tipoUsuario || !userInfo){
-            toast.error('Usuário não autenticado! Você não conseguirá fazer o que quer enquanto não se autenticar.');
+            toast.error('User not authenticated! You will not be able to proceed until you authenticate.');
         }
 
         const fetchSoftSkills = async () => {
@@ -55,8 +55,10 @@ export const ManageTest = () => {
             }
             catch(error){
                 let msg
-                if(error.response) msg = error.response.data.message
-                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                if(error.response) 
+                    msg = error.response.data.message
+                else if(error.request) 
+                    msg = 'Error trying to access the server'
                 return Promise.reject(msg);
             }
         };
@@ -85,8 +87,10 @@ export const ManageTest = () => {
             }
             catch(error){
                 let msg
-                if(error.response) msg = error.response.data.message
-                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                if(error.response) 
+                    msg = error.response.data.message
+                else if(error.request) 
+                    msg = 'Error trying to access the server'
                 return Promise.reject(msg);
             }
         }
@@ -181,10 +185,10 @@ export const ManageTest = () => {
     const confirmarRemoverQuestao = (e, idQ, tpQ) => {
         confirmPopup({
             target: e.currentTarget,
-            message: 'Deseja mesmo remover essa questão?',
+            message: 'Do you really want to remove this question?',
             icon: 'pi pi-exclamation-circle',
-            acceptLabel: 'Sim',
-            rejectLabel: 'Não',
+            acceptLabel: 'Yes',
+            rejectLabel: 'No',
             accept: () => removerQuestao(idQ, tpQ),
         });
     };
@@ -259,10 +263,10 @@ export const ManageTest = () => {
     const confirmarRemoverAlternativa = (e, idQ, idA, tpQ) => {
         confirmPopup({
             target: e.currentTarget,
-            message: 'Deseja mesmo remover essa alternativa?',
+            message: 'Do you really want to remove this alternative?',
             icon: 'pi pi-exclamation-circle',
-            acceptLabel: 'Sim',
-            rejectLabel: 'Não',
+            acceptLabel: 'Yes',
+            rejectLabel: 'No',
             accept: () => removerAlternativa(idQ, idA, tpQ),
         });
     };
@@ -285,10 +289,10 @@ export const ManageTest = () => {
     const confirmarSalvarAlteracoes = (e) => {
         confirmDialog({
             target: e.currentTarget,
-            message: 'Deseja mesmo salvar as alterações feitas?',
+            message: 'Do you really want to save the changes?',
             icon: 'pi pi-question-circle',
-            acceptLabel: 'Sim',
-            rejectLabel: 'Não',
+            acceptLabel: 'Yes',
+            rejectLabel: 'No',
             accept: salvarAlteracoes,
         });
     };
@@ -298,7 +302,7 @@ export const ManageTest = () => {
 
         const { email_admin } = JSON.parse(userInfo);
 
-        const salvando = toast.loading('Salvando Alterações...');
+        const salvando = toast.loading('Saving Changes...');
         baseUrlServicosGerais.post('/teste/gerir', {
             email_admin,
             data_alteracao: new Date(),
@@ -313,7 +317,7 @@ export const ManageTest = () => {
         })
         .then(() => {
             toast.update(salvando, {
-                render: 'Alterações salvas com sucesso!',
+                render: 'Changes saved successfully!',
                 type: 'success',
                 isLoading: false,
                 autoClose: 3000,
@@ -322,8 +326,10 @@ export const ManageTest = () => {
         })
         .catch((error) => {
             let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+            if(error.response) 
+                msg = error.response.data.message
+            else if(error.request) 
+                msg = 'Error trying to access the server'
             toast.update(salvando, {
                 render: `${msg}`,
                 type: 'error',
@@ -338,13 +344,13 @@ export const ManageTest = () => {
             const questsSS = questoes.filter((questao) => questao.id_soft_skill === softSkills[i].id_soft_skill);
             for(let j = 0; j < questsSS.length; j++){
                 if(questsSS[j].enunciado_questao === ''){
-                toast.error(`A questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] não possui enunciado!`, {
+                toast.error(`The question [${j + 1}] of the Soft Skill [${softSkills[i].nome_soft_skill}] does not have a statement!`, {
                     autoClose: 5000
                 });
                     return false;
                 }
                 if(questsSS[j].valor_questao === 0){
-                    toast.error(`A questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] não possui valor!`, {
+                    toast.error(`The question [${j + 1}] of the Soft Skill [${softSkills[i].nome_soft_skill}] does not have a value!`, {
                         autoClose: 5000
                     });
                     return false;
@@ -363,14 +369,14 @@ export const ManageTest = () => {
                     default:
                 };
                 if(alts.length < 2){
-                    toast.error(`A questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] precisa possuir no mínimo 2 alternativas!`, {
+                    toast.error(`The question [${j + 1}] of the Soft Skill [${softSkills[i].nome_soft_skill}] must have at least 2 alternatives!`, {
                         autoClose: 5000
                     });
                     return false;
                 }
                 for(let k = 0; k < alts.length; k++){
                     if(alts[k].texto_alternativa === ''){
-                        toast.error(`A alternativa [${k + 1}] da questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] não possui texto!`, {
+                        toast.error(`The alternative [${k + 1}] of the question [${j + 1}] of the Soft Skill [${softSkills[i].nome_soft_skill}] does not have text!`, {
                             autoClose: 5000
                         });
                         return false;
@@ -381,7 +387,7 @@ export const ManageTest = () => {
                                 break;
                             }
                             if(l === alts.length - 1){
-                                toast.error(`A questão [${j + 1}] da Soft Skill [${softSkills[i].nome_soft_skill}] não possui alternativa correta!`, {
+                                toast.error(`The question [${j + 1}] of the Soft Skill [${softSkills[i].nome_soft_skill}] does not have a correct alternative!`, {
                                     autoClose: 5000
                                 });
                                 return false;
@@ -488,7 +494,7 @@ export const ManageTest = () => {
         <div>
             <Navbar/>
             <div className='m-test-box'>
-                <h1>Gerir Avaliação de Competências</h1>
+                <h1>Manage Competency Assessment</h1>
                 <Divider/>
                 <div className='flex justify-content-center'>
                     <Messages ref={(el) => messages = el}/>
@@ -519,19 +525,19 @@ export const ManageTest = () => {
                                         id='btn-add-qm'
                                         className='btn mb-3'
                                         onClick={() => adicionarQuestao(softSkill.id_soft_skill, 'ME')}>
-                                            <i className='pi pi-plus'/> Múltipla Escolha
+                                            <i className='pi pi-plus'/> Multiple Choice
                                         </button>
                                         <button
                                         id='btn-add-qmv'
                                         className='btn mb-3'
                                         onClick={() => adicionarQuestao(softSkill.id_soft_skill, 'MV')}>
-                                            <i className='pi pi-plus'/> Múltipla Escolha com Valores
+                                            <i className='pi pi-plus'/> Multiple Choice with Values
                                         </button>
                                         <button
                                         id='btn-add-qr'
                                         className='btn mb-3'
                                         onClick={() => adicionarQuestao(softSkill.id_soft_skill, 'R')}>
-                                            <i className='pi pi-plus'/> Rankeamento
+                                            <i className='pi pi-plus'/> Ranking
                                         </button>
                                     </div>
                                 </div>
@@ -546,7 +552,7 @@ export const ManageTest = () => {
                                 <button
                                 className='btn btn-success'
                                 onClick={e => confirmarSalvarAlteracoes(e)}>
-                                    Salvar Alterações
+                                    Save Changes
                                 </button>
                             </div>
                         </div>
@@ -632,11 +638,11 @@ const Quests = (props) => {
     const valorTipoQuestao = (tpQ) => {
         switch(tpQ){
             case 'multipla_escolha':
-                return 'Múltipla Escolha';
+                return 'Multiple Choice';
             case 'rankeamento':
-                return 'Rankeamento';
+                return 'Ranking';
             case 'multipla_escolha_com_valores':
-                return 'Múltipla Escolha com Valores';
+                return 'Multiple Choice with Values';
             default:
         };
     };
@@ -663,7 +669,7 @@ const Quests = (props) => {
                     className={escolherEstilo(item.tipo_questao)}
                     key={item.id_questao}>
                         <div className='flex justify-content-between'>
-                            <h3>Questão {props.questoes.findIndex(questao => questao.id_questao === item.id_questao) + 1}</h3>
+                            <h3>Question {props.questoes.findIndex(questao => questao.id_questao === item.id_questao) + 1}</h3>
                             <button
                             className='btn btn-danger'
                             onClick={e => props.confirmarRemoverQuestao(e, item.id_questao, item.tipo_questao)}>
@@ -673,7 +679,7 @@ const Quests = (props) => {
                         <div className='mt-4 mb-3'>
                             <div className='flex flex-row align-items-center mb-2'>
                                 <div className='flex-1 mr-3'>
-                                    <label>Enunciado:</label>
+                                    <label>Statement:</label>
                                     <InputTextarea
                                     value={item.enunciado_questao}
                                     onChange={e => props.handleChangeEnunciado(e.target.value, item.id_questao)}/>  
@@ -681,7 +687,7 @@ const Quests = (props) => {
                                 <div className={layoutTipoQuestao(item.tipo_questao) + ' xl:block lg:block md:hidden sm:hidden'}>
                                     <div className='p-inputgroup mb-2'>
                                         <span className='p-inputgroup-addon'>
-                                            Tipo de Questão:
+                                            Question Type:
                                         </span>
                                         <InputText
                                         className='text-center'
@@ -691,10 +697,10 @@ const Quests = (props) => {
                                     </div>
                                     <div className='p-inputgroup'>
                                         <span className='p-inputgroup-addon'>
-                                            Valor da Questão:
+                                            Question Value:
                                         </span>
                                         <InputNumber
-                                        locale='pt-BR'
+                                        locale='en-US'
                                         maxFractionDigits={0}
                                         min={0}
                                         allowEmpty={false}
@@ -715,7 +721,7 @@ const Quests = (props) => {
                             <div className={layoutTipoQuestao(item.tipo_questao) + ' xl:hidden lg:hidden md:block sm:block'}>
                                 <div className='p-inputgroup mb-2'>
                                     <span className='p-inputgroup-addon'>
-                                        Tipo de Questão:
+                                        Question Type:
                                     </span>
                                     <InputText
                                     className='text-center'
@@ -725,10 +731,10 @@ const Quests = (props) => {
                                 </div>
                                 <div className='p-inputgroup'>
                                     <span className='p-inputgroup-addon'>
-                                        Valor da Questão:
+                                        Question Value:
                                     </span>
                                     <InputNumber
-                                    locale='pt-BR'
+                                    locale='en-US'
                                     maxFractionDigits={0}
                                     min={0}
                                     allowEmpty={false}
@@ -753,7 +759,7 @@ const Quests = (props) => {
                             <button
                             className='btn btn-primary pr-3 pl-3'
                             onClick={() => props.adicionarAlternativa(item.id_questao, item.tipo_questao)}>
-                                <i className='pi pi-plus'/> Alternativa
+                                <i className='pi pi-plus'/> Alternative
                             </button>
                         </div>
                     </animated.div>
@@ -792,7 +798,7 @@ const AlternativesME = (props) => {
                                 inputId={`rbCorreta-${item.id_questao}`}
                                 checked={item.correta}
                                 onChange={() => props.handleChangeCorreta(item.id_questao, item.id_alternativa)}/>
-                                <label htmlFor={`rbCorreta-${item.id_questao}`}>Correta</label>
+                                <label htmlFor={`rbCorreta-${item.id_questao}`}>Correct</label>
                             </div>
                             <button
                             className='btn btn-danger'
@@ -808,7 +814,7 @@ const AlternativesME = (props) => {
                                 inputId={`rbCorreta-${item.id_questao}`}
                                 checked={item.correta}
                                 onChange={() => props.handleChangeCorreta(item.id_questao, item.id_alternativa)}/>
-                                <label htmlFor={`rbCorreta-${item.id_questao}`}>Correta</label>
+                                <label htmlFor={`rbCorreta-${item.id_questao}`}>Correct</label>
                             </div>
                         </div>
                     </animated.div>
@@ -844,10 +850,10 @@ const AlternativesMV = (props) => {
                             <div className='flex mr-2 xl:block lg:hidden md:hidden sm:hidden'>
                                 <div className='p-inputgroup max-w-23rem'>
                                     <span className='p-inputgroup-addon'>
-                                        Porcentagem da Nota:
+                                        Percentage of Grade:
                                     </span>
                                     <InputNumber
-                                    locale='pt-BR'
+                                    locale='en-US'
                                     maxFractionDigits={0}
                                     min={0}
                                     max={100}
@@ -878,10 +884,10 @@ const AlternativesMV = (props) => {
                                 <div className='flex flex-row align-items-center'>
                                     <div className='p-inputgroup max-w-23rem'>
                                         <span className='p-inputgroup-addon'>
-                                            Porcentagem da Nota:
+                                            Percentage of Grade:
                                         </span>
                                         <InputNumber
-                                        locale='pt-BR'
+                                        locale='en-US'
                                         maxFractionDigits={0}
                                         min={0}
                                         max={100}
@@ -935,10 +941,10 @@ const AlternativesR = (props) => {
                             <div className='flex mr-2 xl:block lg:hidden md:hidden sm:hidden'>
                                 <div className='p-inputgroup max-w-21rem'>
                                     <span className='p-inputgroup-addon'>
-                                        Valor da Alternativa:
+                                        Alternative Value:
                                     </span>
                                     <InputNumber
-                                    locale='pt-BR'
+                                    locale='en-US'
                                     maxFractionDigits={0}
                                     min={0}
                                     allowEmpty={false}
@@ -966,10 +972,10 @@ const AlternativesR = (props) => {
                                 <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
                                 <div className='p-inputgroup max-w-21rem'>
                                     <span className='p-inputgroup-addon'>
-                                        Valor da Alternativa:
+                                        Alternative Value:
                                     </span>
                                     <InputNumber
-                                    locale='pt-BR'
+                                    locale='en-US'
                                     maxFractionDigits={0}
                                     min={0}
                                     allowEmpty={false}

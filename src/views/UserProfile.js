@@ -75,7 +75,7 @@ const UserProfile = () => {
   // Função para excluir o evento
   const handleDeleteEvent = async (event) => {
     const confirmDelete = window.confirm(
-      "Deseja realmente excluir este evento?"
+      "Do you really want to delete this event?"
     );
     if (!confirmDelete) return;
 
@@ -91,10 +91,10 @@ const UserProfile = () => {
         ...prevUserData,
         events: prevUserData.events.filter((e) => e.id !== event.id),
       }));
-      toast.success("Evento excluído com sucesso!");
+      toast.success("Event deleted successfully!");
     } catch (error) {
-      console.error("Erro ao excluir o evento:", error);
-      toast.error("Falha ao excluir o evento.");
+      console.error("Error deleting the event:", error);
+      toast.error("Failed to delete the event.");
     }
   };
 
@@ -141,7 +141,7 @@ const UserProfile = () => {
         let response;
 
         if (!token) {
-          setError("Usuário não autenticado");
+          setError("User not authenticated");
           setLoading(false);
           return;
         }
@@ -195,15 +195,15 @@ const UserProfile = () => {
             badges: response.data.badges || [],
           });
 
-          console.log("Eventos carregados:", eventsResponse.data);
+          console.log("Loaded events:", eventsResponse.data);
         } else {
-          setError("Tipo de usuário inválido");
+          setError("Invalid user type");
         }
 
         setLoading(false);
       } catch (error) {
-        console.error("Erro ao buscar informações do usuário:", error);
-        setError("Falha ao carregar os dados do usuário");
+        console.error("Error fetching user information:", error);
+        setError("Failed to load user data");
         setLoading(false);
       }
     };
@@ -296,62 +296,60 @@ const UserProfile = () => {
       }
 
       setIsEditing(false);
-      toast.success("Dados atualizados com sucesso");
+      toast.success("Data updated successfully");
     } catch (error) {
-      console.error("Erro ao atualizar os dados do usuário:", error);
-      toast.error("Falha ao atualizar os dados do usuário");
+      console.error("Error updating user data:", error);
+      toast.error("Failed to update user data");
     }
   };
 
-const handleShareProfile = () => {
-  let encodedEmail;
-  let publicProfileUrl;
+  const handleShareProfile = () => {
+    let encodedEmail;
+    let publicProfileUrl;
 
-  if (tipoUsuario === "UC") {
-    if (!userData.email) {
-      toast.error("Email não disponível.");
+    if (tipoUsuario === "UC") {
+      if (!userData.email) {
+        toast.error("Email not available.");
+        return;
+      }
+      encodedEmail = btoa(userData.email);
+      publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
+    } else if (tipoUsuario === "UE") {
+      if (!userData.email_comercial) {
+        toast.error("Commercial email not available.");
+        return;
+      }
+      encodedEmail = btoa(userData.email_comercial);
+      publicProfileUrl = `${window.location.origin}/public-profile-enterprise/${encodedEmail}`;
+    } else {
+      toast.error("Invalid user type.");
       return;
     }
-    encodedEmail = btoa(userData.email);
-    publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
-  } else if (tipoUsuario === "UE") {
-    if (!userData.email_comercial) {
-      toast.error("Email comercial não disponível.");
-      return;
-    }
-    encodedEmail = btoa(userData.email_comercial);
-    publicProfileUrl = `${window.location.origin}/public-profile-enterprise/${encodedEmail}`;
-  } else {
-    toast.error("Tipo de usuário inválido.");
-    return;
-  }
 
-  navigator.clipboard
-    .writeText(publicProfileUrl)
-    .then(() => {
-      toast.info("URL do perfil copiada para a área de transferência!");
-    })
-    .catch((error) => {
-      console.error("Erro ao copiar o link:", error);
-      toast.error("Não foi possível copiar o link.");
-    });
-};
-
-
+    navigator.clipboard
+      .writeText(publicProfileUrl)
+      .then(() => {
+        toast.info("Profile URL copied to clipboard!");
+      })
+      .catch((error) => {
+        console.error("Error copying the link:", error);
+        toast.error("Failed to copy the link.");
+      });
+  };
 
   const handleDownloadPortfolio = async () => {
     const doc = new jsPDF("p", "pt", "a4");
 
     doc.setFontSize(20);
-    doc.text("Portfólio do Usuário", 40, 50);
+    doc.text("User Portfolio", 40, 50);
 
     doc.setFontSize(12);
-    doc.text(`Nome: ${userData.fullName}`, 40, 90);
-    doc.text(`Ocupação: ${userData.occupation}`, 40, 110);
-    doc.text(`Sobre: ${userData.sobre}`, 40, 130); // Ajuste 'about' para 'sobre'
+    doc.text(`Name: ${userData.fullName}`, 40, 90);
+    doc.text(`Occupation: ${userData.occupation}`, 40, 110);
+    doc.text(`About: ${userData.sobre}`, 40, 130);
 
     doc.setFontSize(16);
-    doc.text("Educação:", 40, 160);
+    doc.text("Education:", 40, 160);
     userData.education.forEach((edu, index) => {
       doc.setFontSize(12);
       doc.text(
@@ -362,7 +360,7 @@ const handleShareProfile = () => {
     });
 
     doc.setFontSize(16);
-    doc.text("Experiência Profissional:", 40, 240);
+    doc.text("Professional Experience:", 40, 240);
     userData.professionalExperience.forEach((exp, index) => {
       doc.setFontSize(12);
       doc.text(
@@ -373,7 +371,7 @@ const handleShareProfile = () => {
     });
 
     doc.setFontSize(16);
-    doc.text("Idiomas:", 40, 320);
+    doc.text("Languages:", 40, 320);
     userData.languages.forEach((language, index) => {
       doc.setFontSize(12);
       doc.text(`${language}`, 60, 340 + index * 20);
@@ -392,7 +390,7 @@ const handleShareProfile = () => {
       doc.save("portfolio.pdf");
     }
 
-    toast.success("Portfólio baixado com sucesso");
+    toast.success("Portfolio downloaded successfully");
   };
 
   const handleTabChange = (tab) => {
@@ -456,20 +454,20 @@ const handleShareProfile = () => {
                 <h2 className="profile-name">{userData.fullName}</h2>
               )}
               <p className="profile-title">
-                {userData.occupation || "Ocupação não informada"}
+                {userData.occupation || "Occupation not provided"}
               </p>
               <div className="profile-actions">
                 <button onClick={handleEditToggle} className="edit-button">
                   <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
                 </button>
                 <button onClick={handleShareProfile} className="share-button">
-                  <ShareFill /> Compartilhar
+                  <ShareFill /> Share
                 </button>
                 <button
                   onClick={handleDownloadPortfolio}
                   className="download-button"
                 >
-                  <FileEarmarkArrowDownFill /> Baixar Portfólio
+                  <FileEarmarkArrowDownFill /> Download Portfolio
                 </button>
               </div>
             </div>
@@ -479,7 +477,7 @@ const handleShareProfile = () => {
             <div className="profile-sections">
               <div className="profile-section">
                 <label>
-                  <PersonFill className="icon" /> Sobre
+                  <PersonFill className="icon" /> About
                 </label>
                 <textarea
                   name="sobre" // Ajuste 'about' para 'sobre'
@@ -491,7 +489,7 @@ const handleShareProfile = () => {
 
               <div className="profile-section">
                 <h3>
-                  <MortarboardFill className="icon" /> Educação
+                  <MortarboardFill className="icon" /> Education
                 </h3>
                 {userData.education.map((edu, index) => (
                   <div key={index} className="profile-array-item">
@@ -499,7 +497,7 @@ const handleShareProfile = () => {
                     <input
                       type="text"
                       value={edu.institution}
-                      placeholder="Instituição"
+                      placeholder="Institution"
                       onChange={(e) =>
                         handleArrayChange(e, index, "institution", "education")
                       }
@@ -509,7 +507,7 @@ const handleShareProfile = () => {
                     <input
                       type="text"
                       value={edu.degree}
-                      placeholder="Grau"
+                      placeholder="Degree"
                       onChange={(e) =>
                         handleArrayChange(e, index, "degree", "education")
                       }
@@ -518,7 +516,7 @@ const handleShareProfile = () => {
                     <input
                       type="text"
                       value={edu.year}
-                      placeholder="Ano"
+                      placeholder="Year"
                       onChange={(e) =>
                         handleArrayChange(e, index, "year", "education")
                       }
@@ -542,13 +540,13 @@ const handleShareProfile = () => {
                   }
                   className="add-button"
                 >
-                  <PlusSquare /> Adicionar
+                  <PlusSquare /> Add
                 </button>
               </div>
 
               <div className="profile-section">
                 <h3>
-                  <Briefcase className="icon" /> Experiência Profissional
+                  <Briefcase className="icon" /> Professional Experience
                 </h3>
                 {userData.professionalExperience.map((exp, index) => (
                   <div key={index} className="profile-array-item">
@@ -556,7 +554,7 @@ const handleShareProfile = () => {
                     <input
                       type="text"
                       value={exp.company || ""}
-                      placeholder="Empresa"
+                      placeholder="Company"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -571,7 +569,7 @@ const handleShareProfile = () => {
                     <input
                       type="text"
                       value={exp.position || ""}
-                      placeholder="Cargo"
+                      placeholder="Position"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -585,7 +583,7 @@ const handleShareProfile = () => {
                     <input
                       type="text"
                       value={exp.dates || ""}
-                      placeholder="Período"
+                      placeholder="Dates"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -616,13 +614,13 @@ const handleShareProfile = () => {
                   }
                   className="add-button"
                 >
-                  <PlusSquare /> Adicionar
+                  <PlusSquare /> Add
                 </button>
               </div>
 
               <div className="profile-section">
                 <h3>
-                  <Globe className="icon" /> Idiomas
+                  <Globe className="icon" /> Languages
                 </h3>
                 {userData.languages.map((language, index) => (
                   <div key={index} className="profile-array-item">
@@ -630,7 +628,7 @@ const handleShareProfile = () => {
                     <input
                       type="text"
                       value={language}
-                      placeholder="Idioma"
+                      placeholder="Language"
                       onChange={(e) =>
                         handleArrayChange(e, index, null, "languages")
                       }
@@ -648,29 +646,28 @@ const handleShareProfile = () => {
                   onClick={() => handleAddItem("languages", "")}
                   className="add-button"
                 >
-                  <PlusSquare /> Adicionar
+                  <PlusSquare /> Add
                 </button>
               </div>
 
               <button onClick={handleSaveChanges} className="save-button">
-                Salvar Alterações
+                Save Changes
               </button>
             </div>
           ) : (
             <div className="profile-sections">
               <div className="profile-section">
                 <h3>
-                  <PersonFill className="icon" /> Sobre
+                  <PersonFill className="icon" /> About
                 </h3>
-                <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>{" "}
-                {/* Ajuste 'about' para 'sobre' */}
+                <p>{userData.sobre || "No description provided."}</p>
               </div>
               <div className="profile-section">
                 <h3>
-                  <MortarboardFill className="icon" /> Educação
+                  <MortarboardFill className="icon" /> Education
                 </h3>
                 {Array.isArray(userData.education) &&
-                userData.education.length > 0 ? (
+                  userData.education.length > 0 ? (
                   userData.education.map((edu, index) => (
                     <div key={index} className="education-item">
                       <div className="profile-info-row">
@@ -689,15 +686,15 @@ const handleShareProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>Nenhuma informação educacional fornecida.</p>
+                  <p>No educational information provided.</p>
                 )}
               </div>
               <div className="profile-section">
                 <h3>
-                  <Briefcase className="icon" /> Experiência Profissional
+                  <Briefcase className="icon" /> Professional Experience
                 </h3>
                 {Array.isArray(userData.professionalExperience) &&
-                userData.professionalExperience.length > 0 ? (
+                  userData.professionalExperience.length > 0 ? (
                   userData.professionalExperience.map((exp, index) => (
                     <div key={index}>
                       <div className="profile-info-row">
@@ -716,15 +713,15 @@ const handleShareProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>Nenhuma experiência profissional fornecida.</p>
+                  <p>No professional experience provided.</p>
                 )}
               </div>
               <div className="profile-section">
                 <h3>
-                  <Globe className="icon" /> Idiomas
+                  <Globe className="icon" /> Languages
                 </h3>
                 {Array.isArray(userData.languages) &&
-                userData.languages.length > 0 ? (
+                  userData.languages.length > 0 ? (
                   userData.languages.map((language, index) => (
                     <div key={index} className="profile-info-row">
                       <Flag className="icon" />
@@ -732,7 +729,7 @@ const handleShareProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>Nenhum idioma fornecido.</p>
+                  <p>No languages provided.</p>
                 )}
               </div>
             </div>
@@ -781,7 +778,7 @@ const handleShareProfile = () => {
                 <h2 className="profile-name">{userData.razao_social}</h2>
               )}
               <p className="profile-title">
-                {userData.cnpj || "CNPJ não informado"}
+                {userData.cnpj || "CNPJ not provided"}
               </p>
               <div className="company-badges">
                 {userData.municipio && (
@@ -805,7 +802,7 @@ const handleShareProfile = () => {
                   <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
                 </button>
                 <button onClick={handleShareProfile} className="share-button">
-                  <ShareFill /> Compartilhar Perfil
+                  <ShareFill /> Share Profile
                 </button>
               </div>
             </div>
@@ -816,13 +813,13 @@ const handleShareProfile = () => {
               onClick={() => handleTabChange("sobre")}
               className={activeTab === "sobre" ? "active" : ""}
             >
-              Sobre
+              About
             </button>
             <button
               onClick={() => handleTabChange("eventos")}
               className={activeTab === "eventos" ? "active" : ""}
             >
-              Eventos
+              Events
             </button>
             <button
               onClick={() => handleTabChange("badges")}
@@ -839,7 +836,7 @@ const handleShareProfile = () => {
                   <>
                     <div className="profile-section">
                       <label>
-                        <PersonFill className="icon" /> Sobre
+                        <PersonFill className="icon" /> About
                       </label>
                       <textarea
                         name="sobre" // Ajuste 'about' para 'sobre'
@@ -862,7 +859,7 @@ const handleShareProfile = () => {
                     </div>
                     <div className="profile-section">
                       <label>
-                        <Phone className="icon" /> Telefone
+                        <Phone className="icon" /> Phone
                       </label>
                       <input
                         type="text"
@@ -873,29 +870,28 @@ const handleShareProfile = () => {
                       />
                     </div>
                     <button onClick={handleSaveChanges} className="save-button">
-                      Salvar Alterações
+                      Save Changes
                     </button>
                   </>
                 ) : (
                   <>
                     <div className="profile-section">
                       <h3>
-                        <PersonFill className="icon" /> Sobre
+                        <PersonFill className="icon" /> About
                       </h3>
-                      <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>{" "}
-                      {/* Ajuste 'about' para 'sobre' */}
+                      <p>{userData.sobre || "No description provided."}</p>
                     </div>
                     <div className="profile-section">
                       <h3>
                         <Globe className="icon" /> Website
                       </h3>
-                      <p>{userData.website || "Não informado"}</p>
+                      <p>{userData.website || "Not provided"}</p>
                     </div>
                     <div className="profile-section">
                       <h3>
-                        <Phone className="icon" /> Telefone
+                        <Phone className="icon" /> Phone
                       </h3>
-                      <p>{userData.numero_contato || "Não informado"}</p>
+                      <p>{userData.numero_contato || "Not provided"}</p>
                     </div>
                   </>
                 )}
@@ -904,7 +900,7 @@ const handleShareProfile = () => {
 
             {activeTab === "eventos" && (
               <div className="eventos-section">
-                <h3>Eventos Promovidos</h3>
+                <h3>Promoted Events</h3>
 
                 {/* Componente para criar novos posts */}
                 <PostForm onPostCreated={handleNewPost} />
@@ -962,26 +958,26 @@ const handleShareProfile = () => {
                                 }}
                                 title={
                                   !isWithin24Hours(event.createdAt)
-                                    ? "Edição disponível apenas nas primeiras 24 horas"
-                                    : "Editar Evento"
+                                    ? "Editing available only within the first 24 hours"
+                                    : "Edit Event"
                                 }
                               >
-                                Editar
+                                Edit
                               </button>
                               {/* Botão "Excluir" sempre habilitado */}
                               <button onClick={() => handleDeleteEvent(event)}>
-                                Excluir
+                                Delete
                               </button>
                             </div>
                           )}
                         </div>
                       </div>
                       <div className="event-details">
-                        <p>{event.descricao || "Sem descrição"}</p>
+                        <p>{event.descricao || "No description"}</p>
                         {event.imageUrl && (
                           <img
                             src={event.imageUrl}
-                            alt="Imagem do evento"
+                            alt="Event Image"
                             className="event-image"
                           />
                         )}
@@ -989,14 +985,14 @@ const handleShareProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>Nenhum evento disponível.</p>
+                  <p>No events available.</p>
                 )}
               </div>
             )}
 
             {activeTab === "badges" && (
               <div className="badges-section">
-                <h3>Badges Conquistados</h3>
+                <h3>Earned Badges</h3>
                 {userData.badges && userData.badges.length > 0 ? (
                   <div className="badges-grid">
                     {userData.badges.map((badge, index) => (
@@ -1007,7 +1003,7 @@ const handleShareProfile = () => {
                     ))}
                   </div>
                 ) : (
-                  <p>Nenhum badge disponível.</p>
+                  <p>No badges available.</p>
                 )}
               </div>
             )}

@@ -32,19 +32,6 @@ const Home = () => {
   return (
     <div>
       <Navbar userType={userType} user={user} />
-      <div className="container-fluid home-content">
-        <div className="text-container">
-          <h1 className="home-title">
-            Suas medalhas com a segurança da nossa Blockchain.
-          </h1>
-          <p className="home-subtitle">
-            Um único lugar para <span className="emitir">emitir</span>,{" "}
-            <span className="conquistar">conquistar</span> e{" "}
-            <span className="armazenar">armazenar</span> todas as suas medalhas
-            de maneira segura.
-          </p>
-        </div>
-      </div>
       <div className="divisoria1">
         <img
           className="iconShieldSmall"
@@ -64,41 +51,41 @@ const Home = () => {
       </div>
       <div className="container">
         <div className="why-digital-medals">
-          <h2>Por que medalhas digitais?</h2>
-          <div className="reasons">
-            <h3>Compartilhamento</h3>
-            <p>
-              Compartilhe suas conquistas com um público mais amplo. Ao exibir
-              medalhas em mídias sociais, currículos ou portfólios, suas
-              realizações são comunicadas de forma visual e impactante,
-              inspirando e abrindo oportunidades no mundo educacional e
-              profissional.
-            </p>
+          <h2>Sharing</h2>
+          <p>
+            Share your achievements with a wider audience. By displaying
+            badges on social media, resumes, or portfolios, your
+            accomplishments are communicated in a visual and impactful way,
+            inspiring and opening opportunities in the educational and
+            professional world.
+          </p>
+          <br />
 
-            <h3>Currículo e portfólio modernos</h3>
-            <p>
-              Medalhas digitais estão se tornando uma parte moderna de
-              currículos e portfólios. Elas adicionam um elemento visual
-              dinâmico, tornando seu histórico mais envolvente e informativo.
-              Isso chama a atenção de empregadores e instituições de ensino e
-              servem de destaque em um mercado competitivo.
-            </p>
+          <h2>Modern Resume and Portfolio</h2>
+          <p>
+            Badges are becoming a modern part of resumes and
+            portfolios. They add a dynamic visual element, making your
+            history more engaging and informative. This catches the attention
+            of employers and educational institutions and serves as a
+            highlight in a competitive market.
+          </p>
+          <br />
 
-            <h3>Demonstração de Habilidade e Competências</h3>
-            <p>
-              Medalhas digitais são uma forma sólida de demonstrar suas
-              habilidades e competências. Elas não apenas contam uma história,
-              mas também validam suas competências de maneira objetiva.
-            </p>
+          <h2>Demonstration of Skills and Competencies</h2>
+          <p>
+            Badges are a solid way to demonstrate your skills and
+            competencies. They not only tell a story but also validate your
+            competencies in an objective manner.
+          </p>
+          <br />
 
-            <h3>Destaque</h3>
-            <p>
-              Num mundo cada vez mais competitivo, medalhas digitais te ajudam a
-              se destacar. Além de serem símbolos de conquista, também são
-              indicativos de um profissional ou indivíduo dedicado e orientado
-              para o sucesso.
-            </p>
-          </div>
+          <h2>Stand Out</h2>
+          <p>
+            In an increasingly competitive world, badges help you
+            stand out. Besides being symbols of achievement, they are also
+            indicators of a dedicated and success-oriented professional or
+            individual.
+          </p>
         </div>
       </div>
       <div className="divisoria2">
@@ -120,20 +107,13 @@ const Home = () => {
       </div>
       <div className="container">
         <div className="credibilidade-seguranca">
-          <h2>Credibilidade e Segurança</h2>
+          <h2>Credibility and Security</h2>
           <p>
-            Nossas medalhas digitais são projetadas com um conjunto de medidas
-            de segurança robustas, garantindo a integridade e autenticidade de
-            cada medalha. Isso significa que, quando alguém recebe uma medalha
-            digital, ela é mais do que apenas um símbolo bonito de conquista - é
-            um atestado sólido de suas habilidades e realizações.
-          </p>
-          <p>
-            Além disso, para garantir que as medalhas permaneçam seguras e à
-            prova de adulterações a longo prazo, armazenamos informações sobre
-            elas em uma tecnologia blockchain. Isso cria um registro imutável
-            que pode ser verificado a qualquer momento, proporcionando a mais
-            alta garantia de autenticidade.
+            Our badges are designed with a set of robust security
+            measures, ensuring the integrity and authenticity of each medal.
+            This means that when someone receives a digital medal, it is more
+            than just a beautiful symbol of achievement - it is a solid
+            testament to their skills and accomplishments.
           </p>
         </div>
       </div>
@@ -156,31 +136,23 @@ const Home = () => {
       </div>
       <div className="container">
         <div className="features-section">
-          <FeatureCard icon="/icons/home/image-card.svg" title="Imagem">
-            "Uma imagem cativante, alinhada à identidade visual da marca, que
-            tanto a empresa quanto o emissor se orgulhem de compartilhar."
+          <FeatureCard icon="Mission" title="Mission">
+            Facilitate the recognition of achievements and skills through an
+            innovative system of badges and soft skills, promoting engagement
+            and motivation in educational, professional, and social environments.
           </FeatureCard>
-          <FeatureCard icon="/icons/home/im.svg" title="Nome">
-            Cada medalha tem um nome que prontamente identifica a competência
-            que o ganhador conquistou.
+          <FeatureCard icon="Vision" title="Vision">
+            To be a renowned platform in the digital recognition of skills and
+            achievements, transforming the way individuals and organizations
+            share their accomplishments.
           </FeatureCard>
-          <FeatureCard icon="/icons/home/descricao.svg" title="Descrição">
-            Um texto claro e conciso que estrategicamente descreve as
-            habilidades e conhecimentos adquiridos pelo vencedor.
-          </FeatureCard>
-          <FeatureCard icon="/icons/home/criteria-icon.svg" title="Critérios">
-            Explica o motivo pelo qual o vencedor foi premiado com a medalha,
-            incluindo detalhes que variam desde a confirmação da presença mínima
-            até a avaliação da nota na prova final.
-          </FeatureCard>
-          <FeatureCard icon="/icons/home/calendario.svg" title="Validade">
-            Indica se a medalha é de prazo indeterminado ou se tem uma data de
-            expiração estabelecida pela instituição emissora.
-          </FeatureCard>
-          <FeatureCard icon="/icons/home/maleta.svg" title="Emissor">
-            Quando você clica no logotipo do emissor, o sistema abre um link
-            para uma 'página da empresa' que exibe todas as medalhas emitidas
-            por aquela instituição.
+          <FeatureCard icon="Values" title="Values">
+            <ul className="values-list">
+              <li>Innovation</li>
+              <li>Transparency</li>
+              <li>Security</li>
+              <li>Excellence</li>
+            </ul>
           </FeatureCard>
         </div>
       </div>

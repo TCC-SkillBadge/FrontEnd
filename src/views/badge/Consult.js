@@ -243,8 +243,8 @@ const Consult = () => {
         show={showModal}
         onHide={handleCloseModal}
         onConfirm={handleConfirmInactivate}
-        title="Confirm Plan Deletion"
-        body="Are you sure you want to delete this plan?"
+        title="Confirm Badge Inactivate"
+        body="Are you sure you want to delete this badge?"
         confirmButtonText="Delete"
         cancelButtonText="Cancel"
       />

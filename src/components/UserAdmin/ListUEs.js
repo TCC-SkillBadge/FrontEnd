@@ -4,8 +4,8 @@ import React from "react";
 const ListarUEs = () => {
   return (
     <div>
-      <h2>Listar UEs</h2>
-      <p>Placeholder content for Listar UEs.</p>
+      <h2>List UEs</h2>
+      <p>Placeholder content for listing UEs.</p>
     </div>
   );
 };

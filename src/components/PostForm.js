@@ -40,7 +40,7 @@ const PostForm = ({
     e.preventDefault();
 
     if (!isEditAllowed && existingEvent) {
-      toast.error("Não é mais possível editar este post.");
+      toast.error("It is no longer possible to edit this post.");
       return;
     }
 
@@ -68,7 +68,7 @@ const PostForm = ({
           }
         );
 
-        toast.success("Post atualizado com sucesso!");
+        toast.success("Post updated successfully!");
         onPostUpdated(response.data.evento);
       } else {
         response = await axios.post(
@@ -82,7 +82,7 @@ const PostForm = ({
           }
         );
 
-        toast.success("Post criado com sucesso!");
+        toast.success("Post created successfully!");
         onPostCreated(response.data.evento);
       }
 
@@ -90,8 +90,8 @@ const PostForm = ({
       setPostImage(null);
       onClose && onClose();
     } catch (error) {
-      console.error("Erro ao salvar o post:", error);
-      toast.error("Falha ao salvar o post.");
+      console.error("Error saving the post:", error);
+      toast.error("Failed to save the post.");
     } finally {
       setIsSubmitting(false);
     }
@@ -121,7 +121,7 @@ const PostForm = ({
       {existingEvent && existingEvent.createdAt && (
         <div className="post-publication-info">
           <p>
-            Publicado em:{" "}
+            Published on:{" "}
             <strong>{formatDateTime(existingEvent.createdAt)}</strong>
           </p>
         </div>
@@ -130,7 +130,7 @@ const PostForm = ({
       <textarea
         value={postText}
         onChange={handleTextChange}
-        placeholder="Escreva algo..."
+        placeholder="Write something..."
         className="post-textarea"
         disabled={existingEvent && !isEditAllowed}
       />
@@ -172,7 +172,7 @@ const PostForm = ({
             className="cancel-button"
             disabled={!isEditAllowed}
           >
-            Cancelar
+            Cancel
           </button>
         )}
       </div>
@@ -185,7 +185,7 @@ const PostForm = ({
 
       {existingEvent && existingEvent.imageUrl && !postImage && (
         <div className="image-preview">
-          <img src={existingEvent.imageUrl} alt="Imagem existente" />
+          <img src={existingEvent.imageUrl} alt="Existing image" />
         </div>
       )}
     </form>

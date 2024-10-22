@@ -122,12 +122,12 @@ const PublicProfileEnterprise = () => {
   };
 
   if (loading) {
-    return <div className="spinner-container">Carregando...</div>;
+    return <div className="spinner-container">Loading...</div>;
   }
 
   if (!userData) {
     return (
-      <div className="public-profile-container">Usuário não encontrado.</div>
+      <div className="public-profile-container">User not found.</div>
     );
   }
 
@@ -187,13 +187,13 @@ const PublicProfileEnterprise = () => {
             onClick={() => setActiveTab("sobre")}
             className={activeTab === "sobre" ? "active" : ""}
           >
-            Sobre
+            About
           </button>
           <button
             onClick={() => setActiveTab("eventos")}
             className={activeTab === "eventos" ? "active" : ""}
           >
-            Eventos
+            Events
           </button>
           <button
             onClick={() => setActiveTab("badges")}
@@ -208,15 +208,15 @@ const PublicProfileEnterprise = () => {
           {activeTab === "sobre" && (
             <div className="profile-section">
               <h3>
-                <PersonFill className="icon" /> Sobre
+                <PersonFill className="icon" /> About
               </h3>
-              <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+              <p>{userData.sobre || "No description provided."}</p>
             </div>
           )}
 
           {activeTab === "eventos" && (
             <div className="profile-section">
-              <h3>Eventos Promovidos</h3>
+              <h3>Promoted Events</h3>
               {userData.events && userData.events.length > 0 ? (
                 userData.events.map((event, index) => (
                   <div
@@ -250,7 +250,7 @@ const PublicProfileEnterprise = () => {
                                 [event.id]: !prevState[event.id],
                               }))
                             }
-                            title="Compartilhar Evento"
+                            title="Share Event"
                           />
                           {/* Opções de compartilhamento */}
                           {showShareOptions[event.id] && (
@@ -285,11 +285,11 @@ const PublicProfileEnterprise = () => {
                       </div>
                     </div>
                     <div className="event-details">
-                      <p>{event.descricao || "Sem descrição"}</p>
+                      <p>{event.descricao || "No description"}</p>
                       {event.imageUrl && (
                         <img
                           src={event.imageUrl}
-                          alt="Imagem do Evento"
+                          alt="Event Image"
                           className="event-image"
                         />
                       )}
@@ -297,7 +297,7 @@ const PublicProfileEnterprise = () => {
                   </div>
                 ))
               ) : (
-                <p>Nenhum evento disponível.</p>
+                <p>No events available.</p>
               )}
             </div>
           )}
@@ -315,7 +315,7 @@ const PublicProfileEnterprise = () => {
                   ))}
                 </div>
               ) : (
-                <p>Nenhum badge disponível.</p>
+                <p>No badges available.</p>
               )}
             </div>
           )}

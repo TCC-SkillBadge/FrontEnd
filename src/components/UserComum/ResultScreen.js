@@ -22,7 +22,7 @@ const ResultScreen = () => {
         <div>
             <Navbar/>
             <animated.div style={transicao} className='result-box'>
-                <h1>Resultados</h1>
+                <h1>Results</h1>
                 <Divider/>
                 <div className='flex justify-content-center'>
                     <Chart
@@ -43,7 +43,7 @@ const ResultScreen = () => {
                         },
                         colors: resultShow.map((resultado) => `#${resultado.cor_soft_skill}`),
                         title: {
-                            text: 'Pontuação por Soft Skill',
+                            text: 'Score by Soft Skill',
                             align: 'center',
                             style: {
                                 fontSize: '20px',
@@ -69,7 +69,7 @@ const ResultScreen = () => {
                     height={500}/>
                 </div>
                 <div className='flex justify-content-center mt-3'>
-                    <button className='btn btn-primary' onClick={() => window.location.replace('/')}>Voltar</button>
+                    <button className='btn btn-primary' onClick={() => window.location.replace('/')}>Back</button>
                 </div>
             </animated.div>
         </div>

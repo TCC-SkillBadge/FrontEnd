@@ -8,20 +8,20 @@ import "primeicons/primeicons.css";
 import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import Login from "./Login";
-import Cadastro from "./Cadastro";
+import Create from "./Create";
 import Wallet from "./Wallet";
 import Workflow from "./Workflow";
 import BadgeConsult from "./badge/Consult";
 import BadgeCreate from "./badge/Create";
 import BadgeEdit from "./badge/Edit";
 import BadgeDetails from "./badge/Details";
-import ContaUA from "../components/UserAdmin/ContaUA";
-import ContaUE from "../components/UserEmpresarial/ContaUE";
-import ContaUC from "../components/UserComum/ContaUC";
-import PesquisaEmpr from "../components/UserEmpresarial/PesquisaEmpr";
-import PesquisaAdmin from "../components/UserAdmin/PesquisaAdmin";
-import ListarUCs from "../components/UserAdmin/ListarUCs";
-import ListarUEs from "../components/UserAdmin/ListarUEs";
+import AccountUA from "../components/UserAdmin/AccountUA";
+import AccountUE from "../components/UserEmpresarial/AccountUE";
+import AccountUC from "../components/UserComum/AccountUC";
+import SearchUE from "../components/UserEmpresarial/SearchUE";
+import SearchAdmin from "../components/UserAdmin/SearchAdmin";
+import ListUCs from "../components/UserAdmin/ListUCs";
+import ListUEs from "../components/UserAdmin/ListUEs";
 import CreateServicePlan from "./CreateServicePlan";
 import EditServicePlan from "./EditServicePlan";
 import Price from "./Price";
@@ -34,6 +34,7 @@ import ManageTest from "../components/UserAdmin/ManageTest";
 import ListSoftSkills from "../components/UserAdmin/ListSoftSkills";
 import ProficiencyTest from "../components/UserComum/ProficiencyTest";
 import ResultScreen from "../components/UserComum/ResultScreen";
+import Requests from "./Requests";
 
 /*um comentario
  */
@@ -50,32 +51,27 @@ function App() {
         <Route path="/badges/create" element={<BadgeCreate />} />
         <Route path="/badges/edit/:id_badge" element={<BadgeEdit />} />
         <Route path="/badges/details/:id_badge" element={<BadgeDetails />} />
-        <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/contaUE" element={<ContaUE />} />
-        <Route path="/contaUC" element={<ContaUC />} />
-        <Route path="/contaUA" element={<ContaUA />} />
-        <Route path="/pesquisaEmpr" element={<PesquisaEmpr />} />
-        <Route path="/pesquisaAdmin" element={<PesquisaAdmin />} />
-        <Route path="/listarUCs" element={<ListarUCs />} />
-        <Route path="/listarUEs" element={<ListarUEs />} />
+        <Route path="/create" element={<Create />} />
+        <Route path="/accountUE" element={<AccountUE />} />
+        <Route path="/accountUC" element={<AccountUC />} />
+        <Route path="/accountUA" element={<AccountUA />} />
+        <Route path="/searchUE" element={<SearchUE />} />
+        <Route path="/searchAdmin" element={<SearchAdmin />} />
+        <Route path="/listUCs" element={<ListUCs />} />
+        <Route path="/listUEs" element={<ListUEs />} />
         <Route path="/price" element={<Price />} />
         <Route path="/createServicePlan" element={<CreateServicePlan />} />
         <Route path="/edit-plan/:id" element={<EditServicePlan />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<UserProfile />} />
-        <Route
-          path="/public-profile/:encodedEmail"
-          element={<PublicProfile />}
-        />
-        <Route
-          path="/public-profile-enterprise/:encodedEmail"
-          element={<PublicProfileEnterprise />}
-        />
+        <Route path="/public-profile/:encodedEmail" element={<PublicProfile />} />
+        <Route path="/public-profile-enterprise/:encodedEmail" element={<PublicProfileEnterprise />} />
         <Route path="/manage-test" element={<ManageTest />} />
         <Route path="/list-soft-skills" element={<ListSoftSkills />} />
         <Route path="/proficiency-test" element={<ProficiencyTest />} />
         <Route path="/result-screen" element={<ResultScreen />} />
+        <Route path="/requests" element={<Requests />} />
       </Routes>
     </div>
   );

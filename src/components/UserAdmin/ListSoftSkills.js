@@ -40,7 +40,7 @@ export const ListSoftSkills = () => {
 
     useEffect(() => {
         if(!token || !tipoUsuario || !userInfo) {
-            toast.error('Usuário não autenticado! Você não conseguirá fazer o que quer enquanto não se autenticar.');
+            toast.error('User not authenticated! You will not be able to proceed until you authenticate.');
         }
 
         pegaLista();
@@ -58,8 +58,11 @@ export const ListSoftSkills = () => {
         })
         .catch((error) => {
             let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+            if(error.response) 
+                msg = error.response.data.message
+            else if(error.request) 
+                msg = 'Error trying to access the server'
+
             messages.replace({
                 severity: 'error',
                 summary: 'Erro',
@@ -76,23 +79,23 @@ export const ListSoftSkills = () => {
     const confirmarEdicao = (e) => {
         confirmPopup({
             target: e.currentTarget,
-            message: 'Deseja mesmo editar essa Soft Skill?',
+            message: 'Do you really want to edit this Soft Skill?',
             icon: 'pi pi-exclamation-circle',
-            acceptLabel: 'Sim',
-            rejectLabel: 'Não',
+            acceptLabel: 'Yes',
+            rejectLabel: 'No',
             accept: () => editarSoftSkill(),
         });
     }
 
     const editarSoftSkill = async () => {
         if(managedSS.nome_soft_skill === '' || managedSS.descricao_soft_skill === '') {
-            toast.error('Deixe todos os campos preenchidos!');
+            toast.error('Please fill in all fields!');
             return;
         }
 
         console.log(managedSS);
 
-        const editando = toast.loading('Editando Soft Skill...');
+        const editando = toast.loading('Editing Soft Skill...');
         baseUrlServicosGerais.put('/editar', {
             nome_soft_skill: managedSS.nome_soft_skill,
             descricao_soft_skill: managedSS.descricao_soft_skill,
@@ -110,7 +113,7 @@ export const ListSoftSkills = () => {
             setEditando(false);
             setManagedSS(objSSInit);
             toast.update(editando, {
-                render: 'Soft Skill editada com sucesso!',
+                render: 'Soft Skill edited successfully!',
                 type: 'success',
                 isLoading: false,
                 autoClose: 3000
@@ -119,8 +122,10 @@ export const ListSoftSkills = () => {
         })
         .catch((error) => {
             let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Erro ao tentar acessar servidor'
+            if(error.response) 
+                msg = error.response.data.message
+            else if(error.request) 
+                msg = 'Error trying to access the server'
             toast.update(editando, {
                 render: `${msg}`,
                 type: 'error',
@@ -133,16 +138,16 @@ export const ListSoftSkills = () => {
     const confirmarDelecao = (e, idSS) => {
         confirmPopup({
             target: e.currentTarget,
-            message: 'Deseja mesmo deletar essa Soft Skill?',
+            message: 'Do you really want to delete this Soft Skill?',
             icon: 'pi pi-question-circle',
-            acceptLabel: 'Sim',
-            rejectLabel: 'Não',
+            acceptLabel: 'Yes',
+            rejectLabel: 'No',
             accept: () => deletarSoftSkill(idSS),
         });
     }
 
     const deletarSoftSkill = async (id) => {
-        const deletando = toast.loading('Deletando Soft Skill...');
+        const deletando = toast.loading('Deleting Soft Skill...');
         baseUrlServicosGerais.delete('/deletar', {
             headers: { Authorization: `Bearer ${token}` },
             params: {
@@ -152,7 +157,7 @@ export const ListSoftSkills = () => {
         })
         .then(() => {
             toast.update(deletando, {
-                render: 'Soft Skill deletada com sucesso!',
+                render: 'Soft Skill deleted successfully!',
                 type: 'success',
                 isLoading: false,
                 autoClose: 3000
@@ -161,8 +166,10 @@ export const ListSoftSkills = () => {
         })
         .catch((error) => {
             let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Erro ao tentar acessar servidor'
+            if(error.response) 
+                msg = error.response.data.message
+            else if(error.request) 
+                msg = 'Error trying to access the server'
             toast.update(deletando, {
                 render: `${msg}`,
                 type: 'error',
@@ -174,13 +181,13 @@ export const ListSoftSkills = () => {
 
     const registrarSoftSkill = async () => {
         if(managedSS.nome_soft_skill === '' || managedSS.descricao_soft_skill === '') {
-            toast.error('Preencha todos os campos!');
+            toast.error('Please fill in all fields!');
             return;
         }
 
         const { email_admin } = JSON.parse(userInfo);
 
-        const registrando = toast.loading('Registrando Soft Skill...');
+        const registrando = toast.loading('Registering Soft Skill...');
         baseUrlServicosGerais.post('/registrar', {
             nome_soft_skill: managedSS.nome_soft_skill,
             descricao_soft_skill: managedSS.descricao_soft_skill,
@@ -195,7 +202,7 @@ export const ListSoftSkills = () => {
             setMostraPopUp(false);
             setManagedSS(objSSInit);
             toast.update(registrando, {
-                render: 'Soft Skill registrada com sucesso!',
+                render: 'Soft Skill registered successfully!',
                 type: 'success',
                 isLoading: false,
                 autoClose: 3000
@@ -204,8 +211,10 @@ export const ListSoftSkills = () => {
         })
         .catch((error) => {
             let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Erro ao tentar acessar servidor'
+            if(error.response) 
+                msg = error.response.data.message
+            else if(error.request) 
+                msg = 'Error trying to access the server'
             toast.update(registrando, {
                 render: `${msg}`,
                 type: 'error',
@@ -219,7 +228,7 @@ export const ListSoftSkills = () => {
         <div>
             <Navbar/>
             <div className='list-box'>
-                <h1>Lista de Soft Skills</h1>
+                <h1>Soft Skills List</h1>
                 <Divider className='mb-4'/>
                 <div>
                     <div>
@@ -232,7 +241,7 @@ export const ListSoftSkills = () => {
                                         {softSkill.nome_soft_skill}
                                     </h3>
                                     <div className='flex flex-row align-items-center mr-4 pl-2'>
-                                        <h4>Cor:</h4>
+                                        <h4>Color:</h4>
                                         <div
                                         style={{
                                             backgroundColor: `#${softSkill.cor_soft_skill}`,
@@ -254,12 +263,12 @@ export const ListSoftSkills = () => {
                                         setEditando(true);
                                         setManagedSS(softSkill);
                                     }}>
-                                        Editar
+                                        Edit
                                     </button>
                                     <button
                                     className='btn btn-danger'
                                     onClick={(e) => confirmarDelecao(e, softSkill.id_soft_skill)}>
-                                        Excluir
+                                        Delete
                                     </button>
                                 </div>
                             </div>
@@ -291,7 +300,7 @@ export const ListSoftSkills = () => {
                 <div>
                     <div className='grid mt-4'>
                         <div className='xl:col-9 lg:col-8 md:col-12 sm:col-12'>
-                           <h4>Nome</h4>
+                           <h4>Name</h4>
                             <InputText
                             className='w-100'
                             value={managedSS.nome_soft_skill}
@@ -304,7 +313,7 @@ export const ListSoftSkills = () => {
                         </div>
                         <div className='flex xl:col-3 lg:col-4 md:col-12 sm:col-12 align-items-center xl:justify-content-center lg:justify-content-center'>
                             <div className='flex flex-row'>
-                               <h4>Cor</h4>
+                               <h4>Color</h4>
                                 <ColorPicker
                                 className='ml-3 max-w-4rem'
                                 value={managedSS.cor_soft_skill}
@@ -318,7 +327,7 @@ export const ListSoftSkills = () => {
                         </div>
                     </div>
                     <div>
-                        <h4>Descrição</h4>
+                        <h4>Description</h4>
                         <InputTextarea
                         className='w-100'
                         value={managedSS.descricao_soft_skill}
@@ -342,7 +351,7 @@ export const ListSoftSkills = () => {
                             setManagedSS(objSSInit)
                             if(editando) setEditando(false)
                         }}>
-                            Cancelar
+                            Cancel
                         </button>
                     </div>
                 </div>

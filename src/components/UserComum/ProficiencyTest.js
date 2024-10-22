@@ -47,7 +47,7 @@ export const ProficiencyTest = () => {
 
     useEffect(() => {
         if(!token || !tipoUsuario || !userInfo){
-            toast.error('Usuário não autenticado! Você não conseguirá fazer o que quer enquanto não se autenticar.');
+            toast.error('User not authenticated! You will not be able to proceed until you authenticate.');
             return;
         }
         
@@ -63,8 +63,10 @@ export const ProficiencyTest = () => {
             }
             catch(error){
                 let msg
-                if(error.response) msg = error.response.data.message
-                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                if(error.response) 
+                    msg = error.response.data.message
+                else if(error.request) 
+                    msg = 'Error trying to access the server'
                 return Promise.reject(msg);
             }
         };
@@ -87,8 +89,10 @@ export const ProficiencyTest = () => {
             }
             catch(error){
                 let msg
-                if(error.response) msg = error.response.data.message
-                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                if(error.response) 
+                    msg = error.response.data.message
+                else if(error.request) 
+                    msg = 'Error trying to access the server'
                 return Promise.reject(msg);
             }
         };
@@ -176,7 +180,7 @@ export const ProficiencyTest = () => {
             if(respostas[i].tipo_questao === 'multipla_escolha' || respostas[i].tipo_questao === 'multipla_escolha_com_valores'){
                 const escolhas = respostas[i].alternativas.filter((alt) => alt.escolha_feita);
                 if(escolhas.length === 0){
-                    toast.error(`Responda todas as questões.`);
+                    toast.error(`Answer all questions.`);
                     return false;
                 }
             }
@@ -209,8 +213,10 @@ export const ProficiencyTest = () => {
         .catch((error) => {
             setCarregandoResultados(false);
             let msg;
-            if(error.response) msg = error.response.data.message;
-            else if(error.request) msg = 'Erro ao tentar acessar servidor';
+            if(error.response) 
+                msg = error.response.data.message;
+            else if(error.request) 
+                msg = 'Error trying to access the server';
             toast.error(msg);
         });
     };
@@ -319,10 +325,10 @@ export const ProficiencyTest = () => {
     const confimarCancelar = (e) => {
         confirmPopup({
             target: e.currentTarget,
-            message: 'Deseja mesmo cancelar a prova?',
+            message: 'Do you really want to cancel the test?',
             icon: 'pi pi-exclamation-circle',
-            acceptLabel: 'Sim',
-            rejectLabel: 'Não',
+            acceptLabel: 'Yes',
+            rejectLabel: 'No',
             accept: () => cancelar(),
         });
     };
@@ -356,7 +362,7 @@ export const ProficiencyTest = () => {
         <div>
             <Navbar/>
             <div className='d-test-box'>
-                <h1>Avaliação de Competências</h1>
+                <h1>Proficiency Test</h1>
                 <Divider/>
                 <div className='flex justify-content-center'>
                     <Messages ref={(el) => messages = el}/>
@@ -367,7 +373,7 @@ export const ProficiencyTest = () => {
                     <div>
                         <div className='flex flex-row justify-content-between'>
                             <div>
-                                A prova possui duração de 35 minutos.
+                                The test duration is 35 minutes.
                             </div>
                             <div>
                                 <i className='pi pi-clock mr-2'/>
@@ -398,8 +404,8 @@ export const ProficiencyTest = () => {
                             }
                         </div>
                         <div className='flex flex-row justify-content-between'>
-                            <button className='btn btn-danger' onClick={(e) => confimarCancelar(e)}>Cancelar</button>
-                            <button className='btn btn-success' onClick={finalizarDoUsuario}>Finalizar</button>
+                            <button className='btn btn-danger' onClick={(e) => confimarCancelar(e)}>Cancel</button>
+                            <button className='btn btn-success' onClick={finalizarDoUsuario}>Finish</button>
                         </div>
                     </div>
                 }
@@ -423,7 +429,7 @@ export const ProficiencyTest = () => {
             onHide={() => {if (!carregandoResultados) return; setCarregandoResultados(false);}}>
                 <div className='flex flex-column align-items-center'>
                     <ClipLoader color='#F8F8FF' loading={carregandoResultados} size={150}/>
-                    <h2 className='text-center'>Calculando resultados...</h2>
+                    <h2 className='text-center'>Calculating results...</h2>
                 </div>
             </Dialog>
         </div>

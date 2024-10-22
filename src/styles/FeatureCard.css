@@ -1,19 +1,23 @@
 .feature-card {
-  background-color: rgba(0, 0, 0, 0.25); /* Preto com 25% de opacidade */
-  border-radius: 8px; /* Borda arredondada */
+  background-color: rgba(0, 0, 0, 0.25);
+  /* Preto com 25% de opacidade */
+  border-radius: 8px;
+  /* Borda arredondada */
   color: white;
   text-align: center;
   max-width: 300px;
   padding: 20px;
-  border: 2px solid; /* Borda com gradiente */
+  border: 2px solid;
+  /* Borda com gradiente */
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
   margin: 10px;
 }
 
-.feature-card img.feature-icon {
+.feature-card .feature-icon {
   width: 50px;
   height: 50px;
   margin-bottom: 20px;
+  color: #D273FF;
 }
 
 .feature-card h3 {

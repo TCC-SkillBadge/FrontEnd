@@ -18,9 +18,9 @@ const Orders = () => {
 
   // Mapeamento dos nomes de canais para algo mais intuitivo
   const channelMap = {
-    criacao_badge: "Criação de Badge",
-    edicao_badge: "Edição de Badge",
-    suporte: "Suporte",
+    criacao_badge: "Badge Creation",
+    edicao_badge: "Badge Editing",
+    suporte: "Support",
   };
 
   useEffect(() => {
