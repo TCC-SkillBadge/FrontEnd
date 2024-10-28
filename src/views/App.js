@@ -35,6 +35,7 @@ import ListSoftSkills from "../components/UserAdmin/ListSoftSkills";
 import ProficiencyTest from "../components/UserComum/ProficiencyTest";
 import ResultScreen from "../components/UserComum/ResultScreen";
 import Requests from "./Requests";
+import ClaimBadgePage from "./ClaimBadgePage";
 
 /*um comentario
  */
@@ -65,13 +66,20 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<UserProfile />} />
-        <Route path="/public-profile/:encodedEmail" element={<PublicProfile />} />
-        <Route path="/public-profile-enterprise/:encodedEmail" element={<PublicProfileEnterprise />} />
+        <Route
+          path="/public-profile/:encodedEmail"
+          element={<PublicProfile />}
+        />
+        <Route
+          path="/public-profile-enterprise/:encodedEmail"
+          element={<PublicProfileEnterprise />}
+        />
         <Route path="/manage-test" element={<ManageTest />} />
         <Route path="/list-soft-skills" element={<ListSoftSkills />} />
         <Route path="/proficiency-test" element={<ProficiencyTest />} />
         <Route path="/result-screen" element={<ResultScreen />} />
         <Route path="/requests" element={<Requests />} />
+        <Route path="/claim-badge" element={<ClaimBadgePage />} />{" "}
       </Routes>
     </div>
   );
