@@ -32,7 +32,7 @@ const UserProfile = () => {
   const [userData, setUserData] = useState({
     fullName: "",
     occupation: "",
-    about: "", // Alterado de 'sobre' para 'about'
+    about: "",
     education: [],
     professionalExperience: [],
     languages: [],
@@ -316,7 +316,11 @@ const UserProfile = () => {
     currentY += 20;
     userData.education.forEach((edu, index) => {
       doc.setFontSize(12);
-      doc.text(`${edu.institution}, ${edu.degree}, ${edu.year}`, 60, currentY);
+      doc.text(
+        `${edu.institution}, ${edu.degree}, ${edu.admissionYear} - ${edu.graduationYear}`,
+        60,
+        currentY
+      );
       currentY += 20;
     });
 
@@ -326,7 +330,11 @@ const UserProfile = () => {
     currentY += 20;
     userData.professionalExperience.forEach((exp, index) => {
       doc.setFontSize(12);
-      doc.text(`${exp.company}, ${exp.position}, ${exp.dates}`, 60, currentY);
+      doc.text(
+        `${exp.company}, ${exp.position}, ${exp.startDate} - ${exp.endDate}`,
+        60,
+        currentY
+      );
       currentY += 20;
     });
 
@@ -544,12 +552,33 @@ const UserProfile = () => {
                       }
                       className="profile-input"
                     />
+                    <CalendarFill className="icon" />
                     <input
                       type="text"
-                      value={edu.year || ""}
-                      placeholder="Year"
+                      value={edu.admissionYear || ""}
+                      placeholder="Admission Year"
                       onChange={(e) =>
-                        handleArrayChange(e, index, "year", "education")
+                        handleArrayChange(
+                          e,
+                          index,
+                          "admissionYear",
+                          "education"
+                        )
+                      }
+                      className="profile-input"
+                    />
+                    <CalendarFill className="icon" />
+                    <input
+                      type="text"
+                      value={edu.graduationYear || ""}
+                      placeholder="Graduation Year"
+                      onChange={(e) =>
+                        handleArrayChange(
+                          e,
+                          index,
+                          "graduationYear",
+                          "education"
+                        )
                       }
                       className="profile-input"
                     />
@@ -566,7 +595,8 @@ const UserProfile = () => {
                     handleAddItem("education", {
                       degree: "",
                       institution: "",
-                      year: "",
+                      admissionYear: "",
+                      graduationYear: "",
                     })
                   }
                   className="add-button"
@@ -611,15 +641,31 @@ const UserProfile = () => {
                       }
                       className="profile-input"
                     />
+                    <CalendarFill className="icon" />
                     <input
                       type="text"
-                      value={exp.dates || ""}
-                      placeholder="Dates"
+                      value={exp.startDate || ""}
+                      placeholder="Start Date"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
                           index,
-                          "dates",
+                          "startDate",
+                          "professionalExperience"
+                        )
+                      }
+                      className="profile-input"
+                    />
+                    <CalendarFill className="icon" />
+                    <input
+                      type="text"
+                      value={exp.endDate || ""}
+                      placeholder="End Date"
+                      onChange={(e) =>
+                        handleArrayChange(
+                          e,
+                          index,
+                          "endDate",
                           "professionalExperience"
                         )
                       }
@@ -640,7 +686,8 @@ const UserProfile = () => {
                     handleAddItem("professionalExperience", {
                       company: "",
                       position: "",
-                      dates: "",
+                      startDate: "",
+                      endDate: "",
                     })
                   }
                   className="add-button"
@@ -680,7 +727,10 @@ const UserProfile = () => {
                         <span className="education-degree">{edu.degree}</span>
                       </div>
                       <div className="profile-info-row">
-                        <span className="education-dates">{edu.year}</span>
+                        <CalendarFill className="icon" />
+                        <span className="education-dates">
+                          {edu.admissionYear} - {edu.graduationYear}
+                        </span>
                       </div>
                     </div>
                   ))
@@ -695,7 +745,7 @@ const UserProfile = () => {
                 {Array.isArray(userData.professionalExperience) &&
                 userData.professionalExperience.length > 0 ? (
                   userData.professionalExperience.map((exp, index) => (
-                    <div key={index}>
+                    <div key={index} className="experience-item">
                       <div className="profile-info-row">
                         <Building className="icon" />
                         <span className="profile-info-text">{exp.company}</span>
@@ -707,7 +757,10 @@ const UserProfile = () => {
                         </span>
                       </div>
                       <div className="profile-info-row">
-                        <span className="education-dates">{exp.dates}</span>
+                        <CalendarFill className="icon" />
+                        <span className="education-dates">
+                          {exp.startDate} - {exp.endDate}
+                        </span>
                       </div>
                     </div>
                   ))
