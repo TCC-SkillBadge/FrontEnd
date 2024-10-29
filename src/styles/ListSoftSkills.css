@@ -1,5 +1,13 @@
+:root{
+    --btn-danger-color: #d42c2c;
+    --btn-success-color: #046f0f;
+    --btn-primary-color: #b74df0;
+    --list-box-bckcolor: #1c193b;
+    --list-skill-box-bckcolor: #28213f;
+}
+
 .list-box{
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: var(--list-box-bckcolor);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
@@ -7,18 +15,36 @@
     margin: auto;
     border: 2px solid;
     border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    color: white;
     padding: 1%;
     margin-top: 4rem;
     margin-bottom: 4rem;
+    color: white
+}
+
+@media (max-width: 1600px){
+    .list-box{
+        width: 70%;
+    }
+}
+
+@media (max-width: 1100px){
+    .list-box{
+        width: 80%;
+    }
+}
+
+@media (max-width: 800px){
+    .list-box{
+        width: 90%;
+    }
 }
 
 .list-skill-box{
-    border-style: solid;
+    background-color: var(--list-skill-box-bckcolor);
     border-radius: 8px;
-    border-width: 1px;
-    padding: 10px;
-    margin-bottom: 2%;
+    padding: 1%;
+    margin: 2%;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
 }
 
 .list-box .p-message-error{
@@ -37,50 +63,43 @@
 .list-box .btn{
     margin-left: 5%;
     margin-right: 5%;
+    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+}
+
+.list-box .btn:hover{
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
 }
 
 .list-box .btn-primary{
     min-width: 8rem;
     border-radius: 5px;
     background-color: transparent;
-    color: #00BFFF;
+    color: var(--btn-primary-color);
     font-weight: bold;
-    border: 2px solid #00BFFF;
+    border: 2px solid var(--btn-primary-color);
     padding: 7px;
 }
 
 .list-box .btn-primary:hover{
-    background-color: #00BFFF;
+    background-color: var(--btn-primary-color);
     color: white;
+    border-color: var(--btn-primary-color);
 }
 
 .list-box .btn-danger{
     min-width: 8rem;
     border-radius: 5px;
     background-color: transparent;
-    color: #FF6347;
+    color: var(--btn-danger-color);
     font-weight: bold;
-    border: 2px solid #FF6347;
+    border: 2px solid var(--btn-danger-color);
     padding: 7px;
 }
 
 .list-box .btn-danger:hover{
-    background-color: #FF6347;
+    background-color: var(--btn-danger-color);
     color: white;
-}
-
-.list-box .btn-success{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #32CD32;
-    font-weight: bold;
-    border: 2px solid #32CD32;
-    padding: 7px;
-}
-
-.list-box .btn-success:hover{
-    background-color: #32CD32;
-    color: white;
+    border-color: var(--btn-danger-color);
 }
 
 .p-confirm-popup{
@@ -101,8 +120,7 @@
     border-radius: 10px;
     width: 60%;
     border: 2px solid;
-    background-color: rgba(0, 0, 0, 0.3);
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    background-color: #1c193b;
     border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
 }
 
@@ -112,8 +130,8 @@
 }
 
 .edit-box .p-dialog-content{
-    background-color: #0a0b16;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    background-color: #28213f;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
     color: white;
     padding: 3%;
 }
@@ -140,34 +158,41 @@
 .edit-box .btn{
     margin-left: 5%;
     margin-right: 5%;
+    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+}
+
+.edit-box .btn:hover{
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
 }
 
 .edit-box .btn-success{
     min-width: 8rem;
     border-radius: 5px;
     background-color: transparent;
-    color: #32CD32;
+    color: var(--btn-success-color);
     font-weight: bold;
-    border: 2px solid #32CD32;
+    border: 2px solid var(--btn-success-color);
     padding: 7px;
 }
 
 .edit-box .btn-success:hover{
-    background-color: #32CD32;
+    background-color: var(--btn-success-color);
     color: white;
+    border-color: var(--btn-success-color);
 }
 
 .edit-box .btn-danger{
     min-width: 8rem;
     border-radius: 5px;
     background-color: transparent;
-    color: #FF6347;
+    color: var(--btn-danger-color);
     font-weight: bold;
-    border: 2px solid #FF6347;
+    border: 2px solid var(--btn-danger-color);
     padding: 7px;
 }
 
 .edit-box .btn-danger:hover{
-    background-color: #FF6347;
+    background-color: var(--btn-danger-color);
     color: white;
+    border-color: var(--btn-danger-color);
 }

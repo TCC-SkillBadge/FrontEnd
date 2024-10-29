@@ -1,5 +1,5 @@
 import React from "react";
-import { EnvelopeFill, LockFill, Building, Phone, GeoAltFill } from "react-bootstrap-icons";
+import { EnvelopeFill, LockFill, Building, Phone, GeoAltFill, PersonCircle } from "react-bootstrap-icons";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 
@@ -22,6 +22,20 @@ const BusinessUserForm = ({
             id="email"
             placeholder="Business Email"
             value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+      </div>
+      <div className="form-group">
+        <div className="input-icon">
+          <PersonCircle />
+          <input
+            type="text"
+            className="form-control"
+            id="username"
+            placeholder="Username"
+            value={formData.username}
             onChange={handleChange}
             required
           />

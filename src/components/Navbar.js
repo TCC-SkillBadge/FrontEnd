@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Navbar,
   Nav,
@@ -13,6 +13,8 @@ import {
 } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { OverlayPanel } from 'primereact/overlaypanel';
+import ChatBox from "./ChatBox";
 import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
@@ -23,6 +25,8 @@ const NavBar = () => {
   const [notifications, setNotifications] = useState([]); // Estado para notificações
   const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para o dropdown
   const navigate = useNavigate();
+
+  let op = useRef(null);
 
   useEffect(() => {
     const storedUserType = sessionStorage.getItem("tipoUsuario");
@@ -296,6 +300,14 @@ const NavBar = () => {
     );
   };
 
+  const renderChat = () => {
+    return (
+      <button className="btn-chat" onClick={(e) => op.current.toggle(e)}>
+        <i className="bi bi-chat-left"></i>
+      </button>
+    );
+  };
+
   return (
     <Navbar expand="lg" className="navbar">
       <Container fluid>
@@ -313,6 +325,8 @@ const NavBar = () => {
             />
           </Form>
           <Nav>
+            {user && (userType !== 'UA') && renderChat()}{" "}
+            {/* Exibe o ícone do chat apenas se houver usuário e ele não for um usuário administrativo */}
             {user && renderNotifications()}{" "}
             {/* Exibe o sino de notificações apenas se houver usuário */}
             {user ? (
@@ -329,6 +343,14 @@ const NavBar = () => {
             )}
           </Nav>
         </Navbar.Collapse>
+        <OverlayPanel
+        id="chat-panel"
+        className="chatbox-panel"
+        ref={op}
+        dismissable={false}
+        showCloseIcon>
+            <ChatBox/>
+        </OverlayPanel>
       </Container>
     </Navbar>
   );

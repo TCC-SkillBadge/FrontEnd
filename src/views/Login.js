@@ -52,15 +52,18 @@ const handleLogin = async (
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: { userType: 'UC' },
           }
         );
       } else if (tipoUsuario === "UE") {
+        console.log('Entrei no else if');
         userInfoResponse = await axios.get(
           `http://localhost:7003/api/acessar-info-usuario-jwt`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: { userType: 'UE' },
           }
         );
       } else if (tipoUsuario === "UA") {
@@ -70,11 +73,13 @@ const handleLogin = async (
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: { userType: 'UA' },
           }
         );
       }
 
       if (userInfoResponse && userInfoResponse.status === 200) {
+        console.log('Entrei no if');
         const userInfo = userInfoResponse.data;
         sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
         return true;
@@ -130,6 +135,8 @@ const handleLogin = async (
         pending: "Logging in...",
       }
     );
+
+
   };
 
   const handleForgotPassword = async () => {
@@ -165,28 +172,6 @@ const handleLogin = async (
       }
       setShowConfirmationModal(false);
     })
-
-    // const promise = axios.post(
-    //   "http://localhost:7000/api/user/request-password-reset",
-    //   {
-    //     email: formData.email,
-    //   }
-    // );
-
-    // toast.promise(promise, {
-    //   pending: "Sending reset link...",
-    //   success: "A link to reset your password has been sent to your email.",
-    //   error: "Error sending password reset link",
-    // });
-
-    // try {
-    //   const response = await promise;
-    //   if (response.status === 200) {
-    //     setShowConfirmationModal(false); // Hide the confirmation modal
-    //   }
-    // } catch (error) {
-    //   // Handle the error case in the toast.promise
-    // }
   };
 
   const handleForgotPasswordClick = () => {
@@ -202,15 +187,6 @@ const handleLogin = async (
 
   const confirmForgotPassword = () => {
     handleForgotPassword(); // Call the forgot password handler
-  };
-
-  const showPassword = () => {
-    const passwordInput = document.getElementById("password");
-    if (passwordInput.type === "password") {
-      passwordInput.type = "text";
-    } else {
-      passwordInput.type = "password";
-    }
   };
 
   return (

@@ -16,6 +16,7 @@ const Cadastro = () => {
   const [userType, setUserType] = useState("common");
   const [formData, setFormData] = useState({
     fullName: "",
+    username: "",
     occupation: "",
     phone: "",
     country: "",
@@ -89,6 +90,7 @@ const Cadastro = () => {
       if (userType === "common") {
         response = await axios.post("http://localhost:7000/api/user/register", {
           email: formData.email,
+          username: formData.username,
           password: formData.password,
           fullName: formData.fullName,
           occupation: formData.occupation,
@@ -98,6 +100,7 @@ const Cadastro = () => {
       } else if (userType === "business") {
         response = await axios.post("http://localhost:7003/api/cadastrar", {
           email_comercial: formData.email,
+          username: formData.username,
           senha: formData.password,
           razao_social: companyData.nomeEmpresa,
           cnpj: companyData.cnpj,
@@ -111,6 +114,7 @@ const Cadastro = () => {
       } else if (userType === "admin") {
         response = await axios.post("http://localhost:7004/admin/cadastrar", {
           email_admin: formData.email,
+          username: formData.username,
           senha: formData.password,
           nome_admin: formData.fullName,
           cargo: formData.occupation,

@@ -1,5 +1,5 @@
 import React from "react";
-import { EnvelopeFill, LockFill, PersonFill, Briefcase } from "react-bootstrap-icons";
+import { EnvelopeFill, LockFill, PersonFill, Briefcase, PersonCircle } from "react-bootstrap-icons";
 
 const AdminUserForm = ({ formData, handleChange }) => {
   return (
@@ -13,6 +13,20 @@ const AdminUserForm = ({ formData, handleChange }) => {
             id="email"
             placeholder="Admin Email"
             value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+      </div>
+      <div className="form-group">
+        <div className="input-icon">
+          <PersonCircle />
+          <input
+            type="text"
+            className="form-control"
+            id="username"
+            placeholder="Username"
+            value={formData.username}
             onChange={handleChange}
             required
           />

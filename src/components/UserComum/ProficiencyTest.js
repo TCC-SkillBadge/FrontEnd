@@ -14,6 +14,7 @@ import { ConfirmPopup } from 'primereact/confirmpopup';
 import { Dialog } from 'primereact/dialog';
 import { confirmPopup } from 'primereact/confirmpopup';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
+import { ResultChart } from './ResultScreen';
 import '../../styles/ProficiencyTest.css';
 
 const baseUrlServicosGeraisSS = axios.create({
@@ -31,32 +32,84 @@ const baseURLUC = axios.create({
 export const ProficiencyTest = () => {
     const [softSkills, setSoftSkills] = useState([]);
     const [respostas, setRespostas] = useState([]);
-    const [carregando, setCarregando] = useState(true);
-    const [tudoOK, setTudoOK] = useState(false);
-    const [timerMinutos, setTimerMinutos] = useState(35);
-    const [timerSegundos, setTimerSegundos] = useState(0);
-    const [carregandoResultados, setCarregandoResultados] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [allFine, setAllFine] = useState(true);
+    const [timerMinutes, setTimerMinutes] = useState(35);
+    const [timerSeconds, setTimerSeconds] = useState(0);
+    const [loadingResults, setLoadingResults] = useState(false);
+    const [startTest, setStartTest] = useState(false);
+    const [alreadyTaken, setAlreadyTaken] = useState(false);
+    const [lastScores, setLastScores] = useState([]);
     
     const navigate = useNavigate();
 
     let messages = useRef(null);
 
     const token = sessionStorage.getItem('token');
-    const tipoUsuario = sessionStorage.getItem('tipoUsuario');
+    const userType = sessionStorage.getItem('tipoUsuario');
     const userInfo = sessionStorage.getItem('userInfo');
 
     useEffect(() => {
-        if(!token || !tipoUsuario || !userInfo){
-            toast.error('Usuário não autenticado! Você não conseguirá fazer o que quer enquanto não se autenticar.');
+        if(!token || !userType || !userInfo){
+            toast.error(`Unauthenticated user! You won't be able to actualize your operations while you are not properly logged in!`);
             return;
         }
-        
+
+        const { email } = JSON.parse(userInfo);
+
+        //Verification of the last test date
+        const verifyLastTest = async () => {
+            try{
+                const response = (await baseURLUC.get('/user/verify-last-test',
+                    {
+                        headers: {Authorization: `Bearer ${token}`},
+                        params: {email_user: email}
+                    }
+                )).data;
+    
+                if(response.length !== 0){
+                    const lastTestDate = new Date(response[0].dt_realizacao);
+                    console.log(lastTestDate);
+                    const diffInDays = (new Date() - lastTestDate) / (1000 * 60 * 60 * 24);
+    
+                    if(diffInDays < 7){
+                        const lastScoresAux = response.map((result) => {
+                            return {
+                                id_soft_skill: result.id_soft_skill,
+                                nome_soft_skill: result.nome_soft_skill,
+                                descricao_soft_skill: result.descricao_soft_skill,
+                                cor_soft_skill: result.cor_soft_skill,
+                                notaShow: roundScore((result.nota / result.nota_max) * 100)
+                            };
+                        });
+    
+                        setAlreadyTaken(() => true);
+                        setLastScores(() => lastScoresAux);
+                        setLoading(() => false);
+                        return Promise.reject();
+                    }
+                }
+
+                return Promise.resolve();
+            }
+            catch(error){
+                let msg;
+                if(error.response) msg = error.response.data.message;
+                else if(error.request) msg = 'Error while trying to access the server!';
+                messages.replace({severity: 'error', summary: 'Erro', detail: `${msg}`, sticky: true, closable: false});
+                setAllFine(false);
+                setLoading(false);
+                return Promise.reject();
+            }
+        };
+
+        //Fetch Soft Skills and Test methods
         const fetchSoftSkills = async () => {
             try{
                 const response = (await baseUrlServicosGeraisSS.get('/listar',
                     {
                         headers: {Authorization: `Bearer ${token}`},
-                        params: {tipoUsuario}
+                        params: {tipoUsuario: userType}
                     }
                 )).data;
                 return Promise.resolve(response);
@@ -64,7 +117,7 @@ export const ProficiencyTest = () => {
             catch(error){
                 let msg
                 if(error.response) msg = error.response.data.message
-                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                else if(error.request) msg = 'Error while trying to access the server!'
                 return Promise.reject(msg);
             }
         };
@@ -74,7 +127,7 @@ export const ProficiencyTest = () => {
                 const response = (await baseUrlServicosGeraisTeste.get('/fetch',
                     {
                         headers: {Authorization: `Bearer ${token}`},
-                        params: {tipoUsuario}
+                        params: {tipoUsuario: userType}
                     }
                 )).data;
                 const {
@@ -88,12 +141,12 @@ export const ProficiencyTest = () => {
             catch(error){
                 let msg
                 if(error.response) msg = error.response.data.message
-                else if(error.request) msg = 'Erro ao tentar acessar o servidor'
+                else if(error.request) msg = 'Error while trying to access the server!'
                 return Promise.reject(msg);
             }
         };
 
-        const fluxo = async () => {
+        const mountTest = async () => {
             try{
                 const auxSSs = await fetchSoftSkills();
                 const response = await fetchTeste();
@@ -113,7 +166,7 @@ export const ProficiencyTest = () => {
                         }
                     }
                 };
-
+    
                 const resps = [];
                 const alts = [
                     { tpQ: 'multipla_escolha', alts: [...alternativasMultiplaEscolha] },
@@ -137,35 +190,38 @@ export const ProficiencyTest = () => {
                         }
                     };
                 };
-
-                setTudoOK(true);
+    
                 setRespostas(resps);
                 setSoftSkills(SSs);
-                return Promise.resolve();
             }
             catch(error){
                 messages.replace({severity: 'error', summary: 'Erro', detail: `${error}`, sticky: true, closable: false});
-                return Promise.reject();
+                setAllFine(false);
             }
             finally{
-                setCarregando(false);
+                setLoading(false);
             }
         };
 
-        const timer = fluxo().then(() => setInterval(() => setTimerSegundos((prev) => prev - 1), 1000)).catch(() => {return null});
-
-        return () => {
-            clearInterval(timer);
-        };
+        //Iniciation of the process
+        verifyLastTest().then(() => mountTest()).catch(() => {}) ;
     }, []);
 
     useEffect(() => {
-        if(timerSegundos === -1){
-            setTimerMinutos((prev) => prev - 1);
-            setTimerSegundos(59);
+        if(!startTest) return;
+        const interval = setInterval(() => {
+            setTimerSeconds((prev) => prev - 1);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [startTest]);
+
+    useEffect(() => {
+        if(timerSeconds === -1){
+            setTimerMinutes((prev) => prev - 1);
+            setTimerSeconds(59);
         }
-        if(timerMinutos === 0 && timerSegundos === 0) finalizar();
-    }, [timerSegundos, timerMinutos]);
+        if(timerMinutes === 0 && timerSeconds === 0) finalizar();
+    }, [timerSeconds, timerMinutes]);
     
     const finalizarDoUsuario = () => {
         if(realizarVerificacoes()) finalizar();
@@ -176,7 +232,7 @@ export const ProficiencyTest = () => {
             if(respostas[i].tipo_questao === 'multipla_escolha' || respostas[i].tipo_questao === 'multipla_escolha_com_valores'){
                 const escolhas = respostas[i].alternativas.filter((alt) => alt.escolha_feita);
                 if(escolhas.length === 0){
-                    toast.error(`Responda todas as questões.`);
+                    toast.error(`Answer all questions before finishing the test!`);
                     return false;
                 }
             }
@@ -189,7 +245,7 @@ export const ProficiencyTest = () => {
         
         const email_user = JSON.parse(userInfo).email;
 
-        setCarregandoResultados(true);
+        setLoadingResults(true);
         baseURLUC.post('/user/register-test-scores', {
             email_user,
             resultados: resultSend,
@@ -202,15 +258,15 @@ export const ProficiencyTest = () => {
         })
         .then(() => {
             setTimeout(() => {
-                setCarregandoResultados(false);
+                setLoadingResults(false);
                 navigate(`/result-screen`, { state: resultShow });
             }, 2000);
         })
         .catch((error) => {
-            setCarregandoResultados(false);
+            setLoadingResults(false);
             let msg;
             if(error.response) msg = error.response.data.message;
-            else if(error.request) msg = 'Erro ao tentar acessar servidor';
+            else if(error.request) msg = 'Error while trying to access the server!';
             toast.error(msg);
         });
     };
@@ -303,6 +359,8 @@ export const ProficiencyTest = () => {
 
                 const obj2 = {
                     id_soft_skill: SSs[i].id_soft_skill,
+                    nome_soft_skill: SSs[i].nome_soft_skill,
+                    cor_soft_skill: SSs[i].cor_soft_skill,
                     nota: NF[i].notaF,
                     nota_max: NM[i].maxNota
                 };
@@ -319,15 +377,13 @@ export const ProficiencyTest = () => {
     const confimarCancelar = (e) => {
         confirmPopup({
             target: e.currentTarget,
-            message: 'Deseja mesmo cancelar a prova?',
+            message: 'Do you really want to cancel the test?',
             icon: 'pi pi-exclamation-circle',
-            acceptLabel: 'Sim',
-            rejectLabel: 'Não',
-            accept: () => cancelar(),
+            acceptLabel: 'Yes',
+            rejectLabel: 'No',
+            accept: () => window.location.replace('/'),
         });
     };
-
-    const cancelar = () => navigate('/');
 
     const handleChangeEscolhaFeita = (idQ, idA) => {
         const resps = [...respostas];
@@ -356,22 +412,18 @@ export const ProficiencyTest = () => {
         <div>
             <Navbar/>
             <div className='d-test-box'>
-                <h1>Avaliação de Competências</h1>
+                <h1>Competency Test</h1>
                 <Divider/>
-                <div className='flex justify-content-center'>
-                    <Messages ref={(el) => messages = el}/>
-                    <ClipLoader color='#F8F8FF' loading={carregando} size={150}/>
-                </div>
                 {
-                    tudoOK &&
+                    startTest &&
                     <div>
                         <div className='flex flex-row justify-content-between'>
                             <div>
-                                A prova possui duração de 35 minutos.
+                                The test has a duration of 35 minutes.
                             </div>
                             <div>
                                 <i className='pi pi-clock mr-2'/>
-                                <span>{timerMinutos < 10 ? `0${timerMinutos}` : timerMinutos}:{timerSegundos < 10 ? `0${timerSegundos}` : timerSegundos}</span>
+                                <span>{timerMinutes < 10 ? `0${timerMinutes}` : timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span>
                             </div>
                         </div>
                         <div className='d-test-skill-box'>
@@ -398,8 +450,8 @@ export const ProficiencyTest = () => {
                             }
                         </div>
                         <div className='flex flex-row justify-content-between'>
-                            <button className='btn btn-danger' onClick={(e) => confimarCancelar(e)}>Cancelar</button>
-                            <button className='btn btn-success' onClick={finalizarDoUsuario}>Finalizar</button>
+                            <button className='btn btn-danger' onClick={(e) => confimarCancelar(e)}>Cancel</button>
+                            <button className='btn btn-success' onClick={finalizarDoUsuario}>Finish</button>
                         </div>
                     </div>
                 }
@@ -414,17 +466,91 @@ export const ProficiencyTest = () => {
                 draggable
                 pauseOnHover
                 theme="dark"/>
-                <ConfirmPopup/>
+                <ConfirmPopup
+                pt={{
+                    footer: {className: 'flex justify-content-center'}
+                }}/>
             </div>
             <Dialog
             className='loading-box'
-            visible={carregandoResultados}
+            visible={loadingResults}
+            draggable={false}
             closable={false}
-            onHide={() => {if (!carregandoResultados) return; setCarregandoResultados(false);}}>
-                <div className='flex flex-column align-items-center'>
-                    <ClipLoader color='#F8F8FF' loading={carregandoResultados} size={150}/>
-                    <h2 className='text-center'>Calculando resultados...</h2>
+            onHide={() => {if (!loadingResults) return; setLoadingResults(() => false);}}>
+                <div className='flex flex-column justify-content-center align-items-center'>
+                    <ClipLoader color='#F8F8FF' loading={loadingResults} size={150}/>
+                    <h2 className='text-center'>Calculating Results...</h2>
                 </div>
+            </Dialog>
+            <Dialog
+            className='loading-box'
+            visible={!startTest}
+            closable={false}
+            draggable={false}
+            style={{minWidth: '40%', minHeight: '300px', width: 'fit-content', margin: '2%'}}
+            onHide={() => {if (startTest) return; setLoading(() => true);}}
+            maskStyle={{backgroundColor: 'rgba(0, 0, 0, 1)'}}>
+                {
+                    loading && 
+                    <div className='flex flex-column justify-content-center align-items-center'>
+                        <ClipLoader color='#F8F8FF' loading={loading} size={150}/>
+                        <h2 className='text-center'>Loading...</h2>
+                    </div>
+                }
+                {
+                    !loading && allFine ?
+                    (
+                        alreadyTaken ?
+                        <div>
+                            <h1 className='text-center'>Test Done</h1>
+                            <Divider/>
+                            <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
+                                <p>You've already taken the test this week. Wait at least 7 days to take it again.</p>
+                                <p>Here are your last scores.</p>
+                            </div>
+                            <div className='flex flex-column align-items-center'>
+                                <ResultChart resultShow={lastScores}/>
+                                <button
+                                style={{fontSize: 'calc(0.8rem + 1vw)'}}
+                                className='btn btn-primary mt-5'
+                                onClick={() => window.location.replace('/')}>
+                                    Return to Home Page
+                                </button>
+                            </div>
+                        </div> :
+                        <div>
+                            <h1 className='text-center'>The Test is about to Start</h1>
+                            <Divider/>
+                            <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
+                                <p>
+                                    This test will evaluate your proficiency in a series of Soft Skills, 
+                                    which are certain socio-behavioural abilities extremely valued nowadays 
+                                    in a myriad of different environments.
+                                </p>
+                                <p>You have 35 minutes to complete it.</p>
+                                <p>Press Start to inciate it.</p>
+                                <p><b>Good Luck!</b></p>
+                                <div className='flex flex-column align-items-center'>
+                                    <button
+                                    style={{fontSize: 'calc(0.8rem + 1vw)'}}
+                                    className='btn btn-primary w-4'
+                                    onClick={() => setStartTest(() => true)}>
+                                        Start
+                                    </button>
+                                    <button
+                                    style={{fontSize: 'calc(0.8rem + 1vw)'}}
+                                    className='btn btn-primary mt-3 w-4'
+                                    onClick={() => window.location.replace('/')}>
+                                        Return to Home Page
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ) :
+                    <div>
+                        <Messages ref={(el) => messages = el}/>
+                    </div>
+                }
             </Dialog>
         </div>
     )

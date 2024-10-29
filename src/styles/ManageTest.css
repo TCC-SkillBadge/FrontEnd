@@ -1,5 +1,10 @@
+:root{
+    --btn-danger-color: #d42c2c;
+    --btn-success-color: #046f0f;
+}
+
 .m-test-box{
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: #1c193b;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
@@ -13,163 +18,131 @@
     margin-bottom: 4rem;
 }
 
-.m-test-skill-box{
-    background-color: #110e2d;
-    padding: 1%;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 10px;
-    border: 2px solid;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+@media (max-width: 900px){
+    .m-test-box{
+        width: 90%;
+    }
 }
 
-.m-test-skill-box .p-inputnumber-input{
+.accordion-h{
+    background-color: #28213f;
+    color: white;
+    border: none;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.m-test-box .p-accordion-content{
+    border: none;
+    background-color: #28213f;
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 2%;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+}
+
+.add-quest-btn{
+    background-color: #28213f;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: larger;
+}
+
+.add-quest-btn:hover{
+    background-color: #1c193b;
+    border-color: white;
+}
+
+.add-quest-btn:focus{
+    background-color: #1c193b;
+    border-color: white;
+}
+
+.add-quest-btn:active{
+    background-color: #1c193b;
+    border-color: white;
+}
+
+.add-quest-btn:enabled{
+    background-color: #1c193b;
+    border-color: white;
+}
+
+.dropdown-buttons{
+    color: white;
+}
+
+.dropdown-buttons:hover{
+    color: #1c193b;
+}
+
+.dropdown-buttons:active{
+    color: #1c193b;
+    background-color: white;
+}
+
+.shadow-box-btns{
+    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+}
+
+.shadow-box-btns:hover{
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
+}
+
+.shadow-box-btns:focus{
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
+}
+
+.m-quest-box{
+    border-radius: 8px;
+    border-color: #4682B4;
+    color: #4682B4;
+    padding: 20px;
+    margin-bottom: 2%;
+    background-color: #37304e;
+    color: white;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+}
+
+.m-quest-box textarea{
     width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid white;
+    background-color: transparent;
+    color: white;
+}
+
+.m-quest-box input{
+    border-radius: 5px;
+    border: 1px solid white;
+    background-color: transparent;
+    color: white;
     text-align: center;
 }
 
-.me-quest-box{
-    border-style: solid;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: #4682B4;
-    color: #4682B4;
-    padding: 20px;
-    margin-bottom: 2%;
-}
-
-.me-quest-box textarea{
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #4682B4;
+.m-quest-box span{
     background-color: transparent;
-    color: #4682B4;
-}
-
-.me-quest-box input{
-    border-radius: 5px;
-    border: 1px solid #4682B4;
-    background-color: transparent;
-    color: #4682B4;
-}
-
-.me-quest-box span{
-    background-color: transparent;
-    color: #4682B4;
-    border-color: #4682B4;
-}
-
-.me-quest-box .btn-primary{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #4682B4;
-    font-weight: bold;
-    border: 2px solid #4682B4;
-    padding: 7px;
-    font-size: larger;
-}
-
-.me-quest-box .btn-primary:hover{
-    background-color: #4682B4;
     color: white;
+    border-color: white;
 }
 
-.mv-quest-box{
-    border-style: solid;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: #aba00e;
-    color: #aba00e;
-    padding: 20px;
-    margin-bottom: 2%;
-}
-
-.mv-quest-box textarea{
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #aba00e;
-    background-color: transparent;
-    color: #aba00e;
-}
-
-.mv-quest-box input{
-    border-radius: 5px;
-    border: 1px solid #aba00e;
-    background-color: transparent;
-    color: #aba00e;
-}
-
-.mv-quest-box span{
-    background-color: transparent;
-    color: #aba00e;
-    border-color: #aba00e;
-}
-
-.mv-quest-box .btn-primary{
+.m-quest-box .btn-primary{
     min-width: 3rem;
     border-radius: 5px;
     background-color: transparent;
-    color: #aba00e;
-    font-weight: bold;
-    border: 2px solid #aba00e;
-    padding: 7px;
-    font-size: larger;
-}
-
-.mv-quest-box .btn-primary:hover{
-    background-color: #aba00e;
     color: white;
-}
-
-.r-quest-box{
-    border-style: solid;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: #008080;
-    color: #008080;
-    padding: 20px;
-    margin-bottom: 2%;
-}
-
-.r-quest-box textarea{
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #008080;
-    background-color: transparent;
-    color: #008080;
-}
-
-.r-quest-box input{
-    border-radius: 5px;
-    border: 1px solid #008080;
-    background-color: transparent;
-    color: #008080;
-}
-
-.r-quest-box span{
-    background-color: transparent;
-    color: #008080;
-    border-color: #008080;
-}
-
-.r-quest-box .btn-primary{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #008080;
     font-weight: bold;
-    border: 2px solid #008080;
+    border: 2px solid white;
     padding: 7px;
     font-size: larger;
 }
 
-.r-quest-box .btn-primary:hover{
-    background-color: #008080;
+.m-quest-box .btn-primary:hover{
+    background-color: #1c193b;
     color: white;
 }
 
@@ -179,72 +152,40 @@
 }
 
 .m-test-box .p-message-error{
-    background-color: #FF6347;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    font-size: larger;
+    color: white;
+}
+
+.m-test-box .p-message-icon{
+    color: white;
+}
+
+.btn-add-quest{
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 5px;
     font-size: larger;
 }
-
-#btn-add-qr{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #008080;
-    font-weight: bold;
-    border: 2px solid #008080;
-    padding: 7px;
-    max-width: 12rem;
-    min-width: 12rem;
-}
-
-#btn-add-qr:hover{
-    background-color: #008080;
-    color: white;
-}
-
-#btn-add-qm{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #4682B4;
-    font-weight: bold;
-    border: 2px solid #4682B4;
-    padding: 7px;
-    max-width: 14rem;
-    min-width: 14rem;
-}
-
-#btn-add-qm:hover{
-    background-color: #4682B4;
-    color: white;
-}
-
-#btn-add-qmv{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #c5b914;
-    font-weight: bold;
-    border: 2px solid #c5b914;
-    padding: 7px;
-    max-width: 20rem;
-    min-width: 20rem;
-}
-
-#btn-add-qmv:hover{
-    background-color: #c5b914;
-    color: white;
-}
-
 
 .m-test-box .btn-success{
     min-width: 40%;
     border-radius: 5px;
     background-color: transparent;
-    color: #32CD32;
+    color: var(--btn-success-color);
     font-weight: bold;
-    border: 2px solid #32CD32;
+    border: 2px solid var(--btn-success-color);
     padding: 7px;
     font-size: larger;
 }
 
 .m-test-box .btn-success:hover{
-    background-color: #32CD32;
+    background-color: var(--btn-success-color);
     color: white;
 }
 
@@ -252,15 +193,15 @@
     min-width: 3rem;
     border-radius: 5px;
     background-color: transparent;
-    color: #FF6347;
+    color: var(--btn-danger-color);
     font-weight: bold;
-    border: 2px solid #FF6347;
+    border: 2px solid var(--btn-danger-color);
     padding: 7px;
     font-size: larger;
 }
 
 .m-test-box .btn-danger:hover{
-    background-color: #FF6347;
+    background-color: var(--btn-danger-color);
     color: white;
 }
 

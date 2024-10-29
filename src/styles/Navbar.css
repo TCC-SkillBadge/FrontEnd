@@ -199,3 +199,57 @@
   max-height: 0;
   overflow: hidden;
 }
+
+.btn-chat {
+  background-color: transparent;
+  color: rgb(44, 113, 250);
+  border: none;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.btn-chat:hover {
+  color: rgb(10, 86, 238);
+}
+
+.chatbox-panel{
+  background-color: #1c193b;
+  border-radius: 10px;
+  box-sizing: border-box;
+  z-index: 1000;
+  box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+  position: fixed;
+}
+
+.p-overlaypanel{
+  min-height: fit-content;
+}
+
+.p-overlaypanel-content{
+  width: 70vw;
+  height: 600px;
+}
+
+@media (max-width: 800px){
+  .p-overlaypanel-content{
+    width: 90vw;
+  }
+}
+
+.p-overlaypanel-close{
+  background-color: #1c193b;
+  border-radius: 50%;
+  box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+}
+
+.p-overlaypanel-close:hover {
+  scale: 1.1;
+  box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+}
+
+.p-overlaypanel.p-overlaypanel::before {
+  content: none;
+}
+.p-overlaypanel.p-overlaypanel::after {
+  content: none;
+}

@@ -28,7 +28,7 @@ import PublicProfile from "./PublicProfile";
 import ManageTest from "../components/UserAdmin/ManageTest";
 import ListSoftSkills from "../components/UserAdmin/ListSoftSkills";
 import ProficiencyTest from "../components/UserComum/ProficiencyTest";
-import ResultScreen from "../components/UserComum/ResultScreen";
+import { ResultScreen } from "../components/UserComum/ResultScreen";
 
 /*um comentario
  */ 

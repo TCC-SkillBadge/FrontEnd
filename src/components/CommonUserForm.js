@@ -1,6 +1,7 @@
 import React from "react";
 import {
   PersonFill,
+  PersonCircle,
   EnvelopeFill,
   LockFill,
   Phone,
@@ -21,6 +22,20 @@ const CommonUserForm = ({ formData, handleChange, handlePhoneChange }) => {
             id="fullName"
             placeholder="Full Name"
             value={formData.fullName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+      </div>
+      <div className="form-group">
+        <div className="input-icon">
+          <PersonCircle />
+          <input
+            type="text"
+            className="form-control"
+            id="username"
+            placeholder="Username"
+            value={formData.username}
             onChange={handleChange}
             required
           />

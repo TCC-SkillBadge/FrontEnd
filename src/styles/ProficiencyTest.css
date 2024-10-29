@@ -47,6 +47,7 @@
 
 .d-test-skill-box{
     background-color: #1c193b;
+    border-radius: 8px;
     padding: 4%;
     margin-top: 2rem;
     margin-bottom: 2rem;
@@ -91,13 +92,12 @@
     color: white;
 }
 
-
 .loading-box{
     padding: 20px;
     border-radius: 10px;
     width: 60%;
     border: 2px solid;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: #1c193b;
     box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
     border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
 }
@@ -108,8 +108,37 @@
 }
 
 .loading-box .p-dialog-content{
-    background-color: #0a0b16;
+    background-color: #28213f;
     box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
     color: white;
     padding: 3%;
+}
+
+.loading-box .p-message-error{
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    font-size: larger;
+    color: white;
+}
+
+.loading-box .p-message-icon{
+    color: white;
+}
+
+.loading-box .btn-primary{
+    border-radius: 5px;
+    background-color: transparent;
+    color: #4682B4;
+    font-weight: bold;
+    border: 2px solid #4682B4;
+    padding: 7px;
+    min-width: 40%;
+    min-height: 3rem;
+}
+
+.loading-box .btn-primary:hover{
+    background-color: #4682B4;
+    color: white;
 }
