@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
+import { motion } from "framer-motion"; // Importação do framer-motion
 import "../styles/Wallet.css";
 
 const Wallet = () => {
@@ -125,10 +126,21 @@ const Wallet = () => {
             <ClipLoader size={150} color={"#123abc"} loading={loading} />
           </div>
         ) : (
-          <div className="wallet-medals">
+          <motion.div
+            className="wallet-medals"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <div className="wallet-medal-slide">
               {currentMedals.map((medal) => (
-                <div key={medal.id} className="wallet-medal-card">
+                <motion.div
+                  key={medal.id}
+                  className="wallet-medal-card"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
                   <img
                     src={medal.image_url}
                     alt={medal.name_badge}
@@ -136,7 +148,7 @@ const Wallet = () => {
                   />
                   <h3>{medal.name_badge}</h3>
                   <button>Details</button>
-                </div>
+                </motion.div>
               ))}
             </div>
             <div className="pagination">
@@ -163,7 +175,7 @@ const Wallet = () => {
                 <option value={12}>12 per page</option>
               </select>
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
