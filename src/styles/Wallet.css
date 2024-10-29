@@ -64,8 +64,6 @@ body {
   color: white;
   background-color: rgba(0, 0, 0, 0.8);
   appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   padding-right: 30px;
   position: relative;
 }
@@ -111,6 +109,18 @@ body {
   margin-bottom: 20px;
 }
 
+/* Animação Fade-In e Slide-Up */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .wallet-medal-card {
   background-color: rgba(0, 0, 0, 0.25);
   color: white;
@@ -127,11 +137,20 @@ body {
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   position: relative;
+  opacity: 0; /* Inicia invisível */
+  animation: fadeInUp 0.5s ease forwards; /* Aplica animação */
 }
 
+/* Atraso na animação para efeito de cascata */
+.wallet-medal-card:nth-child(1) { animation-delay: 0.1s; }
+.wallet-medal-card:nth-child(2) { animation-delay: 0.2s; }
+.wallet-medal-card:nth-child(3) { animation-delay: 0.3s; }
+.wallet-medal-card:nth-child(4) { animation-delay: 0.4s; }
+/* Adicione mais delays conforme necessário */
+
 .wallet-medal-card:hover {
-  transform: translateY(-10px); /* Move o card para cima */
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Adiciona sombra ao card */
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .wallet-medal-card .medal-img {
@@ -207,6 +226,7 @@ body {
   cursor: pointer;
 }
 
+/* Responsividade */
 @media (max-width: 1200px) {
   .wallet-medal-card {
     width: calc(33.333% - 20px);
