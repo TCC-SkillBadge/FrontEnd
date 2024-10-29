@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+// src/components/UserProfile.jsx
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   PencilSquare,
@@ -18,6 +19,8 @@ import {
   CalendarFill,
   PeopleFill,
   ThreeDotsVertical,
+  ChevronDown,
+  ChevronUp,
 } from "react-bootstrap-icons";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -56,6 +59,9 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const languageDropdownRef = useRef(null);
+
   const tipoUsuario = sessionStorage.getItem("tipoUsuario");
 
   const handleNewPost = (newPost) => {
@@ -84,10 +90,16 @@ const UserProfile = () => {
         let response;
 
         if (!token) {
-          setError("User not authenticated");
+          setError("Usuário não autenticado");
           setLoading(false);
           return;
         }
+
+        // Carregar os idiomas disponíveis primeiro
+        const languagesResponse = await axios.get(
+          "http://localhost:7000/api/languages"
+        );
+        setAvailableLanguages(languagesResponse.data);
 
         if (tipoUsuario === "UC") {
           response = await axios.get("http://localhost:7000/api/user/info", {
@@ -95,6 +107,21 @@ const UserProfile = () => {
               Authorization: `Bearer ${token}`,
             },
           });
+
+          // Mapear os idiomas do usuário para objetos com id e name
+          const userLanguages = Array.isArray(response.data.languages)
+            ? response.data.languages
+                .map((langId) => {
+                  // Procurar o idioma correspondente em availableLanguages
+                  const languageObj = languagesResponse.data.find(
+                    (lang) => lang.id === langId
+                  );
+                  return languageObj
+                    ? { id: languageObj.id, name: languageObj.language }
+                    : null;
+                })
+                .filter((lang) => lang !== null)
+            : [];
 
           setUserData({
             ...response.data,
@@ -106,15 +133,8 @@ const UserProfile = () => {
             )
               ? response.data.professional_experience
               : [],
-            languages: Array.isArray(response.data.languages)
-              ? response.data.languages
-              : [],
+            languages: userLanguages,
           });
-
-          const languagesResponse = await axios.get(
-            "http://localhost:7000/api/languages"
-          );
-          setAvailableLanguages(languagesResponse.data);
         } else if (tipoUsuario === "UE") {
           response = await axios.get(
             "http://localhost:7003/api/acessar-info-usuario-jwt",
@@ -145,13 +165,13 @@ const UserProfile = () => {
 
           console.log("Loaded events:", eventsResponse.data);
         } else {
-          setError("Invalid user type");
+          setError("Tipo de usuário inválido");
         }
 
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching user information:", error);
-        setError("Failed to load user data");
+        console.error("Erro ao obter informações do usuário:", error);
+        setError("Falha ao carregar os dados do usuário");
         setLoading(false);
       }
     };
@@ -169,8 +189,26 @@ const UserProfile = () => {
   };
 
   const handleArrayChange = (e, index, key, arrayKey) => {
+    let value = e.target.value;
+
+    // Se o campo for um ano (admissionYear, graduationYear, startDate, endDate)
+    if (
+      key === "admissionYear" ||
+      key === "graduationYear" ||
+      key === "startDate" ||
+      key === "endDate"
+    ) {
+      // Remover caracteres não numéricos
+      value = value.replace(/[^0-9]/g, "");
+
+      // Limitar o tamanho a 4 dígitos
+      if (value.length > 4) {
+        value = value.slice(0, 4);
+      }
+    }
+
     const updatedArray = [...userData[arrayKey]];
-    updatedArray[index][key] = e.target.value;
+    updatedArray[index][key] = value;
     setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
@@ -186,24 +224,72 @@ const UserProfile = () => {
     setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
-  const handleLanguageSelect = (e) => {
-    const selectedOptions = Array.from(e.target.selectedOptions);
-    const selectedLanguages = selectedOptions.map((option) => ({
-      id: parseInt(option.value),
-      name: option.text,
-    }));
+  const handleLanguageCheckboxChange = (e) => {
+    const { value, checked } = e.target;
+    const languageId = parseInt(value);
+    const languageObj = availableLanguages.find(
+      (lang) => lang.id === languageId
+    );
 
-    setUserData({
-      ...userData,
-      languages: selectedLanguages,
-    });
+    if (checked) {
+      // Adicionar idioma selecionado
+      setUserData((prevState) => ({
+        ...prevState,
+        languages: [
+          ...prevState.languages,
+          { id: languageObj.id, name: languageObj.language },
+        ],
+      }));
+    } else {
+      // Remover idioma desmarcado
+      setUserData((prevState) => ({
+        ...prevState,
+        languages: prevState.languages.filter((lang) => lang.id !== languageId),
+      }));
+    }
   };
 
   const handleFileChange = (e) => {
     setUserData({ ...userData, photo: e.target.files[0] });
   };
 
+  const validateDates = () => {
+    let isValid = true;
+
+    userData.education.forEach((edu) => {
+      if (
+        edu.admissionYear &&
+        edu.graduationYear &&
+        parseInt(edu.admissionYear) > parseInt(edu.graduationYear)
+      ) {
+        toast.error(
+          `Na educação, o ano de início (${edu.admissionYear}) não pode ser maior que o ano de término (${edu.graduationYear}).`
+        );
+        isValid = false;
+      }
+    });
+
+    userData.professionalExperience.forEach((exp) => {
+      if (
+        exp.startDate &&
+        exp.endDate &&
+        parseInt(exp.startDate) > parseInt(exp.endDate)
+      ) {
+        toast.error(
+          `Na experiência profissional, a data de início (${exp.startDate}) não pode ser maior que a data de término (${exp.endDate}).`
+        );
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  };
+
   const handleSaveChanges = async () => {
+    if (!validateDates()) {
+      return;
+    }
+
     try {
       const token = sessionStorage.getItem("token");
       const formData = new FormData();
@@ -254,10 +340,10 @@ const UserProfile = () => {
       }
 
       setIsEditing(false);
-      toast.success("Data updated successfully");
+      toast.success("Dados atualizados com sucesso");
     } catch (error) {
-      console.error("Error updating user data:", error);
-      toast.error("Failed to update user data");
+      console.error("Erro ao atualizar os dados do usuário:", error);
+      toast.error("Falha ao atualizar os dados do usuário");
     }
   };
 
@@ -267,31 +353,31 @@ const UserProfile = () => {
 
     if (tipoUsuario === "UC") {
       if (!userData.email) {
-        toast.error("Email not available.");
+        toast.error("Email não disponível.");
         return;
       }
       encodedEmail = btoa(userData.email);
       publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
     } else if (tipoUsuario === "UE") {
       if (!userData.email_comercial) {
-        toast.error("Commercial email not available.");
+        toast.error("Email comercial não disponível.");
         return;
       }
       encodedEmail = btoa(userData.email_comercial);
       publicProfileUrl = `${window.location.origin}/public-profile-enterprise/${encodedEmail}`;
     } else {
-      toast.error("Invalid user type.");
+      toast.error("Tipo de usuário inválido.");
       return;
     }
 
     navigator.clipboard
       .writeText(publicProfileUrl)
       .then(() => {
-        toast.info("Profile URL copied to clipboard!");
+        toast.info("URL do perfil copiada para a área de transferência!");
       })
       .catch((error) => {
-        console.error("Error copying the link:", error);
-        toast.error("Failed to copy the link.");
+        console.error("Erro ao copiar o link:", error);
+        toast.error("Falha ao copiar o link.");
       });
   };
 
@@ -361,7 +447,7 @@ const UserProfile = () => {
       doc.save("portfolio.pdf");
     }
 
-    toast.success("Portfolio downloaded successfully");
+    toast.success("Portfólio baixado com sucesso");
   };
 
   const handleTabChange = (tab) => {
@@ -386,7 +472,7 @@ const UserProfile = () => {
 
   const handleDeleteEvent = async (event) => {
     const confirmDelete = window.confirm(
-      "Do you really want to delete this event?"
+      "Você realmente deseja excluir este evento?"
     );
     if (!confirmDelete) return;
 
@@ -401,10 +487,10 @@ const UserProfile = () => {
         ...prevUserData,
         events: prevUserData.events.filter((e) => e.id !== event.id),
       }));
-      toast.success("Event deleted successfully!");
+      toast.success("Evento excluído com sucesso!");
     } catch (error) {
-      console.error("Error deleting the event:", error);
-      toast.error("Failed to delete the event.");
+      console.error("Erro ao excluir o evento:", error);
+      toast.error("Falha ao excluir o evento.");
     }
   };
 
@@ -416,6 +502,28 @@ const UserProfile = () => {
       ),
     }));
     setEditingEvent(null);
+  };
+
+  // Efeito para fechar o dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        languageDropdownRef.current &&
+        !languageDropdownRef.current.contains(event.target)
+      ) {
+        setIsLanguageDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleLanguageDropdown = () => {
+    setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
   };
 
   if (loading) {
@@ -475,20 +583,20 @@ const UserProfile = () => {
                 <h2 className="profile-name">{userData.fullName}</h2>
               )}
               <p className="profile-title">
-                {userData.occupation || "Occupation not provided"}
+                {userData.occupation || "Ocupação não informada"}
               </p>
               <div className="profile-actions">
                 <button onClick={handleEditToggle} className="edit-button">
                   <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
                 </button>
                 <button onClick={handleShareProfile} className="share-button">
-                  <ShareFill /> Share
+                  <ShareFill /> Compartilhar
                 </button>
                 <button
                   onClick={handleDownloadPortfolio}
                   className="download-button"
                 >
-                  <FileEarmarkArrowDownFill /> Download Portfolio
+                  <FileEarmarkArrowDownFill /> Baixar Portfólio
                 </button>
               </div>
             </div>
@@ -498,7 +606,7 @@ const UserProfile = () => {
             <div className="profile-sections">
               <div className="profile-section">
                 <label>
-                  <PersonFill className="icon" /> About
+                  <PersonFill className="icon" /> Sobre
                 </label>
                 <textarea
                   name="about"
@@ -508,27 +616,49 @@ const UserProfile = () => {
                 />
               </div>
 
+              {/* Seção de Idiomas */}
               <div className="profile-section">
                 <h3>
-                  <Globe className="icon" /> Languages
+                  <Globe className="icon" /> Idiomas
                 </h3>
-                <select
-                  multiple
-                  value={userData.languages.map((lang) => lang.id)}
-                  onChange={handleLanguageSelect}
-                  className="profile-select"
-                >
-                  {availableLanguages.map((language) => (
-                    <option key={language.id} value={language.id}>
-                      {language.language}
-                    </option>
-                  ))}
-                </select>
+                <div className="language-dropdown" ref={languageDropdownRef}>
+                  <button
+                    type="button"
+                    className="language-dropdown-button"
+                    onClick={toggleLanguageDropdown}
+                  >
+                    {userData.languages.length > 0
+                      ? userData.languages.map((lang) => lang.name).join(", ")
+                      : "Selecione os idiomas"}
+                    <span className="dropdown-icon">
+                      {isLanguageDropdownOpen ? <ChevronUp /> : <ChevronDown />}
+                    </span>
+                  </button>
+                  {isLanguageDropdownOpen && (
+                    <div className="language-dropdown-content">
+                      {availableLanguages.map((language) => (
+                        <div key={language.id} className="language-checkbox">
+                          <label>
+                            <input
+                              type="checkbox"
+                              value={language.id}
+                              checked={userData.languages.some(
+                                (lang) => lang.id === language.id
+                              )}
+                              onChange={handleLanguageCheckboxChange}
+                            />
+                            {language.language}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="profile-section">
                 <h3>
-                  <MortarboardFill className="icon" /> Education
+                  <MortarboardFill className="icon" /> Educação
                 </h3>
                 {userData.education.map((edu, index) => (
                   <div key={index} className="profile-array-item">
@@ -536,7 +666,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={edu.institution || ""}
-                      placeholder="Institution"
+                      placeholder="Instituição"
                       onChange={(e) =>
                         handleArrayChange(e, index, "institution", "education")
                       }
@@ -546,7 +676,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={edu.degree || ""}
-                      placeholder="Degree"
+                      placeholder="Grau"
                       onChange={(e) =>
                         handleArrayChange(e, index, "degree", "education")
                       }
@@ -556,7 +686,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={edu.admissionYear || ""}
-                      placeholder="Admission Year"
+                      placeholder="Ano de Ingresso"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -571,7 +701,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={edu.graduationYear || ""}
-                      placeholder="Graduation Year"
+                      placeholder="Ano de Conclusão"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -601,13 +731,13 @@ const UserProfile = () => {
                   }
                   className="add-button"
                 >
-                  <PlusSquare /> Add
+                  <PlusSquare /> Adicionar
                 </button>
               </div>
 
               <div className="profile-section">
                 <h3>
-                  <Briefcase className="icon" /> Professional Experience
+                  <Briefcase className="icon" /> Experiência Profissional
                 </h3>
                 {userData.professionalExperience.map((exp, index) => (
                   <div key={index} className="profile-array-item">
@@ -615,7 +745,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={exp.company || ""}
-                      placeholder="Company"
+                      placeholder="Empresa"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -630,7 +760,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={exp.position || ""}
-                      placeholder="Position"
+                      placeholder="Cargo"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -645,7 +775,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={exp.startDate || ""}
-                      placeholder="Start Date"
+                      placeholder="Ano de Início"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -660,7 +790,7 @@ const UserProfile = () => {
                     <input
                       type="text"
                       value={exp.endDate || ""}
-                      placeholder="End Date"
+                      placeholder="Ano de Término"
                       onChange={(e) =>
                         handleArrayChange(
                           e,
@@ -692,25 +822,25 @@ const UserProfile = () => {
                   }
                   className="add-button"
                 >
-                  <PlusSquare /> Add
+                  <PlusSquare /> Adicionar
                 </button>
               </div>
 
               <button onClick={handleSaveChanges} className="save-button">
-                Save Changes
+                Salvar Alterações
               </button>
             </div>
           ) : (
             <div className="profile-sections">
               <div className="profile-section">
                 <h3>
-                  <PersonFill className="icon" /> About
+                  <PersonFill className="icon" /> Sobre
                 </h3>
-                <p>{userData.about || "No description provided."}</p>
+                <p>{userData.about || "Nenhuma descrição fornecida."}</p>
               </div>
               <div className="profile-section">
                 <h3>
-                  <MortarboardFill className="icon" /> Education
+                  <MortarboardFill className="icon" /> Educação
                 </h3>
                 {Array.isArray(userData.education) &&
                 userData.education.length > 0 ? (
@@ -735,12 +865,12 @@ const UserProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>No educational information provided.</p>
+                  <p>Nenhuma informação educacional fornecida.</p>
                 )}
               </div>
               <div className="profile-section">
                 <h3>
-                  <Briefcase className="icon" /> Professional Experience
+                  <Briefcase className="icon" /> Experiência Profissional
                 </h3>
                 {Array.isArray(userData.professionalExperience) &&
                 userData.professionalExperience.length > 0 ? (
@@ -765,12 +895,12 @@ const UserProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>No professional experience provided.</p>
+                  <p>Nenhuma experiência profissional fornecida.</p>
                 )}
               </div>
               <div className="profile-section">
                 <h3>
-                  <Globe className="icon" /> Languages
+                  <Globe className="icon" /> Idiomas
                 </h3>
                 {Array.isArray(userData.languages) &&
                 userData.languages.length > 0 ? (
@@ -781,7 +911,7 @@ const UserProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <p>No languages provided.</p>
+                  <p>Nenhum idioma fornecido.</p>
                 )}
               </div>
             </div>
