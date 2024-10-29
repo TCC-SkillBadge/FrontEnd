@@ -32,7 +32,7 @@ const UserProfile = () => {
   const [userData, setUserData] = useState({
     fullName: "",
     occupation: "",
-    sobre: "", // Correção para usar 'sobre' em vez de 'about'
+    about: "", // Alterado de 'sobre' para 'about'
     education: [],
     professionalExperience: [],
     languages: [],
@@ -48,73 +48,16 @@ const UserProfile = () => {
     badges: [],
   });
 
-  // Estado para controlar qual menu de opções está visível
   const [optionsVisibleIndex, setOptionsVisibleIndex] = useState(null);
-
-  // Estado para controlar o evento em edição
   const [editingEvent, setEditingEvent] = useState(null);
-
-  // Função para verificar se o post foi criado há menos de 24 horas
-  const isWithin24Hours = (createdAt) => {
-    const eventDate = new Date(createdAt);
-    const now = new Date();
-    const diffInHours = (now - eventDate) / (1000 * 60 * 60);
-    return diffInHours <= 24;
-  };
-
-  // Função para lidar com o clique no ícone de opções
-  const handleOptionsClick = (index) => {
-    setOptionsVisibleIndex(optionsVisibleIndex === index ? null : index);
-  };
-
-  // Função para editar o evento
-  const handleEditEvent = (event) => {
-    setEditingEvent(event);
-  };
-
-  // Função para excluir o evento
-  const handleDeleteEvent = async (event) => {
-    const confirmDelete = window.confirm(
-      "Do you really want to delete this event?"
-    );
-    if (!confirmDelete) return;
-
-    try {
-      const token = sessionStorage.getItem("token");
-      await axios.delete(`http://localhost:7003/api/eventos/${event.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      // Atualizar o estado removendo o evento deletado
-      setUserData((prevUserData) => ({
-        ...prevUserData,
-        events: prevUserData.events.filter((e) => e.id !== event.id),
-      }));
-      toast.success("Event deleted successfully!");
-    } catch (error) {
-      console.error("Error deleting the event:", error);
-      toast.error("Failed to delete the event.");
-    }
-  };
-
-  // Função para atualizar o post após edição
-  const handlePostUpdated = (updatedPost) => {
-    setUserData((prevUserData) => ({
-      ...prevUserData,
-      events: prevUserData.events.map((event) =>
-        event.id === updatedPost.id ? updatedPost : event
-      ),
-    }));
-    setEditingEvent(null);
-  };
-
+  const [availableLanguages, setAvailableLanguages] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("sobre");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const tipoUsuario = sessionStorage.getItem("tipoUsuario");
+
   const handleNewPost = (newPost) => {
     setUserData((prevUserData) => ({
       ...prevUserData,
@@ -152,6 +95,7 @@ const UserProfile = () => {
               Authorization: `Bearer ${token}`,
             },
           });
+
           setUserData({
             ...response.data,
             education: Array.isArray(response.data.education)
@@ -166,6 +110,11 @@ const UserProfile = () => {
               ? response.data.languages
               : [],
           });
+
+          const languagesResponse = await axios.get(
+            "http://localhost:7000/api/languages"
+          );
+          setAvailableLanguages(languagesResponse.data);
         } else if (tipoUsuario === "UE") {
           response = await axios.get(
             "http://localhost:7003/api/acessar-info-usuario-jwt",
@@ -176,7 +125,6 @@ const UserProfile = () => {
             }
           );
 
-          // **Usar o endpoint correto para obter os eventos**
           const eventsResponse = await axios.get(
             "http://localhost:7003/api/eventos",
             {
@@ -188,7 +136,7 @@ const UserProfile = () => {
 
           setUserData({
             ...response.data,
-            email_comercial: response.data.email_comercial, // Adicionado
+            email_comercial: response.data.email_comercial,
             sobre: response.data.sobre || "",
             website: response.data.website || "",
             events: eventsResponse.data || [],
@@ -222,13 +170,7 @@ const UserProfile = () => {
 
   const handleArrayChange = (e, index, key, arrayKey) => {
     const updatedArray = [...userData[arrayKey]];
-
-    if (arrayKey === "languages") {
-      updatedArray[index] = e.target.value;
-    } else {
-      updatedArray[index][key] = e.target.value;
-    }
-
+    updatedArray[index][key] = e.target.value;
     setUserData({ ...userData, [arrayKey]: updatedArray });
   };
 
@@ -242,6 +184,19 @@ const UserProfile = () => {
   const handleRemoveItem = (index, arrayKey) => {
     const updatedArray = userData[arrayKey].filter((_, i) => i !== index);
     setUserData({ ...userData, [arrayKey]: updatedArray });
+  };
+
+  const handleLanguageSelect = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions);
+    const selectedLanguages = selectedOptions.map((option) => ({
+      id: parseInt(option.value),
+      name: option.text,
+    }));
+
+    setUserData({
+      ...userData,
+      languages: selectedLanguages,
+    });
   };
 
   const handleFileChange = (e) => {
@@ -261,13 +216,16 @@ const UserProfile = () => {
         formData.append("occupation", userData.occupation || "");
         formData.append("country", userData.country || "");
         formData.append("phoneNumber", userData.phoneNumber || "");
-        formData.append("about", userData.sobre || ""); // Ajuste 'about' para 'sobre'
+        formData.append("about", userData.about || "");
         formData.append("education", JSON.stringify(userData.education || []));
         formData.append(
           "professionalExperience",
           JSON.stringify(userData.professionalExperience || [])
         );
-        formData.append("languages", JSON.stringify(userData.languages || []));
+        formData.append(
+          "languages",
+          JSON.stringify(userData.languages.map((lang) => lang.id))
+        );
 
         await axios.put("http://localhost:7000/api/user/update", formData, {
           headers: {
@@ -284,7 +242,7 @@ const UserProfile = () => {
         formData.append("municipio", userData.municipio || "");
         formData.append("suplemento", userData.suplemento || "");
         formData.append("numero_contato", userData.numero_contato || "");
-        formData.append("sobre", userData.sobre || ""); // Ajuste 'about' para 'sobre'
+        formData.append("sobre", userData.sobre || "");
         formData.append("website", userData.website || "");
 
         await axios.put("http://localhost:7003/api/update", formData, {
@@ -339,42 +297,47 @@ const UserProfile = () => {
 
   const handleDownloadPortfolio = async () => {
     const doc = new jsPDF("p", "pt", "a4");
+    let currentY = 50;
 
     doc.setFontSize(20);
-    doc.text("User Portfolio", 40, 50);
+    doc.text("User Portfolio", 40, currentY);
+    currentY += 40;
 
     doc.setFontSize(12);
-    doc.text(`Name: ${userData.fullName}`, 40, 90);
-    doc.text(`Occupation: ${userData.occupation}`, 40, 110);
-    doc.text(`About: ${userData.sobre}`, 40, 130);
+    doc.text(`Name: ${userData.fullName}`, 40, currentY);
+    currentY += 20;
+    doc.text(`Occupation: ${userData.occupation}`, 40, currentY);
+    currentY += 20;
+    doc.text(`About: ${userData.about}`, 40, currentY);
+    currentY += 30;
 
     doc.setFontSize(16);
-    doc.text("Education:", 40, 160);
+    doc.text("Education:", 40, currentY);
+    currentY += 20;
     userData.education.forEach((edu, index) => {
       doc.setFontSize(12);
-      doc.text(
-        `${edu.institution}, ${edu.degree}, ${edu.year}`,
-        60,
-        180 + index * 20
-      );
+      doc.text(`${edu.institution}, ${edu.degree}, ${edu.year}`, 60, currentY);
+      currentY += 20;
     });
 
+    currentY += 20;
     doc.setFontSize(16);
-    doc.text("Professional Experience:", 40, 240);
+    doc.text("Professional Experience:", 40, currentY);
+    currentY += 20;
     userData.professionalExperience.forEach((exp, index) => {
       doc.setFontSize(12);
-      doc.text(
-        `${exp.company}, ${exp.position}, ${exp.dates}`,
-        60,
-        260 + index * 20
-      );
+      doc.text(`${exp.company}, ${exp.position}, ${exp.dates}`, 60, currentY);
+      currentY += 20;
     });
 
+    currentY += 20;
     doc.setFontSize(16);
-    doc.text("Languages:", 40, 320);
+    doc.text("Languages:", 40, currentY);
+    currentY += 20;
     userData.languages.forEach((language, index) => {
       doc.setFontSize(12);
-      doc.text(`${language}`, 60, 340 + index * 20);
+      doc.text(`${language.name}`, 60, currentY);
+      currentY += 20;
     });
 
     if (userData.imageUrl) {
@@ -395,6 +358,56 @@ const UserProfile = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  // Funções relacionadas aos eventos (para o UE)
+  const isWithin24Hours = (createdAt) => {
+    const eventDate = new Date(createdAt);
+    const now = new Date();
+    const diffInHours = (now - eventDate) / (1000 * 60 * 60);
+    return diffInHours <= 24;
+  };
+
+  const handleOptionsClick = (index) => {
+    setOptionsVisibleIndex(optionsVisibleIndex === index ? null : index);
+  };
+
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+  };
+
+  const handleDeleteEvent = async (event) => {
+    const confirmDelete = window.confirm(
+      "Do you really want to delete this event?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const token = sessionStorage.getItem("token");
+      await axios.delete(`http://localhost:7003/api/eventos/${event.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        events: prevUserData.events.filter((e) => e.id !== event.id),
+      }));
+      toast.success("Event deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting the event:", error);
+      toast.error("Failed to delete the event.");
+    }
+  };
+
+  const handlePostUpdated = (updatedPost) => {
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      events: prevUserData.events.map((event) =>
+        event.id === updatedPost.id ? updatedPost : event
+      ),
+    }));
+    setEditingEvent(null);
   };
 
   if (loading) {
@@ -480,11 +493,29 @@ const UserProfile = () => {
                   <PersonFill className="icon" /> About
                 </label>
                 <textarea
-                  name="sobre" // Ajuste 'about' para 'sobre'
-                  value={userData.sobre || ""}
+                  name="about"
+                  value={userData.about || ""}
                   onChange={handleInputChange}
                   className="profile-about-input"
                 />
+              </div>
+
+              <div className="profile-section">
+                <h3>
+                  <Globe className="icon" /> Languages
+                </h3>
+                <select
+                  multiple
+                  value={userData.languages.map((lang) => lang.id)}
+                  onChange={handleLanguageSelect}
+                  className="profile-select"
+                >
+                  {availableLanguages.map((language) => (
+                    <option key={language.id} value={language.id}>
+                      {language.language}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="profile-section">
@@ -496,7 +527,7 @@ const UserProfile = () => {
                     <Building className="icon" />
                     <input
                       type="text"
-                      value={edu.institution}
+                      value={edu.institution || ""}
                       placeholder="Institution"
                       onChange={(e) =>
                         handleArrayChange(e, index, "institution", "education")
@@ -506,7 +537,7 @@ const UserProfile = () => {
                     <AwardFill className="icon" />
                     <input
                       type="text"
-                      value={edu.degree}
+                      value={edu.degree || ""}
                       placeholder="Degree"
                       onChange={(e) =>
                         handleArrayChange(e, index, "degree", "education")
@@ -515,7 +546,7 @@ const UserProfile = () => {
                     />
                     <input
                       type="text"
-                      value={edu.year}
+                      value={edu.year || ""}
                       placeholder="Year"
                       onChange={(e) =>
                         handleArrayChange(e, index, "year", "education")
@@ -618,38 +649,6 @@ const UserProfile = () => {
                 </button>
               </div>
 
-              <div className="profile-section">
-                <h3>
-                  <Globe className="icon" /> Languages
-                </h3>
-                {userData.languages.map((language, index) => (
-                  <div key={index} className="profile-array-item">
-                    <Flag className="icon" />
-                    <input
-                      type="text"
-                      value={language}
-                      placeholder="Language"
-                      onChange={(e) =>
-                        handleArrayChange(e, index, null, "languages")
-                      }
-                      className="profile-input"
-                    />
-                    <button
-                      onClick={() => handleRemoveItem(index, "languages")}
-                      className="delete-button"
-                    >
-                      <Trash />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() => handleAddItem("languages", "")}
-                  className="add-button"
-                >
-                  <PlusSquare /> Add
-                </button>
-              </div>
-
               <button onClick={handleSaveChanges} className="save-button">
                 Save Changes
               </button>
@@ -660,14 +659,14 @@ const UserProfile = () => {
                 <h3>
                   <PersonFill className="icon" /> About
                 </h3>
-                <p>{userData.sobre || "No description provided."}</p>
+                <p>{userData.about || "No description provided."}</p>
               </div>
               <div className="profile-section">
                 <h3>
                   <MortarboardFill className="icon" /> Education
                 </h3>
                 {Array.isArray(userData.education) &&
-                  userData.education.length > 0 ? (
+                userData.education.length > 0 ? (
                   userData.education.map((edu, index) => (
                     <div key={index} className="education-item">
                       <div className="profile-info-row">
@@ -694,7 +693,7 @@ const UserProfile = () => {
                   <Briefcase className="icon" /> Professional Experience
                 </h3>
                 {Array.isArray(userData.professionalExperience) &&
-                  userData.professionalExperience.length > 0 ? (
+                userData.professionalExperience.length > 0 ? (
                   userData.professionalExperience.map((exp, index) => (
                     <div key={index}>
                       <div className="profile-info-row">
@@ -721,11 +720,11 @@ const UserProfile = () => {
                   <Globe className="icon" /> Languages
                 </h3>
                 {Array.isArray(userData.languages) &&
-                  userData.languages.length > 0 ? (
+                userData.languages.length > 0 ? (
                   userData.languages.map((language, index) => (
                     <div key={index} className="profile-info-row">
                       <Flag className="icon" />
-                      <span className="profile-info-text">{language}</span>
+                      <span className="profile-info-text">{language.name}</span>
                     </div>
                   ))
                 ) : (
