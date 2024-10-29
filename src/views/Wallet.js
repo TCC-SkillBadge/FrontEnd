@@ -102,11 +102,6 @@ const Wallet = () => {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <input
-              type="text"
-              className="wallet-search"
-              placeholder="Search by code"
-            />
           </div>
           <div className="wallet-order">
             <span>Order by:</span>
@@ -135,11 +130,11 @@ const Wallet = () => {
               {currentMedals.map((medal) => (
                 <div key={medal.id} className="wallet-medal-card">
                   <img
-                    src={medal.image_url} // Alterado para 'image_url'
-                    alt={medal.name_badge} // Alterado para 'name_badge'
+                    src={medal.image_url}
+                    alt={medal.name_badge}
                     className="medal-img"
                   />
-                  <h3>{medal.name_badge}</h3> {/* Alterado para 'name_badge' */}
+                  <h3>{medal.name_badge}</h3>
                   <button>Details</button>
                 </div>
               ))}
