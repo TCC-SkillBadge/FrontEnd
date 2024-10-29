@@ -1,10 +1,25 @@
 /* Wallet.css */
 
+/* Variáveis de Tema */
+:root {
+  --background-color: #1e1e1e;
+  --text-color: #ffffff;
+  --input-background: #d9d9d94d;
+  --divider-color: #9c6bb4;
+  --card-background: rgba(0, 0, 0, 0.25);
+  --button-border-color: #8dfd8b;
+  --select-background: rgba(0, 0, 0, 0.8);
+  --pagination-background: rgba(0, 0, 0, 0.5);
+  --pagination-active-background: #9c6bb4;
+  --card-hover-shadow: rgba(0, 0, 0, 0.3);
+}
+
 body {
   margin: 0;
   padding: 0;
   font-family: 'Inter', sans-serif;
-  background-size: cover;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 .wallet-page {
@@ -19,8 +34,8 @@ body {
   justify-content: center;
   align-items: center;
   flex-grow: 1;
-  padding: 20px;
-  max-width: 1200px;
+  padding: 30px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -43,15 +58,16 @@ body {
   padding: 10px;
   font-size: 1rem;
   border-radius: 5px;
-  border: 1px solid #fff;
-  background-color: #D9D9D94D;
+  border: 1px solid var(--text-color);
+  background-color: var(--input-background);
   width: 250px;
+  color: var(--text-color);
 }
 
 .wallet-order {
   display: flex;
   align-items: center;
-  color: white;
+  color: var(--text-color);
   margin-top: 10px;
 }
 
@@ -61,8 +77,8 @@ body {
   border-radius: 5px;
   border: 1px solid #ccc;
   margin-left: 10px;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: var(--select-background);
+  color: var(--text-color);
   appearance: none;
   padding-right: 30px;
   position: relative;
@@ -73,13 +89,13 @@ body {
   position: absolute;
   right: 10px;
   pointer-events: none;
-  color: white;
+  color: var(--text-color);
 }
 
 .wallet-info {
   margin-bottom: 10px;
   font-size: 1.25rem;
-  color: white;
+  color: var(--text-color);
   text-align: left;
   width: 100%;
 }
@@ -87,14 +103,14 @@ body {
 .wallet-divider {
   width: 100%;
   height: 2px;
-  background-color: #9C6BB4;
+  background-color: var(--divider-color);
   margin-bottom: 20px;
 }
 
 .wallet-medals {
-  background-color: rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  border-radius: 8px;
+  background-color: var(--card-background);
+  padding: 30px;
+  border-radius: 10px;
   width: 100%;
   max-width: 100%;
 }
@@ -122,46 +138,43 @@ body {
 }
 
 .wallet-medal-card {
-  background-color: rgba(0, 0, 0, 0.25);
-  color: white;
+  background-color: var(--card-background);
+  color: var(--text-color);
   text-align: center;
-  width: 200px;
-  min-height: 210px;
+  width: 250px;
+  min-height: 260px;
   border: 2px solid;
-  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  border-image: linear-gradient(to bottom, #d273ff, var(--button-border-color)) 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  margin: 10px;
+  margin: 15px;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
   position: relative;
-  opacity: 0; /* Inicia invisível */
-  animation: fadeInUp 0.5s ease forwards; /* Aplica animação */
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
 }
 
-/* Atraso na animação para efeito de cascata */
-.wallet-medal-card:nth-child(1) { animation-delay: 0.1s; }
-.wallet-medal-card:nth-child(2) { animation-delay: 0.2s; }
-.wallet-medal-card:nth-child(3) { animation-delay: 0.3s; }
-.wallet-medal-card:nth-child(4) { animation-delay: 0.4s; }
-/* Adicione mais delays conforme necessário */
+.wallet-medal-card:nth-child(3n+1) { animation-delay: 0.1s; }
+.wallet-medal-card:nth-child(3n+2) { animation-delay: 0.2s; }
+.wallet-medal-card:nth-child(3n+3) { animation-delay: 0.3s; }
 
 .wallet-medal-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 20px var(--card-hover-shadow);
 }
 
 .wallet-medal-card .medal-img {
   border-radius: 8px;
-  height: 180px;
+  height: 200px;
   object-fit: cover;
   margin: 10px;
 }
 
 .wallet-medal-card h3 {
-  font-size: 0.9rem;
+  font-size: 1rem;
   margin-bottom: 10px;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 5px 10px;
@@ -173,10 +186,10 @@ body {
 .wallet-medal-card button {
   padding: 10px 20px;
   font-size: 1rem;
-  border: 2px solid #8DFD8B;
+  border: 2px solid var(--button-border-color);
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.2);
-  color: white;
+  color: var(--text-color);
   cursor: pointer;
   transition: background 0.3s;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
@@ -200,13 +213,13 @@ body {
   margin: 0 5px;
   border: none;
   border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
+  background-color: var(--pagination-background);
+  color: var(--text-color);
   cursor: pointer;
 }
 
 .pagination-button.active {
-  background-color: #9C6BB4;
+  background-color: var(--pagination-active-background);
   font-weight: bold;
 }
 
@@ -219,9 +232,9 @@ body {
   padding: 8px;
   font-size: 1rem;
   border-radius: 4px;
-  border: 1px solid #fff;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
+  border: 1px solid var(--text-color);
+  background-color: var(--select-background);
+  color: var(--text-color);
   margin-left: 15px;
   cursor: pointer;
 }
