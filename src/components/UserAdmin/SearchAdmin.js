@@ -4,8 +4,8 @@ import React from "react";
 const PesquisaAdmin = () => {
   return (
     <div>
-      <h2>Pesquisa Admin</h2>
-      <p>Placeholder content for Pesquisa Admin.</p>
+      <h2>Admin Search</h2>
+      <p>Placeholder content for Admin Search.</p>
     </div>
   );
 };

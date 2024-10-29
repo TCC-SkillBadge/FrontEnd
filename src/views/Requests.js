@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
-import "../styles/Pedidos.css";
+import "../styles/Requests.css";
 
-const Pedidos = () => {
+const Requests = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -177,4 +177,4 @@ const Pedidos = () => {
   );
 };
 
-export default Pedidos;
+export default Requests;

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
@@ -12,19 +10,21 @@ const Wallet = () => {
   const [loading, setLoading] = useState(true);
   const [orderBy, setOrderBy] = useState("assigned-last");
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
 
   useEffect(() => {
     const fetchBadges = async () => {
-      const email = JSON.parse(sessionStorage.getItem("userInfo")).email;
       try {
+        const email = JSON.parse(sessionStorage.getItem("userInfo")).email;
         const response = await axios.get(
-          `http://localhost:7000/api/badges?email=${email}`
+          `http://localhost:7001/badges/wallet?email=${email}`
         );
         setMedals(response.data);
         setFilteredMedals(response.data);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching badges:", error);
+      } finally {
         setLoading(false);
       }
     };
@@ -37,62 +37,56 @@ const Wallet = () => {
   };
 
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    filterMedals(e.target.value);
+    const term = e.target.value;
+    setSearchTerm(term);
+    filterMedals(term);
   };
 
   const filterMedals = (term) => {
     if (!term) {
       setFilteredMedals(medals);
     } else {
+      const fragments = term.toLowerCase().split(" ");
       const filtered = medals.filter((medal) =>
-        medal.descricao.toLowerCase().includes(term.toLowerCase())
+        fragments.every((fragment) =>
+          medal.name_badge.toLowerCase().includes(fragment)
+        )
       );
       setFilteredMedals(filtered);
     }
   };
 
   const getSortedMedals = () => {
-    switch (orderBy) {
-      case "assigned-first":
-        return [...filteredMedals].sort(
-          (a, b) => new Date(a.dt_emissao) - new Date(b.dt_emissao)
-        );
-      case "name":
-        return [...filteredMedals].sort((a, b) =>
-          a.descricao.localeCompare(b.descricao)
-        );
-      case "assigned-last":
-      default:
-        return [...filteredMedals].sort(
-          (a, b) => new Date(b.dt_emissao) - new Date(a.dt_emissao)
-        );
-    }
+    return [...filteredMedals].sort((a, b) => {
+      switch (orderBy) {
+        case "assigned-first":
+          return new Date(a.dt_emission) - new Date(b.dt_emission);
+        case "name":
+          return a.name_badge.localeCompare(b.name_badge);
+        case "assigned-last":
+        default:
+          return new Date(b.dt_emission) - new Date(a.dt_emission);
+      }
+    });
   };
 
-  const renderMedalsInSlides = (medals) => {
-    const slides = [];
-    const itemsPerSlide = 3;
+  // Paginação
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentMedals = getSortedMedals().slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
-    for (let i = 0; i < medals.length; i += itemsPerSlide) {
-      slides.push(
-        <div className="wallet-medal-slide" key={`slide-${i}`}>
-          {medals.slice(i, i + itemsPerSlide).map((medal) => (
-            <div key={medal.id} className="wallet-medal-card">
-              <img
-                src={medal.imagem_b}
-                alt={medal.descricao}
-                className="medal-img"
-              />
-              <h3>{medal.descricao}</h3>
-              <button>Details</button>
-            </div>
-          ))}
-        </div>
-      );
-    }
+  const totalPages = Math.ceil(filteredMedals.length / itemsPerPage);
 
-    return slides;
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
   };
 
   return (
@@ -107,11 +101,6 @@ const Wallet = () => {
               placeholder="Search by name"
               value={searchTerm}
               onChange={handleSearchChange}
-            />
-            <input
-              type="text"
-              className="wallet-search"
-              placeholder="Search by code"
             />
           </div>
           <div className="wallet-order">
@@ -137,16 +126,43 @@ const Wallet = () => {
           </div>
         ) : (
           <div className="wallet-medals">
-            <Carousel
-              showArrows={true}
-              infiniteLoop={true}
-              showThumbs={false}
-              showStatus={false}
-              emulateTouch={true}
-              className="wallet-carousel"
-            >
-              {renderMedalsInSlides(getSortedMedals())}
-            </Carousel>
+            <div className="wallet-medal-slide">
+              {currentMedals.map((medal, index) => (
+                <div key={medal.id} className="wallet-medal-card">
+                  <img
+                    src={medal.image_url}
+                    alt={medal.name_badge}
+                    className="medal-img"
+                  />
+                  <h3>{medal.name_badge}</h3>
+                  <button>Details</button>
+                </div>
+              ))}
+            </div>
+            <div className="pagination">
+              <div className="pagination-buttons">
+                {[...Array(totalPages).keys()].map((number) => (
+                  <button
+                    key={number + 1}
+                    onClick={() => handlePageChange(number + 1)}
+                    className={`pagination-button ${
+                      currentPage === number + 1 ? "active" : ""
+                    }`}
+                  >
+                    {number + 1}
+                  </button>
+                ))}
+              </div>
+              <select
+                className="items-per-page-select"
+                value={itemsPerPage}
+                onChange={handleItemsPerPageChange}
+              >
+                <option value={6}>6 per page</option>
+                <option value={9}>9 per page</option>
+                <option value={12}>12 per page</option>
+              </select>
+            </div>
           </div>
         )}
       </div>

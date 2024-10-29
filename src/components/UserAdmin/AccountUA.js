@@ -3,8 +3,8 @@ import React from "react";
 const ContaUA = () => {
   return (
     <div>
-      <h2>Conta UA</h2>
-      <p>Placeholder content for Conta UA.</p>
+      <h2>UA Account</h2>
+      <p>Placeholder content for UA Account.</p>
     </div>
   );
 };

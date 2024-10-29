@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Cadastro.css";
+import "../styles/Create.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Dropdown } from "react-bootstrap";
 import axios from "axios";
@@ -12,7 +12,7 @@ import CommonUserForm from "../components/CommonUserForm";
 import BusinessUserForm from "../components/BusinessUserForm";
 import AdminUserForm from "../components/AdminUserForm";
 
-const Cadastro = () => {
+const Create = () => {
   const [userType, setUserType] = useState("common");
   const [formData, setFormData] = useState({
     fullName: "",
@@ -208,4 +208,4 @@ const Cadastro = () => {
   );
 };
 
-export default Cadastro;
+export default Create;

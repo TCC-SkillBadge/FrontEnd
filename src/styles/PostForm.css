@@ -1,0 +1,83 @@
+.post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.post-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  background-color: #191a2e;
+  color: #fff;
+}
+
+.post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.image-upload-wrapper {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #d273ff;
+  font-size: 1.5rem;
+}
+
+.photo-icon {
+  margin-right: 10px;
+}
+
+.share-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.share-option input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.share-icon {
+  font-size: 1.5rem;
+  color: #8dfd8b;
+}
+
+.submit-post-button {
+  background-color: #d273ff;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.submit-post-button:disabled {
+  background-color: #ccc;
+}
+
+.submit-post-button:hover {
+  background-color: #8dfd8b;
+}
+
+.image-preview {
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 100%;
+  border-radius: 10px;
+}

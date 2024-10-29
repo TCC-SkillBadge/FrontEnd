@@ -87,13 +87,7 @@
   font-size: 2.5rem;
   font-weight: 600;
   margin-bottom: 30px;
-}
-
-.why-digital-medals h3 {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.75rem;
-  font-weight: 500;
-  margin-top: 20px;
+  text-align: center;
 }
 
 .why-digital-medals p {
@@ -142,6 +136,7 @@
   font-size: 2.5rem;
   font-weight: 600;
   margin-bottom: 30px;
+  text-align: center;
 }
 
 .credibilidade-seguranca p {
@@ -217,7 +212,7 @@
   margin-bottom: 20px;
 }
 
-.feature-card h3 {
+.feature-card h2 {
   font-family: 'Inter', sans-serif;
   font-size: 1.75rem;
   font-weight: 600;
@@ -229,6 +224,17 @@
   font-size: 1.25rem;
   font-weight: 400;
   margin-top: 10px;
+}
+
+.values-list {
+  list-style-position: inside; 
+  padding: 0;
+  display: inline-block; 
+  text-align: left; 
+}
+
+.values-list li {
+  text-align: left; 
 }
 
 /* Responsividade */
@@ -289,10 +295,6 @@
     font-size: 2rem;
   }
 
-  .why-digital-medals h3 {
-    font-size: 1.5rem;
-  }
-
   .why-digital-medals p {
     font-size: 1rem;
   }
@@ -321,10 +323,6 @@
 
   .why-digital-medals h2 {
     font-size: 1.75rem;
-  }
-
-  .why-digital-medals h3 {
-    font-size: 1.25rem;
   }
 
   .why-digital-medals p {

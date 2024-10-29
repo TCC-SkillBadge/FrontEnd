@@ -16,6 +16,13 @@ const Orders = () => {
 
   const userType = sessionStorage.getItem("tipoUsuario");
 
+  // Mapeamento dos nomes de canais para algo mais intuitivo
+  const channelMap = {
+    criacao_badge: "Badge Creation",
+    edicao_badge: "Badge Editing",
+    suporte: "Support",
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       const token = sessionStorage.getItem("token");
@@ -30,7 +37,6 @@ const Orders = () => {
             },
           }
         );
-
 
         if (response.status === 200) {
           setOrders(response.data);
@@ -167,8 +173,10 @@ const Orders = () => {
             {filteredOrders.map((order) => (
               <tr key={order.numero_pedido}>
                 <td>{order.numero_pedido}</td>
-                <td>{order.data}</td>
-                <td>{order.canal}</td>
+                <td>{new Date(order.data).toLocaleDateString()}</td>{" "}
+                {/* Formatação de data */}
+                <td>{channelMap[order.canal] || order.canal}</td>{" "}
+                {/* Mapeamento de canal */}
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>
                 <td>{order.cliente}</td>

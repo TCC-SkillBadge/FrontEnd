@@ -11,7 +11,7 @@ const Footer = ({ userType, user }) => {
     return (
       <>
         <div className="footer-item">
-          © 2024, Skill Badge. All rights reserved.
+          © 2024, Next Badge. All rights reserved.
         </div>
         <NavLink to="/home" className="footer-item">
           Home

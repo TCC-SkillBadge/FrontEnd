@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import ConfirmationModal from "../components/ConfirmationModal"; // Import the ConfirmationModal
-import "../styles/CreateServicePlan.css"; // Importing the CSS
+import ConfirmationModal from "../components/ConfirmationModal";
+import "../styles/CreateServicePlan.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,10 +24,9 @@ const EditServicePlan = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Verifica se o usuário é administrador
     const userType = sessionStorage.getItem("tipoUsuario");
     if (userType !== "UA") {
-      navigate("/home"); // Redireciona para a página inicial se o usuário não for administrador
+      navigate("/home");
     } else {
       const fetchPlan = async () => {
         try {
@@ -56,9 +55,7 @@ const EditServicePlan = () => {
 
   const handlePriceChange = (e) => {
     let value = e.target.value;
-    // Remove all non-digit characters
     value = value.replace(/\D/g, "");
-    // Add formatting
     value = (value / 100).toFixed(2).toString();
     setFormData((prevData) => ({ ...prevData, precoPlanoServico: value }));
   };
@@ -110,6 +107,10 @@ const EditServicePlan = () => {
   const handleConfirmDelete = () => {
     handleDelete();
     setShowModal(false);
+  };
+
+  const handleCancel = () => {
+    navigate("/price"); // Volta para a página anterior
   };
 
   return (
@@ -236,12 +237,23 @@ const EditServicePlan = () => {
               <button type="submit" className="btn btn-primary save-button">
                 Save Plan
               </button>
+            </div>
+
+            {/* New div for Delete and Cancel buttons */}
+            <div className="button-group">
               <button
                 type="button"
                 className="btn btn-danger delete-button"
                 onClick={handleShowModal}
               >
                 Delete Plan
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary cancel-button"
+                onClick={handleCancel}
+              >
+                Cancel
               </button>
             </div>
           </form>

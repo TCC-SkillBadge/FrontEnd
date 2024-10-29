@@ -320,7 +320,7 @@ const NavBar = () => {
           <Form className="d-flex mx-auto searchSection">
             <FormControl
               type="text"
-              placeholder="Buscar"
+              placeholder="Search"
               className="searchInput"
             />
           </Form>
@@ -336,7 +336,7 @@ const NavBar = () => {
                 <Nav.Link as={NavLink} to="/login" className="signIn">
                   Sign In
                 </Nav.Link>
-                <Nav.Link as={NavLink} to="/cadastro" className="signUp">
+                <Nav.Link as={NavLink} to="/create" className="signUp">
                   Sign Up
                 </Nav.Link>
               </>

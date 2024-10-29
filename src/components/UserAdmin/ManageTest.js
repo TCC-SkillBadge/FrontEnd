@@ -817,7 +817,7 @@ const AlternativesMV = (props) => {
                                         Score Percentage:
                                     </span>
                                     <InputNumber
-                                    locale='pt-BR'
+                                    locale='en-US'
                                     maxFractionDigits={0}
                                     step={5}
                                     min={0}
@@ -852,7 +852,7 @@ const AlternativesMV = (props) => {
                                             Score Percentage:
                                         </span>
                                         <InputNumber
-                                        locale='pt-BR'
+                                        locale='en-US'
                                         maxFractionDigits={0}
                                         min={0}
                                         max={100}
@@ -904,7 +904,7 @@ const AlternativesR = (props) => {
                                        Alternative Value:
                                     </span>
                                     <InputNumber
-                                    locale='pt-BR'
+                                    locale='en-US'
                                     maxFractionDigits={0}
                                     min={0}
                                     allowEmpty={false}
@@ -935,7 +935,7 @@ const AlternativesR = (props) => {
                                         Alternative Value:
                                     </span>
                                     <InputNumber
-                                    locale='pt-BR'
+                                    locale='en-US'
                                     maxFractionDigits={0}
                                     min={0}
                                     allowEmpty={false}

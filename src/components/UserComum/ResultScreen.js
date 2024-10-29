@@ -31,7 +31,7 @@ export const ResultScreen = () => {
                     <ResultChart resultShow={resultShow}/>
                 </div>
                 <div className='flex justify-content-center mt-3'>
-                    <button className='btn btn-primary' onClick={() => window.location.replace('/')}>Voltar</button>
+                    <button className='btn btn-primary' onClick={() => window.location.replace('/')}>Back</button>
                 </div>
             </animated.div>
         </div>
