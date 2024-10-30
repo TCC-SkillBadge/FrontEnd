@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { DataScroller } from 'primereact/datascroller';
 import { Divider } from 'primereact/divider';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
@@ -10,6 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import InputEmoji from 'react-input-emoji';
 import Loading from './Loading';
 import { toast, ToastContainer } from 'react-toastify';
+import { animated, useTransition, useSpring } from 'react-spring';
 import 'react-toastify/dist/ReactToastify.css';
 
 const chatServiceURL = 'http://localhost:8001';
@@ -24,11 +24,30 @@ const connectionEnterpriseUser = axios.create({
   baseURL: enterpriseUserURL,
 });
 
+const verifyImageValidity = (user, dimensions) => {
+  if(user.profile_picture === null || user.profile_picture === '') {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: '50%',
+        border: '1px solid white',
+        width:`${dimensions}px`,
+        height: `${dimensions}px`,
+      }}>
+        { user.type === 'UE' ?  <i className='pi pi-building'/> : <i className='pi pi-user'/> }
+      </div>
+    );
+  }
+  return <img style={{borderRadius: '50%'}} src={user.profile_picture} width={dimensions} height={dimensions}/>;
+};
+
 const ChatBox = () => {
-  const [token, _setToken] = useState(sessionStorage.getItem('token'));
   const [userType, _setUserType] = useState(sessionStorage.getItem('tipoUsuario'));
   const [userInfo, _setUserInfo] = useState(JSON.parse(sessionStorage.getItem('userInfo')));
-  const [user, _setUser] = useState(userInfo.email ? userInfo.email : userInfo.email_comercial);
+  const [userEmail, _setUserEmail] = useState(userInfo.email ? userInfo.email : userInfo.email_comercial);
+  const [userUsername, _setUserUsername] = useState(userInfo.username);
 
   const [contacts, setContacts] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
@@ -39,37 +58,91 @@ const ChatBox = () => {
 
 
   useEffect(() => {
-    console.log('ChatBox mounted');
-    console.log('Token:', token);
-    console.log('User Type:', userType);
-    console.log('User Info:', userInfo);
-
-    setSocket(() => io(chatServiceURL, { auth: { user } } ))
+    setSocket(() => io(chatServiceURL, { auth: { user: userEmail } } ))
     
     return () => {
       socket?.disconnect();
     }
   }, []);
 
+  const searchContatcs = async (contact) => {
+    const cont ={
+      email: contact.email,
+      username: contact.username,
+      user_type: contact.user_type,
+    }
+    let profile_picture = '';
+    try{
+      if(contact.user_type === 'UC') {
+        const response = (await connectionCommonUser.get('/find', {
+          params: { 
+            search: contact.email,
+            researcher: userEmail,
+          },
+        })).data;
+        console.log('Response', response);
+        profile_picture = response[0].imageUrl;
+      }
+      else{
+        const response = (await connectionEnterpriseUser.get('/find-user', {
+          params: { 
+            search: contact.email,
+            researcher: userEmail,
+          },
+        })).data;
+        console.log('Response', response);
+        profile_picture = response[0].imageUrl;
+      }
+    }
+    catch (error) {
+      console.error('An error occurred while fetching users profile pictures');
+      console.error(error);
+      toast.error('An error occurred while fetching users profile pictures');
+    }
+    cont.profile_picture = profile_picture;
+    return cont;
+  };
+
   useEffect(() => {
     socket?.on('connect', () => {
       console.log('Connected to Chat Service');
     });
   
-    socket?.on('start chat application', (data) => {
+    socket?.on('start chat application', async (data) => {
       console.log('Chat application started');	
       console.log(data);
-      setContacts(() => data.contacts);
+
+      const contactsAux = data.contacts;
+      const contacts = [];
+      for(let i = 0; i < contactsAux.length; i++) {
+        const cont = await searchContatcs(contactsAux[i]);
+        contacts.push(cont);
+      }
+
+      console.log('Contacts:', contacts);
+
+      setContacts(() => contacts);
       setAllMessages(() => data.messageList);
       setLoading(() => false);
     });
 
-    socket?.on('received message', (data) => {
+    socket?.on('received message', async (data) => {
       console.log('Message received');
       console.log(data);
   
-      const cont_e = user === data.sender_email ? data.receiver_email : data.sender_email;
-      const cont_u = user === data.sender_email ? data.receiver_username : data.sender_username;
+      let cont_e;
+      let cont_u;
+      let cont_t;
+      if(data.sender_email === userEmail) {
+        cont_e = data.receiver_email;
+        cont_u = data.receiver_username;
+        cont_t = data.receiver_user_type;
+      }
+      else{
+        cont_e = data.sender_email;
+        cont_u = data.sender_username;
+        cont_t = data.sender_user_type;
+      }
 
       let found = false;
       for(let i = 0; i < contacts.length; i++) {
@@ -94,8 +167,10 @@ const ChatBox = () => {
       }
       else{
         console.log('New contact');
-        setContacts((oldContacts) => [...oldContacts, { email: cont_e, username: cont_u }]);
-        setAllMessages((oldMessages) => [...oldMessages, { contact_email: cont_e, contact_username: cont_u, messages: [data] }]);
+        const newContact = await searchContatcs({ email: cont_e, username: cont_u, user_type: cont_t });
+
+        setContacts((oldContacts) => [...oldContacts, newContact]);
+        setAllMessages((oldMessages) => [...oldMessages, { contact_email: cont_e, contact_username: cont_u, contact_type: cont_t, messages: [data] }]);
         toast.info(`A new contact has been added: ${cont_u}`);
       }
     });
@@ -119,7 +194,12 @@ const ChatBox = () => {
     if(messagesDisplayed){
       for(let i = 0; i < allMessages.length; i++) {
         if(allMessages[i].contact_email === messagesDisplayed.contact_email) {
-          setMessagesDisplayed(() => allMessages[i]);
+          setMessagesDisplayed((oldValues) => {
+            return {
+              contact_profile_picture: oldValues.contact_profile_picture,
+              ...allMessages[i]
+            }
+          });
           break;
         }
       }
@@ -129,14 +209,18 @@ const ChatBox = () => {
   const sendMessage = (msg) => {
     console.log('Sending message');
     console.log('Contacts:', contacts);
-    socket.emit('send message', {
+    const message = {
       sender_email: msg.sender_email,
       receiver_email: msg.receiver_email,
       sender_username: msg.sender_username,
       receiver_username: msg.receiver_username,
+      sender_user_type: userType,
+      receiver_user_type: msg.receiver_user_type,
       message: msg.message,
       sending_date: new Date(),
-    });
+    };
+    console.log('Message sent', message);
+    socket.emit('send message', message);
   };
 
   const chooseContact = (contact) => {
@@ -146,8 +230,13 @@ const ChatBox = () => {
     console.log(allMessages);
 
     for(let i = 0; i < allMessages.length; i++) {
-      if(allMessages[i].contact_email === contact) {
-        setMessagesDisplayed(() => allMessages[i]);
+      if(allMessages[i].contact_email === contact.email) {
+        setMessagesDisplayed(() => {
+          return {
+            ...allMessages[i],
+            contact_profile_picture: contact.profile_picture,
+          }
+        });
         break;
       }
     }
@@ -169,16 +258,17 @@ const ChatBox = () => {
           <MessagesD
           contactMessages={messagesDisplayed}
           userInfo={userInfo}
-          sendMessage={sendMessage}
-          setMessagesDisplayed={setMessagesDisplayed}/>
+          userEmail={userEmail}
+          userType={userType}
+          userUsername={userUsername}
+          sendMessage={sendMessage}/>
         </div>
       }
       <SearchBox
       searching={searching}
       setSearching={setSearching}
-      token={token}
-      userType={userType}
-      userInfo={userInfo}
+      userEmail={userEmail}
+      userUsername={userUsername}
       contacts={contacts}
       sendMessage={sendMessage}/>
       <ToastContainer
@@ -198,6 +288,11 @@ const ChatBox = () => {
 
 const Contacts = ({contacts, setSearching, chooseContact}) => {
 
+  useEffect(() => {
+    console.log('Contacts mounted');
+    console.log('Contacts:', contacts);
+  }, []);
+
   const buildContacts = () => {
     return (
       <div className='contact-box'>
@@ -206,10 +301,13 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
             return (
               <div
               key={contact.email}
-              className='flex flex-row align-items-center'>
+              className='flex flex-row align-items-center mb-3'>
                 <button
                 className='contact-button'
-                onClick={() => chooseContact(contact.email)}>
+                onClick={() => chooseContact(contact)}>
+                  <div className='mr-2'>
+                    {verifyImageValidity({type: contact.user_type, profile_picture: contact.profile_picture}, '35')}
+                  </div>
                   <nobr>{contact.username}</nobr>
                 </button>
               </div>
@@ -238,12 +336,16 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
   )
 };
 
-const MessagesD = ({contactMessages, userInfo, sendMessage, setMessagesDisplayed}) => {
-  const [userEmail, _setUserEmail] = useState(userInfo.email ? userInfo.email : userInfo.email_comercial);
+const MessagesD = ({contactMessages, userEmail, userType, userInfo, userUsername, sendMessage}) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
 
   const scrollabelRef = useRef(null);
+
+  useEffect(() => {
+    console.log('MessagesD mounted');
+    console.log('Contact Messages:', contactMessages);
+  }, []);
 
   useEffect(() => {
     console.log('MessagesD mounted');
@@ -258,24 +360,6 @@ const MessagesD = ({contactMessages, userInfo, sendMessage, setMessagesDisplayed
       scrollabelRef.current.scrollTop = scrollabelRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const sendMsg = (sender, receiver, sender_UN, receiver_UN, message) => {
-    const msg = {
-      sender_email: sender,
-      receiver_email: receiver,
-      sender_username: sender_UN,
-      receiver_username: receiver_UN,
-      message: message,
-    };
-    sendMessage(msg);
-    setMessagesDisplayed((oldValues) => {
-      console.log('Old Values:', oldValues);
-      return {
-        ...oldValues,
-        messages: [msg, ...oldValues.messages],
-      };
-    });
-  };
 
   const buildMessages = () => {
     return (
@@ -303,7 +387,25 @@ const MessagesD = ({contactMessages, userInfo, sendMessage, setMessagesDisplayed
                 <div className={isSenderTheUser ? 'message-line-sender' : 'message-line-receiver'}>
                   <div className={isSenderTheUser ? 'message-line-sender-box' : 'message-line-receiver-box'}>
                     <div>
-                      <h5><b>{isSenderTheUser ? 'You' : message.sender_username}</b></h5>
+                      {
+                        isSenderTheUser ? 
+                        <div className='flex flex-row justify-content-end mb-2'>
+                          <div className='flex flex-row align-items-center'>
+                            <div className='mr-2'>
+                              {verifyImageValidity({type: userType, profile_picture: userInfo.imageUrl}, '25')}
+                            </div>
+                            <b>You</b>
+                          </div> 
+                        </div>:
+                        <div className='flex flex-row justify-content-start mb-2'>
+                          <div className='flex flex-row align-items-center'>
+                            <div className='mr-2'>
+                            {verifyImageValidity({type: contactMessages.contact_type, profile_picture: contactMessages.contact_profile_picture}, '25')}
+                            </div>
+                            <b>{contactMessages.contact_username}</b>
+                          </div> 
+                        </div>
+                      }
                     </div>
                       <p>{message.message}</p>
                       <div
@@ -311,7 +413,7 @@ const MessagesD = ({contactMessages, userInfo, sendMessage, setMessagesDisplayed
                       style={{
                         color: 'lightgray',
                       }}>
-                        {new Date(message.sending_date).toLocaleTimeString()}
+                        {new Date(message.sending_date).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
                       </div>
                   </div>
                 </div>
@@ -338,12 +440,14 @@ const MessagesD = ({contactMessages, userInfo, sendMessage, setMessagesDisplayed
             value={newMessage}
             onChange={setNewMessage}
             onEnter={() => { 
-              sendMsg(
-                userEmail,
-                contactMessages.contact_email,
-                userInfo.username,
-                contactMessages.contact_username,
-                newMessage)
+              sendMessage({
+                sender_email: userEmail,
+                receiver_email: contactMessages.contact_email,
+                sender_username: userUsername,
+                receiver_username: contactMessages.contact_username,
+                receiver_user_type: contactMessages.contact_type,
+                message: newMessage,
+              })
             }}
             placeholder='Type your message and press enter'
             cleanOnEnter
@@ -359,27 +463,15 @@ const MessagesD = ({contactMessages, userInfo, sendMessage, setMessagesDisplayed
   )
 };
 
-const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts, sendMessage}) => {
+const SearchBox = ({userEmail, userUsername, searching, setSearching, contacts, sendMessage}) => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [noResults, setNoResults] = useState(false);
 
-  useEffect(() => {
-    console.log('SearchBox mounted');
-    console.log('Token:', token);
-    console.log('User Type:', userType);
-    console.log('User Info:',userInfo);
-  }, []);
-
   const searchUsers = async () => {
     setLoading(() => true);
     setNoResults(() => false);
-
-    console.log('Searching for users');
-    console.log('Search:', searchTerm);
-    console.log('Token:', token);
-    console.log('User Type:', userType);
 
     const fetchUsers = async () => {
       let UEs = [];
@@ -387,12 +479,9 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
 
       try{
         UCs = (await connectionCommonUser.get('/find', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
           params: { 
-            userType: userType,
-            search: searchTerm 
+            search: searchTerm,
+            researcher: userEmail,
           },
         })).data;
       }
@@ -402,12 +491,9 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
 
       try {
         UEs = (await connectionEnterpriseUser.get('/find-user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
           params: { 
-            userType: userType,
-            search: searchTerm 
+            search: searchTerm,
+            researcher: userEmail,
           },
         })).data;
       }
@@ -424,6 +510,7 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
     const formatResponses = (UEs, UCs) => {
       const users = [];
 
+      console.log('Contacts:', contacts);
       for(let i = 0; i < UEs.length; i++) {
         let alreadyInContacts = false;
         for(let j = 0; j < contacts.length; j++) {
@@ -431,14 +518,15 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
             alreadyInContacts = true;
             break;
           }
-          if(!alreadyInContacts){
-            users.push({
-              username: UEs[i].username ? UEs[i].username : 'Anonimous',
-              email: UEs[i].email_comercial,
-              name: UEs[i].razao_social,
-              type: 'enterprise',
-            });
-          }
+        }
+        if(!alreadyInContacts){
+          users.push({
+            username: UEs[i].username ? UEs[i].username : 'Anonimous',
+            email: UEs[i].email_comercial,
+            name: UEs[i].razao_social,
+            profile_picture: UEs[i].imageUrl,
+            type: 'UE',
+          });
         }
       }
       
@@ -455,7 +543,8 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
             username: UCs[i].username ? UCs[i].username : 'Anonimous',
             email: UCs[i].email,
             name: UCs[i].fullName,
-            type: 'common',
+            profile_picture: UCs[i].imageUrl,
+            type: 'UC',
           });
         }
       }
@@ -479,7 +568,6 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
 
   return (
     <Dialog
-    className='searchbox'
     visible={searching}
     onHide={() => {
       if (!searching) return;
@@ -499,6 +587,11 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
           </span>
           <InputText
           value={searchTerm}
+          onKeyDown={(e) => {
+            if(e.key === 'Enter') {
+              searchUsers();
+            }
+          }}
           onChange={(e) => {setSearchTerm(() => e.target.value)}}/>
           <Button
           className='p-button-primary'
@@ -508,88 +601,141 @@ const SearchBox = ({token, userType, userInfo, searching, setSearching, contacts
         <div className='m-3'>
           {
             noResults ?
-            <div className='flex flex-row justify-content-center'>
+            <div className='flex flex-row justify-content-center mt-3'>
               <h3>No results found</h3>
-            </div> : 
+            </div> :
             null
           }
-          <SearchResults searchResults={searchResults} userInfo={userInfo} sendMessage={sendMessage} setSearching={setSearching}/>
+          {
+            searchResults.length > 0 ?
+            <SearchResultsBox
+            searchResults={searchResults}
+            userEmail={userEmail}
+            userUsername={userUsername}
+            sendMessage={sendMessage}
+            setSearching={setSearching}/> :
+            null
+          }
         </div>
       </div>
     </Dialog>
   )
 };
 
-const SearchResults = ({searchResults, userInfo, sendMessage, setSearching}) => {
-  const [sendFirstMessage, setSendFirstMessage] = useState(false);
-  const [firstMessage, setFirstMessage] = useState('');
-  const [userEmail, _setUserEmail] = useState(userInfo.email ? userInfo.email : userInfo.email_comercial);
-  const [userUsername, _setUserUsername] = useState(userInfo.username);
+const SearchResultsBox = ({userEmail, userUsername, searchResults, sendMessage, setSearching}) => {
+  useEffect(() => {
+    console.log('SearchResults mounted');
+    console.log('SearchResults:', searchResults);
+  }, []);
 
   return (
     <div className='search-result-box'>
       {
         searchResults.map((user) => {
-          const icon = user.type === 'common' ? 'pi pi-user' : 'pi pi-building';
-
           return (
-            <div
+            <SearchResults
             key={user.email}
-            className='search-results'>
-              <div>
-                <div className='flex flex-row align-items-center'>
-                  <i className={'mr-3 ' + icon}/>
-                  <h1><b>{user.username}</b></h1>
-                </div>
-                <div className='mb-2'>
-                  <b>E-mail:</b>
-                  <div>{user.email}</div>
-                </div>
-                <div className='mb-3'>
-                  {
-                    user.type === 'enterprise' ?
-                    <b>Enterprise Name: </b> :
-                    <b>Full Name: </b>
-                  }
-                  <div>{user.name}</div>
-                </div>
-              </div>
-              <div className='flex flex-row justify-content-center'>
-                <button
-                className='iniciate-chat-button'
-                onClick={() => setSendFirstMessage(() => !sendFirstMessage)}>
-                  Start Chat
-                </button>
-              </div>
-              {
-                sendFirstMessage ?
-                <div className='first-message-box'>
-                  <h2>Send your first Message</h2>
-                  <InputEmoji
-                  value={firstMessage}
-                  onChange={setFirstMessage}
-                  onEnter={() => {
-                    sendMessage({
-                      sender_email: userEmail,
-                      receiver_email: user.email,
-                      sender_username: userUsername,
-                      receiver_username: user.username,
-                      message: firstMessage,
-                    });
-                    setSearching(() => false);
-                  }}
-                  placeholder={`Type your message and press enter to send it to ${user.username}`}
-                  cleanOnEnter
-                  shouldReturn/>
-                </div> :
-                null
-              }
-            </div>
+            user={user}
+            userEmail={userEmail}
+            userUsername={userUsername}
+            sendMessage={sendMessage}
+            setSearching={setSearching}/>
           )
         })
       }
     </div>
   )
+};
+
+const SearchResults = ({user, userEmail, userUsername, sendMessage, setSearching}) => {
+  const [sendFirstMessage, setSendFirstMessage] = useState(false);
+  const [firstMessage, setFirstMessage] = useState('');
+
+  const mountFirstMessageButton = useTransition(sendFirstMessage, {
+    from: { opacity: 0, transform: 'scale(0)' },
+    enter: { opacity: 1, transform: 'scale(1)' },
+    leave: { opacity: 0, transform: 'scale(0)' },
+    config: {duration: 400},
+  })
+
+  const send = () => {
+    sendMessage({
+      sender_email: userEmail,
+      receiver_email: user.email,
+      sender_username: userUsername,
+      receiver_username: user.username,
+      receiver_user_type: user.type,
+      message: firstMessage,
+    });
+    setSearching(() => false);
+  };
+
+  return(
+    <div
+    key={user.email}
+    className='search-results'>
+      <div>
+        <div className='flex flex-row align-items-center mb-2'>
+          <div className='mr-3'>
+            {verifyImageValidity(user, '50')}
+          </div>
+          <h1><b>{user.username}</b></h1>
+        </div>
+        <div className='mb-2'>
+          <b>E-mail:</b>
+          <div>{user.email}</div>
+        </div>
+        <div className='mb-3'>
+          {
+            user.type === 'UE' ?
+            <b>Corporate Name: </b> :
+            <b>Full Name: </b>
+          }
+          <div>{user.name}</div>
+        </div>
+      </div>
+      <div className='flex flex-row justify-content-center mb-2'>
+        {
+          sendFirstMessage ?
+          <button
+          className='cancel-button'
+          onClick={() => setSendFirstMessage(() => false)}>
+            Cancel
+          </button> :
+          <button
+          className='iniciate-chat-button'
+          onClick={() => setSendFirstMessage(() => true)}>
+            Start Chat
+          </button>
+        }
+      </div>
+      {
+        mountFirstMessageButton((styles, item) => 
+          item &&
+          <animated.div style={styles}>
+            <div className='first-message-box'>
+              <h3 className='text-center'>Send your first Message</h3>
+              <div className='flex flex-row justify-content-center'>
+                <InputEmoji
+                value={firstMessage}
+                onChange={setFirstMessage}
+                onEnter={() => send()}
+                placeholder='Enter your message'
+                shouldReturn/>
+              </div>
+              <div className='flex flex-row justify-content-center'>
+                <button
+                className='iniciate-chat-button mt-3'
+                onClick={() => send()}>
+                  Send
+                </button>
+              </div>
+            </div>
+          </animated.div>
+        )
+      }
+    </div>
+  );
 };
 
 export default ChatBox;
