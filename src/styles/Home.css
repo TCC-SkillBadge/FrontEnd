@@ -49,6 +49,18 @@
   color: #8dfd8b;
 }
 
+.coinBackgroundHome {
+  background-image: url('../../public/images/background-image-home.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 140%;
+  z-index: 1;
+}
+
 /* Estilo para a primeira divisória */
 .divisoria1 {
   display: flex;
