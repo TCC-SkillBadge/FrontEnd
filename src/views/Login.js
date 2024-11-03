@@ -278,7 +278,7 @@ const handleLogin = async (
           </form>
           <div className="signup-options">
             <span className="dont-have-account">Don't have an account?</span>
-            <Link to="/cadastro" className="sign-up">
+            <Link to="/create" className="sign-up">
               Sign Up
             </Link>
           </div>

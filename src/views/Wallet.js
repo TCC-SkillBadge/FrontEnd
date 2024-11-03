@@ -92,6 +92,7 @@ const Wallet = () => {
   return (
     <div className="wallet-page">
       <Navbar />
+      <div className="coinBackgroundWallet"></div>
       <div className="wallet-container">
         <div className="wallet-header">
           <div className="wallet-search-group">
