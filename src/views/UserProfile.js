@@ -29,6 +29,7 @@ import NavBar from "../components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
+import { Link } from "react-router-dom"; 
 import PostForm from "../components/PostForm";
 
 const UserProfile = () => {
@@ -71,6 +72,42 @@ const UserProfile = () => {
     }));
   };
 
+  const fetchBadges = async (tipoUsuario, email) => {
+  try {
+    let response;
+    const token = sessionStorage.getItem("token");
+
+    if (tipoUsuario === "UC") {
+      // Endpoint para usuários comuns
+      response = await axios.get(`http://localhost:7001/badges/wallet?email=${email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else if (tipoUsuario === "UE") {
+      // Endpoint para usuários empresariais
+      response = await axios.get(`http://localhost:7001/badges/consult?search=${email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      throw new Error("Tipo de usuário inválido");
+    }
+
+    setUserData((prevData) => ({
+      ...prevData,
+      badges: response.data,
+    }));
+    setLoading(false);
+  } catch (error) {
+    console.error("Erro ao buscar badges:", error);
+    setUserData((prevData) => ({ ...prevData, badges: [] }));
+    setLoading(false);
+  }
+};
+
+
   const formatDateTime = (dateString) => {
     const options = {
       year: "numeric",
@@ -84,100 +121,115 @@ const UserProfile = () => {
   };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        let response;
+  const fetchUserInfo = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      let response;
 
-        if (!token) {
-          setError("Usuário não autenticado");
-          setLoading(false);
-          return;
+      if (!token) {
+        setError("Usuário não autenticado");
+        setLoading(false);
+        return;
+      }
+
+      // Carregar os idiomas disponíveis primeiro
+      const languagesResponse = await axios.get(
+        "http://localhost:7000/api/languages",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
+      setAvailableLanguages(languagesResponse.data);
 
-        // Carregar os idiomas disponíveis primeiro
-        const languagesResponse = await axios.get(
-          "http://localhost:7000/api/languages"
-        );
-        setAvailableLanguages(languagesResponse.data);
+      if (tipoUsuario === "UC") {
+        response = await axios.get("http://localhost:7000/api/user/info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        if (tipoUsuario === "UC") {
-          response = await axios.get("http://localhost:7000/api/user/info", {
+        // Mapear os idiomas do usuário para objetos com id e name
+        const userLanguages = Array.isArray(response.data.languages)
+          ? response.data.languages
+              .map((langId) => {
+                const languageObj = languagesResponse.data.find(
+                  (lang) => lang.id === langId
+                );
+                return languageObj
+                  ? { id: languageObj.id, name: languageObj.language }
+                  : null;
+              })
+              .filter((lang) => lang !== null)
+          : [];
+
+        setUserData({
+          ...response.data,
+          education: Array.isArray(response.data.education)
+            ? response.data.education
+            : [],
+          professionalExperience: Array.isArray(
+            response.data.professional_experience
+          )
+            ? response.data.professional_experience
+            : [],
+          languages: userLanguages,
+        });
+
+        // Chamar fetchBadges para usuários comuns
+        const email = response.data.email || "teste@email.com";
+        await fetchBadges("UC", email);
+
+      } else if (tipoUsuario === "UE") {
+        response = await axios.get(
+          "http://localhost:7003/api/acessar-info-usuario-jwt",
+          {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          });
+          }
+        );
 
-          // Mapear os idiomas do usuário para objetos com id e name
-          const userLanguages = Array.isArray(response.data.languages)
-            ? response.data.languages
-                .map((langId) => {
-                  // Procurar o idioma correspondente em availableLanguages
-                  const languageObj = languagesResponse.data.find(
-                    (lang) => lang.id === langId
-                  );
-                  return languageObj
-                    ? { id: languageObj.id, name: languageObj.language }
-                    : null;
-                })
-                .filter((lang) => lang !== null)
-            : [];
+        const eventsResponse = await axios.get(
+          "http://localhost:7003/api/eventos",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-          setUserData({
-            ...response.data,
-            education: Array.isArray(response.data.education)
-              ? response.data.education
-              : [],
-            professionalExperience: Array.isArray(
-              response.data.professional_experience
-            )
-              ? response.data.professional_experience
-              : [],
-            languages: userLanguages,
-          });
-        } else if (tipoUsuario === "UE") {
-          response = await axios.get(
-            "http://localhost:7003/api/acessar-info-usuario-jwt",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+        setUserData({
+          ...response.data,
+          email_comercial: response.data.email_comercial,
+          sobre: response.data.sobre || "",
+          website: response.data.website || "",
+          events: eventsResponse.data || [],
+          badges: [], // Inicializa como vazio
+        });
 
-          const eventsResponse = await axios.get(
-            "http://localhost:7003/api/eventos",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+        console.log("Loaded events:", eventsResponse.data);
 
-          setUserData({
-            ...response.data,
-            email_comercial: response.data.email_comercial,
-            sobre: response.data.sobre || "",
-            website: response.data.website || "",
-            events: eventsResponse.data || [],
-            badges: response.data.badges || [],
-          });
+        // Chamar fetchBadges para usuários empresariais
+        const email = response.data.email_comercial || "teste_comercial@email.com";
+        await fetchBadges("UE", email);
 
-          console.log("Loaded events:", eventsResponse.data);
-        } else {
-          setError("Tipo de usuário inválido");
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Erro ao obter informações do usuário:", error);
-        setError("Falha ao carregar os dados do usuário");
-        setLoading(false);
+      } else {
+        setError("Tipo de usuário inválido");
       }
-    };
 
-    fetchUserInfo();
-  }, [tipoUsuario]);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao obter informações do usuário:", error);
+      setError("Falha ao carregar os dados do usuário");
+      setLoading(false);
+    }
+  };
+
+  fetchUserInfo();
+}, [tipoUsuario]);
+
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -1173,18 +1225,21 @@ const UserProfile = () => {
             )}
 
             {activeTab === "badges" && (
-              <div className="badges-section">
-                <h3>Earned Badges</h3>
-                {userData.badges && userData.badges.length > 0 ? (
-                  <div className="badges-grid">
-                    {userData.badges.map((badge, index) => (
-                      <div key={index} className="badge-item">
-                        <AwardFill className="badge-icon" />
-                        <span>{badge.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
+            <div className="badges-section">
+              <h3>Badges</h3>
+              {userData.badges && userData.badges.length > 0 ? (
+                <div className="badges-grid">
+                  {userData.badges.map((badge) => (
+                    <div key={badge.id_badge} className="badge-card">
+                      <img src={badge.image_url} alt="Badge" className="badge-preview" />
+                      <h3>{badge.name_badge}</h3>
+                      <Link to={`/badges/details/${badge.id_badge}`}>
+                        <button>Details</button>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
                   <p>No badges available.</p>
                 )}
               </div>

@@ -641,3 +641,24 @@
   font-size: 1.5rem;
   color: var(--color-secondary);
 }
+
+.badges-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.badge-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  width: 200px;
+}
+
+.badge-preview {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
