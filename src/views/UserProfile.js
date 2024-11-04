@@ -56,7 +56,7 @@ const UserProfile = () => {
   const [editingEvent, setEditingEvent] = useState(null);
   const [availableLanguages, setAvailableLanguages] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("sobre");
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -64,7 +64,9 @@ const UserProfile = () => {
   const languageDropdownRef = useRef(null);
 
   const tipoUsuario = sessionStorage.getItem("tipoUsuario");
-
+const [activeTab, setActiveTab] = useState(
+  tipoUsuario === "UC" ? "perfil" : "sobre"
+);
   const handleNewPost = (newPost) => {
     setUserData((prevUserData) => ({
       ...prevUserData,
