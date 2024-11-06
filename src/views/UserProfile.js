@@ -64,9 +64,9 @@ const UserProfile = () => {
   const languageDropdownRef = useRef(null);
 
   const tipoUsuario = sessionStorage.getItem("tipoUsuario");
-const [activeTab, setActiveTab] = useState(
-  tipoUsuario === "UC" ? "perfil" : "sobre"
-);
+  const [activeTab, setActiveTab] = useState(
+    tipoUsuario === "UC" ? "perfil" : "sobre"
+  );
   const handleNewPost = (newPost) => {
     setUserData((prevUserData) => ({
       ...prevUserData,
@@ -155,15 +155,6 @@ const [activeTab, setActiveTab] = useState(
         // Mapear os idiomas do usuário para objetos com id e name
         const userLanguages = Array.isArray(response.data.languages)
           ? response.data.languages
-              .map((langId) => {
-                const languageObj = languagesResponse.data.find(
-                  (lang) => lang.id === langId
-                );
-                return languageObj
-                  ? { id: languageObj.id, name: languageObj.language }
-                  : null;
-              })
-              .filter((lang) => lang !== null)
           : [];
 
         setUserData({

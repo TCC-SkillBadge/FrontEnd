@@ -28,8 +28,8 @@ import "react-toastify/dist/ReactToastify.css";
 const PublicProfile = () => {
   const { encodedEmail } = useParams(); // Captura o parâmetro encodedEmail da URL
   const [userData, setUserData] = useState(null);
-  const [tipoUsuario, setTipoUsuario] = useState(null); // Adicionado para armazenar o tipo de usuário
-  const [activeTab, setActiveTab] = useState("perfil"); // Valor padrão, será ajustado após carregar os dados
+  const [tipoUsuario, setTipoUsuario] = useState(null); // Armazena o tipo de usuário
+  const [activeTab, setActiveTab] = useState("perfil"); // Será ajustado após carregar os dados
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -50,14 +50,23 @@ const PublicProfile = () => {
         }
         setTipoUsuario(tipo);
 
-        // Ajustar o estado 'activeTab' com base no tipo de usuário
+        // Ajustar a guia ativa com base no tipo de usuário
         if (tipo === "UC") {
           setActiveTab("perfil");
         } else if (tipo === "UE") {
           setActiveTab("sobre");
         }
 
-        setUserData(data);
+        // Mapear os dados corretamente
+        setUserData({
+          ...data,
+          education: Array.isArray(data.education) ? data.education : [],
+          professionalExperience: Array.isArray(data.professional_experience)
+            ? data.professional_experience
+            : [],
+          languages: Array.isArray(data.languages) ? data.languages : [],
+        });
+
         setLoading(false);
       } catch (error) {
         setError("Falha ao carregar o perfil do usuário.");
@@ -335,9 +344,6 @@ const PublicProfile = () => {
                           })}
                         </span>
                       )}
-
-                      {/* Ícone de três pontinhos sempre visível */}
-                      {/* Se desejar adicionar opções como editar/excluir, pode implementar aqui */}
                     </div>
                     <div className="event-details">
                       <p>{event.descricao || "Nenhuma descrição."}</p>
