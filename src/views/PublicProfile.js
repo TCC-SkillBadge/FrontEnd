@@ -193,81 +193,96 @@ const PublicProfile = () => {
         <div className="tab-content">
           {/* Guia Perfil para UC */}
           {tipoUsuario === "UC" && activeTab === "perfil" && (
-            <div className="profile-section">
-              <h3>
-                <PersonFill className="icon" /> Sobre
-              </h3>
-              <p>{userData.about || "Nenhuma descrição fornecida."}</p>
-              <h3>
-                <MortarboardFill className="icon" /> Educação
-              </h3>
-              {Array.isArray(userData.education) &&
-              userData.education.length > 0 ? (
-                userData.education.map((edu, index) => (
-                  <div key={index} className="education-item">
-                    <div className="profile-info-row">
-                      <Building className="icon" />
-                      <span className="institution-name">
-                        {edu.institution}
-                      </span>
-                    </div>
-                    <div className="profile-info-row">
-                      <AwardFill className="icon" />
-                      <span className="education-degree">{edu.degree}</span>
-                    </div>
-                    <div className="profile-info-row">
-                      <CalendarFill className="icon" />
-                      <span className="education-dates">
-                        {edu.admissionYear} - {edu.graduationYear}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>Nenhuma informação educacional fornecida.</p>
-              )}
+            <div className="profile-sections">
+              {/* Seção Sobre */}
+              <div className="profile-section">
+                <h3>
+                  <PersonFill className="icon" /> Sobre
+                </h3>
+                <p>{userData.about || "Nenhuma descrição fornecida."}</p>
+              </div>
 
-              <h3>
-                <Briefcase className="icon" /> Experiência Profissional
-              </h3>
-              {Array.isArray(userData.professionalExperience) &&
-              userData.professionalExperience.length > 0 ? (
-                userData.professionalExperience.map((exp, index) => (
-                  <div key={index} className="experience-item">
-                    <div className="profile-info-row">
-                      <Building className="icon" />
-                      <span className="profile-info-text">{exp.company}</span>
+              {/* Seção Educação */}
+              <div className="profile-section">
+                <h3>
+                  <MortarboardFill className="icon" /> Educação
+                </h3>
+                {Array.isArray(userData.education) &&
+                userData.education.length > 0 ? (
+                  userData.education.map((edu, index) => (
+                    <div key={index} className="education-item">
+                      <div className="profile-info-row">
+                        <Building className="icon" />
+                        <span className="institution-name">
+                          {edu.institution}
+                        </span>
+                      </div>
+                      <div className="profile-info-row">
+                        <AwardFill className="icon" />
+                        <span className="education-degree">{edu.degree}</span>
+                      </div>
+                      <div className="profile-info-row">
+                        <CalendarFill className="icon" />
+                        <span className="education-dates">
+                          {edu.admissionYear} - {edu.graduationYear}
+                        </span>
+                      </div>
                     </div>
-                    <div className="profile-info-row">
-                      <Briefcase className="icon" />
-                      <span className="profile-info-text">{exp.position}</span>
-                    </div>
-                    <div className="profile-info-row">
-                      <CalendarFill className="icon" />
-                      <span className="education-dates">
-                        {exp.startDate} - {exp.endDate}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>Nenhuma experiência profissional fornecida.</p>
-              )}
+                  ))
+                ) : (
+                  <p>Nenhuma informação educacional fornecida.</p>
+                )}
+              </div>
 
-              <h3>
-                <Globe className="icon" /> Idiomas
-              </h3>
-              {Array.isArray(userData.languages) &&
-              userData.languages.length > 0 ? (
-                userData.languages.map((language, index) => (
-                  <div key={index} className="profile-info-row">
-                    <Flag className="icon" />
-                    <span className="profile-info-text">{language.name}</span>
-                  </div>
-                ))
-              ) : (
-                <p>Nenhum idioma fornecido.</p>
-              )}
+              {/* Seção Experiência Profissional */}
+              <div className="profile-section">
+                <h3>
+                  <Briefcase className="icon" /> Experiência Profissional
+                </h3>
+                {Array.isArray(userData.professionalExperience) &&
+                userData.professionalExperience.length > 0 ? (
+                  userData.professionalExperience.map((exp, index) => (
+                    <div key={index} className="experience-item">
+                      <div className="profile-info-row">
+                        <Building className="icon" />
+                        <span className="profile-info-text">{exp.company}</span>
+                      </div>
+                      <div className="profile-info-row">
+                        <Briefcase className="icon" />
+                        <span className="profile-info-text">
+                          {exp.position}
+                        </span>
+                      </div>
+                      <div className="profile-info-row">
+                        <CalendarFill className="icon" />
+                        <span className="education-dates">
+                          {exp.startDate} - {exp.endDate}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>Nenhuma experiência profissional fornecida.</p>
+                )}
+              </div>
+
+              {/* Seção Idiomas */}
+              <div className="profile-section">
+                <h3>
+                  <Globe className="icon" /> Idiomas
+                </h3>
+                {Array.isArray(userData.languages) &&
+                userData.languages.length > 0 ? (
+                  userData.languages.map((language, index) => (
+                    <div key={index} className="profile-info-row">
+                      <Flag className="icon" />
+                      <span className="profile-info-text">{language.name}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p>Nenhum idioma fornecido.</p>
+                )}
+              </div>
             </div>
           )}
 
@@ -300,18 +315,26 @@ const PublicProfile = () => {
           {/* Guia Sobre para UE */}
           {tipoUsuario === "UE" && activeTab === "sobre" && (
             <div className="sobre-section">
-              <h3>
-                <PersonFill className="icon" /> Sobre
-              </h3>
-              <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
-              <h3>
-                <Globe className="icon" /> Website
-              </h3>
-              <p>{userData.website || "Não fornecido"}</p>
-              <h3>
-                <Phone className="icon" /> Telefone
-              </h3>
-              <p>{userData.numero_contato || "Não fornecido"}</p>
+              <div className="profile-section">
+                <h3>
+                  <PersonFill className="icon" /> Sobre
+                </h3>
+                <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+              </div>
+
+              <div className="profile-section">
+                <h3>
+                  <Globe className="icon" /> Website
+                </h3>
+                <p>{userData.website || "Não fornecido"}</p>
+              </div>
+
+              <div className="profile-section">
+                <h3>
+                  <Phone className="icon" /> Telefone
+                </h3>
+                <p>{userData.numero_contato || "Não fornecido"}</p>
+              </div>
             </div>
           )}
 
