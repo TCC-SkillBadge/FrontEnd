@@ -6,7 +6,8 @@ import "../styles/ApiReference.css"; // Arquivo de estilos específico
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify"; // Importações do react-toastify
 import "react-toastify/dist/ReactToastify.css"; // Importação dos estilos do react-toastify
-
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importação dos ícones de olho
+ 
 const ApiReference = () => {
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
@@ -14,6 +15,7 @@ const ApiReference = () => {
   const [loadingApiKey, setLoadingApiKey] = useState(true); // Estado para controlar o carregamento
   const [generatingApiKey, setGeneratingApiKey] = useState(false); // Estado para controlar a geração da API Key
   const [selectedLanguage, setSelectedLanguage] = useState("Java");
+  const [showApiKey, setShowApiKey] = useState(false); // Estado para controlar a visibilidade da API Key
 
   // Função para verificar o login e definir os estados
   const verificaLogin = () => {
@@ -293,6 +295,11 @@ namespace AssignBadge
   // Lista de linguagens disponíveis
   const languages = Object.keys(codeExamples);
 
+  // Função para alternar a visibilidade da API Key
+  const toggleApiKeyVisibility = () => {
+    setShowApiKey((prevState) => !prevState);
+  };
+
   return (
     <div>
       <Navbar userType={userType} user={user} />
@@ -303,7 +310,6 @@ namespace AssignBadge
           sistema. Siga as instruções abaixo para configurar e utilizar os
           endpoints.
         </p>
-
         {/* Se o usuário for Empresarial (UE), exibir a seção da API Key */}
         {userType === "UE" && (
           <div className="api-section">
@@ -312,7 +318,23 @@ namespace AssignBadge
               <p>Carregando sua API Key...</p>
             ) : apiKey ? (
               <>
-                <p className="api-key">{apiKey}</p>
+                <div className="api-key-container">
+                  <input
+                    type={showApiKey ? "text" : "password"}
+                    value={apiKey}
+                    readOnly
+                    className="api-key-input"
+                  />
+                  <button
+                    className="toggle-api-key-button"
+                    onClick={toggleApiKeyVisibility}
+                    aria-label={
+                      showApiKey ? "Ocultar API Key" : "Mostrar API Key"
+                    }
+                  >
+                    {showApiKey ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 <button
                   className="generate-api-key-button"
                   onClick={handleGenerateApiKey}
@@ -332,7 +354,6 @@ namespace AssignBadge
             )}
           </div>
         )}
-
         {/* Seção de Autenticação */}
         <div className="api-section">
           <h2>Autenticação</h2>
@@ -345,11 +366,9 @@ namespace AssignBadge
             <code>{`x-api-key: SUA_API_KEY_AQUI`}</code>
           </p>
         </div>
-
         {/* Seção de Endpoints */}
         <div className="api-section">
           <h2>Endpoints</h2>
-
           <div className="endpoint">
             <h3>POST /api/badges/assign</h3>
             <p>Este endpoint permite atribuir uma badge a um usuário final.</p>
@@ -366,19 +385,11 @@ namespace AssignBadge
             <h4>Exemplo de Requisição:</h4>
             <p className="code-snippet">
               <code>
-                {`curl -X POST "http://localhost:7001/api/badges/assign" \\
-  -H "x-api-key: SUA_API_KEY_AQUI" \\
-  -H "Content-Type: application/json" \\
-  -d '{ "email_com": "usuario@exemplo.com", "id_badge": "badge1234" }'`}
-              </code>
-            </p>
-            <h4>Resposta de Sucesso:</h4>
-            <p className="code-snippet">
-              <code>{`{ "message": "Email de atribuição de badge enviado com sucesso" }`}</code>
-            </p>
-          </div>
+                {`curl -X POST "http://localhost:7001/api/badges/assign" \\-H "x-api-key: SUA_API_KEY_AQUI" \ -H "Content-Type: application/json" \ -d '{ "email_com": "usuario@exemplo.com", "id_badge": "badge1234" }'} </code> </p> <h4>Resposta de Sucesso:</h4> <p className="code-snippet"> <code>{{ "message": "Email de atribuição de badge enviado com sucesso" }`}
+              </code>{" "}
+            </p>{" "}
+          </div>{" "}
         </div>
-
         {/* Seção de Erros Possíveis */}
         <div className="api-section">
           <h2>Erros Possíveis</h2>
@@ -405,7 +416,6 @@ namespace AssignBadge
             </li>
           </ul>
         </div>
-
         {/* Seção de Exemplos de Requisição no Insomnia/Postman */}
         <div className="api-section">
           <h2>Exemplo de Requisição no Insomnia/Postman</h2>
@@ -437,19 +447,16 @@ namespace AssignBadge
             </li>
             <pre className="code-snippet">
               <code>
-                {`{
-  "email_com": "usuario@exemplo.com",
-  "id_badge": "badge1234"
-}`}
-              </code>
-            </pre>
-          </ul>
+                {`{"email_com": "usuario@exemplo.com", "id_badge": "badge1234" }`}{" "}
+              </code>{" "}
+            </pre>{" "}
+          </ul>{" "}
           <p>
+            {" "}
             Certifique-se de substituir <code>SUA_API_KEY_AQUI</code> pela sua
-            API Key e os valores dos parâmetros conforme necessário.
-          </p>
-        </div>
-
+            API Key e os valores dos parâmetros conforme necessário.{" "}
+          </p>{" "}
+        </div>{" "}
         {/* Seção de Exemplos de Implementação */}
         <div className="api-section">
           <h2>Exemplos de Implementação</h2>

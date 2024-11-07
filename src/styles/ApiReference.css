@@ -38,21 +38,25 @@
   word-break: break-all;
 }
 
-.endpoint, .example {
+.endpoint,
+.example {
   margin-bottom: 20px;
 }
 
-.endpoint h3, .example h3 {
+.endpoint h3,
+.example h3 {
   font-size: 1.75rem;
   color: #d273ff; /* Cor destacada */
 }
 
-.endpoint p, .example p {
+.endpoint p,
+.example p {
   color: #e0e0e0;
   margin-bottom: 10px;
 }
 
-.endpoint h4, .example h4 {
+.endpoint h4,
+.example h4 {
   font-size: 1.25rem;
   color: #ffffff;
 }
@@ -132,6 +136,72 @@ strong {
   transform: scale(1);
 }
 
+/* Novas Classes Adicionadas para a Visualização da API Key */
+
+/* Container para a API Key e o botão de alternância */
+.api-key-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Campo de input da API Key */
+.api-key-input {
+  width: 100%;
+  padding: 10px 40px 10px 10px; /* Espaço à direita para o botão */
+  border: 1px solid #444444;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  color: #f8f8f2;
+  background-color: #2d2d2d;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+/* Botão de alternância da visibilidade da API Key */
+.toggle-api-key-button {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555555;
+  font-size: 1.2em;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+}
+
+.toggle-api-key-button:hover {
+  color: #ffffff;
+}
+
+/* Estilo para o botão de gerar API Key */
+.generate-api-key-button {
+  background-color: #d273ff;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 10px;
+}
+
+.generate-api-key-button:hover {
+  background-color: #b162e0;
+  transform: scale(1.05);
+}
+
+.generate-api-key-button:active {
+  background-color: #a050d0;
+  transform: scale(1);
+}
+
 @media (max-width: 768px) {
   .api-reference-container {
     padding: 20px;
@@ -145,11 +215,13 @@ strong {
     font-size: 1rem;
   }
 
-  .endpoint h3, .example h3 {
+  .endpoint h3,
+  .example h3 {
     font-size: 1.5rem;
   }
 
-  .endpoint h4, .example h4 {
+  .endpoint h4,
+  .example h4 {
     font-size: 1rem;
   }
 
@@ -162,5 +234,11 @@ strong {
     width: 100%;
     padding: 12px 0;
     font-size: 1rem;
+  }
+
+  /* Ajustes para o botão de alternância no mobile */
+  .toggle-api-key-button {
+    font-size: 1em;
+    right: 10px;
   }
 }
