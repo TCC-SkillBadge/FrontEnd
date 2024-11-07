@@ -659,7 +659,7 @@ if (tipoUsuario === "UC") {
                 name="fullName"
                 value={userData.fullName || ""}
                 onChange={handleInputChange}
-                className="profile-name-input"
+                className="profile-input"
               />
             ) : (
               <h2 className="profile-name">{userData.fullName}</h2>
@@ -1044,40 +1044,40 @@ if (tipoUsuario === "UC") {
             ))}
 
           {/* Guia Badges */}
-{activeTab === "badges" && (
-  <div className="badges-section">
-    <h3>Badges</h3>
-    {userData.badges && userData.badges.length > 0 ? (
-      <div className="badges-grid">
-        {userData.badges.map((badge, index) => (
-          <div key={badge.id} className="badge-card">
-            <img
-              src={badge.image_url}
-              alt="Badge"
-              className="badge-preview"
-            />
-            <h4>{badge.name_badge}</h4>
-            <div className="badge-visibility">
-              <label className="custom-checkbox">
-                <input
-                  type="checkbox"
-                  checked={badge.is_public}
-                  onChange={(e) =>
-                    handleBadgeVisibilityChange(e, badge.id, index)
-                  }
-                />
-                <span className="checkmark"></span>
-                {badge.is_public ? "Pública" : "Privada"}
-              </label>
+          {activeTab === "badges" && (
+            <div className="badges-section">
+              <h3>Badges</h3>
+              {userData.badges && userData.badges.length > 0 ? (
+                <div className="badges-grid">
+                  {userData.badges.map((badge, index) => (
+                    <div key={badge.id} className="badge-card">
+                      <img
+                        src={badge.image_url}
+                        alt="Badge"
+                        className="badge-preview"
+                      />
+                      <h4>{badge.name_badge}</h4>
+                      <div className="badge-visibility">
+                        <label className="custom-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={badge.is_public}
+                            onChange={(e) =>
+                              handleBadgeVisibilityChange(e, badge.id, index)
+                            }
+                          />
+                          <span className="checkmark"></span>
+                          {badge.is_public ? "Pública" : "Privada"}
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>Nenhuma badge disponível.</p>
+              )}
             </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p>Nenhuma badge disponível.</p>
-    )}
-  </div>
-)}
+          )}
         </div>
       </div>
     </div>

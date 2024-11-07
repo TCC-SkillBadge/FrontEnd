@@ -722,3 +722,26 @@
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
+/* 
+.profile-name-input {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text-light);
+  background-color: rgba(25, 26, 46, 0.8);
+  border: none;
+  border-bottom: 2px solid var(--color-secondary);
+  width: 100%;
+  padding: 10px 5px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.profile-name-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.profile-name-input:focus {
+  border-bottom: 2px solid var(--color-primary);
+  background-color: rgba(25, 26, 46, 1);
+} */
