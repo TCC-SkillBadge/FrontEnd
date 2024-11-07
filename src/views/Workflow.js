@@ -10,8 +10,23 @@ const Workflow = () => {
   const { id_badge } = useParams();
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
+  const [badge, setBadge] = useState({
+    id_badge: "",
+    name_badge: "",
+    status_badge: 0,
+    image_url: "",
+  });
 
   const navigate = useNavigate();
+
+  const fetchBadge = async () => {
+    try {
+      const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
+      setBadge(response.data);
+    } catch (error) {
+      console.error('Error fetching the badge:', error);
+    }
+  };
 
   const checkLogin = async () => {
     const token = sessionStorage.getItem("token");
@@ -50,6 +65,7 @@ const Workflow = () => {
 
   useEffect(() => {
     checkLogin();
+    fetchBadge();
   }, []);
 
   if (userType === "UE") {
@@ -66,21 +82,25 @@ const Workflow = () => {
               icon="bi bi-journal-check fs-1"
               title="Requested"
               children="Your badge request has been submitted."
+              {...badge.status_badge === 1 ? { active: "-active" } : {active: ""}}
             />
             <WorkflowCard
               icon="bi bi-fan fs-1"
               title="In production"
               children="Your badge is being manufactured."
+              {...badge.status_badge === 2 ? { active: "-active" } : {active: ""}}
             />
             <WorkflowCard
               icon="bi bi-eye fs-1"
               title="Review"
-              children="Your badge is being reviewed."
+              children="Your badge is for your review."
+              {...badge.status_badge === 3 ? { active: "-active" } : {active: ""}}
             />
             <WorkflowCard
               icon="bi bi-check2 fs-1"
               title="Issued"
               children="Your badge has been issued."
+              {...badge.status_badge === 4 ? { active: "-active" } : {active: ""}}
             />
           </div>
         </div>
@@ -100,24 +120,28 @@ const Workflow = () => {
               title="Requested"
               children="Your badge request has been submitted."
               button="Move to Production"
+              {...badge.status_badge === 1 ? { active: "-active" } : {active: ""}}
             />
             <WorkflowCard
               icon="bi bi-power fs-1"
               title="In production"
               children="Your badge is currently being produced."
               button="Move to Analysist"
+              {...badge.status_badge === 2 ? { active: "-active" } : {active: ""}}
             />
             <WorkflowCard
               icon="bi bi-eye fs-1"
               title="Analysis"
               children="Your badge is being reviewed for quality and accuracy."
               button="Move to Issued"
+              {...badge.status_badge === 3 ? { active: "-active" } : {active: ""}}
             />
             <WorkflowCard
               icon="bi bi-award fs-1"
               title="Issued"
               children="Your badge has been successfully issued."
               button="End Flow"
+              {...badge.status_badge === 4 ? { active: "-active" } : {active: ""}}
             />
           </div>
         </div>
