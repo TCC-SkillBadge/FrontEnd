@@ -1,3 +1,5 @@
+/* src/styles/UserProfile.css */
+
 :root {
   --background-dark: #191A2E;
   --color-primary: #D273FF;
@@ -13,7 +15,7 @@
   --transition: all 0.3s ease;
 }
 
-/* Estilo Geral */
+/* General Styling */
 .profile-page {
   display: flex;
   flex-direction: column;
@@ -165,15 +167,34 @@
 .profile-input,
 .profile-array-item input,
 .profile-array-item textarea {
-  background-color: rgba(25, 26, 46, 0.8);
-  border: 2px solid var(--color-secondary);
-  border-radius: 5px;
-  padding: 10px;
-  color: var(--color-text-light);
+  background-color: #2d2d2d; /* Updated background color */
+  border: 1px solid #444444; /* Updated border color */
+  border-radius: 4px; /* Updated border radius */
+  padding: 10px; /* Updated padding */
+  color: #f8f8f2; /* Updated text color */
+  font-family: 'Fira Code', monospace; /* Updated font family */
   font-size: 1rem;
   width: 100%;
+  box-sizing: border-box;
   margin-top: 10px;
   min-height: 40px;
+  transition: var(--transition);
+}
+
+.profile-about-input::placeholder,
+.profile-input::placeholder,
+.profile-array-item input::placeholder,
+.profile-array-item textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.profile-about-input:focus,
+.profile-input:focus,
+.profile-array-item input:focus,
+.profile-array-item textarea:focus {
+  border-color: var(--color-primary);
+  background-color: rgba(45, 45, 45, 1);
+  outline: none;
 }
 
 .profile-array-item {
@@ -250,7 +271,7 @@
   margin-top: 5px;
 }
 
-/* Estilização das Guias (Sobre, Eventos, Badges) */
+/* Styling the Tabs (Profile, Badges) */
 .tabs {
   display: flex;
   justify-content: center;
@@ -281,7 +302,7 @@
   margin-top: 20px;
 }
 
-/* Responsividade */
+/* Responsiveness */
 @media (max-width: 600px) {
   .profile-container {
     padding: 15px;
@@ -319,7 +340,7 @@
   }
 }
 
-/* Estilização dos Eventos */
+/* Styling the Events */
 .event-item {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
@@ -405,14 +426,7 @@
   border-radius: 5px;
 }
 
-/* Estilização da Data e Hora de Publicação */
-.event-publication-time {
-  font-size: 0.8em;
-  color: #cccccc;
-  margin-left: 10px;
-}
-
-/* Estilização do PostForm */
+/* Styling the PostForm */
 .post-form {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
@@ -429,13 +443,26 @@
 .post-textarea {
   width: 100%;
   min-height: 80px;
-  background-color: rgba(25, 26, 46, 0.8);
-  border: 2px solid var(--color-secondary);
-  border-radius: 5px;
-  padding: 10px;
-  color: var(--color-text-light);
+  background-color: #2d2d2d; /* Updated background color */
+  border: 1px solid #444444; /* Updated border color */
+  border-radius: 4px; /* Updated border radius */
+  padding: 10px; /* Updated padding */
+  color: #f8f8f2; /* Updated text color */
+  font-family: 'Fira Code', monospace; /* Updated font family */
   font-size: 1rem;
   resize: vertical;
+  box-sizing: border-box;
+  transition: var(--transition);
+}
+
+.post-textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.post-textarea:focus {
+  border-color: var(--color-primary);
+  background-color: rgba(45, 45, 45, 1);
+  outline: none;
 }
 
 .post-actions {
@@ -518,7 +545,7 @@
   border-radius: 5px;
 }
 
-/* Estilização dos Badges */
+/* Styling the Badges */
 .badges-section {
   display: flex;
   flex-direction: column;
@@ -546,7 +573,7 @@
   margin-bottom: 5px;
 }
 
-/* Estilos para os Botões de Adicionar e Excluir */
+/* Styles for Add and Delete Buttons */
 .add-button {
   margin-top: 10px;
   background-color: transparent;
@@ -581,7 +608,7 @@
   color: var(--color-danger);
 }
 
-/* Estilos para o Dropdown de Idiomas */
+/* Styling the Language Dropdown */
 .language-dropdown {
   position: relative;
   display: inline-block;
@@ -589,31 +616,32 @@
 }
 
 .language-dropdown-button {
-  background-color: rgba(25, 26, 46, 0.8);
-  color: var(--color-text-light);
+  background-color: #2d2d2d; /* Updated background color */
+  color: #f8f8f2; /* Updated text color */
   padding: 10px;
-  border: 2px solid var(--color-secondary);
-  border-radius: 5px;
+  border: 1px solid #444444; /* Updated border color */
+  border-radius: 4px; /* Updated border radius */
   cursor: pointer;
   width: 100%;
   text-align: left;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: var(--transition);
 }
 
 .language-dropdown-button:hover {
-  background-color: rgba(25, 26, 46, 1);
+  background-color: rgba(45, 45, 45, 1); /* Updated hover background */
 }
 
 .language-dropdown-content {
   display: block;
   position: absolute;
-  background-color: rgba(25, 26, 46, 0.95);
+  background-color: rgba(45, 45, 45, 0.95); /* Updated background color */
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
-  border: 2px solid var(--color-secondary);
+  border: 1px solid var(--color-secondary);
   border-radius: 5px;
   z-index: 1;
   margin-top: 5px;
@@ -663,7 +691,7 @@
   border-radius: 4px;
 }
 
-/* Estilos para customizar os checkboxes */
+/* Styling Custom Checkboxes */
 .custom-checkbox {
   position: relative;
   display: inline-block;
@@ -689,13 +717,13 @@
   left: 0;
   height: 22px;
   width: 22px;
-  background-color: rgba(25, 26, 46, 0.8);
-  border: 2px solid var(--color-secondary);
+  background-color: #2d2d2d; /* Updated background color */
+  border: 2px solid #444444; /* Updated border color */
   border-radius: 4px;
 }
 
 .custom-checkbox:hover input ~ .checkmark {
-  background-color: rgba(25, 26, 46, 1);
+  background-color: rgba(45, 45, 45, 1);
 }
 
 .custom-checkbox input:checked ~ .checkmark {
@@ -722,42 +750,5 @@
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
-/* 
-.profile-name-input {
-  font-size: 2rem;
-  font-weight: bold;
-  color: var(--color-text-light);
-  background-color: rgba(25, 26, 46, 0.8);
-  border: none;
-  border-bottom: 2px solid var(--color-secondary);
-  width: 100%;
-  padding: 10px 5px;
-  margin-bottom: 10px;
-  outline: none;
-  transition: var(--transition);
-}
 
-.profile-name-input::placeholder {
-  color: var(--color-text-muted);
-}
-
-.profile-name-input:focus {
-  border-bottom: 2px solid var(--color-primary);
-  background-color: rgba(25, 26, 46, 1);
-} */
-
-.profile-input-group {
-  margin-bottom: 15px; /* Ajuste este valor conforme necessário */
-}
-
-.profile-label {
-  display: block;
-  margin-bottom: 5px; /* Espaço entre o label e o input */
-  font-weight: bold;  /* Opcional: deixa o texto do label em negrito */
-}
-
-.profile-input {
-  width: 100%;
-  padding: 8px;      /* Espaçamento interno do input */
-  box-sizing: border-box;
-}
+/* Repeated class definition removed to avoid duplication */
