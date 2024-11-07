@@ -654,19 +654,32 @@ if (tipoUsuario === "UC") {
           </div>
           <div className="profile-info">
             {isEditing ? (
-              <input
-                type="text"
-                name="fullName"
-                value={userData.fullName || ""}
-                onChange={handleInputChange}
-                className="profile-input"
-              />
+              <>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={userData.fullName || ""}
+                  onChange={handleInputChange}
+                  className="profile-input"
+                  placeholder="Nome Completo"
+                />
+                <input
+                  type="text"
+                  name="occupation"
+                  value={userData.occupation || ""}
+                  onChange={handleInputChange}
+                  className="profile-input"
+                  placeholder="Ocupação"
+                />
+              </>
             ) : (
-              <h2 className="profile-name">{userData.fullName}</h2>
+              <>
+                <h2 className="profile-name">{userData.fullName}</h2>
+                <p className="profile-title">
+                  {userData.occupation || "Ocupação não informada"}
+                </p>
+              </>
             )}
-            <p className="profile-title">
-              {userData.occupation || "Ocupação não informada"}
-            </p>
             <div className="profile-actions">
               <button onClick={handleEditToggle} className="edit-button">
                 <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}

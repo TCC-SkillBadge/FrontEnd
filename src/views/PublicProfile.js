@@ -27,6 +27,7 @@ import "react-toastify/dist/ReactToastify.css";
 // import ClipLoader from "react-spinners/ClipLoader"; // Importando o spinner
 import ScaleLoader from "react-spinners/ScaleLoader"; // Importando o spinner
 
+
 const PublicProfile = () => {
   const { encodedEmail } = useParams(); // Captura o parâmetro encodedEmail da URL
   const [userData, setUserData] = useState(null);
