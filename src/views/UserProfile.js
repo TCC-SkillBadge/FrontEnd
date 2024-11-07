@@ -52,6 +52,39 @@ const UserProfile = () => {
     badges: [],
   });
 
+  const handleBadgeVisibilityChange = async (e, badgeId, index) => {
+    const isPublic = e.target.checked;
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await axios.put(
+        "http://localhost:7000/api/badges/visibility",
+        {
+          badgeIds: [badgeId],
+          is_public: isPublic,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Atualiza o estado local para refletir a mudança
+      setUserData((prevData) => {
+        const updatedBadges = [...prevData.badges];
+        updatedBadges[index].is_public = isPublic;
+        return {
+          ...prevData,
+          badges: updatedBadges,
+        };
+      });
+      toast.success("Visibilidade da badge atualizada com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar visibilidade da badge:", error);
+      toast.error("Falha ao atualizar a visibilidade da badge.");
+    }
+  };
+
+
   const [optionsVisibleIndex, setOptionsVisibleIndex] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [availableLanguages, setAvailableLanguages] = useState([]);
@@ -1008,30 +1041,40 @@ if (tipoUsuario === "UC") {
             ))}
 
           {/* Guia Badges */}
-          {activeTab === "badges" && (
-            <div className="badges-section">
-              <h3>Badges</h3>
-              {userData.badges && userData.badges.length > 0 ? (
-                <div className="badges-grid">
-                  {userData.badges.map((badge) => (
-                    <div key={badge.id_badge} className="badge-card">
-                      <img
-                        src={badge.image_url}
-                        alt="Badge"
-                        className="badge-preview"
-                      />
-                      <h4>{badge.name_badge}</h4>
-                      <Link to={`/badges/details/${badge.id_badge}`}>
-                        <button>Detalhes</button>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>Nenhuma badge disponível.</p>
-              )}
+{activeTab === "badges" && (
+  <div className="badges-section">
+    <h3>Badges</h3>
+    {userData.badges && userData.badges.length > 0 ? (
+      <div className="badges-grid">
+        {userData.badges.map((badge, index) => (
+          <div key={badge.id} className="badge-card">
+            <img
+              src={badge.image_url}
+              alt="Badge"
+              className="badge-preview"
+            />
+            <h4>{badge.name_badge}</h4>
+            <div className="badge-visibility">
+              <label className="custom-checkbox">
+                <input
+                  type="checkbox"
+                  checked={badge.is_public}
+                  onChange={(e) =>
+                    handleBadgeVisibilityChange(e, badge.id, index)
+                  }
+                />
+                <span className="checkmark"></span>
+                {badge.is_public ? "Pública" : "Privada"}
+              </label>
             </div>
-          )}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p>Nenhuma badge disponível.</p>
+    )}
+  </div>
+)}
         </div>
       </div>
     </div>
