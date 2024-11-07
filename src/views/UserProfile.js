@@ -655,22 +655,34 @@ if (tipoUsuario === "UC") {
           <div className="profile-info">
             {isEditing ? (
               <>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={userData.fullName || ""}
-                  onChange={handleInputChange}
-                  className="profile-input"
-                  placeholder="Nome Completo"
-                />
-                <input
-                  type="text"
-                  name="occupation"
-                  value={userData.occupation || ""}
-                  onChange={handleInputChange}
-                  className="profile-input"
-                  placeholder="Ocupação"
-                />
+                <div className="profile-input-group">
+                  <label htmlFor="fullName" className="profile-label">
+                    Nome
+                  </label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    value={userData.fullName || ""}
+                    onChange={handleInputChange}
+                    className="profile-input"
+                    placeholder="Nome Completo"
+                  />
+                </div>
+                <div className="profile-input-group">
+                  <label htmlFor="occupation" className="profile-label">
+                    Ocupação
+                  </label>
+                  <input
+                    type="text"
+                    id="occupation"
+                    name="occupation"
+                    value={userData.occupation || ""}
+                    onChange={handleInputChange}
+                    className="profile-input"
+                    placeholder="Ocupação"
+                  />
+                </div>
               </>
             ) : (
               <>
@@ -721,9 +733,9 @@ if (tipoUsuario === "UC") {
               <div className="profile-sections">
                 {/* Seção Sobre */}
                 <div className="profile-section">
-                  <label>
+                  <p>
                     <PersonFill className="icon" /> Sobre
-                  </label>
+                  </p>
                   <textarea
                     name="about"
                     value={userData.about || ""}

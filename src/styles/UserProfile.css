@@ -745,3 +745,19 @@
   border-bottom: 2px solid var(--color-primary);
   background-color: rgba(25, 26, 46, 1);
 } */
+
+.profile-input-group {
+  margin-bottom: 15px; /* Ajuste este valor conforme necessário */
+}
+
+.profile-label {
+  display: block;
+  margin-bottom: 5px; /* Espaço entre o label e o input */
+  font-weight: bold;  /* Opcional: deixa o texto do label em negrito */
+}
+
+.profile-input {
+  width: 100%;
+  padding: 8px;      /* Espaçamento interno do input */
+  box-sizing: border-box;
+}
