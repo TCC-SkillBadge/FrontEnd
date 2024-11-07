@@ -12,8 +12,10 @@ const ApiReference = () => {
   const [user, setUser] = useState(null);
   const [apiKey, setApiKey] = useState(null); // Inicialmente null
   const [loadingApiKey, setLoadingApiKey] = useState(true); // Estado para controlar o carregamento
+  const [generatingApiKey, setGeneratingApiKey] = useState(false); // Estado para controlar a geração da API Key
   const [selectedLanguage, setSelectedLanguage] = useState("Java");
 
+  // Função para verificar o login e definir os estados
   const verificaLogin = () => {
     const tipoUsuario = sessionStorage.getItem("tipoUsuario");
     const userInfo = sessionStorage.getItem("userInfo");
@@ -32,6 +34,7 @@ const ApiReference = () => {
     }
   };
 
+  // useEffect para verificar o login ao montar o componente
   useEffect(() => {
     verificaLogin();
     window.addEventListener("storage", verificaLogin);
@@ -40,55 +43,82 @@ const ApiReference = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchApiKey = async () => {
-      if (userType === "UE" && user) {
-        setLoadingApiKey(true);
-        try {
-          // Definir a URL correta com base no tipo de usuário
-          const backendUrl =
-            "http://localhost:7003/api/acessar-info-usuario-jwt"; // URL completa do backend para UE
+  // Define fetchApiKey fora do useEffect para reutilização
+  const fetchApiKey = async () => {
+    if (userType === "UE" && user) {
+      setLoadingApiKey(true);
+      try {
+        // Definir a URL correta com base no tipo de usuário
+        const backendUrl = "http://localhost:7003/api/acessar-info-usuario-jwt"; // URL completa do backend para UE
 
-          const response = await axios.get(backendUrl, {
-            params: { email_comercial: user.email_comercial },
-          });
+        const response = await axios.get(backendUrl, {
+          params: { email_comercial: user.email_comercial },
+        });
 
-          if (response.status === 200) {
-            setApiKey(response.data.api_key); // Ajuste conforme a estrutura da resposta
-          } else {
-            setApiKey(null);
-          }
-        } catch (error) {
-          console.error("Erro ao obter API Key:", error);
+        // Ajuste aqui com base na estrutura real da resposta da API
+        const receivedApiKey = response.data.api_key || response.data.apiKey;
+
+        console.log("Fetch API Key Response Status:", response.status);
+        console.log("Fetch API Key Response Data:", response.data);
+
+        if (response.status === 200 && receivedApiKey) {
+          setApiKey(receivedApiKey); // Ajuste conforme a estrutura da resposta
+        } else {
           setApiKey(null);
-        } finally {
-          setLoadingApiKey(false);
+          toast.error("Falha ao obter API Key.");
         }
+      } catch (error) {
+        console.error("Erro ao obter API Key:", error);
+        setApiKey(null);
+        toast.error("Erro ao obter API Key.");
+      } finally {
+        setLoadingApiKey(false);
       }
-    };
+    }
+  };
 
+  // useEffect para buscar a API Key quando userType ou user muda
+  useEffect(() => {
     fetchApiKey();
   }, [userType, user]);
 
+  // Função para gerar uma nova API Key
   const handleGenerateApiKey = async () => {
+    if (!user || !user.email_comercial) {
+      toast.error("Informações do usuário não disponíveis.");
+      return;
+    }
+
+    setGeneratingApiKey(true);
     try {
       const backendUrl = "http://localhost:7003/api/generate-api-key"; // Ajuste para a URL correta do backend
       const response = await axios.post(backendUrl, {
         email_comercial: user.email_comercial,
       });
 
-      if (response.status === 200) {
-        setApiKey(response.data.api_key);
+      console.log("Gerar API Key Response Status:", response.status);
+      console.log("Gerar API Key Response Data:", response.data);
+
+      // Ajuste aqui com base na estrutura real da resposta da API
+      const newApiKey = response.data.api_key || response.data.apiKey;
+
+      if (response.status === 200 && newApiKey) {
+        setApiKey(newApiKey);
         toast.success("API Key gerada com sucesso e enviada por email!");
       } else {
-        toast.error("Falha ao gerar API Key.");
+        // Caso a API não retorne a chave diretamente, buscar novamente
+        await fetchApiKey();
+        toast.success("API Key gerada com sucesso e enviada por email!");
       }
     } catch (error) {
       console.error("Erro ao gerar API Key:", error);
       toast.error("Erro ao gerar API Key.");
+    } finally {
+      setGeneratingApiKey(false);
     }
   };
 
+  // Exemplos de código para diferentes linguagens
   const codeExamples = {
     Java: `// Exemplo em Java usando HttpClient
 import java.net.URI;
@@ -255,10 +285,12 @@ namespace AssignBadge
 }`,
   };
 
+  // Função para alterar a linguagem selecionada
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
   };
 
+  // Lista de linguagens disponíveis
   const languages = Object.keys(codeExamples);
 
   return (
@@ -272,6 +304,7 @@ namespace AssignBadge
           endpoints.
         </p>
 
+        {/* Se o usuário for Empresarial (UE), exibir a seção da API Key */}
         {userType === "UE" && (
           <div className="api-section">
             <h2>Sua API Key</h2>
@@ -283,21 +316,24 @@ namespace AssignBadge
                 <button
                   className="generate-api-key-button"
                   onClick={handleGenerateApiKey}
+                  disabled={generatingApiKey}
                 >
-                  Gerar Nova API Key
+                  {generatingApiKey ? "Gerando..." : "Gerar Nova API Key"}
                 </button>
               </>
             ) : (
               <button
                 className="generate-api-key-button"
                 onClick={handleGenerateApiKey}
+                disabled={generatingApiKey}
               >
-                Gerar API Key
+                {generatingApiKey ? "Gerando..." : "Gerar API Key"}
               </button>
             )}
           </div>
         )}
 
+        {/* Seção de Autenticação */}
         <div className="api-section">
           <h2>Autenticação</h2>
           <p>
@@ -310,6 +346,7 @@ namespace AssignBadge
           </p>
         </div>
 
+        {/* Seção de Endpoints */}
         <div className="api-section">
           <h2>Endpoints</h2>
 
@@ -342,6 +379,7 @@ namespace AssignBadge
           </div>
         </div>
 
+        {/* Seção de Erros Possíveis */}
         <div className="api-section">
           <h2>Erros Possíveis</h2>
           <ul>
@@ -368,6 +406,7 @@ namespace AssignBadge
           </ul>
         </div>
 
+        {/* Seção de Exemplos de Requisição no Insomnia/Postman */}
         <div className="api-section">
           <h2>Exemplo de Requisição no Insomnia/Postman</h2>
           <p>
@@ -384,15 +423,15 @@ namespace AssignBadge
             </li>
             <li>
               <strong>Headers:</strong>
+              <ul>
+                <li>
+                  <code>Content-Type: application/json</code>
+                </li>
+                <li>
+                  <code>x-api-key: SUA_API_KEY_AQUI</code>
+                </li>
+              </ul>
             </li>
-            <ul>
-              <li>
-                <code>Content-Type: application/json</code>
-              </li>
-              <li>
-                <code>x-api-key: SUA_API_KEY_AQUI</code>
-              </li>
-            </ul>
             <li>
               <strong>Body:</strong> (JSON)
             </li>
@@ -411,6 +450,7 @@ namespace AssignBadge
           </p>
         </div>
 
+        {/* Seção de Exemplos de Implementação */}
         <div className="api-section">
           <h2>Exemplos de Implementação</h2>
           <p>
@@ -431,11 +471,14 @@ namespace AssignBadge
             ))}
           </div>
           <div className="code-snippet">
-            <code>{codeExamples[selectedLanguage]}</code>
+            <pre>
+              <code>{codeExamples[selectedLanguage]}</code>
+            </pre>
           </div>
         </div>
       </div>
       <Footer />
+      {/* Apenas um ToastContainer para evitar duplicação */}
       <ToastContainer
         position="top-center"
         autoClose={3000}
