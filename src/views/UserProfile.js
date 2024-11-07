@@ -77,12 +77,15 @@ const UserProfile = () => {
           badges: updatedBadges,
         };
       });
-      toast.success("Visibilidade da badge atualizada com sucesso!");
+      // Removido o toast de sucesso
     } catch (error) {
       console.error("Erro ao atualizar visibilidade da badge:", error);
       toast.error("Falha ao atualizar a visibilidade da badge.");
     }
   };
+
+
+
 
 
   const [optionsVisibleIndex, setOptionsVisibleIndex] = useState(null);
