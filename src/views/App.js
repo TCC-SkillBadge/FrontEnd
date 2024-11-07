@@ -36,6 +36,7 @@ import ProficiencyTest from "../components/UserComum/ProficiencyTest";
 import ResultScreen from "../components/UserComum/ResultScreen";
 import Requests from "./Requests";
 import ClaimBadgePage from "./ClaimBadgePage";
+import ApiReference from "./ApiReference";
 
 /*um comentario
  */
@@ -66,6 +67,7 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/api-reference" element={<ApiReference />} />
         <Route
           path="/public-profile/:encodedEmail"
           element={<PublicProfile />}

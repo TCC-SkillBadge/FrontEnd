@@ -1,0 +1,166 @@
+/* src/styles/ApiReference.css */
+
+.api-reference-container {
+  padding: 40px;
+  color: #e0e0e0; /* Texto claro */
+}
+
+.api-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.api-description {
+  text-align: center;
+  color: #cccccc;
+  font-size: 1.25rem;
+  margin-bottom: 30px;
+}
+
+.api-section {
+  background-color: #1e1e1e; /* Fundo levemente mais claro para seções */
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 5px solid #d273ff; /* Destaque para a seção */
+}
+
+.api-key {
+  background-color: #2d2d2d;
+  padding: 10px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  color: #f8f8f2;
+  word-break: break-all;
+}
+
+.endpoint, .example {
+  margin-bottom: 20px;
+}
+
+.endpoint h3, .example h3 {
+  font-size: 1.75rem;
+  color: #d273ff; /* Cor destacada */
+}
+
+.endpoint p, .example p {
+  color: #e0e0e0;
+  margin-bottom: 10px;
+}
+
+.endpoint h4, .example h4 {
+  font-size: 1.25rem;
+  color: #ffffff;
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  color: #e0e0e0;
+}
+
+.code-snippet {
+  background-color: #2d2d2d; /* Fundo do código */
+  color: #f8f8f2; /* Cor do texto */
+  padding: 10px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  margin-top: 10px;
+}
+
+code {
+  font-family: 'Fira Code', monospace;
+}
+
+strong {
+  color: #ffffff;
+}
+
+.language-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.language-tab {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.language-tab:hover {
+  background-color: #444444;
+}
+
+.language-tab.active {
+  background-color: #d273ff;
+  color: #ffffff;
+}
+
+.generate-api-key-button {
+  background-color: #d273ff;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 10px;
+}
+
+.generate-api-key-button:hover {
+  background-color: #b162e0;
+  transform: scale(1.05);
+}
+
+.generate-api-key-button:active {
+  background-color: #a050d0;
+  transform: scale(1);
+}
+
+@media (max-width: 768px) {
+  .api-reference-container {
+    padding: 20px;
+  }
+
+  .api-title {
+    font-size: 2rem;
+  }
+
+  .api-description {
+    font-size: 1rem;
+  }
+
+  .endpoint h3, .example h3 {
+    font-size: 1.5rem;
+  }
+
+  .endpoint h4, .example h4 {
+    font-size: 1rem;
+  }
+
+  .language-tab {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .generate-api-key-button {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+  }
+}
