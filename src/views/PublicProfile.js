@@ -24,6 +24,8 @@ import "../styles/PublicProfile.css";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+// import ClipLoader from "react-spinners/ClipLoader"; // Importando o spinner
+import ScaleLoader from "react-spinners/ScaleLoader"; // Importando o spinner
 
 const PublicProfile = () => {
   const { encodedEmail } = useParams(); // Captura o parâmetro encodedEmail da URL
@@ -87,7 +89,12 @@ const PublicProfile = () => {
   };
 
   if (loading) {
-    return <div className="spinner-container">Carregando...</div>;
+    return (
+      <div className="spinner-container">
+        <ScaleLoader color="#00BFFF" loading={loading} size={150} />
+        <p>Carregando...</p>
+      </div>
+    );
   }
 
   if (error) {
