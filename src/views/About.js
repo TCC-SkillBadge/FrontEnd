@@ -1,31 +1,41 @@
-// src/pages/About.js
 import React from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/About.css"; // Import the specific stylesheet for About page
+import "../styles/About.css";
 
 const About = () => {
   return (
     <div>
-      
+      <Navbar />
       <div className="about-background">
         <h1 className="about-title">About Us</h1>
-        <p className="about-description">
-          This project originated from the concept of a college thesis (TCC). We
-          are five young enthusiasts who have always relished tackling
-          challenges and addressing diverse needs with our foundational
-          knowledge of technology. Regularly attending lectures and events
-          focused on education inspired us to create something impactful in the
-          educational sector. Our goal was to develop a platform that not only
-          encourages the pursuit of knowledge but also offers the best
-          cost-benefit ratio for business users. We prioritized a clean and
-          intuitive interface to ensure that our objectives are clearly
-          understood and easily accessible. With this project, we aspire to
-          elevate educational engagement to new heights, making learning more
-          accessible and efficient for everyone involved.
-        </p>
+        
+          <div className="about-description-container">
+            <p className="about-description">
+              Our project was born from a college thesis (TCC), developed by a
+              team of five young enthusiasts passionate about technology and
+              education. Motivated by lectures and events, we envisioned a
+              platform that encourages continuous learning and offers
+              outstanding cost-benefit for businesses. Our platform’s clean,
+              intuitive design ensures an accessible and effective experience,
+              making knowledge pursuit enjoyable and beneficial for everyone.
+            </p>
+          </div>
+        
+        <section className="team-section">
+          <h2 className="team-title">Meet Our Team</h2>
+          <p className="team-description">
+            A dedicated group with diverse backgrounds, united by a shared goal
+            of making a positive impact in education.
+          </p>
+          <img
+            src="path/to/team-image.jpg" // Substitua com o caminho da imagem da equipe
+            alt="Team"
+            className="team-image"
+          />
+        </section>
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };
