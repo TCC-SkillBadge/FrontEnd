@@ -50,26 +50,26 @@ import About from "./About";
 
 function App() {
   // Gerenciar o userType e user no App.js
-  const [userType, setUserType] = useState(null);
-  const [user, setUser] = useState(null);
+  // const [userType, setUserType] = useState(null);
+  // const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const storedUserType = sessionStorage.getItem("tipoUsuario");
-    const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+  // useEffect(() => {
+  //   const storedUserType = sessionStorage.getItem("tipoUsuario");
+  //   const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
 
-    if (storedUserType) {
-      setUserType(storedUserType);
-    }
+  //   if (storedUserType) {
+  //     setUserType(storedUserType);
+  //   }
 
-    if (storedUserInfo) {
-      setUser(storedUserInfo);
-    }
-  }, []);
+  //   if (storedUserInfo) {
+  //     setUser(storedUserInfo);
+  //   }
+  // }, []);
 
   return (
     <div className="App">
       {/* Passar userType e user como props para NavBar */}
-      <NavBar userType={userType} user={user} />
+      {/* <NavBar userType={userType} user={user} /> */}
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Home />} />
@@ -115,7 +115,7 @@ function App() {
           {/* Remova se não precisar */}
         </Routes>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
