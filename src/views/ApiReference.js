@@ -278,7 +278,15 @@ namespace AssignBadge
             {loadingApiKey ? (
               <p>Carregando sua API Key...</p>
             ) : apiKey ? (
-              <p className="api-key">{apiKey}</p>
+              <>
+                <p className="api-key">{apiKey}</p>
+                <button
+                  className="generate-api-key-button"
+                  onClick={handleGenerateApiKey}
+                >
+                  Gerar Nova API Key
+                </button>
+              </>
             ) : (
               <button
                 className="generate-api-key-button"
