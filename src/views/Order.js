@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar"; // Adicionando o componente Navbar
-import axios from "axios";
+import Navbar from "../components/Navbar"; 
+import Footer from "../components/Footer";
 import { ToastContainer, toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import { EyeFill } from "react-bootstrap-icons";
+import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/Orders.css";
 
@@ -16,6 +19,8 @@ const Orders = () => {
 
   const userType = sessionStorage.getItem("tipoUsuario");
 
+  const navigate = useNavigate();
+
   // Mapeamento dos nomes de canais para algo mais intuitivo
   const channelMap = {
     criacao_badge: "Badge Creation",
@@ -29,7 +34,7 @@ const Orders = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:7004/admin/meus-pedidos",
+          "http://localhost:7004/admin/orders",
           { token }, // Enviando o token no corpo da requisição
           {
             headers: {
@@ -54,6 +59,36 @@ const Orders = () => {
       }
     };
 
+    const checkLogin = async () => {
+      const token = sessionStorage.getItem("token");
+      const userType = sessionStorage.getItem("tipoUsuario");
+  
+      if (userType === "UE") {
+        let userInfoResponse = await axios.get(
+          `http://localhost:7003/api/acessar-info-usuario-jwt`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } 
+      else if (userType === "UA") {
+        let userInfoResponse = await axios.get(
+          `http://localhost:7004/admin/acessa-info`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+      else {
+        navigate("/home")
+      }
+    };
+
+    checkLogin();
     fetchOrders();
   }, []);
 
@@ -167,6 +202,7 @@ const Orders = () => {
               <th>Status</th>
               <th>Client</th>
               <th>Badge ID</th>
+              <th style={{ textAlign: "center" }}>Options</th>
             </tr>
           </thead>
           <tbody>
@@ -181,11 +217,19 @@ const Orders = () => {
                 <td>{order.status}</td>
                 <td>{order.cliente}</td>
                 <td>{order.badgeId}</td>
+                <td style={{ textAlign: "center" }}>
+                  {order.id_badge && (
+                    <Link to={`/workflow/${order.id_badge}`}>
+                      <EyeFill className="eye-icon"/>
+                    </Link>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <Footer />
     </div>
   );
 };

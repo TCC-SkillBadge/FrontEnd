@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import { EyeFill } from "react-bootstrap-icons";
+import { Link, useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/Requests.css";
 
 const Requests = () => {
@@ -11,15 +16,26 @@ const Requests = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchBadgeId, setSearchBadgeId] = useState("");
   const [orderBy, setOrderBy] = useState("date-desc");
+  
+  const userType = sessionStorage.getItem("tipoUsuario");
+  
+  const navigate = useNavigate();
 
+  // Mapeamento dos nomes de canais para algo mais intuitivo
+  const channelMap = {
+    criacao_badge: "Badge Creation",
+    edicao_badge: "Badge Editing",
+    suporte: "Support",
+  };
+  
   useEffect(() => {
     const fetchOrders = async () => {
       const token = sessionStorage.getItem("token");
 
       try {
         const response = await axios.post(
-          "http://localhost:7004/admin/meus-pedidos",
-          {},
+          "http://localhost:7004/admin/requests",
+          { token },
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -41,6 +57,36 @@ const Requests = () => {
       }
     };
 
+    const checkLogin = async () => {
+      const token = sessionStorage.getItem("token");
+      const userType = sessionStorage.getItem("tipoUsuario");
+  
+      if (userType === "UE") {
+        let userInfoResponse = await axios.get(
+          `http://localhost:7003/api/acessar-info-usuario-jwt`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } 
+      else if (userType === "UA") {
+        let userInfoResponse = await axios.get(
+          `http://localhost:7004/admin/acessa-info`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+      else {
+        navigate("/home")
+      }
+    };
+
+    checkLogin();
     fetchOrders();
   }, []);
 
@@ -103,35 +149,33 @@ const Requests = () => {
     return <p>Loading...</p>;
   }
 
-  if (error) {
-    return <p>{error}</p>;
-  }
-
   return (
-    <div className="pedidos-page">
-      <Navbar />
-      <div className="container pedidos-container">
-        <div className="pedidos-header">
-          <div className="pedidos-search-group">
+    <div>
+      <Navbar userType={userType} /> {/* Adicionando o Navbar */}
+      <div className="container orders-container">
+        <ToastContainer />
+        {/* <Aside userType={userType} /> Componente Aside comentado */}
+        <div className="orders-header">
+          <div className="orders-search-group">
             <input
               type="text"
-              className="pedidos-search"
+              className="orders-search"
               placeholder="Search by client"
               value={searchTerm}
               onChange={handleSearchTermChange}
             />
             <input
               type="text"
-              className="pedidos-search"
+              className="orders-search"
               placeholder="Search by badge ID"
               value={searchBadgeId}
               onChange={handleSearchBadgeIdChange}
             />
           </div>
-          <div className="pedidos-order">
+          <div className="orders-order">
             <span>Order by:</span>
             <select
-              className="pedidos-select"
+              className="orders-select"
               value={orderBy}
               onChange={handleOrderChange}
             >
@@ -142,37 +186,48 @@ const Requests = () => {
             </select>
           </div>
         </div>
-        <div className="pedidos-info">
+        <div className="orders-info">
           You have {filteredOrders.length} orders
         </div>
-        <div className="pedidos-divider"></div>
-        <table className="pedidos-table">
+        <div className="orders-divider"></div>
+        <table className="orders-table">
           <thead>
             <tr>
-              <th>Order Number</th>
+              <th>Request Number</th>
               <th>Date</th>
               <th>Channel</th>
               <th>Priority</th>
               <th>Status</th>
               <th>Client</th>
-              <th>Badge ID</th>
+              <th style={{ textAlign: "center" }}>Badge</th>
+              <th style={{ textAlign: "center" }}>Options</th>
             </tr>
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
               <tr key={order.numero_pedido}>
                 <td>{order.numero_pedido}</td>
-                <td>{order.data}</td>
-                <td>{order.canal}</td>
+                <td>{new Date(order.data).toLocaleDateString()}</td>{" "}
+                <td>{channelMap[order.canal] || order.canal}</td>{" "}
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>
-                <td>{order.cliente}</td>
-                <td>{order.badgeId}</td>
+                <td>{order.email_request}</td>
+                <td style={{ textAlign: "center" }}>
+                  {order.name_badge || "-"}
+                </td>
+                <td style={{ textAlign: "center" }}>
+                  {order.id_badge && (
+                    <Link to={`/workflow/${order.id_badge}`}>
+                      <EyeFill className="eye-icon"/>
+                    </Link>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <Footer />
     </div>
   );
 };
