@@ -1,3 +1,4 @@
+// src/views/NavBar.js
 import React, { useState, useEffect } from "react";
 import {
   Navbar,
@@ -128,8 +129,8 @@ const NavBar = () => {
             <Nav.Link as={NavLink} to="/contact">
               Contact
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/about">
-              About
+            <Nav.Link as={NavLink} to="/api-reference">
+              API Reference
             </Nav.Link>
           </>
         );
@@ -332,7 +333,6 @@ const NavBar = () => {
       </Container>
     </Navbar>
   );
-
 };
 
 export default NavBar;
