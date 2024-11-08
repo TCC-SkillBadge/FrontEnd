@@ -163,16 +163,18 @@
   color: var(--color-text-light);
 }
 
+/* Consistent Input Styling */
 .profile-about-input,
 .profile-input,
 .profile-array-item input,
-.profile-array-item textarea {
-  background-color: #2d2d2d; /* Updated background color */
-  border: 1px solid #444444; /* Updated border color */
-  border-radius: 4px; /* Updated border radius */
-  padding: 10px; /* Updated padding */
-  color: #f8f8f2; /* Updated text color */
-  font-family: 'Fira Code', monospace; /* Updated font family */
+.profile-array-item textarea,
+.profile-name-input { /* Added .profile-name-input */
+  background-color: #2d2d2d; /* Dark background */
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
+  padding: 10px; /* Adequate padding */
+  color: #f8f8f2; /* Light text color for contrast */
+  font-family: 'Fira Code', monospace; /* Monospaced font for consistency */
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
@@ -184,19 +186,65 @@
 .profile-about-input::placeholder,
 .profile-input::placeholder,
 .profile-array-item input::placeholder,
-.profile-array-item textarea::placeholder {
+.profile-array-item textarea::placeholder,
+.profile-name-input::placeholder { /* Added placeholder styling */
   color: var(--color-text-muted);
 }
 
 .profile-about-input:focus,
 .profile-input:focus,
 .profile-array-item input:focus,
-.profile-array-item textarea:focus {
+.profile-array-item textarea:focus,
+.profile-name-input:focus { /* Focus states */
   border-color: var(--color-primary);
   background-color: rgba(45, 45, 45, 1);
   outline: none;
 }
 
+/* Styling for 'razao_social' Input */
+.profile-name-input {
+  /* The following styles ensure that 'razao_social' input matches other inputs */
+  background-color: #2d2d2d; /* Dark background */
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
+  padding: 10px; /* Adequate padding */
+  color: #f8f8f2; /* Light text color for contrast */
+  font-family: 'Fira Code', monospace; /* Monospaced font for consistency */
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  min-height: 40px;
+  transition: var(--transition);
+}
+
+/* Remove redundant or commented-out styles if present */
+/* 
+.profile-name-input {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text-light);
+  background-color: rgba(25, 26, 46, 0.8);
+  border: none;
+  border-bottom: 2px solid var(--color-secondary);
+  width: 100%;
+  padding: 10px 5px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.profile-name-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.profile-name-input:focus {
+  border-bottom: 2px solid var(--color-primary);
+  background-color: rgba(25, 26, 46, 1);
+}
+*/
+
+/* Styling for Array Items */
 .profile-array-item {
   display: flex;
   align-items: center;
@@ -443,12 +491,12 @@
 .post-textarea {
   width: 100%;
   min-height: 80px;
-  background-color: #2d2d2d; /* Updated background color */
-  border: 1px solid #444444; /* Updated border color */
-  border-radius: 4px; /* Updated border radius */
-  padding: 10px; /* Updated padding */
-  color: #f8f8f2; /* Updated text color */
-  font-family: 'Fira Code', monospace; /* Updated font family */
+  background-color: #2d2d2d; /* Dark background */
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
+  padding: 10px; /* Adequate padding */
+  color: #f8f8f2; /* Light text color for contrast */
+  font-family: 'Fira Code', monospace; /* Monospaced font for consistency */
   font-size: 1rem;
   resize: vertical;
   box-sizing: border-box;
@@ -616,11 +664,11 @@
 }
 
 .language-dropdown-button {
-  background-color: #2d2d2d; /* Updated background color */
-  color: #f8f8f2; /* Updated text color */
+  background-color: #2d2d2d; /* Dark background */
+  color: #f8f8f2; /* Light text color */
   padding: 10px;
-  border: 1px solid #444444; /* Updated border color */
-  border-radius: 4px; /* Updated border radius */
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -631,13 +679,13 @@
 }
 
 .language-dropdown-button:hover {
-  background-color: rgba(45, 45, 45, 1); /* Updated hover background */
+  background-color: rgba(45, 45, 45, 1); /* Slightly lighter on hover */
 }
 
 .language-dropdown-content {
   display: block;
   position: absolute;
-  background-color: rgba(45, 45, 45, 0.95); /* Updated background color */
+  background-color: rgba(45, 45, 45, 0.95); /* Dark background */
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
@@ -670,27 +718,6 @@
   color: var(--color-secondary);
 }
 
-.badges-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-}
-
-.badge-card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  width: 200px;
-}
-
-.badge-preview {
-  width: 100%;
-  height: auto;
-  border-radius: 4px;
-}
-
 /* Styling Custom Checkboxes */
 .custom-checkbox {
   position: relative;
@@ -717,8 +744,8 @@
   left: 0;
   height: 22px;
   width: 22px;
-  background-color: #2d2d2d; /* Updated background color */
-  border: 2px solid #444444; /* Updated border color */
+  background-color: #2d2d2d; /* Dark background */
+  border: 2px solid #444444; /* Subtle border */
   border-radius: 4px;
 }
 
@@ -750,5 +777,3 @@
   border-width: 0 3px 3px 0;
   transform: rotate(45deg);
 }
-
-/* Repeated class definition removed to avoid duplication */
