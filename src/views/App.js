@@ -45,6 +45,7 @@ import Requests from "./Requests";
 import ClaimBadgePage from "./ClaimBadgePage";
 import ApiReference from "./ApiReference";
 import About from "./About";
+import Dashboard from "./Dashboard";
 // Import TestPage apenas se estiver usando
 // import TestPage from "./TestPage"; // Remova se não precisar
 
@@ -111,6 +112,7 @@ function App() {
           <Route path="/requests" element={<Requests />} />
           <Route path="/claim-badge" element={<ClaimBadgePage />} />
           <Route path="/about" element={<About />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* <Route path="/test" element={<TestPage />} /> */}{" "}
           {/* Remova se não precisar */}
         </Routes>
