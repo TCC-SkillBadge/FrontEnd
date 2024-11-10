@@ -1,0 +1,230 @@
+/*These are settings for components wildly used across the system (example: general PrimeReact components)*/
+
+:root{
+    --btn-danger-color: #c51515;
+    --btn-success-color: #088506;
+    --btn-primary-color: #b74df0;
+    --background-color-1: #1c193b;
+    --background-color-2: #28213f;
+    --background-color-3: #37304e;
+    --scrollbar-color: #3a365e transparent;
+}
+
+/*Border-Image*/
+
+.default-border-image{
+    position: relative;
+    padding: 1.3rem;
+    backdrop-filter: blur(10px);
+}
+
+.default-border-image::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 15px;
+    border: 3px solid transparent;
+    background: linear-gradient(to bottom, #D273FF, #8DFD8B) border-box;
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+/*Confirm Dialog*/
+
+.p-confirm-dialog{
+    background-color: #0e102a;
+    color: white;
+    position: relative;
+    backdrop-filter: blur(10px);
+    padding: 1%;
+}
+
+.p-confirm-dialog::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 15px;
+    border: 3px solid transparent;
+    background: linear-gradient(to bottom, #D273FF, #8DFD8B) border-box;
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.p-cd-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+    background-color: #0e102a;
+    color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.p-cd-header{
+    background-color: #0e102a;
+    color: white;
+}
+
+/*Confirm Popup*/
+
+.p-confirm-popup{
+    background-color: #0e102a;
+    color: white;
+    border: 2px solid;
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+}
+
+.p-confirm-popup-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+}
+
+.p-confirm-popup-footer button{
+    border-radius: 10px;
+    margin-left: 3%;
+    margin-right: 3%;
+}
+
+/*Dialog Component*/
+
+.p-dialog-content{
+    padding: 3%;
+    border-radius: 15px;
+    background-color: transparent;
+    color: white;
+}
+
+.p-dialog-header{
+    background-color: transparent;
+    padding: 3px;
+}
+
+/*Buttons*/
+
+.dbuttons{
+    font-weight: bold;
+    padding: 7px;
+    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+}
+
+.dbuttons:hover{
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
+    scale: 1.05;
+}
+
+.dbuttons-success{
+    border-radius: 5px;
+    background-color: transparent;
+    color: var(--btn-success-color);
+    border: 2px solid var(--btn-success-color);
+}
+
+.dbuttons-success:hover{
+    background-color: var(--btn-success-color);
+    color: white;
+    border-color: var(--btn-success-color);
+}
+
+.dbuttons-danger{
+    border-radius: 5px;
+    background-color: transparent;
+    color: var(--btn-danger-color);
+    border: 2px solid var(--btn-danger-color);
+}
+
+.dbuttons-danger:hover{
+    background-color: var(--btn-danger-color);
+    color: white;
+    border-color: var(--btn-danger-color);
+}
+
+.dbuttons-primary{
+    border-radius: 5px;
+    background-color: transparent;
+    color: var(--btn-primary-color);
+    border: 2px solid var(--btn-primary-color);
+}
+
+.dbuttons-primary:hover{
+    background-color: var(--btn-primary-color);
+    color: white;
+    border-color: var(--btn-primary-color);
+}
+
+.dbuttons-secondary{
+    border-radius: 5px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    box-shadow: none;
+}
+
+.dbuttons-secondary:hover{
+    background-color: white;
+    color: var(--background-color-1);
+    border-color: white;
+    box-shadow: none;
+    scale: 1;
+}
+
+.dbuttons-secondary:focus{
+    background-color: white;
+    color: var(--background-color-1);
+    border-color: white;
+    box-shadow: none;
+    scale: 1;
+}
+
+.dbuttons-secondary:active{
+    background-color: white;
+    color: var(--background-color-1);
+    border-color: white;
+    box-shadow: none;
+    scale: 1;
+}
+
+/*Inputs*/
+
+.p-inputtext{
+    background-color: transparent;
+    width: 100%;
+    color: white;
+    border-radius: 5px;
+    border: 1px solid white;
+    padding: 5px;
+    scrollbar-color: var(--scrollbar-color);
+}
+
+.p-inputtextarea{
+    background-color: transparent;
+    width: 100%;
+    color: white;
+    border-radius: 5px;
+    border: 1px solid white;
+    padding: 5px;
+    scrollbar-color: var(--scrollbar-color);
+}
+
+.p-inputnumber-input{
+    text-align: center;
+}
+
+.p-inputgroup-addon{
+    background-color: transparent;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    width: fit-content;
+    color: white;
+}
+
+/*Various*/
+
+.hide-component{
+    display: none;
+}

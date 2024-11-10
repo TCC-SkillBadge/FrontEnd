@@ -8,9 +8,13 @@ import '../styles/ChatBox.css';
 import { InputText } from 'primereact/inputtext';
 import InputEmoji from 'react-input-emoji';
 import Loading from './Loading';
+import { animated, useTransition } from 'react-spring';
+import { jwtExpirationHandler } from '../utils/general-functions/JWTExpirationHandler';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import { toast, ToastContainer } from 'react-toastify';
-import { animated, useTransition, useSpring } from 'react-spring';
 import 'react-toastify/dist/ReactToastify.css';
+import '../styles/ChatBox.css'
+import '../styles/GlobalStylings.css';
 
 const chatServiceURL = 'http://localhost:8001';
 const commonUserURL = 'http://localhost:7000/api';
@@ -44,6 +48,7 @@ const verifyImageValidity = (user, dimensions) => {
 };
 
 const ChatBox = () => {
+  const [token, _setToken] = useState(sessionStorage.getItem('token'));
   const [userType, _setUserType] = useState(sessionStorage.getItem('tipoUsuario'));
   const [userInfo, _setUserInfo] = useState(JSON.parse(sessionStorage.getItem('userInfo')));
   const [userEmail, _setUserEmail] = useState(userInfo.email ? userInfo.email : userInfo.email_comercial);
@@ -54,6 +59,7 @@ const ChatBox = () => {
   const [messagesDisplayed, setMessagesDisplayed] = useState(null);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [inoperant, setInoperant] = useState(false);
   const [socket, setSocket] = useState(null);
 
 
@@ -65,47 +71,10 @@ const ChatBox = () => {
     }
   }, []);
 
-  const searchContatcs = async (contact) => {
-    const cont ={
-      email: contact.email,
-      username: contact.username,
-      user_type: contact.user_type,
-    }
-    let profile_picture = '';
-    try{
-      if(contact.user_type === 'UC') {
-        const response = (await connectionCommonUser.get('/find', {
-          params: { 
-            search: contact.email,
-            researcher: userEmail,
-          },
-        })).data;
-        console.log('Response', response);
-        profile_picture = response[0].imageUrl;
-      }
-      else{
-        const response = (await connectionEnterpriseUser.get('/find-user', {
-          params: { 
-            search: contact.email,
-            researcher: userEmail,
-          },
-        })).data;
-        console.log('Response', response);
-        profile_picture = response[0].imageUrl;
-      }
-    }
-    catch (error) {
-      console.error('An error occurred while fetching users profile pictures');
-      console.error(error);
-      toast.error('An error occurred while fetching users profile pictures');
-    }
-    cont.profile_picture = profile_picture;
-    return cont;
-  };
-
   useEffect(() => {
     socket?.on('connect', () => {
       console.log('Connected to Chat Service');
+      setLoading(() => true);
     });
   
     socket?.on('start chat application', async (data) => {
@@ -124,6 +93,7 @@ const ChatBox = () => {
       setContacts(() => contacts);
       setAllMessages(() => data.messageList);
       setLoading(() => false);
+      setInoperant(() => false);
     });
 
     socket?.on('received message', async (data) => {
@@ -181,11 +151,20 @@ const ChatBox = () => {
       toast.error(data.error);
     });
 
+    // Listen to connection error
+    socket?.on('connect_error', (error) => {
+      console.error('An error occurred while connecting to the chat service');
+      console.error(error);
+      setLoading(() => false);
+      setInoperant(() => true);
+    });
+
     return () => {
       socket?.off('connect');
       socket?.off('start chat application');
       socket?.off('received message');
       socket?.off('error occurrence');
+      socket?.off('connect_error');
     };
   }, [socket, contacts, allMessages, messagesDisplayed]);
 
@@ -205,6 +184,46 @@ const ChatBox = () => {
       }
     }
   }, [allMessages]);
+
+  const searchContatcs = async (contact) => {
+    const cont ={
+      email: contact.email,
+      username: contact.username,
+      user_type: contact.user_type,
+    }
+    let profile_picture = '';
+    try{
+      if(contact.user_type === 'UC') {
+        const response = (await connectionCommonUser.get('/find', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { 
+            search: contact.email,
+            researcher: userEmail,
+          },
+        })).data;
+        console.log('Response', response);
+        profile_picture = response[0].imageUrl;
+      }
+      else{
+        const response = (await connectionEnterpriseUser.get('/find-user', {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { 
+            search: contact.email,
+            researcher: userEmail,
+          },
+        })).data;
+        console.log('Response', response);
+        profile_picture = response[0].imageUrl;
+      }
+    }
+    catch (error) {
+      console.error('An error occurred while fetching users profile pictures');
+      console.error(error);
+      handleRequestError(error);
+    }
+    cont.profile_picture = profile_picture;
+    return cont;
+  };
 
   const sendMessage = (msg) => {
     console.log('Sending message');
@@ -242,35 +261,51 @@ const ChatBox = () => {
     }
   };
 
+  const handleRequestError = (error) => {
+    let msg = '';
+    if(error.response){
+        msg = error.response.data.message
+        if(error.response.data.type === 'TokenExpired') jwtExpirationHandler();
+    }
+    else if(error.request) msg = 'Error while trying to access server!'
+    toast.error(msg);
+  };
+
   return (
-    <div className='chatbox'>
+    <div id='chatbox-component' className='chatbox'>
       {
         loading ?
-        <div className='flex flex-row justify-content-center align-items-center h-full'>
-          <Loading msg='Loading Chat Service'/>
-        </div> :
-        <div className='flex flex-row h-full'> 
-          <Contacts
-          contacts={contacts}
-          setSearching={setSearching}
-          chooseContact={chooseContact}/>
-          <Divider layout='vertical'/>
-          <MessagesD
-          contactMessages={messagesDisplayed}
-          userInfo={userInfo}
-          userEmail={userEmail}
-          userType={userType}
-          userUsername={userUsername}
-          sendMessage={sendMessage}/>
-        </div>
+        <Loading show={loading} msg='Loading Chat Service'/> :
+        (
+          inoperant ?
+          <InoperantMessage/> :
+          <div className='flex flex-row h-full'> 
+            <Contacts
+            contacts={contacts}
+            setSearching={setSearching}
+            chooseContact={chooseContact}/>
+            <MessagesD
+            contactMessages={messagesDisplayed}
+            userInfo={userInfo}
+            userEmail={userEmail}
+            userType={userType}
+            userUsername={userUsername}
+            sendMessage={sendMessage}/>
+          </div>
+        )
       }
       <SearchBox
       searching={searching}
       setSearching={setSearching}
+      token={token}
       userEmail={userEmail}
       userUsername={userUsername}
       contacts={contacts}
-      sendMessage={sendMessage}/>
+      sendMessage={sendMessage}
+      handleRequestError={handleRequestError}/>
+
+      {/* Messages and confirmation parts */}
+
       <ToastContainer
       position="top-center"
       autoClose={3000}
@@ -282,8 +317,30 @@ const ChatBox = () => {
       draggable
       pauseOnHover
       theme="dark"/>
+
+      <ConfirmDialog
+      closable={false}
+      draggable={false}
+      pt={{
+          header: {className: 'p-cd-header'},
+          footer: {className: 'p-cd-footer'},
+          acceptButton: {className: 'dbuttons dbuttons-success ml-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
+          rejectButton: {className: 'dbuttons dbuttons-danger mr-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
+          message: {style: {fontWeight: 'bold', fontSize: 'calc(15px + 1vw)', width: 'fit-content'}},
+          content: {style: {width: 'fit-content', marginTop: '20px', marginRight: '40px'}},
+      }}/>
     </div>
   )
+};
+
+const InoperantMessage = () => {
+  return (
+    <div className='inoperant-message'>
+      <img width='auto' height='50%' src='/images/error-icon-32.png'/>
+      <h1 style={{fontSize: 'calc(45px + 1vw)'}}>Chat Service is not available for now</h1>
+      <h3 className='mt-4' style={{fontSize: 'calc(15px + 1vw)'}}>Please try again later</h3>
+    </div>
+  );
 };
 
 const Contacts = ({contacts, setSearching, chooseContact}) => {
@@ -303,6 +360,7 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
               key={contact.email}
               className='flex flex-row align-items-center mb-3'>
                 <button
+                id={`contact-${contact.email}`}
                 className='contact-button'
                 onClick={() => chooseContact(contact)}>
                   <div className='mr-2'>
@@ -319,14 +377,14 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
   };
 
   return (
-    <div className='relative'>
-      <h3>Contacts</h3>
-      <Divider/>
+    <div id='contacts-component' className='contact-container'>
+      <h3 className='mb-4'>Contacts</h3>
       <div>
         {buildContacts()}
       </div>
-      <div className='flex flex-row mt-3 w-full absolute bottom-0'>
+      <div className='flex flex-row mt-3 mb-3 w-full bottom-0'>
         <button
+        id='add-contact-btn'
         className='btn btn-primary'
         onClick={() => setSearching(() => true)}>
           <i className='pi pi-plus'/> New Chat
@@ -363,7 +421,7 @@ const MessagesD = ({contactMessages, userEmail, userType, userInfo, userUsername
 
   const buildMessages = () => {
     return (
-      <div ref={scrollabelRef} className='message-box'>
+      <div id='messages-showbox' ref={scrollabelRef} className='message-box'>
         {
           messages.map((message, index, messages) => {
             const isSenderTheUser = userEmail === message.sender_email;
@@ -427,31 +485,32 @@ const MessagesD = ({contactMessages, userEmail, userType, userInfo, userUsername
 
   return(
     <div className='relative w-full'>
-      <h3>Messages</h3>
-      <Divider/>
+      <h3 className='mb-4'>Messages</h3>
       {
         messages.length !== 0 ?
         <div>
           <div>
            {buildMessages()}
           </div>
-          <div className='flex flex-row absolute bottom-0 w-full'>
-            <InputEmoji
-            value={newMessage}
-            onChange={setNewMessage}
-            onEnter={() => { 
-              sendMessage({
-                sender_email: userEmail,
-                receiver_email: contactMessages.contact_email,
-                sender_username: userUsername,
-                receiver_username: contactMessages.contact_username,
-                receiver_user_type: contactMessages.contact_type,
-                message: newMessage,
-              })
-            }}
-            placeholder='Type your message and press enter'
-            cleanOnEnter
-            shouldReturn/>
+          <div className='absolute bottom-0 w-full'>
+              <InputEmoji
+              id='message-input'
+              value={newMessage}
+              onChange={setNewMessage}
+              onEnter={() => { 
+                sendMessage({
+                  sender_email: userEmail,
+                  receiver_email: contactMessages.contact_email,
+                  sender_username: userUsername,
+                  receiver_username: contactMessages.contact_username,
+                  receiver_user_type: contactMessages.contact_type,
+                  message: newMessage,
+                })
+              }}
+              placeholder='Type your message and press enter'
+              cleanOnEnter
+              shouldReturn
+              borderRadius={0}/>
           </div>
         </div> :
         <div className='flex flex-column justify-content-center align-items-center h-full'>
@@ -463,7 +522,7 @@ const MessagesD = ({contactMessages, userEmail, userType, userInfo, userUsername
   )
 };
 
-const SearchBox = ({userEmail, userUsername, searching, setSearching, contacts, sendMessage}) => {
+const SearchBox = ({token, userEmail, userUsername, searching, setSearching, contacts, sendMessage, handleRequestError}) => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -479,18 +538,14 @@ const SearchBox = ({userEmail, userUsername, searching, setSearching, contacts, 
 
       try{
         UCs = (await connectionCommonUser.get('/find', {
+          headers: { Authorization: `Bearer ${token}` },
           params: { 
             search: searchTerm,
             researcher: userEmail,
           },
         })).data;
-      }
-      catch (error) {
-        console.error(error);
-      }
-
-      try {
         UEs = (await connectionEnterpriseUser.get('/find-user', {
+          headers: { Authorization: `Bearer ${token}` },
           params: { 
             search: searchTerm,
             researcher: userEmail,
@@ -498,7 +553,10 @@ const SearchBox = ({userEmail, userUsername, searching, setSearching, contacts, 
         })).data;
       }
       catch (error) {
+        console.error('An error occurred while fetching users');
         console.error(error);
+        setSearching(() => false);
+        handleRequestError(error);
       }
 
       console.log('UCs:', UCs);
@@ -566,63 +624,71 @@ const SearchBox = ({userEmail, userUsername, searching, setSearching, contacts, 
     setSearchTerm(() => '');
   };
 
+  const resetSearch = () => {
+    setSearchTerm(() => '');
+    setSearchResults(() => []);
+    setNoResults(() => false);
+    setSearching(() => false);
+  };
+
   return (
     <Dialog
+    className='search-box default-border-image'
     visible={searching}
     onHide={() => {
       if (!searching) return;
 
-      setSearchTerm(() => '');
-      setSearchResults(() => []);
-      setNoResults(() => false);
-      setSearching(() => false);
+      resetSearch();
     }}
-    closable={true}>
-      <div>
-        <h3>Search for Users</h3>
-        <Divider/>
-        <div className='p-inputgroup'>
-          <span className='p-inputgroup-addon'>
-            <i className={loading ? 'pi pi-spin pi-spinner' : 'pi pi-search'}/>
-          </span>
-          <InputText
-          value={searchTerm}
-          onKeyDown={(e) => {
-            if(e.key === 'Enter') {
-              searchUsers();
-            }
-          }}
-          onChange={(e) => {setSearchTerm(() => e.target.value)}}/>
-          <Button
-          className='p-button-primary'
-          label='Search'
-          onClick={searchUsers}/>
-        </div>
-        <div className='m-3'>
-          {
-            noResults ?
-            <div className='flex flex-row justify-content-center mt-3'>
-              <h3>No results found</h3>
-            </div> :
-            null
+    closable={true}
+    pt={{
+      closeButton: {className: 'search-box-close-btn'},
+    }}>
+      <h3>Search for Users</h3>
+      <Divider/>
+      <div className='p-inputgroup'>
+        <span className='p-inputgroup-addon'>
+          <i className={loading ? 'pi pi-spin pi-spinner' : 'pi pi-search'}/>
+        </span>
+        <InputText
+        id='chat-search-users-input'
+        value={searchTerm}
+        onKeyDown={(e) => {
+          if(e.key === 'Enter') {
+            searchUsers();
           }
-          {
-            searchResults.length > 0 ?
-            <SearchResultsBox
-            searchResults={searchResults}
-            userEmail={userEmail}
-            userUsername={userUsername}
-            sendMessage={sendMessage}
-            setSearching={setSearching}/> :
-            null
-          }
-        </div>
+        }}
+        onChange={(e) => {setSearchTerm(() => e.target.value)}}/>
+        <Button
+        id='chat-search-users-btn'
+        className='dbuttons dbuttons-primary ml-3 pr-4 pl-4'
+        label='Search'
+        onClick={searchUsers}/>
+      </div>
+      <div className='m-3'>
+        {
+          noResults ?
+          <div className='flex flex-row justify-content-center mt-3'>
+            <h3>No results found</h3>
+          </div> :
+          null
+        }
+        {
+          searchResults.length > 0 ?
+          <SearchResultsBox
+          searchResults={searchResults}
+          userEmail={userEmail}
+          userUsername={userUsername}
+          sendMessage={sendMessage}
+          resetSearch={resetSearch}/> :
+          null
+        }
       </div>
     </Dialog>
   )
 };
 
-const SearchResultsBox = ({userEmail, userUsername, searchResults, sendMessage, setSearching}) => {
+const SearchResultsBox = ({userEmail, userUsername, searchResults, sendMessage, resetSearch}) => {
   useEffect(() => {
     console.log('SearchResults mounted');
     console.log('SearchResults:', searchResults);
@@ -639,7 +705,7 @@ const SearchResultsBox = ({userEmail, userUsername, searchResults, sendMessage, 
             userEmail={userEmail}
             userUsername={userUsername}
             sendMessage={sendMessage}
-            setSearching={setSearching}/>
+            resetSearch={resetSearch}/>
           )
         })
       }
@@ -647,7 +713,7 @@ const SearchResultsBox = ({userEmail, userUsername, searchResults, sendMessage, 
   )
 };
 
-const SearchResults = ({user, userEmail, userUsername, sendMessage, setSearching}) => {
+const SearchResults = ({user, userEmail, userUsername, sendMessage, resetSearch}) => {
   const [sendFirstMessage, setSendFirstMessage] = useState(false);
   const [firstMessage, setFirstMessage] = useState('');
 
@@ -667,7 +733,7 @@ const SearchResults = ({user, userEmail, userUsername, sendMessage, setSearching
       receiver_user_type: user.type,
       message: firstMessage,
     });
-    setSearching(() => false);
+    resetSearch();
   };
 
   return(
@@ -698,11 +764,13 @@ const SearchResults = ({user, userEmail, userUsername, sendMessage, setSearching
         {
           sendFirstMessage ?
           <button
+          id='cancel-first-message-btn'
           className='cancel-button'
           onClick={() => setSendFirstMessage(() => false)}>
             Cancel
           </button> :
           <button
+          id='iniciate-chat-btn'
           className='iniciate-chat-button'
           onClick={() => setSendFirstMessage(() => true)}>
             Start Chat
@@ -712,16 +780,18 @@ const SearchResults = ({user, userEmail, userUsername, sendMessage, setSearching
       {
         mountFirstMessageButton((styles, item) => 
           item &&
-          <animated.div style={styles}>
+          <animated.div id='first-message-component' style={styles}>
             <div className='first-message-box'>
               <h3 className='text-center'>Send your first Message</h3>
               <div className='flex flex-row justify-content-center'>
                 <InputEmoji
+                id='first-message-input'
                 value={firstMessage}
                 onChange={setFirstMessage}
                 onEnter={() => send()}
                 placeholder='Enter your message'
-                shouldReturn/>
+                shouldReturn
+                borderRadius={0}/>
               </div>
               <div className='flex flex-row justify-content-center'>
                 <button

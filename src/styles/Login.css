@@ -11,12 +11,10 @@
 .login-container {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   width: 100%;
   max-width: 400px;
-  border: 2px solid;
-  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
 }
 
 .login-container h2 {

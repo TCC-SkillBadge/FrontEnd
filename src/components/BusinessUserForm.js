@@ -1,5 +1,6 @@
-import React from "react";
-import { EnvelopeFill, LockFill, Building, Phone, GeoAltFill, PersonCircle } from "react-bootstrap-icons";
+import React, { useState } from "react";
+import { EnvelopeFill, LockFill, Building, Phone, GeoAltFill, PersonCircle, Eye, EyeSlash, QuestionCircle } from "react-bootstrap-icons";
+import PasswordRequirements from "./PasswordRequirements";
 import { PhoneInput } from "react-international-phone";
 import "react-international-phone/style.css";
 
@@ -11,6 +12,32 @@ const BusinessUserForm = ({
   handleCNPJBlur,
   setCompanyData,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+
+  const handleShowPassword = () => {
+    const passwordInput = document.querySelector("#password");
+    if (showPassword) {
+      setShowPassword(false);
+      passwordInput.type = "password";
+    } else {
+      setShowPassword(true);
+      passwordInput.type = "text";
+    }
+  };
+
+  const handleShowConfirmPassword = () => {
+    const confirmPasswordInput = document.querySelector("#confirmPassword");
+    if (showConfirmPassword) {
+      setShowConfirmPassword(false);
+      confirmPasswordInput.type = "password";
+    } else {
+      setShowConfirmPassword(true);
+      confirmPasswordInput.type = "text";
+    }
+  };
+
   return (
     <>
       <div className="form-group">
@@ -51,10 +78,18 @@ const BusinessUserForm = ({
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
             required
           />
+          {
+            showPassword ?
+            <EyeSlash onClick={handleShowPassword} /> :
+            <Eye onClick={handleShowPassword} />
+          }
+          <QuestionCircle onClick={() => setShowPasswordRequirements((oldValue) => !oldValue)} />
         </div>
       </div>
+      <PasswordRequirements show={showPasswordRequirements} password={formData.password} />
       <div className="form-group">
         <div className="input-icon">
           <LockFill />
@@ -67,6 +102,11 @@ const BusinessUserForm = ({
             onChange={handleChange}
             required
           />
+          {
+            showConfirmPassword ?
+            <EyeSlash onClick={handleShowConfirmPassword} /> :
+            <Eye onClick={handleShowConfirmPassword} />
+          }
         </div>
       </div>
       <div className="form-group">

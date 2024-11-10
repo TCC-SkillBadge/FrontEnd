@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Login.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { EnvelopeFill, LockFill } from "react-bootstrap-icons";
+import { EnvelopeFill, LockFill, Eye, EyeSlash } from "react-bootstrap-icons";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal component
+import "../styles/Login.css";
+import "../styles/GlobalStylings.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +18,19 @@ const Login = () => {
   const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State to control the confirmation modal
   const [confirmationMessage, setConfirmationMessage] = useState(""); // State to hold the confirmation message
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleShowPassword = () => {
+    const passwordInput = document.querySelector("#password");
+    if (showPassword) {
+      setShowPassword(false);
+      passwordInput.type = "password";
+    } else {
+      setShowPassword(true);
+      passwordInput.type = "text";
+    }
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -56,7 +69,6 @@ const handleLogin = async (
           }
         );
       } else if (tipoUsuario === "UE") {
-        console.log('Entrei no else if');
         userInfoResponse = await axios.get(
           `http://localhost:7003/api/acessar-info-usuario-jwt`,
           {
@@ -79,7 +91,6 @@ const handleLogin = async (
       }
 
       if (userInfoResponse && userInfoResponse.status === 200) {
-        console.log('Entrei no if');
         const userInfo = userInfoResponse.data;
         sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
         return true;
@@ -193,7 +204,7 @@ const handleLogin = async (
     <div>
       <Navbar />
       <div className="login-page">
-        <div className="login-container">
+        <div className="login-container default-border-image">
           <h2>Login</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -222,7 +233,11 @@ const handleLogin = async (
                   onChange={handleChange}
                   required
                 />
-                
+                {
+                  showPassword ?
+                  <EyeSlash onClick={handleShowPassword} /> :
+                  <Eye onClick={handleShowPassword} />
+                }
               </div>
             </div>
             <div className="form-options">

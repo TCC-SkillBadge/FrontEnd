@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Create.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { Dropdown } from "react-bootstrap";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "../styles/Create.css";
+import "../styles/GlobalStylings.css";
 
 import CommonUserForm from "../components/CommonUserForm";
 import BusinessUserForm from "../components/BusinessUserForm";
@@ -138,7 +138,7 @@ const Create = () => {
     <div>
       <Navbar />
       <div className="cadastro-page">
-        <div className="cadastro-container">
+        <div className="cadastro-container default-border-image">
           <h2>Register</h2>
           <div className="dropdown-container">
             <Dropdown className="custom-dropdown">

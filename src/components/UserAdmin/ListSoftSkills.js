@@ -9,11 +9,15 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ColorPicker } from 'primereact/colorpicker';
 import { ConfirmPopup } from 'primereact/confirmpopup';
-import { animated, useTransition } from 'react-spring';
 import { confirmPopup } from 'primereact/confirmpopup';
+import { animated, useTransition } from 'react-spring';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import ErrorMessage from '../ErrorMessage';
 import Loading from '../Loading';
+import { protectRoute } from '../../utils/general-functions/ProtectRoutes';
+import { jwtExpirationHandler } from '../../utils/general-functions/JWTExpirationHandler';
 import '../../styles/ListSoftSkills.css';
+import '../../styles/GlobalStylings.css';
 
 const generalServicesURL = 'http://localhost:6004';
 
@@ -29,18 +33,28 @@ export const ListSoftSkills = () => {
         cor_soft_skill: 'ffffff'
     };
 
+    const [token, _setToken] = useState(sessionStorage.getItem('token'));
+    const [userType, _setUserType] = useState(sessionStorage.getItem('tipoUsuario'));
+    const [userInfo, _setUserInfo] = useState(JSON.parse(sessionStorage.getItem('userInfo')));
+    const [userEmail, _setUserEmail] = useState(userInfo.email_admin);
+
     const [softSkills, setSoftSkills] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showPopUp, setShowPopUp] = useState(false);
-    const [editing, setEditing] = useState(false);
+    const [editing, setEditing] = useState(true);
     const [managedSS, setManagedSS] = useState(objSSInit);
     const [immediate, setImmediate] = useState(false);
     const [error, setError] = useState('');
     const [allFine, setAllFine] = useState(false);
 
-    const token = sessionStorage.getItem('token');
-    const userType = sessionStorage.getItem('tipoUsuario');
-    const userInfo = sessionStorage.getItem('userInfo');
+    //Iniciating the page
+    useEffect(() => {
+        fetchList();
+    }, []);
+
+    useEffect(() => {
+        editing ? setImmediate(() => true) : setImmediate(() => false);
+    }, [editing]);
 
     const fetchList = async () => {
         await connectionSoftSkills.get('/listar', 
@@ -55,28 +69,15 @@ export const ListSoftSkills = () => {
             setAllFine(() => true);
         })
         .catch((error) => {
-            let msg;
-            if(error.response) msg = error.response.data.message;
-            else if(error.request) msg = 'Error while trying to access server!';
+            const msg = handleRequestError(error);
             console.log(msg);
             setError(() => msg);
         })
         .finally(() => {
             setLoading(() => false);
+            setEditing(() => false);
         });
     }
-
-    useEffect(() => {
-        if(!token || !userType || !userInfo) {
-            toast.error(`Unauthenticated user! You won't be able to actualize your operations while you are not properly logged in!`);
-        }
-
-        fetchList();
-    }, []);
-
-    useEffect(() => {
-        editing ? setImmediate(() => true) : setImmediate(() => false);
-    }, [editing]);
 
     const transitions = useTransition(softSkills, {
         from: { opacity: 0, transform: 'scale(0)' },
@@ -86,6 +87,14 @@ export const ListSoftSkills = () => {
         immediate
     });
 
+    const doVerifications = () => {
+        if(managedSS.nome_soft_skill === '' || managedSS.descricao_soft_skill === '') {
+            toast.error('Fill all fields!');
+            return false;
+        }
+        return true;
+    };
+
     const confirmEdit = (e) => {
         confirmPopup({
             target: e.currentTarget,
@@ -93,24 +102,21 @@ export const ListSoftSkills = () => {
             icon: 'pi pi-exclamation-circle',
             acceptLabel: 'Yes',
             rejectLabel: 'No',
+            acceptClassName: 'dbuttons dbuttons-success',
+            rejectClassName: 'dbuttons dbuttons-danger',
             accept: () => editSoftSkill(),
         });
     }
 
     const editSoftSkill = async () => {
-        if(managedSS.nome_soft_skill === '' || managedSS.descricao_soft_skill === '') {
-            toast.error('Fill all fields!');
-            return;
-        }
-
-        const { email_admin } = JSON.parse(userInfo);
+        if(!doVerifications()) return;
 
         const editing = toast.loading('Editing Soft Skill...');
         connectionSoftSkills.put('/editar', {
             nome_soft_skill: managedSS.nome_soft_skill,
             descricao_soft_skill: managedSS.descricao_soft_skill,
             cor_soft_skill: managedSS.cor_soft_skill,
-            email_admin
+            email_admin: userEmail
         },
         {
             headers: { Authorization: `Bearer ${token}` },
@@ -132,9 +138,7 @@ export const ListSoftSkills = () => {
             setShowPopUp(() => false);
         })
         .catch((error) => {
-            let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Error while trying to access server!'
+            const msg = handleRequestError(error);
             toast.update(editing, {
                 render: `${msg}`,
                 type: 'error',
@@ -151,6 +155,8 @@ export const ListSoftSkills = () => {
             icon: 'pi pi-question-circle',
             acceptLabel: 'Yes',
             rejectLabel: 'No',
+            acceptClassName: 'dbuttons dbuttons-success',
+            rejectClassName: 'dbuttons dbuttons-danger',
             accept: () => deleteSoftSkill(idSS),
         });
     }
@@ -174,9 +180,7 @@ export const ListSoftSkills = () => {
             setSoftSkills(list => list.filter(ss => ss.id_soft_skill !== id));
         })
         .catch((error) => {
-            let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Error while trying to access server!'
+            const msg = handleRequestError(error);
             toast.update(deleting, {
                 render: `${msg}`,
                 type: 'error',
@@ -187,19 +191,14 @@ export const ListSoftSkills = () => {
     };
 
     const registerSoftSkill = async () => {
-        if(managedSS.nome_soft_skill === '' || managedSS.descricao_soft_skill === '') {
-            toast.error('Fill all fields!');
-            return;
-        }
-
-        const { email_admin } = JSON.parse(userInfo);
+        if(!doVerifications()) return;
 
         const registering = toast.loading('Registering Soft Skill...');
         connectionSoftSkills.post('/registrar', {
             nome_soft_skill: managedSS.nome_soft_skill,
             descricao_soft_skill: managedSS.descricao_soft_skill,
             cor_soft_skill: managedSS.cor_soft_skill,
-            email_admin
+            email_admin: userEmail
         },
         {
             headers: { Authorization: `Bearer ${token}` },
@@ -224,9 +223,7 @@ export const ListSoftSkills = () => {
             setShowPopUp(() => false);
         })
         .catch((error) => {
-            let msg
-            if(error.response) msg = error.response.data.message
-            else if(error.request) msg = 'Error while trying to access server!'
+            const msg = handleRequestError(error);
             toast.update(registering, {
                 render: `${msg}`,
                 type: 'error',
@@ -236,10 +233,20 @@ export const ListSoftSkills = () => {
         });
     };
 
+    const handleRequestError = (error) => {
+        let msg = '';
+        if(error.response){
+            msg = error.response.data.message
+            if(error.response.data.type === 'TokenExpired') jwtExpirationHandler();
+        }
+        else if(error.request) msg = 'Error while trying to access server!'
+        return msg;
+    };
+
     return (
         <div>
             <Navbar/>
-            <div id='softskills-component' className='list-box'>
+            <div id='softskills-component' className='list-box default-border-image'>
                 <h1>Soft Skill List</h1>
                 <Divider className='mb-4'/>
                 <div>
@@ -247,17 +254,19 @@ export const ListSoftSkills = () => {
                         transitions((style, item) => 
                             item &&
                             <animated.div
-                            id={`ss-[${item.nome_soft_skill}]`}
+                            id={`SSDisplayBox-[${item.nome_soft_skill}]`}
                             style={style}
                             key={item.id_soft_skill}
                             className='list-skill-box'>
                                 <div className='flex flex-row mt-1'>
                                    <h3
+                                   id={`SSName-[${item.nome_soft_skill}]`}
                                     className='mr-3'
                                     style={{textTransform: 'uppercase'}}>
                                         {item.nome_soft_skill}
                                     </h3>
                                     <div
+                                    id={`SSColor-[${item.nome_soft_skill}]`}
                                     style={{
                                         padding: '16px',
                                         width: '20px',
@@ -266,20 +275,33 @@ export const ListSoftSkills = () => {
                                         backgroundColor: `#${item.cor_soft_skill}`
                                     }}/> 
                                 </div>
-                                <p className='mt-2'>{item.descricao_soft_skill}</p>
+                                <p
+                                id={`SSDesc-[${item.nome_soft_skill}]`}
+                                className='mt-2'>
+                                    {item.descricao_soft_skill}
+                                </p>
                                 <div className='flex justify-content-center mt-3'>
                                     <button
-                                    className='btn btn-primary'
+                                    id={`edit-SS-btn-[${item.nome_soft_skill}]`}
+                                    className='dbuttons dbuttons-primary'
                                     onClick={() => {
                                         setShowPopUp(() => true);
                                         setEditing(() => true);
                                         setManagedSS(() => item);
+                                    }}
+                                    style={{
+                                        minWidth: '8rem',
+                                        marginRight: '10%'
                                     }}>
                                         <i className='pi pi-pencil mr-1'/> Edit
                                     </button>
                                     <button
-                                    className='btn btn-danger'
-                                    onClick={(e) => confimrDelete(e, item.id_soft_skill)}>
+                                    id={`delete-SS-btn-[${item.nome_soft_skill}]`}
+                                    className='dbuttons dbuttons-danger'
+                                    onClick={(e) => confimrDelete(e, item.id_soft_skill)}
+                                    style={{
+                                        minWidth: '8rem',
+                                    }}>
                                         <i className='pi pi-trash mr-1'/> Delete
                                     </button>
                                 </div>
@@ -291,52 +313,57 @@ export const ListSoftSkills = () => {
                         <div className='flex justify-content-center'>
                             <button
                             id='add-SS-btn'
-                            className='btn btn-primary pl-4 pr-4'
+                            className='dbuttons dbuttons-primary pl-4 pr-4'
                             onClick={() => setShowPopUp(() => true)}>
                                 <i className='pi pi-plus mr-1'/> Add Soft Skill
                             </button>
                         </div>
                     }
                     <div className='flex justify-content-center'>
-                        {
-                            (error !== '') &&
-                            <ErrorMessage msg={error}/>
-                        }
-                        {
-                            loading &&
-                            <Loading msg='Loading Soft Skills...'/>
-                        }
+                        <ErrorMessage msg={error}/>
+                        <Loading show={loading} msg='Loading Soft Skills...'/>
                     </div>
                 </div>
+
+                <ManageSSBox
+                showPopUp={showPopUp}
+                setShowPopUp={setShowPopUp}
+                editing={editing}
+                setEditing={setEditing}
+                managedSS={managedSS}
+                setManagedSS={setManagedSS}
+                confirmEdit={confirmEdit}
+                registerSoftSkill={registerSoftSkill}
+                objSSInit={objSSInit}/>
+
+                {/* Messages and confirmation parts */}
+
+                <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"/>
+
+                <ConfirmPopup/>
+
+                <ConfirmDialog
+                closable={false}
+                draggable={false}
+                pt={{
+                    header: {className: 'p-cd-header'},
+                    footer: {className: 'p-cd-footer'},
+                    acceptButton: {className: 'dbuttons dbuttons-success ml-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
+                    rejectButton: {className: 'dbuttons dbuttons-danger mr-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
+                    message: {style: {fontWeight: 'bold', fontSize: 'calc(15px + 1vw)', width: 'fit-content'}},
+                    content: {style: {width: 'fit-content', marginTop: '20px', marginRight: '40px'}},
+                }}/>
             </div>
-            <ManageSSBox
-            showPopUp={showPopUp}
-            setShowPopUp={setShowPopUp}
-            editing={editing}
-            setEditing={setEditing}
-            managedSS={managedSS}
-            setManagedSS={setManagedSS}
-            confirmEdit={confirmEdit}
-            registerSoftSkill={registerSoftSkill}
-            objSSInit={objSSInit}/>
-
-            {/* Messages and confirmation parts */}
-
-            <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"/>
-            <ConfirmPopup
-            pt={{
-                footer: {className: 'flex justify-content-center'}
-            }}/>
         </div>
     );
 }
@@ -354,8 +381,8 @@ const ManageSSBox = ({
 }) => {
     return (
         <Dialog
-        id='edit-SS-box'
-        className='edit-box'
+        id='manage-SS-box'
+        className='manage-box default-border-image'
         closable={false}
         visible={showPopUp}
         onHide={() => {if (!showPopUp) return; setShowPopUp(() => false);}}>
@@ -366,6 +393,7 @@ const ManageSSBox = ({
                     <div className='xl:col-9 lg:col-8 md:col-12 sm:col-12'>
                         <h4>Name</h4>
                         <InputText
+                        id='SS-input-name'
                         className='w-100'
                         value={managedSS.nome_soft_skill}
                         onChange={(e) => {
@@ -381,6 +409,7 @@ const ManageSSBox = ({
                         <div className='flex flex-row'>
                             <h4>Color</h4>
                             <ColorPicker
+                            id='SS-color-picker'
                             className='ml-3 max-w-4rem'
                             value={managedSS.cor_soft_skill}
                             onChange={e => {
@@ -397,6 +426,7 @@ const ManageSSBox = ({
                 <div>
                     <h4>Description</h4>
                     <InputTextarea
+                    id='SS-input-desc'
                     className='w-100'
                     value={managedSS.descricao_soft_skill}
                     onChange={(e) => {
@@ -408,18 +438,27 @@ const ManageSSBox = ({
                         })
                     }}/>
                 </div>
-                <div className='flex justify-content-center mt-4'>
+                <div className='flex flex-row justify-content-center mt-4'>
                     <button
-                    className='btn btn-success'
-                    onClick={editing ? confirmEdit : registerSoftSkill}>
+                    id='confirm-manage-SS-btn'
+                    className='dbuttons dbuttons-success'
+                    onClick={editing ? confirmEdit : registerSoftSkill}
+                    style={{
+                        minWidth: '8rem',
+                        marginRight: '10%'
+                    }}>
                         <i className='pi pi-check mr-1'/> { editing ? 'Save' : 'Register' }
                     </button>
                     <button
-                    className='btn btn-danger'
+                    id='cancel-manage-SS-btn'
+                    className='dbuttons dbuttons-danger'
                     onClick={() => {
                         setShowPopUp(() => false)
                         setManagedSS(() => objSSInit)
                         if(editing) setEditing(() => false)
+                    }}
+                    style={{
+                        minWidth: '8rem'
                     }}>
                         <i className='pi pi-times mr-1'/> Cancel
                     </button>
@@ -429,4 +468,4 @@ const ManageSSBox = ({
     );
 }
 
-export default ListSoftSkills;
+export default protectRoute(ListSoftSkills);

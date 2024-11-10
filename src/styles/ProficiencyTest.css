@@ -1,53 +1,24 @@
 .d-test-box{
     background-color: rgba(0, 0, 0, 0.3);
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
+    border: 4px solid #8DFD8B;
+    animation: neonTransition 5s infinite;
     width: 80%;
     margin: auto;
-    border: 2px solid;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
     color: white;
-    padding: 1%;
     margin-top: 4rem;
     margin-bottom: 4rem;
 }
 
-.d-test-box .btn-success{
-    min-height: 3rem;
-    min-width: 12rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #32CD32;
-    font-weight: bold;
-    border: 2px solid #32CD32;
-    padding: 7px;
-}
-
-.d-test-box .btn-success:hover{
-    background-color: #32CD32;
-    color: white;
-}
-
-.d-test-box .btn-danger{
-    min-height: 3rem;
-    min-width: 12rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #FF6347;
-    font-weight: bold;
-    border: 2px solid #FF6347;
-    padding: 7px;
-}
-
-.d-test-box .btn-danger:hover{
-    background-color: #FF6347;
-    color: white;
+@keyframes neonTransition{
+    50% {border-color: #D273FF;}
 }
 
 .d-test-skill-box{
-    background-color: #1c193b;
-    border-radius: 8px;
+    background-color: var(--background-color-1);
+    border-radius: 15px;
     padding: 4%;
     margin-top: 2rem;
     margin-bottom: 2rem;
@@ -69,76 +40,14 @@
     margin-bottom: 1%;
 }
 
-.alts-r .btn-primary{
-    background-color: #595191;
-    border: 1px solid #484271;
-}
-
-.alts-r .btn-primary:hover{
-    background-color: #484271;
-    border: 1px solid #595191;
-}
-
-.d-test-box .p-message-error{
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    font-size: larger;
-    color: white;
-}
-
-.d-test-box .p-message-icon{
-    color: white;
-}
-
 .loading-box{
     padding: 20px;
-    border-radius: 10px;
-    width: 60%;
-    border: 2px solid;
-    background-color: #1c193b;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-}
-
-.loading-box .p-dialog-header{
-    background-color: transparent;
-    padding: 3px;
-}
-
-.loading-box .p-dialog-content{
-    background-color: #28213f;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-    color: white;
-    padding: 3%;
-}
-
-.loading-box .p-message-error{
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    font-size: larger;
-    color: white;
-}
-
-.loading-box .p-message-icon{
-    color: white;
-}
-
-.loading-box .btn-primary{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #4682B4;
-    font-weight: bold;
-    border: 2px solid #4682B4;
-    padding: 7px;
+    margin: 2%;
+    border-radius: 15px;
+    width: fit-content;
     min-width: 40%;
-    min-height: 3rem;
-}
-
-.loading-box .btn-primary:hover{
-    background-color: #4682B4;
-    color: white;
+    height: fit-content;
+    max-height: 800px;
+    background-color: var(--background-color-1);
+    scrollbar-color: var(--scrollbar-color);
 }

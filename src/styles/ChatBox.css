@@ -50,6 +50,15 @@
     justify-content: center;
 }
 
+.contact-container{
+    position: relative;
+    background-color: #2b2669;
+    padding: 15px;
+    margin-right: 3%;
+    border-radius: 15px;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+}
+
 .contact-box{
     display: flex;
     flex-direction: column;
@@ -81,7 +90,7 @@
     flex-direction: column-reverse;
     overflow-y: auto;
     scrollbar-color: #3a365e transparent;
-    height: 400px;
+    height: 370px;
     width: 100%;
 }
 
@@ -139,81 +148,34 @@
     min-width: fit-content;
 }
 
+.inoperant-message{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+}
+
 /*-----------------Configs of the search users box-----------------*/
 
-.p-dialog{
+.search-box{
     width: 40%;
     min-width: 600px;
-    min-height: 20%;
+    height: 20%;
     min-height: fit-content;
+    background-color: var(--background-color-1);
 }
 
-.p-dialog-content{
-    background-color: #1c193b;
+.search-box-close-btn{
     color: white;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding: 7px;
-}
-
-.p-inputgroup{
-    width: 100%;
-}
-
-.p-inputgroup-addon{
-    background-color: #1c193b;
-    color: white;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    padding: 7px;
-}
-
-.p-inputtext{
-    background-color: #1c193b;
-    color: white;
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding: 7px;
-}
-
-.p-inputtext:hover{
-    border-color: white !important;
-}
-
-.p-inputtext:focus{
-    border-color: white !important;
-}
-
-.p-button-primary{
     background-color: transparent;
-    color: var(--btn-primary-color) !important;
-    border-radius: 5px;
-    font-weight: bold;
-    border-color: var(--btn-primary-color);
-}
-
-.p-button-primary:hover{
-    background-color: var(--btn-primary-color);
-    color: white !important;
-    border-color: var(--btn-primary-color);
-}
-
-.p-dialog-header{
-    background-color: #1c193b;
-    color: white;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    padding: 7px;
-}
-
-.p-dialog-header-close{
+    border-radius: 50%;
     box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
 }
 
-.p-dialog-header-close:hover{
-    background-color: rgba(0,0,0,0.8);
-    color: white;
-    scale: 1.2;
+.search-box-close-btn:hover{
+    scale: 1.1;
     box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
 }
 

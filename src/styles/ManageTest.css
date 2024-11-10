@@ -1,19 +1,11 @@
-:root{
-    --btn-danger-color: #d42c2c;
-    --btn-success-color: #046f0f;
-}
-
 .m-test-box{
-    background-color: #1c193b;
-    padding: 20px;
-    border-radius: 10px;
+    background-color: var(--background-color-1);
+    padding: 1%;
+    border-radius: 15px;
     box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
     width: 80%;
     margin: auto;
-    border: 2px solid;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
     color: white;
-    padding: 1%;
     margin-top: 4rem;
     margin-bottom: 4rem;
 }
@@ -25,7 +17,7 @@
 }
 
 .accordion-h{
-    background-color: #28213f;
+    background-color: var(--background-color-2);
     color: white;
     border: none;
     padding: 10px;
@@ -34,41 +26,19 @@
 
 .m-test-box .p-accordion-content{
     border: none;
-    background-color: #28213f;
+    background-color: var(--background-color-2);
     color: white;
-    border-radius: 8px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
     padding: 10px;
     margin-bottom: 2%;
     box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
 }
 
-.add-quest-btn{
-    background-color: #28213f;
-    color: white;
-    border: 2px solid white;
-    border-radius: 5px;
-    padding: 10px;
+.m-test-box .dbuttons-danger{
+    min-width: 3rem;
+    padding: 7px;
     font-size: larger;
-}
-
-.add-quest-btn:hover{
-    background-color: #1c193b;
-    border-color: white;
-}
-
-.add-quest-btn:focus{
-    background-color: #1c193b;
-    border-color: white;
-}
-
-.add-quest-btn:active{
-    background-color: #1c193b;
-    border-color: white;
-}
-
-.add-quest-btn:enabled{
-    background-color: #1c193b;
-    border-color: white;
 }
 
 .dropdown-buttons{
@@ -76,172 +46,20 @@
 }
 
 .dropdown-buttons:hover{
-    color: #1c193b;
-}
-
-.dropdown-buttons:active{
-    color: #1c193b;
+    color: var(--background-color-1);
     background-color: white;
 }
 
-.shadow-box-btns{
-    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
-}
-
-.shadow-box-btns:hover{
-    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
-}
-
-.shadow-box-btns:focus{
-    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
+.dropdown-buttons:active{
+    color: var(--background-color-1);
+    background-color: white;
 }
 
 .m-quest-box{
-    border-radius: 8px;
-    border-color: #4682B4;
-    color: #4682B4;
+    border-radius: 15px;
     padding: 20px;
     margin-bottom: 2%;
-    background-color: #37304e;
+    background-color: var(--background-color-3);
     color: white;
     box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
 }
-
-.m-quest-box textarea{
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid white;
-    background-color: transparent;
-    color: white;
-}
-
-.m-quest-box input{
-    border-radius: 5px;
-    border: 1px solid white;
-    background-color: transparent;
-    color: white;
-    text-align: center;
-}
-
-.m-quest-box span{
-    background-color: transparent;
-    color: white;
-    border-color: white;
-}
-
-.m-quest-box .btn-primary{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: white;
-    font-weight: bold;
-    border: 2px solid white;
-    padding: 7px;
-    font-size: larger;
-}
-
-.m-quest-box .btn-primary:hover{
-    background-color: #1c193b;
-    color: white;
-}
-
-.m-test-box .btn{
-    margin-left: 1%;
-    margin-right: 1%;
-}
-
-.m-test-box .p-message-error{
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    font-size: larger;
-    color: white;
-}
-
-.m-test-box .p-message-icon{
-    color: white;
-}
-
-.btn-add-quest{
-    background-color: transparent;
-    color: white;
-    border: 2px solid white;
-    border-radius: 5px;
-    padding: 5px;
-    font-size: larger;
-}
-
-.m-test-box .btn-success{
-    min-width: 40%;
-    border-radius: 5px;
-    background-color: transparent;
-    color: var(--btn-success-color);
-    font-weight: bold;
-    border: 2px solid var(--btn-success-color);
-    padding: 7px;
-    font-size: larger;
-}
-
-.m-test-box .btn-success:hover{
-    background-color: var(--btn-success-color);
-    color: white;
-}
-
-.m-test-box .btn-danger{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: var(--btn-danger-color);
-    font-weight: bold;
-    border: 2px solid var(--btn-danger-color);
-    padding: 7px;
-    font-size: larger;
-}
-
-.m-test-box .btn-danger:hover{
-    background-color: var(--btn-danger-color);
-    color: white;
-}
-
-.p-confirm-popup{
-    background-color: #0e102a;
-    color: white;
-    border: 2px solid;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-}
-
-.p-confirm-popup-footer{
-    width: 50%;
-    margin: auto;
-}
-
-.p-confirm-popup-footer button{
-    color: white;
-    border-radius: 10px;
-    margin-left: 1%;
-    margin-right: 1%;
-}
-
-.p-dialog{
-    padding: 20px;
-    border: 2px solid;
-    background-color: #0e102a;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-}
-
-.p-dialog button{
-    color: white;
-    border-radius: 10px;
-    margin-left: 1%;
-    margin-right: 1%;
-}
-
-.confirm-d-back{
-    background-color: #0e102a;
-    color: white;
-}
-
