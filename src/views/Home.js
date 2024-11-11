@@ -33,6 +33,9 @@ const Home = () => {
   return (
     <div>
       <Navbar userType={userType} user={user} />
+      <div className="coinBackgroundHome">
+      </div>
+      
       <div className="divisoria1">
         <img
           className="iconShieldSmall"
@@ -173,6 +176,7 @@ const Home = () => {
           alt="Divisoria Icon 3"
           src="/icons/home/shield4.svg"
         />
+        
       </div>
       <Footer />
     </div>

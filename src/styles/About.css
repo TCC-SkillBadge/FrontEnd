@@ -1,0 +1,123 @@
+/* Fundo da página About */
+.about-background {
+  padding: 40px 0;
+  background: #191A2E;
+  color: #e0e0e0;
+}
+
+/* Título da seção About */
+.about-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+/* Seção parallax */
+.parallax-section {
+  height: 400px;
+  /* background-image: url("/public/tecnologia-4k.jpg"); Substitua pelo caminho da imagem */
+  background-color: #333333;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Container da descrição */
+.about-description-container {
+  background: rgba(18, 18, 18, 0.8);
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 900px;
+  margin: 0 auto; /* Centraliza o container */
+  margin-bottom: 30px;
+}
+
+/* Texto descritivo */
+.about-description {
+  font-size: 1.25rem;
+  color: #cccccc;
+  text-align: center;
+  line-height: 1.8;
+}
+
+/* Seção da equipe */
+.team-section {
+  padding: 60px 20px;
+  background-color: #f5f5f5;
+  text-align: center;
+}
+
+.team-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+.team-description {
+  font-size: 1.2rem;
+  color: #666666;
+  max-width: 700px;
+  margin: 0 auto 30px;
+}
+
+.team-image {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .about-background {
+    padding: 20px;
+  }
+
+  .about-title {
+    font-size: 2.5rem;
+  }
+
+  .parallax-section {
+    height: 300px;
+  }
+
+  .about-description-container {
+    padding: 20px;
+    margin: 0 10px;
+  }
+
+  .team-title {
+    font-size: 2rem;
+  }
+
+  .team-description {
+    font-size: 1rem;
+  }
+
+  .team-image {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-title {
+    font-size: 2rem;
+  }
+
+  .team-title {
+    font-size: 1.5rem;
+  }
+
+  .about-description {
+    font-size: 1rem;
+  }
+}

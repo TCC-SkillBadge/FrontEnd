@@ -22,6 +22,17 @@ body {
   color: var(--text-color);
 }
 
+.coinBackgroundWallet {
+  background-image: url('../../public/images/background-image-wallet.png');
+  background-repeat: no-repeat;
+  background-size: auto;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 76%;
+  height: 100%;
+  z-index: 1;
+}
 .wallet-page {
   display: flex;
   flex-direction: column;
