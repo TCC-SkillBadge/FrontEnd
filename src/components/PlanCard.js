@@ -9,10 +9,14 @@ const PlanCard = ({ plan, isAdmin, handleDelete }) => {
     <div className={`plan-card ${plan.prioridade ? "highlight" : ""}`}>
       {isAdmin && (
         <div className="admin-icons">
-          <Link to={`/edit-plan/${plan.id}`} className="edit-icon">
+          <Link to={`/edit-plan/${plan.id}`} className="edit-icon" title="Edit Plan">
             <PencilFill />
           </Link>
-          <span className="delete-icon" onClick={() => handleDelete(plan.id)}>
+          <span
+            className="delete-icon"
+            onClick={() => handleDelete(plan.id)}
+            title="Delete Plan"
+          >
             <TrashFill />
           </span>
         </div>
@@ -23,12 +27,10 @@ const PlanCard = ({ plan, isAdmin, handleDelete }) => {
       <h3 className="plan-title">{plan.tituloPlanoServico}</h3>
       <p className="description">{plan.descricaoPlano}</p>
       <ul className="features">
-        {plan.funcionalidadesDisponiveis &&
-        plan.funcionalidadesDisponiveis.length > 0 ? (
-          plan.funcionalidadesDisponiveis.map((func, index) => (
-            <li key={index}>
-              <i className="bi bi-play-fill feature-icon"></i>{" "}
-              {func.nomeFuncionalidade}
+        {plan.funcionalidadesDisponiveis && plan.funcionalidadesDisponiveis.length > 0 ? (
+          plan.funcionalidadesDisponiveis.map((func) => (
+            <li key={func.id}>
+              <i className="bi bi-play-fill feature-icon"></i> {func.nomeFuncionalidade}
             </li>
           ))
         ) : (
@@ -36,12 +38,10 @@ const PlanCard = ({ plan, isAdmin, handleDelete }) => {
         )}
       </ul>
       <ul className="features unavailable">
-        {plan.funcionalidadesNaoDisponiveis &&
-        plan.funcionalidadesNaoDisponiveis.length > 0 ? (
-          plan.funcionalidadesNaoDisponiveis.map((func, index) => (
-            <li key={index}>
-              <i className="bi bi-x-circle-fill feature-icon"></i>{" "}
-              {func.nomeFuncionalidade}
+        {plan.funcionalidadesNaoDisponiveis && plan.funcionalidadesNaoDisponiveis.length > 0 ? (
+          plan.funcionalidadesNaoDisponiveis.map((func) => (
+            <li key={func.id}>
+              <i className="bi bi-x-circle-fill feature-icon"></i> {func.nomeFuncionalidade}
             </li>
           ))
         ) : (

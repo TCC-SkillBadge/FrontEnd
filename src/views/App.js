@@ -6,6 +6,7 @@ import "primeflex/themes/primeone-dark.css";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+
 import { Routes, Route } from "react-router-dom";
 
 // Importar NavBar e Footer
@@ -43,6 +44,8 @@ import ProficiencyTest from "../components/UserComum/ProficiencyTest";
 import ResultScreen from "../components/UserComum/ResultScreen";
 import Requests from "./Requests";
 import ClaimBadgePage from "./ClaimBadgePage";
+import FuncionalidadesManager from "../components/FuncionalidadesManager";
+
 import ApiReference from "./ApiReference";
 import About from "./About";
 // Import TestPage apenas se estiver usando
@@ -96,6 +99,7 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/api-reference" element={<ApiReference />} />
+          <Route path="/funcionalidades" element={<FuncionalidadesManager />} />
           <Route
             path="/public-profile/:encodedEmail"
             element={<PublicProfile />}

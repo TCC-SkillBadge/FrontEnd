@@ -1,9 +1,10 @@
+// EditServicePlan.js
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
-import "../styles/CreateServicePlan.css";
+import "../styles/CreateServicePlan.css"; // Reutilizando estilos
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -34,9 +35,7 @@ const EditServicePlan = () => {
       // Buscar funcionalidades do back-end
       const fetchFuncionalidades = async () => {
         try {
-          const response = await axios.get(
-            "http://localhost:9090/api/funcionalidades"
-          );
+          const response = await axios.get("http://localhost:9090/api/funcionalidades");
           if (response.status === 200) {
             const options = response.data.map((func) => ({
               value: func.id,
@@ -46,15 +45,14 @@ const EditServicePlan = () => {
           }
         } catch (error) {
           console.error("Houve um erro ao buscar as funcionalidades!", error);
+          toast.error("Erro ao buscar funcionalidades.");
         }
       };
 
       // Buscar dados do plano
       const fetchPlan = async () => {
         try {
-          const response = await axios.get(
-            `http://localhost:9090/api/plans/${id}`
-          );
+          const response = await axios.get(`http://localhost:9090/api/plans/${id}`);
           if (response.status === 200) {
             const planData = response.data;
 
@@ -71,13 +69,19 @@ const EditServicePlan = () => {
               }));
 
             setFormData({
-              ...planData,
+              tituloPlanoServico: planData.tituloPlanoServico,
+              descricaoPlano: planData.descricaoPlano,
+              precoPlanoServico: planData.precoPlanoServico,
+              prazoPagamentos: planData.prazoPagamentos,
+              sugestoesUpgrades: planData.sugestoesUpgrades,
+              prioridade: planData.prioridade,
               funcionalidadesDisponiveis,
               funcionalidadesNaoDisponiveis,
             });
           }
         } catch (error) {
           console.error("Houve um erro ao buscar o plano!", error);
+          toast.error("Erro ao buscar o plano.");
         }
       };
 
@@ -96,9 +100,73 @@ const EditServicePlan = () => {
 
   const handlePriceChange = (e) => {
     let value = e.target.value;
+    // Remove todos os caracteres não numéricos
     value = value.replace(/\D/g, "");
+    // Formata o valor
     value = (value / 100).toFixed(2).toString();
     setFormData((prevData) => ({ ...prevData, precoPlanoServico: value }));
+  };
+
+  // Definir estilos personalizados para o react-select
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: "transparent",
+      borderColor: "#8DFD8B",
+      borderRadius: "5px",
+      padding: "2px",
+      minHeight: "38px",
+      boxShadow: state.isFocused ? "0 0 0 1px #8DFD8B" : provided.boxShadow,
+      "&:hover": {
+        borderColor: "#8DFD8B",
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: "#000000", // Preto de fundo para o menu
+      borderRadius: "5px",
+      color: "#ffffff",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#d273ff" : "#000000",
+      color: "#ffffff",
+      "&:hover": {
+        backgroundColor: "#d273ff",
+        color: "#ffffff",
+      },
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      backgroundColor: "rgba(141, 253, 139, 0.2)", // Fundo verde mais sutil
+      borderRadius: "15px", // Bordas mais arredondadas
+      padding: "2px 8px",
+      display: "flex",
+      alignItems: "center",
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: "#8DFD8B", // Cor do texto para corresponder ao fundo
+      fontWeight: "500",
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      color: "#8DFD8B",
+      ":hover": {
+        backgroundColor: "#8DFD8B",
+        color: "#ffffff",
+        borderRadius: "50%",
+      },
+      cursor: "pointer",
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: "#b0b0b0",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: "#ffffff",
+    }),
   };
 
   // Handlers para os componentes Select
@@ -121,58 +189,64 @@ const EditServicePlan = () => {
 
     // Preparar os dados para enviar ao back-end
     const dataToSend = {
-      ...formData,
-      funcionalidadesDisponiveis: formData.funcionalidadesDisponiveis.map(
-        (func) => ({
-          id: func.value,
-          nomeFuncionalidade: func.label,
-        })
-      ),
-      funcionalidadesNaoDisponiveis: formData.funcionalidadesNaoDisponiveis.map(
-        (func) => ({
-          id: func.value,
-          nomeFuncionalidade: func.label,
-        })
-      ),
+      tituloPlanoServico: formData.tituloPlanoServico,
+      descricaoPlano: formData.descricaoPlano,
+      precoPlanoServico: formData.precoPlanoServico,
+      prazoPagamentos: formData.prazoPagamentos,
+      sugestoesUpgrades: formData.sugestoesUpgrades,
+      prioridade: formData.prioridade,
+      funcionalidadesDisponiveis: formData.funcionalidadesDisponiveis.map((func) => ({
+        id: func.value,
+        nomeFuncionalidade: func.label,
+      })),
+      funcionalidadesNaoDisponiveis: formData.funcionalidadesNaoDisponiveis.map((func) => ({
+        id: func.value,
+        nomeFuncionalidade: func.label,
+      })),
     };
 
-    const updatePlanPromise = axios.put(
-      `http://localhost:9090/api/plans/${id}`,
-      dataToSend
-    );
-
-    toast.promise(updatePlanPromise, {
-      pending: "Updating plan...",
-      success: "Plan updated successfully!",
-      error: "There was an error updating the plan.",
-    });
-
     try {
-      const response = await updatePlanPromise;
-      if (response.status === 200) {
+      const response = await axios.put(`http://localhost:9090/api/plans/${id}`, dataToSend);
+
+      toast.success("Plan updated successfully!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+
+      if (response.status === 200 || response.status === 201) {
         setTimeout(() => {
           navigate("/price");
         }, 2000);
       }
     } catch (error) {
       console.error("There was an error updating the plan!", error);
+      if (error.response && error.response.data) {
+        toast.error(`Error: ${JSON.stringify(error.response.data)}`);
+      } else {
+        toast.error("There was an error updating the plan.");
+      }
     }
   };
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:9090/api/plans/${id}`
-      );
+      const response = await axios.delete(`http://localhost:9090/api/plans/${id}`);
       if (response.status === 204) {
-        toast.success("Plan deleted successfully");
+        toast.success("Plan deleted successfully!", {
+          position: "top-center",
+          autoClose: 2000,
+        });
         setTimeout(() => {
           navigate("/price");
         }, 2000);
       }
     } catch (error) {
       console.error("There was an error deleting the plan!", error);
-      toast.error("There was an error deleting the plan.");
+      if (error.response && error.response.data) {
+        toast.error(`Error: ${JSON.stringify(error.response.data)}`);
+      } else {
+        toast.error("There was an error deleting the plan.");
+      }
     }
   };
 
@@ -184,7 +258,7 @@ const EditServicePlan = () => {
   };
 
   const handleCancel = () => {
-    navigate("/price"); // Volta para a página anterior
+    navigate("/price"); // Volta para a página de preço
   };
 
   return (
@@ -221,12 +295,8 @@ const EditServicePlan = () => {
                 required
               />
             </div>
-            {/* Substituir textareas por componentes Select */}
             <div className="form-group">
-              <label
-                htmlFor="funcionalidadesDisponiveis"
-                className="form-label"
-              >
+              <label htmlFor="funcionalidadesDisponiveis" className="form-label">
                 Available Features
               </label>
               <Select
@@ -235,13 +305,11 @@ const EditServicePlan = () => {
                 onChange={handleFuncDisponiveisChange}
                 value={formData.funcionalidadesDisponiveis}
                 placeholder="Select available features"
+                styles={customStyles} // Aplicando estilos personalizados
               />
             </div>
             <div className="form-group">
-              <label
-                htmlFor="funcionalidadesNaoDisponiveis"
-                className="form-label"
-              >
+              <label htmlFor="funcionalidadesNaoDisponiveis" className="form-label">
                 Unavailable Features
               </label>
               <Select
@@ -250,9 +318,9 @@ const EditServicePlan = () => {
                 onChange={handleFuncNaoDisponiveisChange}
                 value={formData.funcionalidadesNaoDisponiveis}
                 placeholder="Select unavailable features"
+                styles={customStyles} // Aplicando estilos personalizados
               />
             </div>
-            {/* Campos restantes permanecem iguais */}
             <div className="form-row">
               <div className="form-group col-md-6">
                 <label htmlFor="precoPlanoServico" className="form-label">
