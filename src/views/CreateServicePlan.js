@@ -6,25 +6,47 @@ import "../styles/CreateServicePlan.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Select from "react-select"; // Importando o componente Select
 
 const CreateServicePlan = () => {
   const [formData, setFormData] = useState({
     tituloPlanoServico: "",
     descricaoPlano: "",
-    funcDisponibilizadas: "",
-    funcNaoDisponibilizadas: "",
     precoPlanoServico: "",
     prazoPagamentos: "",
     sugestoesUpgrades: "",
-    prioridade: false, // Novo campo para prioridade
+    prioridade: false,
+    funcionalidadesDisponiveis: [],
+    funcionalidadesNaoDisponiveis: [],
   });
 
+  const [funcionalidadesOptions, setFuncionalidadesOptions] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const userType = sessionStorage.getItem("tipoUsuario");
     if (userType !== "UA") {
       navigate("/home"); // Redireciona para a página inicial se o usuário não for administrador
+    } else {
+      // Buscar funcionalidades do back-end
+      const fetchFuncionalidades = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:9090/api/funcionalidades"
+          );
+          if (response.status === 200) {
+            const options = response.data.map((func) => ({
+              value: func.id,
+              label: func.nomeFuncionalidade,
+            }));
+            setFuncionalidadesOptions(options);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar funcionalidades!", error);
+        }
+      };
+
+      fetchFuncionalidades();
     }
   }, [navigate]);
 
@@ -38,24 +60,57 @@ const CreateServicePlan = () => {
 
   const handlePriceChange = (e) => {
     let value = e.target.value;
-    // Remove all non-digit characters
+    // Remove todos os caracteres não numéricos
     value = value.replace(/\D/g, "");
-    // Add formatting
+    // Formata o valor
     value = (value / 100).toFixed(2).toString();
     setFormData((prevData) => ({ ...prevData, precoPlanoServico: value }));
   };
 
+  // Handlers para os componentes Select
+  const handleFuncDisponiveisChange = (selectedOptions) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      funcionalidadesDisponiveis: selectedOptions || [],
+    }));
+  };
+
+  const handleFuncNaoDisponiveisChange = (selectedOptions) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      funcionalidadesNaoDisponiveis: selectedOptions || [],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Preparar os dados para enviar ao back-end
+    const dataToSend = {
+      ...formData,
+      funcionalidadesDisponiveis: formData.funcionalidadesDisponiveis.map(
+        (func) => ({
+          id: func.value,
+          nomeFuncionalidade: func.label,
+        })
+      ),
+      funcionalidadesNaoDisponiveis: formData.funcionalidadesNaoDisponiveis.map(
+        (func) => ({
+          id: func.value,
+          nomeFuncionalidade: func.label,
+        })
+      ),
+    };
+
     const createPlanPromise = axios.post(
       "http://localhost:9090/api/plans",
-      formData
+      dataToSend
     );
 
     toast.promise(createPlanPromise, {
-      pending: "Creating plan...",
-      success: "Plan created successfully!",
-      error: "There was an error creating the plan.",
+      pending: "Criando plano...",
+      success: "Plano criado com sucesso!",
+      error: "Houve um erro ao criar o plano.",
     });
 
     try {
@@ -65,7 +120,7 @@ const CreateServicePlan = () => {
         navigate("/price");
       }
     } catch (error) {
-      console.error("There was an error creating the plan!", error);
+      console.error("Houve um erro ao criar o plano!", error);
     }
   };
 
@@ -74,17 +129,17 @@ const CreateServicePlan = () => {
       <Navbar />
       <div className="create-plan-page">
         <div className="create-plan-container">
-          <h2>Create Service Plan</h2>
+          <h2>Criar Plano de Serviço</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="tituloPlanoServico" className="form-label">
-                Plan Title
+                Título do Plano
               </label>
               <input
                 type="text"
                 className="form-control"
                 id="tituloPlanoServico"
-                placeholder="Enter plan title"
+                placeholder="Digite o título do plano"
                 value={formData.tituloPlanoServico}
                 onChange={handleChange}
                 required
@@ -92,47 +147,53 @@ const CreateServicePlan = () => {
             </div>
             <div className="form-group">
               <label htmlFor="descricaoPlano" className="form-label">
-                Plan Description
+                Descrição do Plano
               </label>
               <textarea
                 className="form-control"
                 id="descricaoPlano"
-                placeholder="Describe the plan"
+                placeholder="Descreva o plano"
                 value={formData.descricaoPlano}
                 onChange={handleChange}
                 required
               />
             </div>
+            {/* Campos para as funcionalidades */}
             <div className="form-group">
-              <label htmlFor="funcDisponibilizadas" className="form-label">
-                Available Features
+              <label
+                htmlFor="funcionalidadesDisponiveis"
+                className="form-label"
+              >
+                Funcionalidades Disponíveis
               </label>
-              <textarea
-                className="form-control"
-                id="funcDisponibilizadas"
-                placeholder="List the features included in this plan"
-                value={formData.funcDisponibilizadas}
-                onChange={handleChange}
-                required
+              <Select
+                isMulti
+                options={funcionalidadesOptions}
+                onChange={handleFuncDisponiveisChange}
+                value={formData.funcionalidadesDisponiveis}
+                placeholder="Selecione as funcionalidades disponíveis"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="funcNaoDisponibilizadas" className="form-label">
-                Unavailable Features
+              <label
+                htmlFor="funcionalidadesNaoDisponiveis"
+                className="form-label"
+              >
+                Funcionalidades Não Disponíveis
               </label>
-              <textarea
-                className="form-control"
-                id="funcNaoDisponibilizadas"
-                placeholder="List the features not included in this plan"
-                value={formData.funcNaoDisponibilizadas}
-                onChange={handleChange}
-                required
+              <Select
+                isMulti
+                options={funcionalidadesOptions}
+                onChange={handleFuncNaoDisponiveisChange}
+                value={formData.funcionalidadesNaoDisponiveis}
+                placeholder="Selecione as funcionalidades não disponíveis"
               />
             </div>
+            {/* Campos restantes */}
             <div className="form-row">
               <div className="form-group col-md-6">
                 <label htmlFor="precoPlanoServico" className="form-label">
-                  Plan Price
+                  Preço do Plano
                 </label>
                 <input
                   type="text"
@@ -146,7 +207,7 @@ const CreateServicePlan = () => {
               </div>
               <div className="form-group col-md-6">
                 <label htmlFor="prazoPagamentos" className="form-label">
-                  Payment Term
+                  Prazo de Pagamento
                 </label>
                 <div className="dropdown-container">
                   <select
@@ -156,9 +217,9 @@ const CreateServicePlan = () => {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">Select payment term</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
+                    <option value="">Selecione o prazo de pagamento</option>
+                    <option value="Mensal">Mensal</option>
+                    <option value="Anual">Anual</option>
                   </select>
                   <span className="dropdown-arrow">&#9662;</span>
                 </div>
@@ -166,12 +227,12 @@ const CreateServicePlan = () => {
             </div>
             <div className="form-group">
               <label htmlFor="sugestoesUpgrades" className="form-label">
-                Upgrade Suggestions
+                Sugestões de Upgrades
               </label>
               <textarea
                 className="form-control"
                 id="sugestoesUpgrades"
-                placeholder="Provide upgrade recommendations for this plan"
+                placeholder="Forneça sugestões de upgrade para este plano"
                 value={formData.sugestoesUpgrades}
                 onChange={handleChange}
                 required
@@ -186,12 +247,12 @@ const CreateServicePlan = () => {
                 onChange={handleChange}
               />
               <label className="form-check-label" htmlFor="prioridade">
-                Priority Plan
+                Plano Prioritário
               </label>
             </div>
             <div className="text-right">
               <button type="submit" className="btn btn-primary save-button">
-                Save Plan
+                Salvar Plano
               </button>
             </div>
           </form>

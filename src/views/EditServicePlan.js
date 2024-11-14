@@ -7,40 +7,81 @@ import "../styles/CreateServicePlan.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Select from "react-select"; // Importando o componente Select
 
 const EditServicePlan = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [funcionalidadesOptions, setFuncionalidadesOptions] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
   const [formData, setFormData] = useState({
     tituloPlanoServico: "",
     descricaoPlano: "",
-    funcDisponibilizadas: "",
-    funcNaoDisponibilizadas: "",
     precoPlanoServico: "",
     prazoPagamentos: "",
     sugestoesUpgrades: "",
     prioridade: false,
+    funcionalidadesDisponiveis: [],
+    funcionalidadesNaoDisponiveis: [],
   });
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const userType = sessionStorage.getItem("tipoUsuario");
     if (userType !== "UA") {
       navigate("/home");
     } else {
+      // Buscar funcionalidades do back-end
+      const fetchFuncionalidades = async () => {
+        try {
+          const response = await axios.get(
+            "http://localhost:9090/api/funcionalidades"
+          );
+          if (response.status === 200) {
+            const options = response.data.map((func) => ({
+              value: func.id,
+              label: func.nomeFuncionalidade,
+            }));
+            setFuncionalidadesOptions(options);
+          }
+        } catch (error) {
+          console.error("Houve um erro ao buscar as funcionalidades!", error);
+        }
+      };
+
+      // Buscar dados do plano
       const fetchPlan = async () => {
         try {
           const response = await axios.get(
             `http://localhost:9090/api/plans/${id}`
           );
           if (response.status === 200) {
-            setFormData(response.data);
+            const planData = response.data;
+
+            // Transformar funcionalidades em formato compatível com o Select
+            const funcionalidadesDisponiveis =
+              planData.funcionalidadesDisponiveis.map((func) => ({
+                value: func.id,
+                label: func.nomeFuncionalidade,
+              }));
+            const funcionalidadesNaoDisponiveis =
+              planData.funcionalidadesNaoDisponiveis.map((func) => ({
+                value: func.id,
+                label: func.nomeFuncionalidade,
+              }));
+
+            setFormData({
+              ...planData,
+              funcionalidadesDisponiveis,
+              funcionalidadesNaoDisponiveis,
+            });
           }
         } catch (error) {
-          console.error("There was an error fetching the plan!", error);
+          console.error("Houve um erro ao buscar o plano!", error);
         }
       };
 
+      fetchFuncionalidades();
       fetchPlan();
     }
   }, [id, navigate]);
@@ -60,11 +101,44 @@ const EditServicePlan = () => {
     setFormData((prevData) => ({ ...prevData, precoPlanoServico: value }));
   };
 
+  // Handlers para os componentes Select
+  const handleFuncDisponiveisChange = (selectedOptions) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      funcionalidadesDisponiveis: selectedOptions || [],
+    }));
+  };
+
+  const handleFuncNaoDisponiveisChange = (selectedOptions) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      funcionalidadesNaoDisponiveis: selectedOptions || [],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Preparar os dados para enviar ao back-end
+    const dataToSend = {
+      ...formData,
+      funcionalidadesDisponiveis: formData.funcionalidadesDisponiveis.map(
+        (func) => ({
+          id: func.value,
+          nomeFuncionalidade: func.label,
+        })
+      ),
+      funcionalidadesNaoDisponiveis: formData.funcionalidadesNaoDisponiveis.map(
+        (func) => ({
+          id: func.value,
+          nomeFuncionalidade: func.label,
+        })
+      ),
+    };
+
     const updatePlanPromise = axios.put(
       `http://localhost:9090/api/plans/${id}`,
-      formData
+      dataToSend
     );
 
     toast.promise(updatePlanPromise, {
@@ -147,32 +221,38 @@ const EditServicePlan = () => {
                 required
               />
             </div>
+            {/* Substituir textareas por componentes Select */}
             <div className="form-group">
-              <label htmlFor="funcDisponibilizadas" className="form-label">
+              <label
+                htmlFor="funcionalidadesDisponiveis"
+                className="form-label"
+              >
                 Available Features
               </label>
-              <textarea
-                className="form-control"
-                id="funcDisponibilizadas"
-                placeholder="List the features included in this plan"
-                value={formData.funcDisponibilizadas}
-                onChange={handleChange}
-                required
+              <Select
+                isMulti
+                options={funcionalidadesOptions}
+                onChange={handleFuncDisponiveisChange}
+                value={formData.funcionalidadesDisponiveis}
+                placeholder="Select available features"
               />
             </div>
             <div className="form-group">
-              <label htmlFor="funcNaoDisponibilizadas" className="form-label">
+              <label
+                htmlFor="funcionalidadesNaoDisponiveis"
+                className="form-label"
+              >
                 Unavailable Features
               </label>
-              <textarea
-                className="form-control"
-                id="funcNaoDisponibilizadas"
-                placeholder="List the features not included in this plan"
-                value={formData.funcNaoDisponibilizadas}
-                onChange={handleChange}
-                required
+              <Select
+                isMulti
+                options={funcionalidadesOptions}
+                onChange={handleFuncNaoDisponiveisChange}
+                value={formData.funcionalidadesNaoDisponiveis}
+                placeholder="Select unavailable features"
               />
             </div>
+            {/* Campos restantes permanecem iguais */}
             <div className="form-row">
               <div className="form-group col-md-6">
                 <label htmlFor="precoPlanoServico" className="form-label">
@@ -239,7 +319,7 @@ const EditServicePlan = () => {
               </button>
             </div>
 
-            {/* New div for Delete and Cancel buttons */}
+            {/* Botões de Excluir e Cancelar */}
             <div className="button-group">
               <button
                 type="button"
