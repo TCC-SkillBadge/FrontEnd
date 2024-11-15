@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar"; // Certifique-se de que o caminho est
 import Footer from "../components/Footer";
 import FeatureCard from "../components/FeatureCard"; // Importe o novo componente
 import "../styles/Home.css"; // Certifique-se de criar este arquivo de estilo
+import "../styles/GlobalStylings.css"
 
 const Home = () => {
   const [userType, setUserType] = useState(null);
@@ -53,7 +54,7 @@ const Home = () => {
         />
       </div>
       <div className="container">
-        <div className="why-digital-medals">
+        <div className="why-digital-medals default-border-image">
           <h2>Sharing</h2>
           <p>
             Share your achievements with a wider audience. By displaying
@@ -109,7 +110,7 @@ const Home = () => {
         />
       </div>
       <div className="container">
-        <div className="credibilidade-seguranca">
+        <div className="credibilidade-seguranca default-border-image">
           <h2>Credibility and Security</h2>
           <p>
             Our badges are designed with a set of robust security

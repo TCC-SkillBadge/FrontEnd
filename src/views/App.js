@@ -40,7 +40,7 @@ import PublicProfileEnterprise from "./PublicProfileEnterprise";
 import ManageTest from "../components/UserAdmin/ManageTest";
 import ListSoftSkills from "../components/UserAdmin/ListSoftSkills";
 import ProficiencyTest from "../components/UserComum/ProficiencyTest";
-import ResultScreen from "../components/UserComum/ResultScreen";
+import { ResultScreen } from "../components/UserComum/ResultScreen";
 import Requests from "./Requests";
 import ClaimBadgePage from "./ClaimBadgePage";
 import ApiReference from "./ApiReference";
