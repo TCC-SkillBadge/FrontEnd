@@ -14,6 +14,7 @@ import PaymentConfirmationModal from "../components/PaymentConfirmationModal";
 
 const Price = () => {
   const [plans, setPlans] = useState([]);
+  const [currentPlan, setCurrentPlan] = useState(null); // Novo estado para o plano atual
   const [userType, setUserType] = useState(null);
   const [emailComercial, setEmailComercial] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,19 +24,39 @@ const Price = () => {
   const [planToPurchase, setPlanToPurchase] = useState(null);
 
   useEffect(() => {
-    const fetchPlans = async () => {
+    const fetchPlansAndCurrentPlan = async () => {
       try {
+        // Buscar todos os planos
         const response = await axios.get("http://localhost:9090/api/plans");
         setPlans(response.data);
+
+        // Buscar o plano atual do usuário
+        const token = sessionStorage.getItem("token"); // Assumindo que o token está armazenado no sessionStorage
+        if (token) {
+          const currentPlanResponse = await axios.get(
+            "http://localhost:7003/api/current-plan",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setCurrentPlan(currentPlanResponse.data);
+        }
+
         setLoading(false);
       } catch (error) {
-        console.error("There was an error fetching the plans!", error);
+        console.error(
+          "Ocorreu um erro ao buscar os planos ou o plano atual!",
+          error
+        );
         setLoading(false);
       }
     };
 
-    fetchPlans();
+    fetchPlansAndCurrentPlan();
 
+    // Buscar informações do usuário
     const storedUserType = sessionStorage.getItem("tipoUsuario");
     const storedUserInfo = sessionStorage.getItem("userInfo");
     let storedEmail = null;
@@ -45,7 +66,7 @@ const Price = () => {
         const userInfo = JSON.parse(storedUserInfo);
         storedEmail = userInfo.email_comercial || null;
       } catch (e) {
-        console.error("Error parsing userInfo from sessionStorage:", e);
+        console.error("Erro ao analisar userInfo do sessionStorage:", e);
       }
     }
 
@@ -76,7 +97,7 @@ const Price = () => {
         prevPlans.filter((plan) => plan.id !== planToDelete)
       );
       // Mostra o Toastify ao deletar com sucesso
-      toast.success("Plan deleted successfully!", {
+      toast.success("Plano deletado com sucesso!", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -87,8 +108,8 @@ const Price = () => {
         theme: "dark",
       });
     } catch (error) {
-      console.error("There was an error deleting the plan!", error);
-      toast.error("Failed to delete the plan.", {
+      console.error("Ocorreu um erro ao deletar o plano!", error);
+      toast.error("Falha ao deletar o plano.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -122,7 +143,7 @@ const Price = () => {
 
   // Função para confirmar o pagamento
   const handleConfirmPayment = async () => {
-    console.log("Plan to Purchase:", planToPurchase);
+    console.log("Plano a Comprar:", planToPurchase);
     console.log("Email Comercial:", emailComercial);
 
     if (!emailComercial) {
@@ -157,9 +178,11 @@ const Price = () => {
         draggable: true,
         theme: "dark",
       });
+      // Atualizar o plano atual
+      setCurrentPlan(response.data.plan); // Atualize com os dados do plano retornado
     } catch (error) {
       console.error("Erro ao processar o pagamento:", error);
-      toast.error("Failed to process payment.", {
+      toast.error("Falha ao processar o pagamento.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -179,7 +202,7 @@ const Price = () => {
   // Tooltip para o botão de adicionar plano
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-      You cannot have more than 4 plans.
+      Você não pode ter mais de 4 planos.
     </Tooltip>
   );
 
@@ -191,9 +214,9 @@ const Price = () => {
       <Navbar />
       <div className="price-page">
         <h1 className="title">
-          The <span className="highlight">BEST</span> plans
+          Os <span className="highlight">MELHORES</span> planos
         </h1>
-        <h2 className="subtitle">How often do you want to pay?</h2>
+        <h2 className="subtitle">Com que frequência você deseja pagar?</h2>
         <div className="plans-container">
           {loading ? (
             <div className="loading-spinner">
@@ -211,6 +234,7 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
+                    isCurrent={currentPlan && currentPlan.id === plan.id} // Nova prop
                   />
                 ))}
               {highlightedPlan && (
@@ -221,6 +245,9 @@ const Price = () => {
                   isEnterpriseUser={isEnterpriseUser}
                   handleDelete={openConfirmationModal}
                   handlePayment={handlePayment}
+                  isCurrent={
+                    currentPlan && currentPlan.id === highlightedPlan.id
+                  } // Nova prop
                 />
               )}
               {otherPlans
@@ -233,6 +260,7 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
+                    isCurrent={currentPlan && currentPlan.id === plan.id} // Nova prop
                   />
                 ))}
             </>
@@ -258,7 +286,7 @@ const Price = () => {
               }}
             >
               <PlusCircle className="icon" />
-              Add Service Plan
+              Adicionar Plano de Serviço
             </button>
           </OverlayTrigger>
         )}
@@ -269,10 +297,10 @@ const Price = () => {
         show={showModal}
         onHide={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        title="Confirm Plan Deletion"
-        body="Are you sure you want to delete this plan?"
-        confirmButtonText="Delete"
-        cancelButtonText="Cancel"
+        title="Confirmar Exclusão do Plano"
+        body="Tem certeza de que deseja excluir este plano?"
+        confirmButtonText="Excluir"
+        cancelButtonText="Cancelar"
       />
 
       {/* Modal de confirmação de pagamento */}

@@ -33,22 +33,22 @@
   box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
 }
 
-.admin-icons {
+.plan-card.current-plan {
+  border-color: #007bff;
+  background-color: rgba(30, 30, 30, 0.95);
+  color: #007bff;
+  position: relative;
+}
+
+.current-plan-badge {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
   position: absolute;
   top: 10px;
   right: 10px;
-}
-
-.edit-icon,
-.delete-icon {
-  color: #ffd700;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.edit-icon:hover,
-.delete-icon:hover {
-  color: #ffdd57;
+  border-radius: 5px;
+  font-size: 0.9em;
 }
 
 .icon-container {
@@ -123,6 +123,7 @@
   width: 100%;
   margin-top: auto;
   align-self: center;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .buy-button:hover {
@@ -138,4 +139,37 @@
 .plan-card.highlight .buy-button:hover {
   background-color: #8DFD8B;
   color: white;
+}
+
+/* Informação adicional para o plano atual */
+.current-plan-info {
+  margin-top: 10px;
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* Destaque para o plano atual */
+.plan-card.current-plan {
+  border: 2px solid #007bff;
+  background-color: rgba(30, 30, 30, 0.95);
+  color: #007bff;
+}
+
+/* Badge para indicar o plano atual */
+.current-plan-badge {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
+/* Informação adicional para o plano atual */
+.current-plan-info {
+  margin-top: 10px;
+  color: #28a745;
+  font-weight: bold;
 }

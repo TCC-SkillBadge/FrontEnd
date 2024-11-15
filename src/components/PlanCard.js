@@ -10,27 +10,35 @@ const PlanCard = ({
   isEnterpriseUser,
   handleDelete,
   handlePayment,
+  isCurrent, // Nova prop
 }) => {
   return (
-    <div className={`plan-card ${plan.prioridade ? "highlight" : ""}`}>
+    <div
+      className={`plan-card ${plan.prioridade ? "highlight" : ""} ${
+        isCurrent ? "current-plan" : ""
+      }`}
+    >
       {isAdmin && (
         <div className="admin-icons">
           <Link
             to={`/edit-plan/${plan.id}`}
             className="edit-icon"
-            title="Edit Plan"
+            title="Editar Plano"
           >
             <PencilFill />
           </Link>
           <span
             className="delete-icon"
             onClick={() => handleDelete(plan.id)}
-            title="Delete Plan"
+            title="Deletar Plano"
           >
             <TrashFill />
           </span>
         </div>
       )}
+
+      {isCurrent && <div className="current-plan-badge">Seu Plano Atual</div>}
+
       <div className="icon-container">
         <i className="bi bi-check-circle icon"></i>
       </div>
@@ -63,17 +71,17 @@ const PlanCard = ({
         )}
       </ul>
       <div className="price">
-        R${parseFloat(plan.precoPlanoServico).toFixed(2)}/
-        {plan.prazoPagamentos}
+        R${parseFloat(plan.precoPlanoServico).toFixed(2)}/{plan.prazoPagamentos}
       </div>
-      {/* Exibir botão de compra apenas para usuários empresariais */}
-      {!isAdmin && isEnterpriseUser && (
-        <button
-          className="buy-button"
-          onClick={() => handlePayment(plan.id)}
-        >
+      {/* Exibir botão de compra apenas para usuários empresariais e se não for o plano atual */}
+      {!isAdmin && isEnterpriseUser && !isCurrent && (
+        <button className="buy-button" onClick={() => handlePayment(plan.id)}>
           Comprar Agora
         </button>
+      )}
+      {/* Informar que é o plano atual para o usuário */}
+      {!isAdmin && isEnterpriseUser && isCurrent && (
+        <div className="current-plan-info">Este é o seu plano atual.</div>
       )}
     </div>
   );
