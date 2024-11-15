@@ -1,12 +1,82 @@
-/* src/styles/CancellationConfirmationModal.css */
+/* Estilos gerais para ambos os modais */
 
-.processing-cancellation {
+.custom-modal .modal-content {
+  background-color: #1e1e2f; /* Fundo escuro e moderno */
+  border: 1px solid #4c4c6d; /* Borda suave */
+  border-radius: 8px;
+  color: #e4e4f0; /* Texto em cor clara */
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-title {
+  font-size: 1.5em;
+  color: #8dfd8b; /* Cor do título */
+}
+
+.modal-body {
+  font-size: 1.1em;
+  color: #b0b0c3;
+}
+
+.processing-cancellation, .processing-payment {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.processing-cancellation p {
+.processing-cancellation p, .processing-payment p {
   margin-top: 10px;
-  font-size: 1.1em;
+  color: #8dfd8b;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+.modal-footer .btn-outline-secondary {
+  color: #b0b0c3;
+  border: 1px solid #b0b0c3;
+  background-color: transparent;
+}
+
+.modal-footer .btn-outline-secondary:hover {
+  color: #1e1e2f;
+  background-color: #8dfd8b;
+  border-color: #8dfd8b;
+}
+
+.modal-footer .btn-outline-danger {
+  color: #ff6b6b;
+  border: 1px solid #ff6b6b;
+  background-color: transparent;
+}
+
+.modal-footer .btn-outline-danger:hover {
+  color: #1e1e2f;
+  background-color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.modal-footer .btn-outline-success {
+  color: #8dfd8b;
+  border: 1px solid #8dfd8b;
+  background-color: transparent;
+}
+
+.modal-footer .btn-outline-success:hover {
+  color: #1e1e2f;
+  background-color: #8dfd8b;
+  border-color: #8dfd8b;
+}
+
+.modal-header .close {
+  color: #b0b0c3;
+  opacity: 0.8;
+}
+
+.modal-header .close:hover {
+  color: #ff6b6b;
 }

@@ -1,7 +1,7 @@
 // src/components/CancellationConfirmationModal.js
 import React from "react";
 import { Modal, Button, Spinner, Alert } from "react-bootstrap";
-import "../styles/CancellationConfirmationModal.css"; // Import styles file
+import "../styles/CancellationConfirmationModal.css";
 
 const CancellationConfirmationModal = ({
   show,
@@ -40,11 +40,11 @@ const CancellationConfirmationModal = ({
       <Modal.Footer className="modal-footer">
         {!isProcessing && (
           <>
-            <Button variant="secondary" onClick={onHide}>
+            <Button variant="outline-secondary" onClick={onHide}>
               Cancel
             </Button>
-            <Button variant="danger" onClick={onConfirm}>
-              Cancel Plan
+            <Button variant="outline-danger" onClick={onConfirm}>
+              Confirm Cancellation
             </Button>
           </>
         )}

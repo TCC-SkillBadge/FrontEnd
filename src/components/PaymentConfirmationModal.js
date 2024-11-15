@@ -1,7 +1,7 @@
 // src/components/PaymentConfirmationModal.js
 import React from "react";
 import { Modal, Button, Spinner, Alert } from "react-bootstrap";
-import "../styles/PaymentConfirmationModal.css"; // Import styles file
+import "../styles/PaymentConfirmationModal.css";
 
 const PaymentConfirmationModal = ({
   show,
@@ -42,10 +42,10 @@ const PaymentConfirmationModal = ({
       <Modal.Footer className="modal-footer">
         {!isProcessing && (
           <>
-            <Button variant="secondary" onClick={onHide}>
+            <Button variant="outline-secondary" onClick={onHide}>
               Cancel
             </Button>
-            <Button variant="success" onClick={onConfirm}>
+            <Button variant="outline-success" onClick={onConfirm}>
               Confirm Purchase
             </Button>
           </>
