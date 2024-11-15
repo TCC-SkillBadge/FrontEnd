@@ -2,7 +2,7 @@
 
 .plan-card {
   background-color: rgba(0, 0, 0, 0.3);
-  border: 2px solid #8DFD8B;
+  border: 2px solid #8dfd8b;
   border-radius: 10px;
   padding: 20px;
   width: 300px;
@@ -13,8 +13,9 @@
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
-  position: relative; /* Para ícones de administrador */
-  color: inherit; /* Herda a cor do elemento pai */
+  position: relative;
+  color: inherit;
+  overflow: hidden; /* Garante que o conteúdo permaneça dentro do card */
 }
 
 .plan-card:hover {
@@ -23,9 +24,9 @@
 }
 
 .plan-card.highlight {
-  border-color: #FFD700;
+  border-color: #ffd700;
   background-color: rgba(40, 40, 40, 0.9);
-  color: #FFD700;
+  color: #ffd700;
   transform: scale(1.05);
 }
 
@@ -60,7 +61,7 @@
 
 .icon {
   font-size: 2em;
-  color: #8DFD8B;
+  color: #8dfd8b;
 }
 
 .plan-title {
@@ -91,7 +92,7 @@
 
 .feature-icon {
   margin-right: 8px;
-  color: #8DFD8B;
+  color: #8dfd8b;
 }
 
 .features.unavailable .feature-icon {
@@ -113,17 +114,37 @@
   color: inherit;
 }
 
-.plan-actions {
+/* Ícones de administração */
+.admin-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px; /* Ajusta os ícones para o canto superior direito */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px; /* Espaçamento entre botões */
-  margin-top: 20px;
+  gap: 8px; /* Espaçamento consistente entre os ícones */
+  z-index: 1;
+}
+
+.admin-icons .edit-icon,
+.admin-icons .delete-icon {
+  cursor: pointer;
+  font-size: 1.2em;
+  color: white;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.admin-icons .edit-icon:hover {
+  color: #ffd700;
+  transform: scale(1.2);
+}
+
+.admin-icons .delete-icon:hover {
+  color: #ff6b6b;
+  transform: scale(1.2);
 }
 
 /* Botões */
 .buy-button {
-  background-color: #D273FF;
+  background-color: #d273ff;
   border: none;
   color: white;
   padding: 10px 20px;
@@ -134,45 +155,60 @@
 }
 
 .buy-button:hover {
-  background-color: #8DFD8B;
+  background-color: #8dfd8b;
   color: black;
 }
 
 .plan-card.highlight .buy-button {
-  background-color: #FFD700;
+  background-color: #ffd700;
   color: black;
 }
 
 .plan-card.highlight .buy-button:hover {
-  background-color: #8DFD8B;
+  background-color: #8dfd8b;
   color: white;
 }
 
 /* Botão de Cancelamento */
 .cancel-button {
-  background-color: #ff4d4d;
-  border: none;
+  background-color: #f94144;
+  border: 2px solid #d00000;
   color: white;
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 1em;
   cursor: pointer;
-  width: 100%;
-  transition: background-color 0.3s, color 0.3s;
+  width: auto;
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+  font-weight: bold;
 }
 
 .cancel-button:hover {
-  background-color: #ff1a1a;
-  color: white;
+  background-color: #d00000;
+  border-color: #a00000;
+  color: #ffffff;
+  transform: scale(1.05);
 }
 
-.plan-card.highlight .cancel-button {
-  background-color: #FFD700;
-  color: black;
+.plan-card .cancel-button {
+  margin-top: 10px;
+  width: 100%;
+  max-width: 200px;
+  align-self: center;
 }
 
-.plan-card.highlight .cancel-button:hover {
-  background-color: #8DFD8B;
-  color: white;
+/* Ajuste para modo de edição */
+.plan-card.edit-mode .cancel-button {
+  background-color: #ffb703;
+  border: 2px solid #ff8800;
+  color: #fff;
+}
+
+.plan-card.edit-mode .cancel-button:hover {
+  background-color: #ff8800;
+  border-color: #d07000;
+  color: #ffffff;
 }
 
 /* Dimmed style para planos não atuais */
@@ -192,4 +228,31 @@
   margin-top: 10px;
   color: #28a745;
   font-weight: bold;
+}
+.admin-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px; /* Espaçamento entre os ícones */
+  align-items: center;
+  z-index: 2; /* Garante que os ícones fiquem acima de outros elementos */
+}
+
+.admin-icons .edit-icon,
+.admin-icons .delete-icon {
+  cursor: pointer;
+  font-size: 1.2em;
+  color: white;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.admin-icons .edit-icon:hover {
+  color: #ffd700;
+  transform: scale(1.2);
+}
+
+.admin-icons .delete-icon:hover {
+  color: #ff6b6b;
+  transform: scale(1.2);
 }

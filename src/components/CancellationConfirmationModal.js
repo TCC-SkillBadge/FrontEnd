@@ -1,7 +1,7 @@
 // src/components/CancellationConfirmationModal.js
 import React from "react";
 import { Modal, Button, Spinner, Alert } from "react-bootstrap";
-import "../styles/CancellationConfirmationModal.css"; // Importar o arquivo de estilos
+import "../styles/CancellationConfirmationModal.css"; // Import styles file
 
 const CancellationConfirmationModal = ({
   show,
@@ -13,27 +13,27 @@ const CancellationConfirmationModal = ({
   return (
     <Modal show={show} onHide={onHide} centered dialogClassName="custom-modal">
       <Modal.Header closeButton className="modal-header">
-        <Modal.Title>Confirmar Cancelamento</Modal.Title>
+        <Modal.Title>Confirm Cancellation</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body">
         {isProcessing && (
           <div className="processing-cancellation">
             <Spinner animation="border" role="status">
-              <span className="visually-hidden">Processando...</span>
+              <span className="visually-hidden">Processing...</span>
             </Spinner>
-            <p>Processando o cancelamento...</p>
+            <p>Processing the cancellation...</p>
           </div>
         )}
         {cancellationStatus === "failure" && (
           <Alert variant="danger">
-            Ocorreu um erro ao processar seu cancelamento. Por favor, tente
-            novamente.
+            An error occurred while processing your cancellation. Please try
+            again.
           </Alert>
         )}
         {!isProcessing && cancellationStatus !== "failure" && (
           <p>
-            Tem certeza de que deseja cancelar seu plano atual? Essa ação não
-            pode ser desfeita.
+            Are you sure you want to cancel your current plan? This action
+            cannot be undone.
           </p>
         )}
       </Modal.Body>
@@ -41,10 +41,10 @@ const CancellationConfirmationModal = ({
         {!isProcessing && (
           <>
             <Button variant="secondary" onClick={onHide}>
-              Cancelar
+              Cancel
             </Button>
             <Button variant="danger" onClick={onConfirm}>
-              Cancelar Plano
+              Cancel Plan
             </Button>
           </>
         )}

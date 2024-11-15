@@ -35,7 +35,7 @@ const Price = () => {
   const [cancellationStatus, setCancellationStatus] = useState(null); // 'success', 'failure', 'processing'
 
   useEffect(() => {
-    // Buscar informações do usuário
+    // Fetch user information
     const storedUserType = sessionStorage.getItem("tipoUsuario");
     const storedUserInfo = sessionStorage.getItem("userInfo");
     let storedEmail = null;
@@ -45,7 +45,7 @@ const Price = () => {
         const userInfo = JSON.parse(storedUserInfo);
         storedEmail = userInfo.email_comercial || null;
       } catch (e) {
-        console.error("Erro ao analisar userInfo do sessionStorage:", e);
+        console.error("Error parsing userInfo from sessionStorage:", e);
       }
     }
 
@@ -56,26 +56,23 @@ const Price = () => {
     console.log("Stored Email:", storedEmail);
   }, []);
 
-  // Abrir modal de confirmação de exclusão
   const openConfirmationModal = (planId) => {
     setPlanToDelete(planId);
     setShowModal(true);
   };
 
-  // Fechar modal de confirmação de exclusão
   const handleCloseModal = () => {
     setShowModal(false);
     setPlanToDelete(null);
   };
 
-  // Confirmar exclusão do plano
   const handleConfirmDelete = async () => {
     try {
       await axios.delete(`http://localhost:9090/api/plans/${planToDelete}`);
       setPlans((prevPlans) =>
         prevPlans.filter((plan) => plan.id !== planToDelete)
       );
-      toast.success("Plano deletado com sucesso!", {
+      toast.success("Plan successfully deleted!", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -85,8 +82,8 @@ const Price = () => {
         theme: "dark",
       });
     } catch (error) {
-      console.error("Erro ao deletar o plano!", error);
-      toast.error("Falha ao deletar o plano.", {
+      console.error("Error deleting plan!", error);
+      toast.error("Failed to delete plan.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -100,32 +97,28 @@ const Price = () => {
     }
   };
 
-  // Iniciar processo de pagamento
   const handlePayment = (planId) => {
     const selectedPlan = plans.find((plan) => plan.id === planId);
     openPaymentModal(selectedPlan);
   };
 
-  // Abrir modal de confirmação de pagamento
   const openPaymentModal = (plan) => {
     setPlanToPurchase(plan);
     setShowPaymentModal(true);
   };
 
-  // Fechar modal de confirmação de pagamento
   const handleClosePaymentModal = () => {
     setShowPaymentModal(false);
     setPlanToPurchase(null);
     setPaymentStatus(null);
   };
 
-  // Confirmar pagamento e associar plano
   const handleConfirmPayment = async () => {
-    console.log("Plano a Comprar:", planToPurchase);
-    console.log("Email Comercial:", emailComercial);
+    console.log("Plan to Purchase:", planToPurchase);
+    console.log("Commercial Email:", emailComercial);
 
     if (!emailComercial) {
-      toast.error("Usuário não autenticado. Por favor, faça login novamente.", {
+      toast.error("User not authenticated. Please log in again.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -138,10 +131,9 @@ const Price = () => {
       return;
     }
 
-    // Validação adicional de formato de email (opcional)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailComercial)) {
-      toast.error("Email comercial inválido.", {
+      toast.error("Invalid commercial email.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -154,8 +146,8 @@ const Price = () => {
       return;
     }
 
-    setIsProcessingPayment(true); // Iniciar o carregamento
-    setPaymentStatus("processing"); // Iniciar o processamento
+    setIsProcessingPayment(true);
+    setPaymentStatus("processing");
 
     try {
       const response = await axios.post(
@@ -166,7 +158,7 @@ const Price = () => {
         }
       );
       toast.success(
-        response.data.message || "Pagamento realizado com sucesso!",
+        response.data.message || "Payment processed successfully!",
         {
           position: "top-center",
           autoClose: 3000,
@@ -177,21 +169,16 @@ const Price = () => {
           theme: "dark",
         }
       );
-      // Atualizar o plano atual
       setCurrentPlan(response.data.plan);
-      setPaymentStatus("success"); // Sucesso
+      setPaymentStatus("success");
     } catch (error) {
-      console.error("Erro ao processar o pagamento:", error);
-      let errorMessage = "Falha ao processar o pagamento.";
+      console.error("Error processing payment:", error);
+      let errorMessage = "Failed to process payment.";
       if (error.response) {
-        // O servidor respondeu com um status diferente de 2xx
         errorMessage = error.response.data.message || errorMessage;
       } else if (error.request) {
-        // A requisição foi feita, mas nenhuma resposta foi recebida
-        errorMessage =
-          "Nenhuma resposta do servidor. Tente novamente mais tarde.";
+        errorMessage = "No response from server. Please try again later.";
       } else {
-        // Algo aconteceu ao configurar a requisição
         errorMessage = error.message;
       }
       toast.error(errorMessage, {
@@ -203,34 +190,29 @@ const Price = () => {
         draggable: true,
         theme: "dark",
       });
-      setPaymentStatus("failure"); // Falha
+      setPaymentStatus("failure");
     } finally {
-      setIsProcessingPayment(false); // Finalizar o carregamento
+      setIsProcessingPayment(false);
       handleClosePaymentModal();
     }
   };
 
-  // Abrir modal de confirmação de cancelamento
   const openCancellationModal = () => {
     setShowCancellationModal(true);
   };
 
-  // Fechar modal de confirmação de cancelamento
   const handleCloseCancellationModal = () => {
     setShowCancellationModal(false);
     setCancellationStatus(null);
   };
 
-  // Confirmar cancelamento do plano
   const handleConfirmCancellation = async () => {
     setCancellationStatus("processing");
     try {
       await cancelCurrentPlan();
       setCancellationStatus("success");
-      // Opcional: Atualize outros estados ou faça outras ações necessárias
     } catch (error) {
       setCancellationStatus("failure");
-      // Erros já são tratados no hook, então nenhuma ação extra é necessária aqui
     } finally {
       handleCloseCancellationModal();
     }
@@ -239,10 +221,9 @@ const Price = () => {
   const highlightedPlan = plans.find((plan) => plan.prioridade);
   const otherPlans = plans.filter((plan) => !plan.prioridade);
 
-  // Tooltip para o botão de adicionar plano
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-      Você não pode ter mais de 4 planos.
+      You cannot have more than 4 plans.
     </Tooltip>
   );
 
@@ -254,9 +235,9 @@ const Price = () => {
       <Navbar />
       <div className="price-page">
         <h1 className="title">
-          Os <span className="highlight">MELHORES</span> planos
+          The <span className="highlight">BEST</span> Plans
         </h1>
-        <h2 className="subtitle">Com que frequência você deseja pagar?</h2>
+        <h2 className="subtitle">How often do you want to pay?</h2>
         <div className="plans-container">
           {loading ? (
             <div className="loading-spinner">
@@ -274,7 +255,7 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
-                    handleCancel={openCancellationModal} // Passar a função de cancelamento
+                    handleCancel={openCancellationModal}
                     isCurrent={currentPlan && currentPlan.id === plan.id}
                     isDimmed={currentPlan && currentPlan.id !== plan.id}
                     isProcessingPayment={isProcessingPayment}
@@ -288,7 +269,7 @@ const Price = () => {
                   isEnterpriseUser={isEnterpriseUser}
                   handleDelete={openConfirmationModal}
                   handlePayment={handlePayment}
-                  handleCancel={openCancellationModal} // Passar a função de cancelamento
+                  handleCancel={openCancellationModal}
                   isCurrent={
                     currentPlan && currentPlan.id === highlightedPlan.id
                   }
@@ -308,7 +289,7 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
-                    handleCancel={openCancellationModal} // Passar a função de cancelamento
+                    handleCancel={openCancellationModal}
                     isCurrent={currentPlan && currentPlan.id === plan.id}
                     isDimmed={currentPlan && currentPlan.id !== plan.id}
                     isProcessingPayment={isProcessingPayment}
@@ -318,7 +299,6 @@ const Price = () => {
           )}
         </div>
 
-        {/* Tooltip e desabilitar botão se houverem quatro ou mais planos */}
         {isAdmin && (
           <OverlayTrigger
             placement="top"
@@ -337,24 +317,22 @@ const Price = () => {
               }}
             >
               <PlusCircle className="icon" />
-              Adicionar Plano de Serviço
+              Add Service Plan
             </button>
           </OverlayTrigger>
         )}
       </div>
 
-      {/* Modal de Confirmação de Exclusão */}
       <ConfirmationModal
         show={showModal}
         onHide={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        title="Confirmar Exclusão do Plano"
-        body="Tem certeza de que deseja excluir este plano?"
-        confirmButtonText="Excluir"
-        cancelButtonText="Cancelar"
+        title="Confirm Plan Deletion"
+        body="Are you sure you want to delete this plan?"
+        confirmButtonText="Delete"
+        cancelButtonText="Cancel"
       />
 
-      {/* Modal de Confirmação de Pagamento */}
       <PaymentConfirmationModal
         show={showPaymentModal}
         onHide={handleClosePaymentModal}
@@ -364,7 +342,6 @@ const Price = () => {
         paymentStatus={paymentStatus}
       />
 
-      {/* Modal de Confirmação de Cancelamento */}
       <CancellationConfirmationModal
         show={showCancellationModal}
         onHide={handleCloseCancellationModal}
@@ -373,7 +350,6 @@ const Price = () => {
         cancellationStatus={cancellationStatus}
       />
 
-      {/* Container do ReactToastify */}
       <ToastContainer />
     </div>
   );
