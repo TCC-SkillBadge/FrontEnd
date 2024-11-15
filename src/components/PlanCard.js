@@ -10,7 +10,7 @@ const PlanCard = ({
   isEnterpriseUser,
   handleDelete,
   handlePayment,
-  handleCancel, // Nova prop para cancelar o plano
+  handleCancel, // New prop for canceling the plan
   isCurrent,
   isDisabled,
 }) => {
@@ -25,21 +25,21 @@ const PlanCard = ({
           <Link
             to={`/edit-plan/${plan.id}`}
             className="edit-icon"
-            title="Editar Plano"
+            title="Edit Plan"
           >
             <PencilFill />
           </Link>
           <span
             className="delete-icon"
             onClick={() => handleDelete(plan.id)}
-            title="Deletar Plano"
+            title="Delete Plan"
           >
             <TrashFill />
           </span>
         </div>
       )}
 
-      {isCurrent && <div className="current-plan-badge">Seu Plano Atual</div>}
+      {isCurrent && <div className="current-plan-badge">Your Current Plan</div>}
 
       <div className="icon-container">
         <i className="bi bi-check-circle icon"></i>
@@ -56,7 +56,7 @@ const PlanCard = ({
             </li>
           ))
         ) : (
-          <li>Nenhuma funcionalidade disponível.</li>
+          <li>No available features.</li>
         )}
       </ul>
       <ul className="features unavailable">
@@ -69,33 +69,33 @@ const PlanCard = ({
             </li>
           ))
         ) : (
-          <li>Nenhuma funcionalidade indisponível.</li>
+          <li>No unavailable features.</li>
         )}
       </ul>
       <div className="price">
-        R${parseFloat(plan.precoPlanoServico).toFixed(2)}/{plan.prazoPagamentos}
+        ${parseFloat(plan.precoPlanoServico).toFixed(2)}/{plan.prazoPagamentos}
       </div>
 
-      {/* Exibir botão de compra apenas para usuários empresariais e se não for o plano atual */}
+      {/* Show buy button only for enterprise users and if it's not the current plan */}
       {!isAdmin && isEnterpriseUser && !isCurrent && (
         <button
           className="buy-button"
           onClick={() => handlePayment(plan.id)}
-          disabled={isDisabled} // Desabilita o botão se isDisabled for true
+          disabled={isDisabled} // Disables the button if isDisabled is true
         >
-          Comprar Agora
+          Buy Now
         </button>
       )}
 
-      {/* Exibir botão de cancelamento apenas se for o plano atual */}
+      {/* Show cancel button only if it's the current plan */}
       {!isAdmin && isEnterpriseUser && isCurrent && (
         <button className="cancel-button" onClick={() => handleCancel(plan.id)}>
-          Cancelar Plano
+          Cancel Plan
         </button>
       )}
 
       {!isAdmin && isEnterpriseUser && isCurrent && (
-        <div className="current-plan-info">Este é o seu plano atual.</div>
+        <div className="current-plan-info">This is your current plan.</div>
       )}
     </div>
   );
