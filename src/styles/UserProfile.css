@@ -1,3 +1,5 @@
+/* src/styles/UserProfile.css */
+
 :root {
   --background-dark: #191A2E;
   --color-primary: #D273FF;
@@ -13,7 +15,7 @@
   --transition: all 0.3s ease;
 }
 
-/* Estilo Geral */
+/* General Styling */
 .profile-page {
   display: flex;
   flex-direction: column;
@@ -161,21 +163,88 @@
   color: var(--color-text-light);
 }
 
+/* Consistent Input Styling */
 .profile-about-input,
 .profile-input,
 .profile-array-item input,
-.profile-array-item textarea {
-  background-color: rgba(25, 26, 46, 0.8);
-  border: 2px solid var(--color-secondary);
-  border-radius: 5px;
-  padding: 10px;
-  color: var(--color-text-light);
+.profile-array-item textarea,
+.profile-name-input { /* Added .profile-name-input */
+  background-color: #2d2d2d; /* Dark background */
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
+  padding: 10px; /* Adequate padding */
+  color: #f8f8f2; /* Light text color for contrast */
+  font-family: 'Fira Code', monospace; /* Monospaced font for consistency */
   font-size: 1rem;
   width: 100%;
+  box-sizing: border-box;
   margin-top: 10px;
   min-height: 40px;
+  transition: var(--transition);
 }
 
+.profile-about-input::placeholder,
+.profile-input::placeholder,
+.profile-array-item input::placeholder,
+.profile-array-item textarea::placeholder,
+.profile-name-input::placeholder { /* Added placeholder styling */
+  color: var(--color-text-muted);
+}
+
+.profile-about-input:focus,
+.profile-input:focus,
+.profile-array-item input:focus,
+.profile-array-item textarea:focus,
+.profile-name-input:focus { /* Focus states */
+  border-color: var(--color-primary);
+  background-color: rgba(45, 45, 45, 1);
+  outline: none;
+}
+
+/* Styling for 'razao_social' Input */
+.profile-name-input {
+  /* The following styles ensure that 'razao_social' input matches other inputs */
+  background-color: #2d2d2d; /* Dark background */
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
+  padding: 10px; /* Adequate padding */
+  color: #f8f8f2; /* Light text color for contrast */
+  font-family: 'Fira Code', monospace; /* Monospaced font for consistency */
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  min-height: 40px;
+  transition: var(--transition);
+}
+
+/* Remove redundant or commented-out styles if present */
+/* 
+.profile-name-input {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text-light);
+  background-color: rgba(25, 26, 46, 0.8);
+  border: none;
+  border-bottom: 2px solid var(--color-secondary);
+  width: 100%;
+  padding: 10px 5px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: var(--transition);
+}
+
+.profile-name-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.profile-name-input:focus {
+  border-bottom: 2px solid var(--color-primary);
+  background-color: rgba(25, 26, 46, 1);
+}
+*/
+
+/* Styling for Array Items */
 .profile-array-item {
   display: flex;
   align-items: center;
@@ -250,7 +319,7 @@
   margin-top: 5px;
 }
 
-/* Estilização das Guias (Sobre, Eventos, Badges) */
+/* Styling the Tabs (Profile, Badges) */
 .tabs {
   display: flex;
   justify-content: center;
@@ -281,7 +350,7 @@
   margin-top: 20px;
 }
 
-/* Responsividade */
+/* Responsiveness */
 @media (max-width: 600px) {
   .profile-container {
     padding: 15px;
@@ -319,7 +388,7 @@
   }
 }
 
-/* Estilização dos Eventos */
+/* Styling the Events */
 .event-item {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
@@ -405,14 +474,7 @@
   border-radius: 5px;
 }
 
-/* Estilização da Data e Hora de Publicação */
-.event-publication-time {
-  font-size: 0.8em;
-  color: #cccccc;
-  margin-left: 10px;
-}
-
-/* Estilização do PostForm */
+/* Styling the PostForm */
 .post-form {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
@@ -429,13 +491,26 @@
 .post-textarea {
   width: 100%;
   min-height: 80px;
-  background-color: rgba(25, 26, 46, 0.8);
-  border: 2px solid var(--color-secondary);
-  border-radius: 5px;
-  padding: 10px;
-  color: var(--color-text-light);
+  background-color: #2d2d2d; /* Dark background */
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
+  padding: 10px; /* Adequate padding */
+  color: #f8f8f2; /* Light text color for contrast */
+  font-family: 'Fira Code', monospace; /* Monospaced font for consistency */
   font-size: 1rem;
   resize: vertical;
+  box-sizing: border-box;
+  transition: var(--transition);
+}
+
+.post-textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.post-textarea:focus {
+  border-color: var(--color-primary);
+  background-color: rgba(45, 45, 45, 1);
+  outline: none;
 }
 
 .post-actions {
@@ -518,7 +593,7 @@
   border-radius: 5px;
 }
 
-/* Estilização dos Badges */
+/* Styling the Badges */
 .badges-section {
   display: flex;
   flex-direction: column;
@@ -546,7 +621,7 @@
   margin-bottom: 5px;
 }
 
-/* Estilos para os Botões de Adicionar e Excluir */
+/* Styles for Add and Delete Buttons */
 .add-button {
   margin-top: 10px;
   background-color: transparent;
@@ -581,7 +656,7 @@
   color: var(--color-danger);
 }
 
-/* Estilos para o Dropdown de Idiomas */
+/* Styling the Language Dropdown */
 .language-dropdown {
   position: relative;
   display: inline-block;
@@ -589,31 +664,32 @@
 }
 
 .language-dropdown-button {
-  background-color: rgba(25, 26, 46, 0.8);
-  color: var(--color-text-light);
+  background-color: #2d2d2d; /* Dark background */
+  color: #f8f8f2; /* Light text color */
   padding: 10px;
-  border: 2px solid var(--color-secondary);
-  border-radius: 5px;
+  border: 1px solid #444444; /* Subtle border */
+  border-radius: 4px; /* Slightly rounded corners */
   cursor: pointer;
   width: 100%;
   text-align: left;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: var(--transition);
 }
 
 .language-dropdown-button:hover {
-  background-color: rgba(25, 26, 46, 1);
+  background-color: rgba(45, 45, 45, 1); /* Slightly lighter on hover */
 }
 
 .language-dropdown-content {
   display: block;
   position: absolute;
-  background-color: rgba(25, 26, 46, 0.95);
+  background-color: rgba(45, 45, 45, 0.95); /* Dark background */
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
-  border: 2px solid var(--color-secondary);
+  border: 1px solid var(--color-secondary);
   border-radius: 5px;
   z-index: 1;
   margin-top: 5px;
@@ -640,4 +716,64 @@
 .dropdown-icon {
   font-size: 1.5rem;
   color: var(--color-secondary);
+}
+
+/* Styling Custom Checkboxes */
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  user-select: none;
+  color: var(--color-text-light);
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 22px;
+  width: 22px;
+  background-color: #2d2d2d; /* Dark background */
+  border: 2px solid #444444; /* Subtle border */
+  border-radius: 4px;
+}
+
+.custom-checkbox:hover input ~ .checkmark {
+  background-color: rgba(45, 45, 45, 1);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 7px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--background-dark);
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
 }

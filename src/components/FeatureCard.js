@@ -1,6 +1,7 @@
 import React from "react";
 import { FaBullseye, FaEye, FaHeart } from 'react-icons/fa';
 import "../styles/FeatureCard.css";
+import "../styles/GlobalStylings.css";
 
 const FeatureCard = ({ icon, title, children }) => {
   const renderIcon = () => {
@@ -17,7 +18,7 @@ const FeatureCard = ({ icon, title, children }) => {
   };
 
   return (
-    <div className="feature-card">
+    <div className="feature-card default-border-image">
       {renderIcon()}
       <h3>{title}</h3>
       <p>{children}</p>

@@ -29,6 +29,7 @@ import NavBar from "../components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
+import { Link } from "react-router-dom"; 
 import PostForm from "../components/PostForm";
 
 const UserProfile = () => {
@@ -51,11 +52,47 @@ const UserProfile = () => {
     badges: [],
   });
 
+  const handleBadgeVisibilityChange = async (e, badgeId, index) => {
+    const isPublic = e.target.checked;
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await axios.put(
+        "http://localhost:7000/api/badges/visibility",
+        {
+          badgeIds: [badgeId],
+          is_public: isPublic,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Atualiza o estado local para refletir a mudança
+      setUserData((prevData) => {
+        const updatedBadges = [...prevData.badges];
+        updatedBadges[index].is_public = isPublic;
+        return {
+          ...prevData,
+          badges: updatedBadges,
+        };
+      });
+      // Removido o toast de sucesso
+    } catch (error) {
+      console.error("Erro ao atualizar visibilidade da badge:", error);
+      toast.error("Falha ao atualizar a visibilidade da badge.");
+    }
+  };
+
+
+
+
+
   const [optionsVisibleIndex, setOptionsVisibleIndex] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [availableLanguages, setAvailableLanguages] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState("sobre");
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -63,13 +100,51 @@ const UserProfile = () => {
   const languageDropdownRef = useRef(null);
 
   const tipoUsuario = sessionStorage.getItem("tipoUsuario");
-
+  const [activeTab, setActiveTab] = useState(
+    tipoUsuario === "UC" ? "perfil" : "sobre"
+  );
   const handleNewPost = (newPost) => {
     setUserData((prevUserData) => ({
       ...prevUserData,
       events: [newPost, ...prevUserData.events],
     }));
   };
+
+  const fetchBadges = async (tipoUsuario, email) => {
+  try {
+    let response;
+    const token = sessionStorage.getItem("token");
+
+    if (tipoUsuario === "UC") {
+      // Endpoint para usuários comuns
+      response = await axios.get(`http://localhost:7001/badges/wallet?email=${email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else if (tipoUsuario === "UE") {
+      // Endpoint para usuários empresariais
+      response = await axios.get(`http://localhost:7001/badges/consult?search=${email}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      throw new Error("Tipo de usuário inválido");
+    }
+
+    setUserData((prevData) => ({
+      ...prevData,
+      badges: response.data,
+    }));
+    setLoading(false);
+  } catch (error) {
+    console.error("Erro ao buscar badges:", error);
+    setUserData((prevData) => ({ ...prevData, badges: [] }));
+    setLoading(false);
+  }
+};
+
 
   const formatDateTime = (dateString) => {
     const options = {
@@ -84,100 +159,106 @@ const UserProfile = () => {
   };
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        let response;
+  const fetchUserInfo = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      let response;
 
-        if (!token) {
-          setError("Usuário não autenticado");
-          setLoading(false);
-          return;
+      if (!token) {
+        setError("Usuário não autenticado");
+        setLoading(false);
+        return;
+      }
+
+      // Carregar os idiomas disponíveis primeiro
+      const languagesResponse = await axios.get(
+        "http://localhost:7000/api/languages",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
+      );
+      setAvailableLanguages(languagesResponse.data);
 
-        // Carregar os idiomas disponíveis primeiro
-        const languagesResponse = await axios.get(
-          "http://localhost:7000/api/languages"
-        );
-        setAvailableLanguages(languagesResponse.data);
+      if (tipoUsuario === "UC") {
+        response = await axios.get("http://localhost:7000/api/user/info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-        if (tipoUsuario === "UC") {
-          response = await axios.get("http://localhost:7000/api/user/info", {
+        // Mapear os idiomas do usuário para objetos com id e name
+        const userLanguages = Array.isArray(response.data.languages)
+          ? response.data.languages
+          : [];
+
+        setUserData({
+          ...response.data,
+          education: Array.isArray(response.data.education)
+            ? response.data.education
+            : [],
+          professionalExperience: Array.isArray(
+            response.data.professional_experience
+          )
+            ? response.data.professional_experience
+            : [],
+          languages: userLanguages,
+        });
+
+        // Chamar fetchBadges para usuários comuns
+        const email = response.data.email || "teste@email.com";
+        await fetchBadges("UC", email);
+
+      } else if (tipoUsuario === "UE") {
+        response = await axios.get(
+          "http://localhost:7003/api/acessar-info-usuario-jwt",
+          {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          });
+          }
+        );
 
-          // Mapear os idiomas do usuário para objetos com id e name
-          const userLanguages = Array.isArray(response.data.languages)
-            ? response.data.languages
-                .map((langId) => {
-                  // Procurar o idioma correspondente em availableLanguages
-                  const languageObj = languagesResponse.data.find(
-                    (lang) => lang.id === langId
-                  );
-                  return languageObj
-                    ? { id: languageObj.id, name: languageObj.language }
-                    : null;
-                })
-                .filter((lang) => lang !== null)
-            : [];
+        const eventsResponse = await axios.get(
+          "http://localhost:7003/api/eventos",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-          setUserData({
-            ...response.data,
-            education: Array.isArray(response.data.education)
-              ? response.data.education
-              : [],
-            professionalExperience: Array.isArray(
-              response.data.professional_experience
-            )
-              ? response.data.professional_experience
-              : [],
-            languages: userLanguages,
-          });
-        } else if (tipoUsuario === "UE") {
-          response = await axios.get(
-            "http://localhost:7003/api/acessar-info-usuario-jwt",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+        setUserData({
+          ...response.data,
+          email_comercial: response.data.email_comercial,
+          sobre: response.data.sobre || "",
+          website: response.data.website || "",
+          events: eventsResponse.data || [],
+          badges: [], // Inicializa como vazio
+        });
 
-          const eventsResponse = await axios.get(
-            "http://localhost:7003/api/eventos",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+        console.log("Loaded events:", eventsResponse.data);
 
-          setUserData({
-            ...response.data,
-            email_comercial: response.data.email_comercial,
-            sobre: response.data.sobre || "",
-            website: response.data.website || "",
-            events: eventsResponse.data || [],
-            badges: response.data.badges || [],
-          });
+        // Chamar fetchBadges para usuários empresariais
+        const email = response.data.email_comercial || "teste_comercial@email.com";
+        await fetchBadges("UE", email);
 
-          console.log("Loaded events:", eventsResponse.data);
-        } else {
-          setError("Tipo de usuário inválido");
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Erro ao obter informações do usuário:", error);
-        setError("Falha ao carregar os dados do usuário");
-        setLoading(false);
+      } else {
+        setError("Tipo de usuário inválido");
       }
-    };
 
-    fetchUserInfo();
-  }, [tipoUsuario]);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao obter informações do usuário:", error);
+      setError("Falha ao carregar os dados do usuário");
+      setLoading(false);
+    }
+  };
+
+  fetchUserInfo();
+}, [tipoUsuario]);
+
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -542,660 +623,774 @@ const UserProfile = () => {
     );
   }
 
-  if (tipoUsuario === "UC") {
-    return (
-      <div className="profile-page">
-        <ToastContainer />
-        <NavBar />
-        <div className="profile-container">
-          <div className="profile-header">
-            <div className="profile-photo-wrapper">
-              <img
-                src={userData.imageUrl || "/default-avatar.png"}
-                alt="User Avatar"
-                className="profile-photo"
-              />
-              {isEditing && (
-                <>
-                  <label htmlFor="upload-photo" className="edit-photo-icon">
-                    <PencilSquare />
+if (tipoUsuario === "UC") {
+  return (
+    <div className="profile-page">
+      <ToastContainer />
+      <NavBar />
+      <div className="profile-container">
+        {/* Cabeçalho do Perfil */}
+        <div className="profile-header">
+          <div className="profile-photo-wrapper">
+            <img
+              src={userData.imageUrl || "/default-avatar.png"}
+              alt="User Avatar"
+              className="profile-photo"
+            />
+            {isEditing && (
+              <>
+                <label htmlFor="upload-photo" className="edit-photo-icon">
+                  <PencilSquare />
+                </label>
+                <input
+                  type="file"
+                  id="upload-photo"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+              </>
+            )}
+          </div>
+          <div className="profile-info">
+            {isEditing ? (
+              <>
+                <div className="profile-input-group">
+                  <label htmlFor="fullName" className="profile-label">
+                    Nome
                   </label>
                   <input
-                    type="file"
-                    id="upload-photo"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ display: "none" }}
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    value={userData.fullName || ""}
+                    onChange={handleInputChange}
+                    className="profile-input"
+                    placeholder="Nome Completo"
                   />
-                </>
-              )}
-            </div>
-            <div className="profile-info">
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="fullName"
-                  value={userData.fullName || ""}
-                  onChange={handleInputChange}
-                  className="profile-name-input"
-                />
-              ) : (
+                </div>
+                <div className="profile-input-group">
+                  <label htmlFor="occupation" className="profile-label">
+                    Ocupação
+                  </label>
+                  <input
+                    type="text"
+                    id="occupation"
+                    name="occupation"
+                    value={userData.occupation || ""}
+                    onChange={handleInputChange}
+                    className="profile-input"
+                    placeholder="Ocupação"
+                  />
+                </div>
+              </>
+            ) : (
+              <>
                 <h2 className="profile-name">{userData.fullName}</h2>
-              )}
-              <p className="profile-title">
-                {userData.occupation || "Ocupação não informada"}
-              </p>
-              <div className="profile-actions">
-                <button onClick={handleEditToggle} className="edit-button">
-                  <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
-                </button>
-                <button onClick={handleShareProfile} className="share-button">
-                  <ShareFill /> Compartilhar
-                </button>
-                <button
-                  onClick={handleDownloadPortfolio}
-                  className="download-button"
-                >
-                  <FileEarmarkArrowDownFill /> Baixar Portfólio
-                </button>
-              </div>
+                <p className="profile-title">
+                  {userData.occupation || "Ocupação não informada"}
+                </p>
+              </>
+            )}
+            <div className="profile-actions">
+              <button onClick={handleEditToggle} className="edit-button">
+                <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+              </button>
+              <button onClick={handleShareProfile} className="share-button">
+                <ShareFill /> Compartilhar
+              </button>
+              <button
+                onClick={handleDownloadPortfolio}
+                className="download-button"
+              >
+                <FileEarmarkArrowDownFill /> Baixar Portfólio
+              </button>
             </div>
           </div>
+        </div>
 
-          {isEditing ? (
-            <div className="profile-sections">
-              <div className="profile-section">
-                <label>
-                  <PersonFill className="icon" /> Sobre
-                </label>
-                <textarea
-                  name="about"
-                  value={userData.about || ""}
-                  onChange={handleInputChange}
-                  className="profile-about-input"
-                />
-              </div>
+        {/* Guias de Perfil e Badges */}
+        <div className="tabs">
+          <button
+            onClick={() => handleTabChange("perfil")}
+            className={activeTab === "perfil" ? "active" : ""}
+          >
+            Perfil
+          </button>
+          <button
+            onClick={() => handleTabChange("badges")}
+            className={activeTab === "badges" ? "active" : ""}
+          >
+            Badges
+          </button>
+        </div>
 
-              {/* Seção de Idiomas */}
-              <div className="profile-section">
-                <h3>
-                  <Globe className="icon" /> Idiomas
-                </h3>
-                <div className="language-dropdown" ref={languageDropdownRef}>
-                  <button
-                    type="button"
-                    className="language-dropdown-button"
-                    onClick={toggleLanguageDropdown}
-                  >
-                    {userData.languages.length > 0
-                      ? userData.languages.map((lang) => lang.name).join(", ")
-                      : "Selecione os idiomas"}
-                    <span className="dropdown-icon">
-                      {isLanguageDropdownOpen ? <ChevronUp /> : <ChevronDown />}
-                    </span>
-                  </button>
-                  {isLanguageDropdownOpen && (
-                    <div className="language-dropdown-content">
-                      {availableLanguages.map((language) => (
-                        <div key={language.id} className="language-checkbox">
-                          <label>
-                            <input
-                              type="checkbox"
-                              value={language.id}
-                              checked={userData.languages.some(
-                                (lang) => lang.id === language.id
-                              )}
-                              onChange={handleLanguageCheckboxChange}
-                            />
-                            {language.language}
-                          </label>
-                        </div>
-                      ))}
+        {/* Conteúdo das Guias */}
+        <div className="tab-content">
+          {/* Guia Perfil */}
+          {activeTab === "perfil" &&
+            (isEditing ? (
+              <div className="profile-sections">
+                {/* Seção Sobre */}
+                <div className="profile-section">
+                  <p>
+                    <PersonFill className="icon" /> Sobre
+                  </p>
+                  <textarea
+                    name="about"
+                    value={userData.about || ""}
+                    onChange={handleInputChange}
+                    className="profile-about-input"
+                  />
+                </div>
+
+                {/* Seção Idiomas */}
+                <div className="profile-section">
+                  <h3>
+                    <Globe className="icon" /> Idiomas
+                  </h3>
+                  <div className="language-dropdown" ref={languageDropdownRef}>
+                    <button
+                      type="button"
+                      className="language-dropdown-button"
+                      onClick={toggleLanguageDropdown}
+                    >
+                      {userData.languages.length > 0
+                        ? userData.languages.map((lang) => lang.name).join(", ")
+                        : "Selecione os idiomas"}
+                      <span className="dropdown-icon">
+                        {isLanguageDropdownOpen ? (
+                          <ChevronUp />
+                        ) : (
+                          <ChevronDown />
+                        )}
+                      </span>
+                    </button>
+                    {isLanguageDropdownOpen && (
+                      <div className="language-dropdown-content">
+                        {availableLanguages.map((language) => (
+                          <div key={language.id} className="language-checkbox">
+                            <label>
+                              <input
+                                type="checkbox"
+                                value={language.id}
+                                checked={userData.languages.some(
+                                  (lang) => lang.id === language.id
+                                )}
+                                onChange={handleLanguageCheckboxChange}
+                              />
+                              {language.language}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Seção Educação */}
+                <div className="profile-section">
+                  <h3>
+                    <MortarboardFill className="icon" /> Educação
+                  </h3>
+                  {userData.education.map((edu, index) => (
+                    <div key={index} className="profile-array-item">
+                      <Building className="icon" />
+                      <input
+                        type="text"
+                        value={edu.institution || ""}
+                        placeholder="Instituição"
+                        onChange={(e) =>
+                          handleArrayChange(
+                            e,
+                            index,
+                            "institution",
+                            "education"
+                          )
+                        }
+                        className="profile-input"
+                      />
+                      <AwardFill className="icon" />
+                      <input
+                        type="text"
+                        value={edu.degree || ""}
+                        placeholder="Grau"
+                        onChange={(e) =>
+                          handleArrayChange(e, index, "degree", "education")
+                        }
+                        className="profile-input"
+                      />
+                      <CalendarFill className="icon" />
+                      <input
+                        type="text"
+                        value={edu.admissionYear || ""}
+                        placeholder="Ano de Ingresso"
+                        onChange={(e) =>
+                          handleArrayChange(
+                            e,
+                            index,
+                            "admissionYear",
+                            "education"
+                          )
+                        }
+                        className="profile-input"
+                      />
+                      <CalendarFill className="icon" />
+                      <input
+                        type="text"
+                        value={edu.graduationYear || ""}
+                        placeholder="Ano de Conclusão"
+                        onChange={(e) =>
+                          handleArrayChange(
+                            e,
+                            index,
+                            "graduationYear",
+                            "education"
+                          )
+                        }
+                        className="profile-input"
+                      />
+                      <button
+                        onClick={() => handleRemoveItem(index, "education")}
+                        className="delete-button"
+                      >
+                        <Trash />
+                      </button>
                     </div>
+                  ))}
+                  <button
+                    onClick={() =>
+                      handleAddItem("education", {
+                        degree: "",
+                        institution: "",
+                        admissionYear: "",
+                        graduationYear: "",
+                      })
+                    }
+                    className="add-button"
+                  >
+                    <PlusSquare /> Adicionar
+                  </button>
+                </div>
+
+                {/* Seção Experiência Profissional */}
+                <div className="profile-section">
+                  <h3>
+                    <Briefcase className="icon" /> Experiência Profissional
+                  </h3>
+                  {userData.professionalExperience.map((exp, index) => (
+                    <div key={index} className="profile-array-item">
+                      <Building className="icon" />
+                      <input
+                        type="text"
+                        value={exp.company || ""}
+                        placeholder="Empresa"
+                        onChange={(e) =>
+                          handleArrayChange(
+                            e,
+                            index,
+                            "company",
+                            "professionalExperience"
+                          )
+                        }
+                        className="profile-input"
+                      />
+                      <Briefcase className="icon" />
+                      <input
+                        type="text"
+                        value={exp.position || ""}
+                        placeholder="Cargo"
+                        onChange={(e) =>
+                          handleArrayChange(
+                            e,
+                            index,
+                            "position",
+                            "professionalExperience"
+                          )
+                        }
+                        className="profile-input"
+                      />
+                      <CalendarFill className="icon" />
+                      <input
+                        type="text"
+                        value={exp.startDate || ""}
+                        placeholder="Ano de Início"
+                        onChange={(e) =>
+                          handleArrayChange(
+                            e,
+                            index,
+                            "startDate",
+                            "professionalExperience"
+                          )
+                        }
+                        className="profile-input"
+                      />
+                      <CalendarFill className="icon" />
+                      <input
+                        type="text"
+                        value={exp.endDate || ""}
+                        placeholder="Ano de Término"
+                        onChange={(e) =>
+                          handleArrayChange(
+                            e,
+                            index,
+                            "endDate",
+                            "professionalExperience"
+                          )
+                        }
+                        className="profile-input"
+                      />
+                      <button
+                        onClick={() =>
+                          handleRemoveItem(index, "professionalExperience")
+                        }
+                        className="delete-button"
+                      >
+                        <Trash />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() =>
+                      handleAddItem("professionalExperience", {
+                        company: "",
+                        position: "",
+                        startDate: "",
+                        endDate: "",
+                      })
+                    }
+                    className="add-button"
+                  >
+                    <PlusSquare /> Adicionar
+                  </button>
+                </div>
+
+                {/* Botão Salvar Alterações */}
+                <button onClick={handleSaveChanges} className="save-button">
+                  Salvar Alterações
+                </button>
+              </div>
+            ) : (
+              <div className="profile-sections">
+                {/* Seção Sobre */}
+                <div className="profile-section">
+                  <h3>
+                    <PersonFill className="icon" /> Sobre
+                  </h3>
+                  <p>{userData.about || "Nenhuma descrição fornecida."}</p>
+                </div>
+
+                {/* Seção Educação */}
+                <div className="profile-section">
+                  <h3>
+                    <MortarboardFill className="icon" /> Educação
+                  </h3>
+                  {Array.isArray(userData.education) &&
+                  userData.education.length > 0 ? (
+                    userData.education.map((edu, index) => (
+                      <div key={index} className="education-item">
+                        <div className="profile-info-row">
+                          <Building className="icon" />
+                          <span className="institution-name">
+                            {edu.institution}
+                          </span>
+                        </div>
+                        <div className="profile-info-row">
+                          <AwardFill className="icon" />
+                          <span className="education-degree">{edu.degree}</span>
+                        </div>
+                        <div className="profile-info-row">
+                          <CalendarFill className="icon" />
+                          <span className="education-dates">
+                            {edu.admissionYear} - {edu.graduationYear}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Nenhuma informação educacional fornecida.</p>
+                  )}
+                </div>
+
+                {/* Seção Experiência Profissional */}
+                <div className="profile-section">
+                  <h3>
+                    <Briefcase className="icon" /> Experiência Profissional
+                  </h3>
+                  {Array.isArray(userData.professionalExperience) &&
+                  userData.professionalExperience.length > 0 ? (
+                    userData.professionalExperience.map((exp, index) => (
+                      <div key={index} className="experience-item">
+                        <div className="profile-info-row">
+                          <Building className="icon" />
+                          <span className="profile-info-text">
+                            {exp.company}
+                          </span>
+                        </div>
+                        <div className="profile-info-row">
+                          <Briefcase className="icon" />
+                          <span className="profile-info-text">
+                            {exp.position}
+                          </span>
+                        </div>
+                        <div className="profile-info-row">
+                          <CalendarFill className="icon" />
+                          <span className="education-dates">
+                            {exp.startDate} - {exp.endDate}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Nenhuma experiência profissional fornecida.</p>
+                  )}
+                </div>
+
+                {/* Seção Idiomas */}
+                <div className="profile-section">
+                  <h3>
+                    <Globe className="icon" /> Idiomas
+                  </h3>
+                  {Array.isArray(userData.languages) &&
+                  userData.languages.length > 0 ? (
+                    userData.languages.map((language, index) => (
+                      <div key={index} className="profile-info-row">
+                        <Flag className="icon" />
+                        <span className="profile-info-text">
+                          {language.name}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <p>Nenhum idioma fornecido.</p>
                   )}
                 </div>
               </div>
+            ))}
 
-              <div className="profile-section">
-                <h3>
-                  <MortarboardFill className="icon" /> Educação
-                </h3>
-                {userData.education.map((edu, index) => (
-                  <div key={index} className="profile-array-item">
-                    <Building className="icon" />
-                    <input
-                      type="text"
-                      value={edu.institution || ""}
-                      placeholder="Instituição"
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "institution", "education")
-                      }
-                      className="profile-input"
-                    />
-                    <AwardFill className="icon" />
-                    <input
-                      type="text"
-                      value={edu.degree || ""}
-                      placeholder="Grau"
-                      onChange={(e) =>
-                        handleArrayChange(e, index, "degree", "education")
-                      }
-                      className="profile-input"
-                    />
-                    <CalendarFill className="icon" />
-                    <input
-                      type="text"
-                      value={edu.admissionYear || ""}
-                      placeholder="Ano de Ingresso"
-                      onChange={(e) =>
-                        handleArrayChange(
-                          e,
-                          index,
-                          "admissionYear",
-                          "education"
-                        )
-                      }
-                      className="profile-input"
-                    />
-                    <CalendarFill className="icon" />
-                    <input
-                      type="text"
-                      value={edu.graduationYear || ""}
-                      placeholder="Ano de Conclusão"
-                      onChange={(e) =>
-                        handleArrayChange(
-                          e,
-                          index,
-                          "graduationYear",
-                          "education"
-                        )
-                      }
-                      className="profile-input"
-                    />
-                    <button
-                      onClick={() => handleRemoveItem(index, "education")}
-                      className="delete-button"
-                    >
-                      <Trash />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() =>
-                    handleAddItem("education", {
-                      degree: "",
-                      institution: "",
-                      admissionYear: "",
-                      graduationYear: "",
-                    })
-                  }
-                  className="add-button"
-                >
-                  <PlusSquare /> Adicionar
-                </button>
-              </div>
-
-              <div className="profile-section">
-                <h3>
-                  <Briefcase className="icon" /> Experiência Profissional
-                </h3>
-                {userData.professionalExperience.map((exp, index) => (
-                  <div key={index} className="profile-array-item">
-                    <Building className="icon" />
-                    <input
-                      type="text"
-                      value={exp.company || ""}
-                      placeholder="Empresa"
-                      onChange={(e) =>
-                        handleArrayChange(
-                          e,
-                          index,
-                          "company",
-                          "professionalExperience"
-                        )
-                      }
-                      className="profile-input"
-                    />
-                    <Briefcase className="icon" />
-                    <input
-                      type="text"
-                      value={exp.position || ""}
-                      placeholder="Cargo"
-                      onChange={(e) =>
-                        handleArrayChange(
-                          e,
-                          index,
-                          "position",
-                          "professionalExperience"
-                        )
-                      }
-                      className="profile-input"
-                    />
-                    <CalendarFill className="icon" />
-                    <input
-                      type="text"
-                      value={exp.startDate || ""}
-                      placeholder="Ano de Início"
-                      onChange={(e) =>
-                        handleArrayChange(
-                          e,
-                          index,
-                          "startDate",
-                          "professionalExperience"
-                        )
-                      }
-                      className="profile-input"
-                    />
-                    <CalendarFill className="icon" />
-                    <input
-                      type="text"
-                      value={exp.endDate || ""}
-                      placeholder="Ano de Término"
-                      onChange={(e) =>
-                        handleArrayChange(
-                          e,
-                          index,
-                          "endDate",
-                          "professionalExperience"
-                        )
-                      }
-                      className="profile-input"
-                    />
-                    <button
-                      onClick={() =>
-                        handleRemoveItem(index, "professionalExperience")
-                      }
-                      className="delete-button"
-                    >
-                      <Trash />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  onClick={() =>
-                    handleAddItem("professionalExperience", {
-                      company: "",
-                      position: "",
-                      startDate: "",
-                      endDate: "",
-                    })
-                  }
-                  className="add-button"
-                >
-                  <PlusSquare /> Adicionar
-                </button>
-              </div>
-
-              <button onClick={handleSaveChanges} className="save-button">
-                Salvar Alterações
-              </button>
-            </div>
-          ) : (
-            <div className="profile-sections">
-              <div className="profile-section">
-                <h3>
-                  <PersonFill className="icon" /> Sobre
-                </h3>
-                <p>{userData.about || "Nenhuma descrição fornecida."}</p>
-              </div>
-              <div className="profile-section">
-                <h3>
-                  <MortarboardFill className="icon" /> Educação
-                </h3>
-                {Array.isArray(userData.education) &&
-                userData.education.length > 0 ? (
-                  userData.education.map((edu, index) => (
-                    <div key={index} className="education-item">
-                      <div className="profile-info-row">
-                        <Building className="icon" />
-                        <span className="institution-name">
-                          {edu.institution}
-                        </span>
-                      </div>
-                      <div className="profile-info-row">
-                        <AwardFill className="icon" />
-                        <span className="education-degree">{edu.degree}</span>
-                      </div>
-                      <div className="profile-info-row">
-                        <CalendarFill className="icon" />
-                        <span className="education-dates">
-                          {edu.admissionYear} - {edu.graduationYear}
-                        </span>
+          {/* Guia Badges */}
+          {activeTab === "badges" && (
+            <div className="badges-section">
+              <h3>Badges</h3>
+              {userData.badges && userData.badges.length > 0 ? (
+                <div className="badges-grid">
+                  {userData.badges.map((badge, index) => (
+                    <div key={badge.id} className="badge-card">
+                      <img
+                        src={badge.image_url}
+                        alt="Badge"
+                        className="badge-preview"
+                      />
+                      <h4>{badge.name_badge}</h4>
+                      <div className="badge-visibility">
+                        <label className="custom-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={badge.is_public}
+                            onChange={(e) =>
+                              handleBadgeVisibilityChange(e, badge.id, index)
+                            }
+                          />
+                          <span className="checkmark"></span>
+                          {badge.is_public ? "Pública" : "Privada"}
+                        </label>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p>Nenhuma informação educacional fornecida.</p>
-                )}
-              </div>
-              <div className="profile-section">
-                <h3>
-                  <Briefcase className="icon" /> Experiência Profissional
-                </h3>
-                {Array.isArray(userData.professionalExperience) &&
-                userData.professionalExperience.length > 0 ? (
-                  userData.professionalExperience.map((exp, index) => (
-                    <div key={index} className="experience-item">
-                      <div className="profile-info-row">
-                        <Building className="icon" />
-                        <span className="profile-info-text">{exp.company}</span>
-                      </div>
-                      <div className="profile-info-row">
-                        <Briefcase className="icon" />
-                        <span className="profile-info-text">
-                          {exp.position}
-                        </span>
-                      </div>
-                      <div className="profile-info-row">
-                        <CalendarFill className="icon" />
-                        <span className="education-dates">
-                          {exp.startDate} - {exp.endDate}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p>Nenhuma experiência profissional fornecida.</p>
-                )}
-              </div>
-              <div className="profile-section">
-                <h3>
-                  <Globe className="icon" /> Idiomas
-                </h3>
-                {Array.isArray(userData.languages) &&
-                userData.languages.length > 0 ? (
-                  userData.languages.map((language, index) => (
-                    <div key={index} className="profile-info-row">
-                      <Flag className="icon" />
-                      <span className="profile-info-text">{language.name}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p>Nenhum idioma fornecido.</p>
-                )}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <p>Nenhuma badge disponível.</p>
+              )}
             </div>
           )}
         </div>
       </div>
-    );
-  } else if (tipoUsuario === "UE") {
-    return (
-      <div className="profile-page">
-        <ToastContainer />
-        <NavBar />
-        <div className="profile-container">
-          <div className="profile-header">
-            <div className="profile-photo-wrapper">
-              <img
-                src={userData.imageUrl || "/default-company-logo.png"}
-                alt="Company Logo"
-                className="profile-photo"
+    </div>
+  );
+} else if (tipoUsuario === "UE") {
+  return (
+    <div className="profile-page">
+      <ToastContainer />
+      <NavBar />
+      <div className="profile-container">
+        <div className="profile-header">
+          <div className="profile-photo-wrapper">
+            <img
+              src={userData.imageUrl || "/default-company-logo.png"}
+              alt="Company Logo"
+              className="profile-photo"
+            />
+            {isEditing && (
+              <>
+                <label htmlFor="upload-photo" className="edit-photo-icon">
+                  <PencilSquare />
+                </label>
+                <input
+                  type="file"
+                  id="upload-photo"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: "none" }}
+                />
+              </>
+            )}
+          </div>
+          <div className="profile-info">
+            {isEditing ? (
+              <input
+                type="text"
+                name="razao_social"
+                value={userData.razao_social || ""}
+                onChange={handleInputChange}
+                className="profile-name-input"
               />
-              {isEditing && (
+            ) : (
+              <h2 className="profile-name">{userData.razao_social}</h2>
+            )}
+            <p className="profile-title">
+              {userData.cnpj || "CNPJ not provided"}
+            </p>
+            <div className="company-badges">
+              {userData.municipio && (
+                <span className="company-badge">
+                  <GeoAlt /> {userData.municipio}
+                </span>
+              )}
+              {userData.segmento && (
+                <span className="company-badge">
+                  <Briefcase /> {userData.segmento}
+                </span>
+              )}
+              {userData.tamanho && (
+                <span className="company-badge">
+                  <PeopleFill /> {userData.tamanho}
+                </span>
+              )}
+            </div>
+            <div className="profile-actions">
+              <button onClick={handleEditToggle} className="edit-button">
+                <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+              </button>
+              <button onClick={handleShareProfile} className="share-button">
+                <ShareFill /> Share Profile
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="tabs">
+          <button
+            onClick={() => handleTabChange("sobre")}
+            className={activeTab === "sobre" ? "active" : ""}
+          >
+            About
+          </button>
+          <button
+            onClick={() => handleTabChange("eventos")}
+            className={activeTab === "eventos" ? "active" : ""}
+          >
+            Events
+          </button>
+          <button
+            onClick={() => handleTabChange("badges")}
+            className={activeTab === "badges" ? "active" : ""}
+          >
+            Badges
+          </button>
+        </div>
+
+        <div className="tab-content">
+          {activeTab === "sobre" && (
+            <div className="sobre-section">
+              {isEditing ? (
                 <>
-                  <label htmlFor="upload-photo" className="edit-photo-icon">
-                    <PencilSquare />
-                  </label>
-                  <input
-                    type="file"
-                    id="upload-photo"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ display: "none" }}
-                  />
+                  <div className="profile-section">
+                    <label>
+                      <PersonFill className="icon" /> About
+                    </label>
+                    <textarea
+                      name="sobre" // Ajuste 'about' para 'sobre'
+                      value={userData.sobre || ""}
+                      onChange={handleInputChange}
+                      className="profile-about-input"
+                    />
+                  </div>
+                  <div className="profile-section">
+                    <label>
+                      <Globe className="icon" /> Website
+                    </label>
+                    <input
+                      type="text"
+                      name="website"
+                      value={userData.website || ""}
+                      onChange={handleInputChange}
+                      className="profile-input"
+                    />
+                  </div>
+                  <div className="profile-section">
+                    <label>
+                      <Phone className="icon" /> Phone
+                    </label>
+                    <input
+                      type="text"
+                      name="numero_contato"
+                      value={userData.numero_contato || ""}
+                      onChange={handleInputChange}
+                      className="profile-input"
+                    />
+                  </div>
+                  <button onClick={handleSaveChanges} className="save-button">
+                    Save Changes
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="profile-section">
+                    <h3>
+                      <PersonFill className="icon" /> About
+                    </h3>
+                    <p>{userData.sobre || "No description provided."}</p>
+                  </div>
+                  <div className="profile-section">
+                    <h3>
+                      <Globe className="icon" /> Website
+                    </h3>
+                    <p>{userData.website || "Not provided"}</p>
+                  </div>
+                  <div className="profile-section">
+                    <h3>
+                      <Phone className="icon" /> Phone
+                    </h3>
+                    <p>{userData.numero_contato || "Not provided"}</p>
+                  </div>
                 </>
               )}
             </div>
-            <div className="profile-info">
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="razao_social"
-                  value={userData.razao_social || ""}
-                  onChange={handleInputChange}
-                  className="profile-name-input"
+          )}
+
+          {activeTab === "eventos" && (
+            <div className="eventos-section">
+              <h3>Promoted Events</h3>
+
+              {/* Componente para criar novos posts */}
+              <PostForm onPostCreated={handleNewPost} />
+
+              {/* Renderizar o PostForm para edição */}
+              {editingEvent && (
+                <PostForm
+                  existingEvent={editingEvent}
+                  onPostUpdated={handlePostUpdated}
+                  onClose={() => setEditingEvent(null)}
+                  isEditAllowed={isWithin24Hours(editingEvent.createdAt)}
                 />
-              ) : (
-                <h2 className="profile-name">{userData.razao_social}</h2>
               )}
-              <p className="profile-title">
-                {userData.cnpj || "CNPJ not provided"}
-              </p>
-              <div className="company-badges">
-                {userData.municipio && (
-                  <span className="company-badge">
-                    <GeoAlt /> {userData.municipio}
-                  </span>
-                )}
-                {userData.segmento && (
-                  <span className="company-badge">
-                    <Briefcase /> {userData.segmento}
-                  </span>
-                )}
-                {userData.tamanho && (
-                  <span className="company-badge">
-                    <PeopleFill /> {userData.tamanho}
-                  </span>
-                )}
-              </div>
-              <div className="profile-actions">
-                <button onClick={handleEditToggle} className="edit-button">
-                  <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
-                </button>
-                <button onClick={handleShareProfile} className="share-button">
-                  <ShareFill /> Share Profile
-                </button>
-              </div>
-            </div>
-          </div>
 
-          <div className="tabs">
-            <button
-              onClick={() => handleTabChange("sobre")}
-              className={activeTab === "sobre" ? "active" : ""}
-            >
-              About
-            </button>
-            <button
-              onClick={() => handleTabChange("eventos")}
-              className={activeTab === "eventos" ? "active" : ""}
-            >
-              Events
-            </button>
-            <button
-              onClick={() => handleTabChange("badges")}
-              className={activeTab === "badges" ? "active" : ""}
-            >
-              Badges
-            </button>
-          </div>
-
-          <div className="tab-content">
-            {activeTab === "sobre" && (
-              <div className="sobre-section">
-                {isEditing ? (
-                  <>
-                    <div className="profile-section">
-                      <label>
-                        <PersonFill className="icon" /> About
-                      </label>
-                      <textarea
-                        name="sobre" // Ajuste 'about' para 'sobre'
-                        value={userData.sobre || ""}
-                        onChange={handleInputChange}
-                        className="profile-about-input"
+              {/* Renderização dos eventos */}
+              {userData.events && userData.events.length > 0 ? (
+                userData.events.map((event, index) => (
+                  <div key={index} className="event-item">
+                    <div className="event-header">
+                      <img
+                        src={userData.imageUrl || "/default-avatar.png"}
+                        alt="User Avatar"
+                        className="event-user-avatar"
                       />
-                    </div>
-                    <div className="profile-section">
-                      <label>
-                        <Globe className="icon" /> Website
-                      </label>
-                      <input
-                        type="text"
-                        name="website"
-                        value={userData.website || ""}
-                        onChange={handleInputChange}
-                        className="profile-input"
-                      />
-                    </div>
-                    <div className="profile-section">
-                      <label>
-                        <Phone className="icon" /> Phone
-                      </label>
-                      <input
-                        type="text"
-                        name="numero_contato"
-                        value={userData.numero_contato || ""}
-                        onChange={handleInputChange}
-                        className="profile-input"
-                      />
-                    </div>
-                    <button onClick={handleSaveChanges} className="save-button">
-                      Save Changes
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div className="profile-section">
-                      <h3>
-                        <PersonFill className="icon" /> About
-                      </h3>
-                      <p>{userData.sobre || "No description provided."}</p>
-                    </div>
-                    <div className="profile-section">
-                      <h3>
-                        <Globe className="icon" /> Website
-                      </h3>
-                      <p>{userData.website || "Not provided"}</p>
-                    </div>
-                    <div className="profile-section">
-                      <h3>
-                        <Phone className="icon" /> Phone
-                      </h3>
-                      <p>{userData.numero_contato || "Not provided"}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
+                      <span className="event-user-name">
+                        {userData.razao_social}
+                      </span>
 
-            {activeTab === "eventos" && (
-              <div className="eventos-section">
-                <h3>Promoted Events</h3>
-
-                {/* Componente para criar novos posts */}
-                <PostForm onPostCreated={handleNewPost} />
-
-                {/* Renderizar o PostForm para edição */}
-                {editingEvent && (
-                  <PostForm
-                    existingEvent={editingEvent}
-                    onPostUpdated={handlePostUpdated}
-                    onClose={() => setEditingEvent(null)}
-                    isEditAllowed={isWithin24Hours(editingEvent.createdAt)}
-                  />
-                )}
-
-                {/* Renderização dos eventos */}
-                {userData.events && userData.events.length > 0 ? (
-                  userData.events.map((event, index) => (
-                    <div key={index} className="event-item">
-                      <div className="event-header">
-                        <img
-                          src={userData.imageUrl || "/default-avatar.png"}
-                          alt="User Avatar"
-                          className="event-user-avatar"
-                        />
-                        <span className="event-user-name">
-                          {userData.razao_social}
+                      {/* Exibição da Data e Hora de Publicação */}
+                      {event.createdAt && (
+                        <span className="event-publication-time">
+                          {formatDateTime(event.createdAt)}
                         </span>
+                      )}
 
-                        {/* Exibição da Data e Hora de Publicação */}
-                        {event.createdAt && (
-                          <span className="event-publication-time">
-                            {formatDateTime(event.createdAt)}
-                          </span>
-                        )}
-
-                        {/* Ícone de três pontinhos sempre visível */}
-                        <div className="event-options">
-                          <ThreeDotsVertical
-                            className="options-icon"
-                            onClick={() => handleOptionsClick(index)}
-                          />
-                          {optionsVisibleIndex === index && (
-                            <div className="options-menu">
-                              {/* Botão "Editar" habilitado apenas se dentro de 24h */}
-                              <button
-                                onClick={() => handleEditEvent(event)}
-                                disabled={!isWithin24Hours(event.createdAt)}
-                                style={{
-                                  cursor: isWithin24Hours(event.createdAt)
-                                    ? "pointer"
-                                    : "not-allowed",
-                                  opacity: isWithin24Hours(event.createdAt)
-                                    ? 1
-                                    : 0.5,
-                                }}
-                                title={
-                                  !isWithin24Hours(event.createdAt)
-                                    ? "Editing available only within the first 24 hours"
-                                    : "Edit Event"
-                                }
-                              >
-                                Edit
-                              </button>
-                              {/* Botão "Excluir" sempre habilitado */}
-                              <button onClick={() => handleDeleteEvent(event)}>
-                                Delete
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="event-details">
-                        <p>{event.descricao || "No description"}</p>
-                        {event.imageUrl && (
-                          <img
-                            src={event.imageUrl}
-                            alt="Event Image"
-                            className="event-image"
-                          />
+                      {/* Ícone de três pontinhos sempre visível */}
+                      <div className="event-options">
+                        <ThreeDotsVertical
+                          className="options-icon"
+                          onClick={() => handleOptionsClick(index)}
+                        />
+                        {optionsVisibleIndex === index && (
+                          <div className="options-menu">
+                            {/* Botão "Editar" habilitado apenas se dentro de 24h */}
+                            <button
+                              onClick={() => handleEditEvent(event)}
+                              disabled={!isWithin24Hours(event.createdAt)}
+                              style={{
+                                cursor: isWithin24Hours(event.createdAt)
+                                  ? "pointer"
+                                  : "not-allowed",
+                                opacity: isWithin24Hours(event.createdAt)
+                                  ? 1
+                                  : 0.5,
+                              }}
+                              title={
+                                !isWithin24Hours(event.createdAt)
+                                  ? "Editing available only within the first 24 hours"
+                                  : "Edit Event"
+                              }
+                            >
+                              Edit
+                            </button>
+                            {/* Botão "Excluir" sempre habilitado */}
+                            <button onClick={() => handleDeleteEvent(event)}>
+                              Delete
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <p>No events available.</p>
-                )}
-              </div>
-            )}
-
-            {activeTab === "badges" && (
-              <div className="badges-section">
-                <h3>Earned Badges</h3>
-                {userData.badges && userData.badges.length > 0 ? (
-                  <div className="badges-grid">
-                    {userData.badges.map((badge, index) => (
-                      <div key={index} className="badge-item">
-                        <AwardFill className="badge-icon" />
-                        <span>{badge.name}</span>
-                      </div>
-                    ))}
+                    <div className="event-details">
+                      <p>{event.descricao || "No description"}</p>
+                      {event.imageUrl && (
+                        <img
+                          src={event.imageUrl}
+                          alt="Event Image"
+                          className="event-image"
+                        />
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <p>No badges available.</p>
-                )}
-              </div>
-            )}
-          </div>
+                ))
+              ) : (
+                <p>No events available.</p>
+              )}
+            </div>
+          )}
+
+          {activeTab === "badges" && (
+            <div className="badges-section">
+              <h3>Badges</h3>
+              {userData.badges && userData.badges.length > 0 ? (
+                <div className="badges-grid">
+                  {userData.badges.map((badge) => (
+                    <div key={badge.id_badge} className="badge-card">
+                      <img
+                        src={badge.image_url}
+                        alt="Badge"
+                        className="badge-preview"
+                      />
+                      <h3>{badge.name_badge}</h3>
+                      <Link to={`/badges/details/${badge.id_badge}`}>
+                        <button>Details</button>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>No badges available.</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
-    );
-  } else {
-    return null; // Ou redirecione para o login
-  }
+    </div>
+  );
+} else {
+  return null; // Ou redirecione para o login
+}
 };
 
 export default UserProfile;
