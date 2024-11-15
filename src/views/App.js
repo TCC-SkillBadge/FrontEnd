@@ -98,7 +98,7 @@ function App() {
           <Route path="/edit-plan/:id" element={<EditServicePlan />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/profile/:encodedEmail" element={<UserProfile />} />
           <Route path="/api-reference" element={<ApiReference />} />
           <Route path="/funcionalidades" element={<FuncionalidadesManager />} />
           <Route
