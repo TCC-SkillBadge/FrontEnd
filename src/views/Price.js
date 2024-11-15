@@ -14,7 +14,7 @@ import PaymentConfirmationModal from "../components/PaymentConfirmationModal";
 
 const Price = () => {
   const [plans, setPlans] = useState([]);
-  const [currentPlan, setCurrentPlan] = useState(null); // Novo estado para o plano atual
+  const [currentPlan, setCurrentPlan] = useState(null); // Current plan
   const [userType, setUserType] = useState(null);
   const [emailComercial, setEmailComercial] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,12 +26,12 @@ const Price = () => {
   useEffect(() => {
     const fetchPlansAndCurrentPlan = async () => {
       try {
-        // Buscar todos os planos
+        // Fetch all plans
         const response = await axios.get("http://localhost:9090/api/plans");
         setPlans(response.data);
 
-        // Buscar o plano atual do usuário
-        const token = sessionStorage.getItem("token"); // Assumindo que o token está armazenado no sessionStorage
+        // Fetch current plan if user has one
+        const token = sessionStorage.getItem("token");
         if (token) {
           const currentPlanResponse = await axios.get(
             "http://localhost:7003/api/current-plan",
@@ -46,17 +46,14 @@ const Price = () => {
 
         setLoading(false);
       } catch (error) {
-        console.error(
-          "Ocorreu um erro ao buscar os planos ou o plano atual!",
-          error
-        );
+        console.error("Erro ao buscar os planos ou o plano atual!", error);
         setLoading(false);
       }
     };
 
     fetchPlansAndCurrentPlan();
 
-    // Buscar informações do usuário
+    // Fetch user information
     const storedUserType = sessionStorage.getItem("tipoUsuario");
     const storedUserInfo = sessionStorage.getItem("userInfo");
     let storedEmail = null;
@@ -77,26 +74,25 @@ const Price = () => {
     console.log("Stored Email:", storedEmail);
   }, []);
 
-  // Abre o modal de confirmação e define o plano a ser deletado
+  // Open delete confirmation modal
   const openConfirmationModal = (planId) => {
     setPlanToDelete(planId);
     setShowModal(true);
   };
 
-  // Fecha o modal de confirmação
+  // Close delete confirmation modal
   const handleCloseModal = () => {
     setShowModal(false);
     setPlanToDelete(null);
   };
 
-  // Função para deletar o plano após a confirmação
+  // Confirm deletion of plan
   const handleConfirmDelete = async () => {
     try {
       await axios.delete(`http://localhost:9090/api/plans/${planToDelete}`);
       setPlans((prevPlans) =>
         prevPlans.filter((plan) => plan.id !== planToDelete)
       );
-      // Mostra o Toastify ao deletar com sucesso
       toast.success("Plano deletado com sucesso!", {
         position: "top-center",
         autoClose: 3000,
@@ -104,11 +100,10 @@ const Price = () => {
         closeOnClick: true,
         pauseOnHover: false,
         draggable: true,
-        progress: undefined,
         theme: "dark",
       });
     } catch (error) {
-      console.error("Ocorreu um erro ao deletar o plano!", error);
+      console.error("Erro ao deletar o plano!", error);
       toast.error("Falha ao deletar o plano.", {
         position: "top-center",
         autoClose: 3000,
@@ -123,25 +118,25 @@ const Price = () => {
     }
   };
 
-  // Função para iniciar o processo de pagamento
+  // Initiate payment process
   const handlePayment = (planId) => {
     const selectedPlan = plans.find((plan) => plan.id === planId);
     openPaymentModal(selectedPlan);
   };
 
-  // Abre o modal de confirmação de pagamento
+  // Open payment confirmation modal
   const openPaymentModal = (plan) => {
     setPlanToPurchase(plan);
     setShowPaymentModal(true);
   };
 
-  // Fecha o modal de confirmação de pagamento
+  // Close payment confirmation modal
   const handleClosePaymentModal = () => {
     setShowPaymentModal(false);
     setPlanToPurchase(null);
   };
 
-  // Função para confirmar o pagamento
+  // Confirm payment and associate plan
   const handleConfirmPayment = async () => {
     console.log("Plano a Comprar:", planToPurchase);
     console.log("Email Comercial:", emailComercial);
@@ -168,7 +163,6 @@ const Price = () => {
           userEmail: emailComercial,
         }
       );
-      // Exibir mensagem de sucesso
       toast.success(response.data.message, {
         position: "top-center",
         autoClose: 3000,
@@ -178,8 +172,8 @@ const Price = () => {
         draggable: true,
         theme: "dark",
       });
-      // Atualizar o plano atual
-      setCurrentPlan(response.data.plan); // Atualize com os dados do plano retornado
+      // Update current plan
+      setCurrentPlan(response.data.plan);
     } catch (error) {
       console.error("Erro ao processar o pagamento:", error);
       toast.error("Falha ao processar o pagamento.", {
@@ -199,7 +193,7 @@ const Price = () => {
   const highlightedPlan = plans.find((plan) => plan.prioridade);
   const otherPlans = plans.filter((plan) => !plan.prioridade);
 
-  // Tooltip para o botão de adicionar plano
+  // Tooltip for add plan button
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       Você não pode ter mais de 4 planos.
@@ -234,7 +228,8 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
-                    isCurrent={currentPlan && currentPlan.id === plan.id} // Nova prop
+                    isCurrent={currentPlan && currentPlan.id === plan.id}
+                    isDimmed={currentPlan && currentPlan.id !== plan.id}
                   />
                 ))}
               {highlightedPlan && (
@@ -247,7 +242,10 @@ const Price = () => {
                   handlePayment={handlePayment}
                   isCurrent={
                     currentPlan && currentPlan.id === highlightedPlan.id
-                  } // Nova prop
+                  }
+                  isDimmed={
+                    currentPlan && currentPlan.id !== highlightedPlan.id
+                  }
                 />
               )}
               {otherPlans
@@ -260,14 +258,15 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
-                    isCurrent={currentPlan && currentPlan.id === plan.id} // Nova prop
+                    isCurrent={currentPlan && currentPlan.id === plan.id}
+                    isDimmed={currentPlan && currentPlan.id !== plan.id}
                   />
                 ))}
             </>
           )}
         </div>
 
-        {/* Adicionar Tooltip e desabilitar o botão se houver quatro ou mais planos */}
+        {/* Add Tooltip and disable button if there are four or more plans */}
         {isAdmin && (
           <OverlayTrigger
             placement="top"
@@ -292,7 +291,7 @@ const Price = () => {
         )}
       </div>
 
-      {/* Modal de confirmação de exclusão */}
+      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         show={showModal}
         onHide={handleCloseModal}
@@ -303,7 +302,7 @@ const Price = () => {
         cancelButtonText="Cancelar"
       />
 
-      {/* Modal de confirmação de pagamento */}
+      {/* Payment Confirmation Modal */}
       <PaymentConfirmationModal
         show={showPaymentModal}
         onHide={handleClosePaymentModal}
@@ -311,7 +310,7 @@ const Price = () => {
         plan={planToPurchase}
       />
 
-      {/* Container do ReactToastify */}
+      {/* ReactToastify Container */}
       <ToastContainer />
     </div>
   );

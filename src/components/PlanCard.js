@@ -10,13 +10,14 @@ const PlanCard = ({
   isEnterpriseUser,
   handleDelete,
   handlePayment,
-  isCurrent, // Nova prop
+  isCurrent, // Indicates if this is the current plan
+  isDimmed, // Indicates if the card should be dimmed
 }) => {
   return (
     <div
       className={`plan-card ${plan.prioridade ? "highlight" : ""} ${
         isCurrent ? "current-plan" : ""
-      }`}
+      } ${isDimmed ? "dimmed" : ""}`}
     >
       {isAdmin && (
         <div className="admin-icons">
