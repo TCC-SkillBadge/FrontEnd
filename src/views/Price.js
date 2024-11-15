@@ -1,4 +1,5 @@
 // src/pages/Price.js
+
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "react-bootstrap-icons";
 import Navbar from "../components/Navbar";
@@ -257,7 +258,7 @@ const Price = () => {
                     handlePayment={handlePayment}
                     handleCancel={openCancellationModal}
                     isCurrent={currentPlan && currentPlan.id === plan.id}
-                    isDimmed={currentPlan && currentPlan.id !== plan.id}
+                    isDisabled={!!currentPlan && currentPlan.id !== plan.id} // Desabilita se houver um plano ativo
                     isProcessingPayment={isProcessingPayment}
                   />
                 ))}
@@ -273,9 +274,9 @@ const Price = () => {
                   isCurrent={
                     currentPlan && currentPlan.id === highlightedPlan.id
                   }
-                  isDimmed={
-                    currentPlan && currentPlan.id !== highlightedPlan.id
-                  }
+                  isDisabled={
+                    !!currentPlan && currentPlan.id !== highlightedPlan.id
+                  } // Desabilita se houver um plano ativo
                   isProcessingPayment={isProcessingPayment}
                 />
               )}
@@ -291,7 +292,7 @@ const Price = () => {
                     handlePayment={handlePayment}
                     handleCancel={openCancellationModal}
                     isCurrent={currentPlan && currentPlan.id === plan.id}
-                    isDimmed={currentPlan && currentPlan.id !== plan.id}
+                    isDisabled={!!currentPlan && currentPlan.id !== plan.id} // Desabilita se houver um plano ativo
                     isProcessingPayment={isProcessingPayment}
                   />
                 ))}

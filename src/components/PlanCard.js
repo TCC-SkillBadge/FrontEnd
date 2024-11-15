@@ -10,7 +10,9 @@ const PlanCard = ({
   isEnterpriseUser,
   handleDelete,
   handlePayment,
-  isCurrent, // Nova prop
+  handleCancel, // Nova prop para cancelar o plano
+  isCurrent,
+  isDisabled,
 }) => {
   return (
     <div
@@ -73,13 +75,25 @@ const PlanCard = ({
       <div className="price">
         R${parseFloat(plan.precoPlanoServico).toFixed(2)}/{plan.prazoPagamentos}
       </div>
+
       {/* Exibir botão de compra apenas para usuários empresariais e se não for o plano atual */}
       {!isAdmin && isEnterpriseUser && !isCurrent && (
-        <button className="buy-button" onClick={() => handlePayment(plan.id)}>
+        <button
+          className="buy-button"
+          onClick={() => handlePayment(plan.id)}
+          disabled={isDisabled} // Desabilita o botão se isDisabled for true
+        >
           Comprar Agora
         </button>
       )}
-      {/* Informar que é o plano atual para o usuário */}
+
+      {/* Exibir botão de cancelamento apenas se for o plano atual */}
+      {!isAdmin && isEnterpriseUser && isCurrent && (
+        <button className="cancel-button" onClick={() => handleCancel(plan.id)}>
+          Cancelar Plano
+        </button>
+      )}
+
       {!isAdmin && isEnterpriseUser && isCurrent && (
         <div className="current-plan-info">Este é o seu plano atual.</div>
       )}
