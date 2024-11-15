@@ -1,0 +1,54 @@
+/* PaymentConfirmationModal.css */
+
+.custom-modal .modal-content {
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #8DFD8B;
+  border-radius: 10px;
+  color: #ffffff;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-title {
+  color: #FFD700;
+}
+
+.modal-body {
+  font-size: 1.2em;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+.modal-footer .btn-secondary {
+  background-color: #D273FF;
+  border: none;
+}
+
+.modal-footer .btn-secondary:hover {
+  background-color: #8DFD8B;
+  color: black;
+}
+
+.modal-footer .btn-success {
+  background-color: #FFD700;
+  border: none;
+  color: black;
+}
+
+.modal-footer .btn-success:hover {
+  background-color: #8DFD8B;
+  color: white;
+}
+
+.modal-header .close {
+  color: #ffffff;
+  opacity: 1;
+}
+
+.modal-header .close:hover {
+  color: #FFD700;
+}

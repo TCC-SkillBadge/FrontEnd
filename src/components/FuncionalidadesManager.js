@@ -16,14 +16,13 @@ const FuncionalidadesManager = () => {
 
   const fetchFuncionalidades = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:9090/api/funcionalidades"
-      );
+      const response = await axios.get("http://localhost:9090/api/funcionalidades");
       if (response.status === 200) {
         setFuncionalidades(response.data);
       }
     } catch (error) {
       console.error("Erro ao buscar funcionalidades!", error);
+      toast.error("Erro ao buscar funcionalidades.");
     }
   };
 
@@ -34,12 +33,9 @@ const FuncionalidadesManager = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:9090/api/funcionalidades",
-        {
-          nomeFuncionalidade: newFuncionalidade,
-        }
-      );
+      const response = await axios.post("http://localhost:9090/api/funcionalidades", {
+        nomeFuncionalidade: newFuncionalidade,
+      });
 
       if (response.status === 201) {
         toast.success("Funcionalidade adicionada com sucesso!");
@@ -57,18 +53,23 @@ const FuncionalidadesManager = () => {
       <Navbar />
       <div className="funcionalidades-manager">
         <h2>Gerenciar Funcionalidades</h2>
-        <div className="add-funcionalidade">
+        <div className="add-funcionalidade mb-3">
           <input
             type="text"
+            className="form-control me-2"
             placeholder="Nome da nova funcionalidade"
             value={newFuncionalidade}
             onChange={(e) => setNewFuncionalidade(e.target.value)}
           />
-          <button onClick={handleAddFuncionalidade}>Adicionar</button>
+          <button className="btn btn-success" onClick={handleAddFuncionalidade}>
+            Adicionar
+          </button>
         </div>
-        <ul className="funcionalidades-list">
+        <ul className="funcionalidades-list list-group">
           {funcionalidades.map((func) => (
-            <li key={func.id}>{func.nomeFuncionalidade}</li>
+            <li key={func.id} className="list-group-item">
+              {func.nomeFuncionalidade}
+            </li>
           ))}
         </ul>
       </div>

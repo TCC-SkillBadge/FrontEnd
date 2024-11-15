@@ -8,7 +8,7 @@ import "../styles/CreateServicePlan.css"; // Reutilizando estilos
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Select from "react-select"; // Importando o componente Select
+import CreatableSelect from "react-select/creatable"; // Importando o componente CreatableSelect
 
 const EditServicePlan = () => {
   const { id } = useParams();
@@ -57,16 +57,14 @@ const EditServicePlan = () => {
             const planData = response.data;
 
             // Transformar funcionalidades em formato compatível com o Select
-            const funcionalidadesDisponiveis =
-              planData.funcionalidadesDisponiveis.map((func) => ({
-                value: func.id,
-                label: func.nomeFuncionalidade,
-              }));
-            const funcionalidadesNaoDisponiveis =
-              planData.funcionalidadesNaoDisponiveis.map((func) => ({
-                value: func.id,
-                label: func.nomeFuncionalidade,
-              }));
+            const funcionalidadesDisponiveis = planData.funcionalidadesDisponiveis.map((func) => ({
+              value: func.id,
+              label: func.nomeFuncionalidade,
+            }));
+            const funcionalidadesNaoDisponiveis = planData.funcionalidadesNaoDisponiveis.map((func) => ({
+              value: func.id,
+              label: func.nomeFuncionalidade,
+            }));
 
             setFormData({
               tituloPlanoServico: planData.tituloPlanoServico,
@@ -169,19 +167,56 @@ const EditServicePlan = () => {
     }),
   };
 
-  // Handlers para os componentes Select
-  const handleFuncDisponiveisChange = (selectedOptions) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      funcionalidadesDisponiveis: selectedOptions || [],
-    }));
-  };
+  // Handler para "Available Features" com criação de novas funcionalidades
+  const handleFuncDisponiveisChange = async (selectedOptions, actionMeta) => {
+    if (actionMeta.action === "create-option") {
+      // Nova funcionalidade criada
+      const newOption = actionMeta.option;
+      try {
+        // Enviar nova funcionalidade para o back-end
+        const response = await axios.post("http://localhost:9090/api/funcionalidades", {
+          nomeFuncionalidade: newOption.label,
+        });
+        if (response.status === 201) {
+          const newFunc = response.data;
+          const newFuncOption = { value: newFunc.id, label: newFunc.nomeFuncionalidade };
 
-  const handleFuncNaoDisponiveisChange = (selectedOptions) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      funcionalidadesNaoDisponiveis: selectedOptions || [],
-    }));
+          // Atualizar opções
+          setFuncionalidadesOptions((prevOptions) => [...prevOptions, newFuncOption]);
+
+          // Atualizar seleção
+          const updatedSelectedOptions = [...selectedOptions, newFuncOption];
+
+          setFormData((prevData) => {
+            const selectedIds = updatedSelectedOptions.map((opt) => opt.value);
+            const unavailable = funcionalidadesOptions.filter(
+              (opt) => !selectedIds.includes(opt.value)
+            );
+            return {
+              ...prevData,
+              funcionalidadesDisponiveis: updatedSelectedOptions,
+              funcionalidadesNaoDisponiveis: unavailable,
+            };
+          });
+
+          toast.success("Funcionalidade adicionada com sucesso!");
+        }
+      } catch (error) {
+        console.error("Erro ao adicionar nova funcionalidade!", error);
+        toast.error("Erro ao adicionar nova funcionalidade.");
+      }
+    } else {
+      // Atualizar funcionalidades disponíveis e indisponíveis
+      setFormData((prevData) => {
+        const selectedIds = selectedOptions ? selectedOptions.map((opt) => opt.value) : [];
+        const unavailable = funcionalidadesOptions.filter((opt) => !selectedIds.includes(opt.value));
+        return {
+          ...prevData,
+          funcionalidadesDisponiveis: selectedOptions || [],
+          funcionalidadesNaoDisponiveis: unavailable,
+        };
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -189,12 +224,7 @@ const EditServicePlan = () => {
 
     // Preparar os dados para enviar ao back-end
     const dataToSend = {
-      tituloPlanoServico: formData.tituloPlanoServico,
-      descricaoPlano: formData.descricaoPlano,
-      precoPlanoServico: formData.precoPlanoServico,
-      prazoPagamentos: formData.prazoPagamentos,
-      sugestoesUpgrades: formData.sugestoesUpgrades,
-      prioridade: formData.prioridade,
+      ...formData,
       funcionalidadesDisponiveis: formData.funcionalidadesDisponiveis.map((func) => ({
         id: func.value,
         nomeFuncionalidade: func.label,
@@ -268,6 +298,7 @@ const EditServicePlan = () => {
         <div className="create-plan-container">
           <h2>Edit Service Plan</h2>
           <form onSubmit={handleSubmit}>
+            {/* Título do Plano */}
             <div className="form-group">
               <label htmlFor="tituloPlanoServico" className="form-label">
                 Plan Title
@@ -282,6 +313,8 @@ const EditServicePlan = () => {
                 required
               />
             </div>
+
+            {/* Descrição do Plano */}
             <div className="form-group">
               <label htmlFor="descricaoPlano" className="form-label">
                 Plan Description
@@ -295,32 +328,40 @@ const EditServicePlan = () => {
                 required
               />
             </div>
+
+            {/* Funcionalidades Disponíveis */}
             <div className="form-group">
               <label htmlFor="funcionalidadesDisponiveis" className="form-label">
                 Available Features
               </label>
-              <Select
+              <CreatableSelect
                 isMulti
                 options={funcionalidadesOptions}
                 onChange={handleFuncDisponiveisChange}
                 value={formData.funcionalidadesDisponiveis}
-                placeholder="Select available features"
-                styles={customStyles} // Aplicando estilos personalizados
+                placeholder="Select or add available features"
+                styles={customStyles}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="funcionalidadesNaoDisponiveis" className="form-label">
-                Unavailable Features
-              </label>
-              <Select
-                isMulti
-                options={funcionalidadesOptions}
-                onChange={handleFuncNaoDisponiveisChange}
-                value={formData.funcionalidadesNaoDisponiveis}
-                placeholder="Select unavailable features"
-                styles={customStyles} // Aplicando estilos personalizados
-              />
-            </div>
+
+            {/* Funcionalidades Indisponíveis - Renderização Condicional */}
+            {formData.funcionalidadesNaoDisponiveis.length > 0 && (
+              <div className="form-group">
+                <label htmlFor="funcionalidadesNaoDisponiveis" className="form-label">
+                  Unavailable Features
+                </label>
+                <CreatableSelect
+                  isMulti
+                  options={funcionalidadesOptions}
+                  value={formData.funcionalidadesNaoDisponiveis}
+                  placeholder="Unavailable features are auto-set"
+                  styles={customStyles}
+                  isDisabled // Desabilitar o campo para evitar edição manual
+                />
+              </div>
+            )}
+
+            {/* Preço do Plano */}
             <div className="form-row">
               <div className="form-group col-md-6">
                 <label htmlFor="precoPlanoServico" className="form-label">
@@ -336,6 +377,8 @@ const EditServicePlan = () => {
                   required
                 />
               </div>
+
+              {/* Prazo de Pagamentos */}
               <div className="form-group col-md-6">
                 <label htmlFor="prazoPagamentos" className="form-label">
                   Payment Term
@@ -356,6 +399,8 @@ const EditServicePlan = () => {
                 </div>
               </div>
             </div>
+
+            {/* Sugestões de Upgrades */}
             <div className="form-group">
               <label htmlFor="sugestoesUpgrades" className="form-label">
                 Upgrade Suggestions
@@ -369,6 +414,8 @@ const EditServicePlan = () => {
                 required
               />
             </div>
+
+            {/* Plano de Prioridade */}
             <div className="form-check">
               <input
                 type="checkbox"
@@ -381,6 +428,8 @@ const EditServicePlan = () => {
                 Priority Plan
               </label>
             </div>
+
+            {/* Botão de Salvar */}
             <div className="text-right">
               <button type="submit" className="btn btn-primary save-button">
                 Save Plan
@@ -388,10 +437,10 @@ const EditServicePlan = () => {
             </div>
 
             {/* Botões de Excluir e Cancelar */}
-            <div className="button-group">
+            <div className="button-group mt-3">
               <button
                 type="button"
-                className="btn btn-danger delete-button"
+                className="btn btn-danger delete-button me-2"
                 onClick={handleShowModal}
               >
                 Delete Plan
@@ -408,6 +457,7 @@ const EditServicePlan = () => {
         </div>
       </div>
 
+      {/* Modal de Confirmação */}
       <ConfirmationModal
         show={showModal}
         onHide={handleCloseModal}
@@ -418,6 +468,8 @@ const EditServicePlan = () => {
         cancelButtonText="Cancel"
         showButtons={true}
       />
+
+      {/* Container de Toast */}
       <ToastContainer
         position="top-center"
         autoClose={2000}

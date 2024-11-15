@@ -7,7 +7,7 @@ import "../styles/CreateServicePlan.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Select from "react-select"; // Importando o componente Select
+import CreatableSelect from "react-select/creatable"; // Importando o componente CreatableSelect
 
 const CreateServicePlan = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ const CreateServicePlan = () => {
     precoPlanoServico: "",
     prazoPagamentos: "",
     sugestoesUpgrades: "",
-    prioridade: false, // Novo campo para prioridade
+    prioridade: false, // Campo para prioridade
     funcionalidadesDisponiveis: [],
     funcionalidadesNaoDisponiveis: [],
   });
@@ -129,19 +129,56 @@ const CreateServicePlan = () => {
     }),
   };
 
-  // Handlers para os componentes Select
-  const handleFuncDisponiveisChange = (selectedOptions) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      funcionalidadesDisponiveis: selectedOptions || [],
-    }));
-  };
+  // Handler para "Available Features" com criação de novas funcionalidades
+  const handleFuncDisponiveisChange = async (selectedOptions, actionMeta) => {
+    if (actionMeta.action === "create-option") {
+      // Nova funcionalidade criada
+      const newOption = actionMeta.option;
+      try {
+        // Enviar nova funcionalidade para o back-end
+        const response = await axios.post("http://localhost:9090/api/funcionalidades", {
+          nomeFuncionalidade: newOption.label,
+        });
+        if (response.status === 201) {
+          const newFunc = response.data;
+          const newFuncOption = { value: newFunc.id, label: newFunc.nomeFuncionalidade };
 
-  const handleFuncNaoDisponiveisChange = (selectedOptions) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      funcionalidadesNaoDisponiveis: selectedOptions || [],
-    }));
+          // Atualizar opções
+          setFuncionalidadesOptions((prevOptions) => [...prevOptions, newFuncOption]);
+
+          // Atualizar seleção
+          const updatedSelectedOptions = [...selectedOptions, newFuncOption];
+
+          setFormData((prevData) => {
+            const selectedIds = updatedSelectedOptions.map((opt) => opt.value);
+            const unavailable = funcionalidadesOptions.filter(
+              (opt) => !selectedIds.includes(opt.value)
+            );
+            return {
+              ...prevData,
+              funcionalidadesDisponiveis: updatedSelectedOptions,
+              funcionalidadesNaoDisponiveis: unavailable,
+            };
+          });
+
+          toast.success("Funcionalidade adicionada com sucesso!");
+        }
+      } catch (error) {
+        console.error("Erro ao adicionar nova funcionalidade!", error);
+        toast.error("Erro ao adicionar nova funcionalidade.");
+      }
+    } else {
+      // Atualizar funcionalidades disponíveis e indisponíveis
+      setFormData((prevData) => {
+        const selectedIds = selectedOptions ? selectedOptions.map((opt) => opt.value) : [];
+        const unavailable = funcionalidadesOptions.filter((opt) => !selectedIds.includes(opt.value));
+        return {
+          ...prevData,
+          funcionalidadesDisponiveis: selectedOptions || [],
+          funcionalidadesNaoDisponiveis: unavailable,
+        };
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -191,6 +228,7 @@ const CreateServicePlan = () => {
         <div className="create-plan-container">
           <h2>Create Service Plan</h2>
           <form onSubmit={handleSubmit}>
+            {/* Título do Plano */}
             <div className="form-group">
               <label htmlFor="tituloPlanoServico" className="form-label">
                 Plan Title
@@ -205,6 +243,8 @@ const CreateServicePlan = () => {
                 required
               />
             </div>
+
+            {/* Descrição do Plano */}
             <div className="form-group">
               <label htmlFor="descricaoPlano" className="form-label">
                 Plan Description
@@ -218,32 +258,40 @@ const CreateServicePlan = () => {
                 required
               />
             </div>
+
+            {/* Funcionalidades Disponíveis */}
             <div className="form-group">
               <label htmlFor="funcionalidadesDisponiveis" className="form-label">
                 Available Features
               </label>
-              <Select
+              <CreatableSelect
                 isMulti
                 options={funcionalidadesOptions}
                 onChange={handleFuncDisponiveisChange}
                 value={formData.funcionalidadesDisponiveis}
-                placeholder="Select available features"
-                styles={customStyles} // Aplicando estilos personalizados
+                placeholder="Select or add available features"
+                styles={customStyles}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="funcionalidadesNaoDisponiveis" className="form-label">
-                Unavailable Features
-              </label>
-              <Select
-                isMulti
-                options={funcionalidadesOptions}
-                onChange={handleFuncNaoDisponiveisChange}
-                value={formData.funcionalidadesNaoDisponiveis}
-                placeholder="Select unavailable features"
-                styles={customStyles} // Aplicando estilos personalizados
-              />
-            </div>
+
+            {/* Funcionalidades Indisponíveis - Renderização Condicional */}
+            {formData.funcionalidadesNaoDisponiveis.length > 0 && (
+              <div className="form-group">
+                <label htmlFor="funcionalidadesNaoDisponiveis" className="form-label">
+                  Unavailable Features
+                </label>
+                <CreatableSelect
+                  isMulti
+                  options={funcionalidadesOptions}
+                  value={formData.funcionalidadesNaoDisponiveis}
+                  placeholder="Unavailable features are auto-set"
+                  styles={customStyles}
+                  isDisabled // Desabilitar o campo para evitar edição manual
+                />
+              </div>
+            )}
+
+            {/* Preço do Plano */}
             <div className="form-row">
               <div className="form-group col-md-6">
                 <label htmlFor="precoPlanoServico" className="form-label">
@@ -259,6 +307,8 @@ const CreateServicePlan = () => {
                   required
                 />
               </div>
+
+              {/* Prazo de Pagamentos */}
               <div className="form-group col-md-6">
                 <label htmlFor="prazoPagamentos" className="form-label">
                   Payment Term
@@ -279,6 +329,8 @@ const CreateServicePlan = () => {
                 </div>
               </div>
             </div>
+
+            {/* Sugestões de Upgrades */}
             <div className="form-group">
               <label htmlFor="sugestoesUpgrades" className="form-label">
                 Upgrade Suggestions
@@ -292,6 +344,8 @@ const CreateServicePlan = () => {
                 required
               />
             </div>
+
+            {/* Plano de Prioridade */}
             <div className="form-check">
               <input
                 type="checkbox"
@@ -304,6 +358,8 @@ const CreateServicePlan = () => {
                 Priority Plan
               </label>
             </div>
+
+            {/* Botão de Salvar */}
             <div className="text-right">
               <button type="submit" className="btn btn-primary save-button">
                 Save Plan
