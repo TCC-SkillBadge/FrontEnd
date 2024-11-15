@@ -1,43 +1,39 @@
-// src/components/PaymentConfirmationModal.js
+// src/components/CancellationConfirmationModal.js
 import React from "react";
 import { Modal, Button, Spinner, Alert } from "react-bootstrap";
-import "../styles/PaymentConfirmationModal.css"; // Importar o arquivo de estilos
+import "../styles/CancellationConfirmationModal.css"; // Importar o arquivo de estilos
 
-const PaymentConfirmationModal = ({
+const CancellationConfirmationModal = ({
   show,
   onHide,
   onConfirm,
-  plan,
   isProcessing,
-  paymentStatus, // 'success', 'failure', 'processing'
+  cancellationStatus, // 'success', 'failure', 'processing'
 }) => {
-  if (!plan) return null;
-
   return (
     <Modal show={show} onHide={onHide} centered dialogClassName="custom-modal">
       <Modal.Header closeButton className="modal-header">
-        <Modal.Title>Confirmar Compra</Modal.Title>
+        <Modal.Title>Confirmar Cancelamento</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body">
         {isProcessing && (
-          <div className="processing-payment">
+          <div className="processing-cancellation">
             <Spinner animation="border" role="status">
               <span className="visually-hidden">Processando...</span>
             </Spinner>
-            <p>Processando seu pagamento...</p>
+            <p>Processando o cancelamento...</p>
           </div>
         )}
-        {paymentStatus === "failure" && (
+        {cancellationStatus === "failure" && (
           <Alert variant="danger">
-            Ocorreu um erro ao processar seu pagamento. Por favor, tente
+            Ocorreu um erro ao processar seu cancelamento. Por favor, tente
             novamente.
           </Alert>
         )}
-        {!isProcessing && paymentStatus !== "failure" && (
+        {!isProcessing && cancellationStatus !== "failure" && (
           <p>
-            Tem certeza de que deseja adquirir o plano "
-            {plan.tituloPlanoServico}" por R$
-            {parseFloat(plan.precoPlanoServico).toFixed(2)}?
+            Tem certeza de que deseja cancelar seu plano atual? Essa ação não
+            pode ser desfeita.
           </p>
         )}
       </Modal.Body>
@@ -47,8 +43,8 @@ const PaymentConfirmationModal = ({
             <Button variant="secondary" onClick={onHide}>
               Cancelar
             </Button>
-            <Button variant="success" onClick={onConfirm}>
-              Confirmar Compra
+            <Button variant="danger" onClick={onConfirm}>
+              Cancelar Plano
             </Button>
           </>
         )}
@@ -57,4 +53,4 @@ const PaymentConfirmationModal = ({
   );
 };
 
-export default PaymentConfirmationModal;
+export default CancellationConfirmationModal;

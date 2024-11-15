@@ -1,4 +1,4 @@
-// Price.js
+// src/pages/Price.js
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "react-bootstrap-icons";
 import Navbar from "../components/Navbar";
@@ -11,49 +11,31 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationModal from "../components/ConfirmationModal";
 import PaymentConfirmationModal from "../components/PaymentConfirmationModal";
+import CancellationConfirmationModal from "../components/CancellationConfirmationModal";
+import usePlans from "../hooks/usePlans";
 
 const Price = () => {
-  const [plans, setPlans] = useState([]);
-  const [currentPlan, setCurrentPlan] = useState(null); // Current plan
+  const {
+    plans,
+    setPlans,
+    currentPlan,
+    setCurrentPlan,
+    loading,
+    cancelCurrentPlan,
+  } = usePlans();
   const [userType, setUserType] = useState(null);
   const [emailComercial, setEmailComercial] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState(null); // 'success', 'failure', 'processing'
   const [showModal, setShowModal] = useState(false);
   const [planToDelete, setPlanToDelete] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [planToPurchase, setPlanToPurchase] = useState(null);
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
+  const [cancellationStatus, setCancellationStatus] = useState(null); // 'success', 'failure', 'processing'
 
   useEffect(() => {
-    const fetchPlansAndCurrentPlan = async () => {
-      try {
-        // Fetch all plans
-        const response = await axios.get("http://localhost:9090/api/plans");
-        setPlans(response.data);
-
-        // Fetch current plan if user has one
-        const token = sessionStorage.getItem("token");
-        if (token) {
-          const currentPlanResponse = await axios.get(
-            "http://localhost:7003/api/current-plan",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-          setCurrentPlan(currentPlanResponse.data);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Erro ao buscar os planos ou o plano atual!", error);
-        setLoading(false);
-      }
-    };
-
-    fetchPlansAndCurrentPlan();
-
-    // Fetch user information
+    // Buscar informações do usuário
     const storedUserType = sessionStorage.getItem("tipoUsuario");
     const storedUserInfo = sessionStorage.getItem("userInfo");
     let storedEmail = null;
@@ -74,19 +56,19 @@ const Price = () => {
     console.log("Stored Email:", storedEmail);
   }, []);
 
-  // Open delete confirmation modal
+  // Abrir modal de confirmação de exclusão
   const openConfirmationModal = (planId) => {
     setPlanToDelete(planId);
     setShowModal(true);
   };
 
-  // Close delete confirmation modal
+  // Fechar modal de confirmação de exclusão
   const handleCloseModal = () => {
     setShowModal(false);
     setPlanToDelete(null);
   };
 
-  // Confirm deletion of plan
+  // Confirmar exclusão do plano
   const handleConfirmDelete = async () => {
     try {
       await axios.delete(`http://localhost:9090/api/plans/${planToDelete}`);
@@ -118,25 +100,26 @@ const Price = () => {
     }
   };
 
-  // Initiate payment process
+  // Iniciar processo de pagamento
   const handlePayment = (planId) => {
     const selectedPlan = plans.find((plan) => plan.id === planId);
     openPaymentModal(selectedPlan);
   };
 
-  // Open payment confirmation modal
+  // Abrir modal de confirmação de pagamento
   const openPaymentModal = (plan) => {
     setPlanToPurchase(plan);
     setShowPaymentModal(true);
   };
 
-  // Close payment confirmation modal
+  // Fechar modal de confirmação de pagamento
   const handleClosePaymentModal = () => {
     setShowPaymentModal(false);
     setPlanToPurchase(null);
+    setPaymentStatus(null);
   };
 
-  // Confirm payment and associate plan
+  // Confirmar pagamento e associar plano
   const handleConfirmPayment = async () => {
     console.log("Plano a Comprar:", planToPurchase);
     console.log("Email Comercial:", emailComercial);
@@ -155,6 +138,25 @@ const Price = () => {
       return;
     }
 
+    // Validação adicional de formato de email (opcional)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailComercial)) {
+      toast.error("Email comercial inválido.", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "dark",
+      });
+      handleClosePaymentModal();
+      return;
+    }
+
+    setIsProcessingPayment(true); // Iniciar o carregamento
+    setPaymentStatus("processing"); // Iniciar o processamento
+
     try {
       const response = await axios.post(
         "http://localhost:7003/api/usuarios/associar-plano",
@@ -163,20 +165,36 @@ const Price = () => {
           userEmail: emailComercial,
         }
       );
-      toast.success(response.data.message, {
-        position: "top-center",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        theme: "dark",
-      });
-      // Update current plan
+      toast.success(
+        response.data.message || "Pagamento realizado com sucesso!",
+        {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          theme: "dark",
+        }
+      );
+      // Atualizar o plano atual
       setCurrentPlan(response.data.plan);
+      setPaymentStatus("success"); // Sucesso
     } catch (error) {
       console.error("Erro ao processar o pagamento:", error);
-      toast.error("Falha ao processar o pagamento.", {
+      let errorMessage = "Falha ao processar o pagamento.";
+      if (error.response) {
+        // O servidor respondeu com um status diferente de 2xx
+        errorMessage = error.response.data.message || errorMessage;
+      } else if (error.request) {
+        // A requisição foi feita, mas nenhuma resposta foi recebida
+        errorMessage =
+          "Nenhuma resposta do servidor. Tente novamente mais tarde.";
+      } else {
+        // Algo aconteceu ao configurar a requisição
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage, {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -185,15 +203,43 @@ const Price = () => {
         draggable: true,
         theme: "dark",
       });
+      setPaymentStatus("failure"); // Falha
     } finally {
+      setIsProcessingPayment(false); // Finalizar o carregamento
       handleClosePaymentModal();
+    }
+  };
+
+  // Abrir modal de confirmação de cancelamento
+  const openCancellationModal = () => {
+    setShowCancellationModal(true);
+  };
+
+  // Fechar modal de confirmação de cancelamento
+  const handleCloseCancellationModal = () => {
+    setShowCancellationModal(false);
+    setCancellationStatus(null);
+  };
+
+  // Confirmar cancelamento do plano
+  const handleConfirmCancellation = async () => {
+    setCancellationStatus("processing");
+    try {
+      await cancelCurrentPlan();
+      setCancellationStatus("success");
+      // Opcional: Atualize outros estados ou faça outras ações necessárias
+    } catch (error) {
+      setCancellationStatus("failure");
+      // Erros já são tratados no hook, então nenhuma ação extra é necessária aqui
+    } finally {
+      handleCloseCancellationModal();
     }
   };
 
   const highlightedPlan = plans.find((plan) => plan.prioridade);
   const otherPlans = plans.filter((plan) => !plan.prioridade);
 
-  // Tooltip for add plan button
+  // Tooltip para o botão de adicionar plano
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       Você não pode ter mais de 4 planos.
@@ -228,8 +274,10 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
+                    handleCancel={openCancellationModal} // Passar a função de cancelamento
                     isCurrent={currentPlan && currentPlan.id === plan.id}
                     isDimmed={currentPlan && currentPlan.id !== plan.id}
+                    isProcessingPayment={isProcessingPayment}
                   />
                 ))}
               {highlightedPlan && (
@@ -240,12 +288,14 @@ const Price = () => {
                   isEnterpriseUser={isEnterpriseUser}
                   handleDelete={openConfirmationModal}
                   handlePayment={handlePayment}
+                  handleCancel={openCancellationModal} // Passar a função de cancelamento
                   isCurrent={
                     currentPlan && currentPlan.id === highlightedPlan.id
                   }
                   isDimmed={
                     currentPlan && currentPlan.id !== highlightedPlan.id
                   }
+                  isProcessingPayment={isProcessingPayment}
                 />
               )}
               {otherPlans
@@ -258,15 +308,17 @@ const Price = () => {
                     isEnterpriseUser={isEnterpriseUser}
                     handleDelete={openConfirmationModal}
                     handlePayment={handlePayment}
+                    handleCancel={openCancellationModal} // Passar a função de cancelamento
                     isCurrent={currentPlan && currentPlan.id === plan.id}
                     isDimmed={currentPlan && currentPlan.id !== plan.id}
+                    isProcessingPayment={isProcessingPayment}
                   />
                 ))}
             </>
           )}
         </div>
 
-        {/* Add Tooltip and disable button if there are four or more plans */}
+        {/* Tooltip e desabilitar botão se houverem quatro ou mais planos */}
         {isAdmin && (
           <OverlayTrigger
             placement="top"
@@ -291,7 +343,7 @@ const Price = () => {
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Modal de Confirmação de Exclusão */}
       <ConfirmationModal
         show={showModal}
         onHide={handleCloseModal}
@@ -302,15 +354,26 @@ const Price = () => {
         cancelButtonText="Cancelar"
       />
 
-      {/* Payment Confirmation Modal */}
+      {/* Modal de Confirmação de Pagamento */}
       <PaymentConfirmationModal
         show={showPaymentModal}
         onHide={handleClosePaymentModal}
         onConfirm={handleConfirmPayment}
         plan={planToPurchase}
+        isProcessing={isProcessingPayment}
+        paymentStatus={paymentStatus}
       />
 
-      {/* ReactToastify Container */}
+      {/* Modal de Confirmação de Cancelamento */}
+      <CancellationConfirmationModal
+        show={showCancellationModal}
+        onHide={handleCloseCancellationModal}
+        onConfirm={handleConfirmCancellation}
+        isProcessing={cancellationStatus === "processing"}
+        cancellationStatus={cancellationStatus}
+      />
+
+      {/* Container do ReactToastify */}
       <ToastContainer />
     </div>
   );

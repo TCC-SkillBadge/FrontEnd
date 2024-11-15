@@ -1,0 +1,12 @@
+/* src/styles/CancellationConfirmationModal.css */
+
+.processing-cancellation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.processing-cancellation p {
+  margin-top: 10px;
+  font-size: 1.1em;
+}

@@ -1,4 +1,4 @@
-/* PlanCard.css */
+/* src/styles/PlanCard.css */
 
 .plan-card {
   background-color: rgba(0, 0, 0, 0.3);
@@ -13,7 +13,8 @@
   flex-direction: column;
   justify-content: space-between;
   transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
-  position: relative; /* For admin icons */
+  position: relative; /* Para ícones de administrador */
+  color: inherit; /* Herda a cor do elemento pai */
 }
 
 .plan-card:hover {
@@ -112,6 +113,15 @@
   color: inherit;
 }
 
+.plan-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px; /* Espaçamento entre botões */
+  margin-top: 20px;
+}
+
+/* Botões */
 .buy-button {
   background-color: #D273FF;
   border: none;
@@ -120,8 +130,6 @@
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
-  margin-top: auto;
-  align-self: center;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -140,7 +148,34 @@
   color: white;
 }
 
-/* Dimmed style for other plans when a current plan is selected */
+/* Botão de Cancelamento */
+.cancel-button {
+  background-color: #ff4d4d;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.cancel-button:hover {
+  background-color: #ff1a1a;
+  color: white;
+}
+
+.plan-card.highlight .cancel-button {
+  background-color: #FFD700;
+  color: black;
+}
+
+.plan-card.highlight .cancel-button:hover {
+  background-color: #8DFD8B;
+  color: white;
+}
+
+/* Dimmed style para planos não atuais */
 .dimmed {
   opacity: 0.6;
   transform: scale(0.95);
@@ -152,7 +187,7 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Information for current plan */
+/* Informação para plano atual */
 .current-plan-info {
   margin-top: 10px;
   color: #28a745;
