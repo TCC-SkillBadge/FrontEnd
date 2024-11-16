@@ -95,8 +95,8 @@ function App() {
         const storedEmail = localStorage.getItem("email");
         const storedEncodedEmail = localStorage.getItem("encodedEmail");
 
-        sessionStorage.setItem("email", storedEmail);
-        sessionStorage.setItem("encodedEmail", storedEncodedEmail);
+        if(storedEmail) sessionStorage.setItem("email", storedEmail);
+        if(storedEncodedEmail) sessionStorage.setItem("encodedEmail", storedEncodedEmail);
 
         setUserType(() => storedUserTypeLS);
         setUser(() => storedUserInfoLS)
