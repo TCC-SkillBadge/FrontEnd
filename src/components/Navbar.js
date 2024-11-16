@@ -72,8 +72,9 @@ const NavBar = (props) => {
 
   const handleLogout = () => {
     sessionStorage.clear();
+    localStorage.clear();
     navigate("/login");
-    window.dispatchEvent(new Event("LoginChange-SS"));
+    window.dispatchEvent(new Event("LoginChange"));
   };
 
   const handleClearNotifications = async () => {

@@ -59,27 +59,74 @@ function App() {
   const [token, setToken] = useState(null);
 
   useEffect(() => {
+    const verifyStoredLogin = () => {
+      console.log("Verifying stored login");
+
+      const storedTokenLS = localStorage.getItem("token");
+      const storedUserTypeLS = localStorage.getItem("tipoUsuario");
+      const storedUserInfoLS = JSON.parse(localStorage.getItem("userInfo"));
+
+      console.log("User type stored in LocalStorage:", storedUserTypeLS);
+      console.log("User info stored in LocalStorage:", storedUserInfoLS);
+      console.log("Token stored in LocalStorage:", storedTokenLS);
+
+      setToken(() => storedTokenLS);
+      setUserType(() => storedUserTypeLS);
+      setUser(() => storedUserInfoLS);
+
+      const storedTokenSS = sessionStorage.getItem("token");
+      const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
+      const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
+
+      console.log("User type stored in SessionStorage:", storedUserTypeSS);
+      console.log("User info stored in SessionStorage:", storedUserInfoSS);
+      console.log("Token stored in SessionStorage:", storedTokenSS);
+
+      if(storedTokenSS && storedUserTypeSS && storedUserInfoSS){
+        setUserType(() => storedUserTypeSS);
+        setUser(() => storedUserInfoSS)
+        setToken(() => storedTokenSS);
+      }
+      else if(storedTokenLS && storedUserTypeLS && storedUserInfoLS){
+        sessionStorage.setItem("tipoUsuario", storedUserTypeLS);
+        sessionStorage.setItem("userInfo", JSON.stringify(storedUserInfoLS));
+        sessionStorage.setItem("token", storedTokenLS);
+
+        const storedEmail = localStorage.getItem("email");
+        const storedEncodedEmail = localStorage.getItem("encodedEmail");
+
+        sessionStorage.setItem("email", storedEmail);
+        sessionStorage.setItem("encodedEmail", storedEncodedEmail);
+
+        setUserType(() => storedUserTypeLS);
+        setUser(() => storedUserInfoLS)
+        setToken(() => storedTokenLS);
+      }
+
+      console.log("Exiting verifyStoredLogin");
+    };
+
     const verifyLoggedIn = () => {
       console.log("Verifying logged in");
 
-      const storedUserType = sessionStorage.getItem("tipoUsuario");
-      const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
-      const storedToken = sessionStorage.getItem("token");
+      const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
+      const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
+      const storedTokenSS = sessionStorage.getItem("token");
 
-      console.log("Stored user type:", storedUserType);
-      console.log("Stored user info:", storedUserInfo);
-      console.log("Stored token:", storedToken);
+      console.log("User type stored in SessionStorage:", storedUserTypeSS);
+      console.log("User info stored in SessionStorage:", storedUserInfoSS);
+      console.log("Token stored in SessionStorage:", storedTokenSS);
 
-      setUserType(() => storedUserType);
-      setUser(() => storedUserInfo)
-      setToken(() => storedToken);
+      setUserType(() => storedUserTypeSS);
+      setUser(() => storedUserInfoSS)
+      setToken(() => storedTokenSS);
     };
 
-    verifyLoggedIn();
+    verifyStoredLogin();
 
-    window.addEventListener("LoginChange-SS", verifyLoggedIn);
+    window.addEventListener("LoginChange", verifyLoggedIn);
 
-    return () => { window.removeEventListener("LoginChange-SS", verifyLoggedIn); };
+    return () => { window.removeEventListener("LoginChange", verifyLoggedIn); };
   }, []);
 
   return (

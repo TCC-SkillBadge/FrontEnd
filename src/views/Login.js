@@ -16,6 +16,7 @@ const Login = () => {
   const [loginFailed, setLoginFailed] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State to control the confirmation modal
   const [confirmationMessage, setConfirmationMessage] = useState(""); // State to hold the confirmation message
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -43,6 +44,7 @@ const handleLogin = async (
   params = {},
   headers = {}
 ) => {
+  console.log("Remenber me: ", rememberMe);
   try {
     const response = await axios({
       url,
@@ -55,6 +57,12 @@ const handleLogin = async (
       const { token, tipoUsuario } = response.data;
       sessionStorage.setItem("token", token);
       sessionStorage.setItem("tipoUsuario", tipoUsuario);
+
+      if (rememberMe) {
+        console.log("Entered Remember me for token and tipoUsuario");
+        localStorage.setItem("token", token);
+        localStorage.setItem("tipoUsuario", tipoUsuario);
+      }
 
       let userInfoResponse;
       if (tipoUsuario === "UC") {
@@ -98,9 +106,19 @@ const handleLogin = async (
         if (email) {
           sessionStorage.setItem("email", email); // Email original
           sessionStorage.setItem("encodedEmail", btoa(email)); // Email codificado
+
+          if (rememberMe) {
+            console.log("Entered Remember me for email");
+            localStorage.setItem("email", email);
+            localStorage.setItem("encodedEmail", btoa(email));
+          }
         }
 
         sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+        if (rememberMe){
+          console.log("Entered Remember me for userInfo");
+          localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        }
         return true;
       }
     }
@@ -148,7 +166,7 @@ const handleLogin = async (
             //O evento é capturado no App.js
             //Escolheu-se esta posição pois disparar o evento juntamente aos métodos do sessionStorage nas linahs acima faria com que a Navbar muda-se
             //antes do redirecionamento para a página home, o que criaria uma experiência ruim para o usuário
-            window.dispatchEvent(new Event("LoginChange-SS"));
+            window.dispatchEvent(new Event("LoginChange"));
           }, 2000);
         } else {
           setLoginFailed(true);
@@ -258,6 +276,8 @@ const handleLogin = async (
                   type="checkbox"
                   className="form-check-input"
                   id="rememberMe"
+                  value={rememberMe}
+                  onChange={() => setRememberMe((olValue) => !olValue)}
                 />
                 <label className="form-check-label" htmlFor="rememberMe">
                   Remember me
