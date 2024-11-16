@@ -1,7 +1,5 @@
 // src/views/Dashboard.js
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import "../styles/Dashboard.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -209,7 +207,6 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar />
       <div className="dashboard-container">
         <h1 className="dashboard-title">Dashboard de Análises</h1>
         {loading ? (
@@ -250,7 +247,6 @@ const Dashboard = () => {
           </div>
         )}
       </div>
-      <Footer />
       <ToastContainer
         position="top-center"
         autoClose={3000}

@@ -1,7 +1,5 @@
 // src/views/ApiReference.js
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import "../styles/ApiReference.css"; // Specific stylesheet
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify"; // react-toastify imports
@@ -123,168 +121,168 @@ const ApiReference = () => {
   // Code examples for different languages
   const codeExamples = {
     Java: `// Example in Java using HttpClient
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+    import java.net.URI;
+    import java.net.http.HttpClient;
+    import java.net.http.HttpRequest;
+    import java.net.http.HttpResponse;
 
-public class AssignBadge {
-    public static void main(String[] args) throws Exception {
-        String apiKey = "YOUR_API_KEY_HERE";
-        String json = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
+    public class AssignBadge {
+        public static void main(String[] args) throws Exception {
+            String apiKey = "YOUR_API_KEY_HERE";
+            String json = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:7001/api/badges/assign"))
-            .header("Content-Type", "application/json")
-            .header("x-api-key", apiKey)
-            .POST(HttpRequest.BodyPublishers.ofString(json))
-            .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:7001/api/badges/assign"))
+                .header("Content-Type", "application/json")
+                .header("x-api-key", apiKey)
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.body());
+        }
+    }`,
+        PHP: `<?php
+    // Example in PHP using cURL
+    $apiKey = "YOUR_API_KEY_HERE";
+    $data = array(
+        "email_com" => "user@example.com",
+        "id_badge" => "badge1234"
+    );
+    $payload = json_encode($data);
+
+    $ch = curl_init("http://localhost:7001/api/badges/assign");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        "Content-Type: application/json",
+        "x-api-key: $apiKey"
+    ));
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    echo $response;
+    ?>`,
+        "Node.js": `// Example in Node.js using axios
+    const axios = require('axios');
+
+    const apiKey = 'YOUR_API_KEY_HERE';
+    const data = {
+      email_com: 'user@example.com',
+      id_badge: 'badge1234'
+    };
+
+    axios.post('http://localhost:7001/api/badges/assign', data, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey
+      }
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error(error);
+    });`,
+        Python: `# Example in Python using requests
+    import requests
+
+    api_key = 'YOUR_API_KEY_HERE'
+    data = {
+        'email_com': 'user@example.com',
+        'id_badge': 'badge1234'
     }
-}`,
-    PHP: `<?php
-// Example in PHP using cURL
-$apiKey = "YOUR_API_KEY_HERE";
-$data = array(
-    "email_com" => "user@example.com",
-    "id_badge" => "badge1234"
-);
-$payload = json_encode($data);
-
-$ch = curl_init("http://localhost:7001/api/badges/assign");
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-    "Content-Type: application/json",
-    "x-api-key: $apiKey"
-));
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-$response = curl_exec($ch);
-curl_close($ch);
-
-echo $response;
-?>`,
-    "Node.js": `// Example in Node.js using axios
-const axios = require('axios');
-
-const apiKey = 'YOUR_API_KEY_HERE';
-const data = {
-  email_com: 'user@example.com',
-  id_badge: 'badge1234'
-};
-
-axios.post('http://localhost:7001/api/badges/assign', data, {
-  headers: {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey
-  }
-})
-.then(response => {
-  console.log(response.data);
-})
-.catch(error => {
-  console.error(error);
-});`,
-    Python: `# Example in Python using requests
-import requests
-
-api_key = 'YOUR_API_KEY_HERE'
-data = {
-    'email_com': 'user@example.com',
-    'id_badge': 'badge1234'
-}
-headers = {
-    'Content-Type': 'application/json',
-    'x-api-key': api_key
-}
-
-response = requests.post('http://localhost:7001/api/badges/assign', json=data, headers=headers)
-print(response.text)`,
-    C: `/* Example in C using libcurl */
-#include <curl/curl.h>
-
-int main(void) {
-    CURL *curl = curl_easy_init();
-    if(curl) {
-        CURLcode res;
-        const char *apiKey = "YOUR_API_KEY_HERE";
-        const char *data = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
-
-        struct curl_slist *headers = NULL;
-        headers = curl_slist_append(headers, "Content-Type: application/json");
-        char apiKeyHeader[256];
-        snprintf(apiKeyHeader, sizeof(apiKeyHeader), "x-api-key: %s", apiKey);
-        headers = curl_slist_append(headers, apiKeyHeader);
-
-        curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:7001/api/badges/assign");
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
+    headers = {
+        'Content-Type': 'application/json',
+        'x-api-key': api_key
     }
-    return 0;
-}`,
-    "C++": `// Example in C++ using libcurl
-#include <curl/curl.h>
-#include <string>
 
-int main() {
-    CURL *curl = curl_easy_init();
-    if(curl) {
-        CURLcode res;
-        std::string apiKey = "YOUR_API_KEY_HERE";
-        std::string data = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
+    response = requests.post('http://localhost:7001/api/badges/assign', json=data, headers=headers)
+    print(response.text)`,
+        C: `/* Example in C using libcurl */
+    #include <curl/curl.h>
 
-        struct curl_slist *headers = NULL;
-        headers = curl_slist_append(headers, "Content-Type: application/json");
-        std::string apiKeyHeader = "x-api-key: " + apiKey;
-        headers = curl_slist_append(headers, apiKeyHeader.c_str());
+    int main(void) {
+        CURL *curl = curl_easy_init();
+        if(curl) {
+            CURLcode res;
+            const char *apiKey = "YOUR_API_KEY_HERE";
+            const char *data = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
 
-        curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:7001/api/badges/assign");
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+            struct curl_slist *headers = NULL;
+            headers = curl_slist_append(headers, "Content-Type: application/json");
+            char apiKeyHeader[256];
+            snprintf(apiKeyHeader, sizeof(apiKeyHeader), "x-api-key: %s", apiKey);
+            headers = curl_slist_append(headers, apiKeyHeader);
 
-        res = curl_easy_perform(curl);
-        curl_easy_cleanup(curl);
-    }
-    return 0;
-}`,
-    "C#": `// Example in C# using HttpClient
-using System;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:7001/api/badges/assign");
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
-namespace AssignBadge
-{
-    class Program
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+        }
+        return 0;
+    }`,
+        "C++": `// Example in C++ using libcurl
+    #include <curl/curl.h>
+    #include <string>
+
+    int main() {
+        CURL *curl = curl_easy_init();
+        if(curl) {
+            CURLcode res;
+            std::string apiKey = "YOUR_API_KEY_HERE";
+            std::string data = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
+
+            struct curl_slist *headers = NULL;
+            headers = curl_slist_append(headers, "Content-Type: application/json");
+            std::string apiKeyHeader = "x-api-key: " + apiKey;
+            headers = curl_slist_append(headers, apiKeyHeader.c_str());
+
+            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:7001/api/badges/assign");
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+        }
+        return 0;
+    }`,
+        "C#": `// Example in C# using HttpClient
+    using System;
+    using System.Net.Http;
+    using System.Text;
+    using System.Threading.Tasks;
+
+    namespace AssignBadge
     {
-        static async Task Main(string[] args)
+        class Program
         {
-            string apiKey = "YOUR_API_KEY_HERE";
-            var data = new
+            static async Task Main(string[] args)
             {
-                email_com = "user@example.com",
-                id_badge = "badge1234"
-            };
-            var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+                string apiKey = "YOUR_API_KEY_HERE";
+                var data = new
+                {
+                    email_com = "user@example.com",
+                    id_badge = "badge1234"
+                };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
 
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Add("x-api-key", apiKey);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("http://localhost:7001/api/badges/assign", content);
-                string result = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(result);
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("x-api-key", apiKey);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var response = await client.PostAsync("http://localhost:7001/api/badges/assign", content);
+                    string result = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(result);
+                }
             }
         }
-    }
-}`,
+    }`,
   };
 
   // Function to change the selected language
@@ -302,7 +300,6 @@ namespace AssignBadge
 
   return (
     <div>
-      <Navbar userType={userType} user={user} />
       <div className="api-reference-container">
         <h1 className="api-title">API Reference</h1>
         <p className="api-description">
@@ -497,7 +494,6 @@ namespace AssignBadge
           </div>
         </div>
       </div>
-      <Footer />
       {/* Only one ToastContainer to avoid duplication */}
       <ToastContainer
         position="top-center"

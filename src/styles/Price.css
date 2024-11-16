@@ -42,8 +42,6 @@
 }
 
 .add-plan-button {
-  position: fixed; /* Mantém o botão sempre visível no canto inferior direito */
-  bottom: 20px;
   right: 20px;
   background-color: transparent; /* Fundo transparente */
   border: 2px solid #D273FF; /* Borda delineada */

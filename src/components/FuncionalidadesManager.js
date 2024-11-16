@@ -1,7 +1,6 @@
 // FuncionalidadesManager.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Navbar from "../components/Navbar";
 import "../styles/FuncionalidadesManager.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -50,7 +49,6 @@ const FuncionalidadesManager = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="funcionalidades-manager">
         <h2>Gerenciar Funcionalidades</h2>
         <div className="add-funcionalidade mb-3">

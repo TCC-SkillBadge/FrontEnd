@@ -19,7 +19,6 @@ import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 const NavBar = (props) => {
-  const [showMenu, setShowMenu] = useState(false);
   const [token, setToken] = useState(() => props.token);
   const [user, setUser] = useState(() => props.user);
   const [userType, setUserType] = useState(() => props.userType);
@@ -136,80 +135,6 @@ const NavBar = (props) => {
     }
   };
 
-  //Renderizador antigo de itens do menu
-  // const renderNavItems = () => {
-  //   switch (userType) {
-  //     case "UC":
-  //       return (
-  //         <>
-  //           <Nav.Link as={NavLink} to="/home">
-  //             Home
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/wallet">
-  //             Wallet
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/proficiency-test">
-  //             Skill Test
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/about">
-  //             About
-  //           </Nav.Link>
-  //         </>
-  //       );
-  //     case "UE":
-  //       return (
-  //         <>
-  //           <Nav.Link as={NavLink} to="/home">
-  //             Home
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/price">
-  //             Plans
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/badges">
-  //             Badges
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/contact">
-  //             Contact
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/api-reference">
-  //             API Reference
-  //           </Nav.Link>
-  //         </>
-  //       );
-  //     case "UA":
-  //       return (
-  //         <>
-  //           <Nav.Link as={NavLink} to="/home">
-  //             Home
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/orders">
-  //             Service Request
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/list-soft-skills">
-  //             Skills
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/manage-test">
-  //             Test
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/price">
-  //             Service Plans
-  //           </Nav.Link>
-  //         </>
-  //       );
-  //     default:
-  //       return (
-  //         <>
-  //           <Nav.Link as={NavLink} to="/home">
-  //             Home
-  //           </Nav.Link>
-  //           <Nav.Link as={NavLink} to="/about">
-  //             About
-  //           </Nav.Link>
-  //         </>
-  //       );
-  //   }
-  // };
-
   const renderUserMenu = () => {
     const email = sessionStorage.getItem("email");
     const encodedEmail = email ? btoa(email) : null;
@@ -304,6 +229,7 @@ const NavBar = (props) => {
           />
         }
         id="user-menu"
+        className="user-menu"
         >
         {menuItems}
       </NavDropdown>
@@ -375,12 +301,13 @@ const NavBar = (props) => {
     <Navbar className="navbar" sticky="top">
       <Container fluid>
         <Navbar.Brand as={NavLink} to="/home">
-          <img height={50} width='auto' src="Icone.png"/>
+          <img height={50} width='auto' src="/Icone.png"/>
         </Navbar.Brand>
         <Nav className={"me-auto " + defineBreakpoints().nav}>{renderNavItems('nav')}</Nav>
         <NavDropdown
-        className={"flex-1 " + defineBreakpoints().dropdown}
-        title={<i className="pi pi-align-justify"/>}
+        className={"collapsed-menu flex-1 " + defineBreakpoints().dropdown}
+        title={<i className="pi pi-align-justify" style={{fontSize: '2rem'}}/>}
+        
         >
           {renderNavItems('dropdown')}
         </NavDropdown>

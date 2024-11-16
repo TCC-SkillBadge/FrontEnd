@@ -46,7 +46,7 @@ const Footer = ({ userType, user }) => {
   };
 
   return (
-    <footer className="footer">
+    <footer className="footer" id="footer">
       <div className="footer-components-display">{renderFooterItems()}</div>
       <div className="footer-components-display">{renderFooterRedes()}</div>
     </footer>

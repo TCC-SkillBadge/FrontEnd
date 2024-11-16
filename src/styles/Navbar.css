@@ -42,12 +42,24 @@
 .collapsed-menu{
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  background-color: rgba(0, 0, 0, 0.8) !important; /* Preto com 80% de opacidade */
-  border-radius: 8px;
-  padding: 15px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 7px;
+  margin-right: 5px;
+  max-width: 65px;
 }
 
+.collapsed-menu .dropdown-menu{
+  bottom: auto;
+}
+
+.collapsed-menu .dropdown-toggle::after{
+  display: none !important;
+}
+
+.collapsed-menu .dropdown-item{
+  font-size: calc(20px + 1.2vw);
+}
 
 .searchSection {
   display: flex;
@@ -122,29 +134,11 @@
   height: 40px;
 }
 
-.userMenu {
-  background-color: rgba(0, 0, 0, 0.9);
-  border-radius: 8px;
-  padding: 10px;
-  text-align: left;
-}
-
-.userMenu .menuItem {
+.user-menu {
   color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  text-decoration: none;
 }
 
-.userMenu .menuItem:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.userMenu .menuItem i {
-  margin-right: 10px;
-}
-
-.navbar .dropdown-menu {
+.user-menu .dropdown-menu {
   right: 0 !important;
   left: auto !important;
 }
@@ -251,6 +245,8 @@
 
 .p-overlaypanel{
   min-height: fit-content;
+  margin-left: 45px;
+  margin-right: 45px;
 }
 
 .p-overlaypanel-content{
@@ -259,10 +255,6 @@
 }
 
 @media (max-width: 800px){
-  .p-overlaypanel{
-    margin-left: 45px;
-  }
-
   .p-overlaypanel-content{
     width: 80vw;
   }
