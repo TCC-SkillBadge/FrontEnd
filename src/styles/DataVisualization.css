@@ -25,17 +25,62 @@
 }
 
 .chart-card {
-  position: relative; /* Necessário para posicionar o tooltip */
+  position: relative; /* Necessário para posicionar elementos internos */
   background-color: rgba(255, 255, 255, 0.1);
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
 }
 
 .chart-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Header dentro do chart-card */
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Estilização do título */
+.chart-header h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Controle de seleção de meses */
+.badge-months-control {
+  display: flex;
+  align-items: center;
+}
+
+.badge-months-control label {
+  margin-right: 10px;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.badge-months-input {
+  width: 60px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.badge-months-input:focus {
+  outline: none;
+  border-color: #4A90E2;
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Estilos para o título com tooltip */
@@ -129,6 +174,19 @@
     font-size: 1.4rem;
     margin-bottom: 20px;
   }
+
+  .badge-months-control {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .badge-months-control label {
+    margin-bottom: 5px;
+  }
+
+  .badge-months-input {
+    width: 80px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -143,6 +201,19 @@
   .chart-card .tooltip h3 {
     font-size: 1.2rem;
     margin-bottom: 15px;
+  }
+
+  .badge-months-control {
+    width: 100%;
+  }
+
+  .badge-months-control label {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .badge-months-input {
+    width: 100%;
   }
 }
 
