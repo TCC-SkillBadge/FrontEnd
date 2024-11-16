@@ -31,6 +31,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
 import { Link } from "react-router-dom"; 
 import PostForm from "../components/PostForm";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -51,6 +52,48 @@ const UserProfile = () => {
     events: [],
     badges: [],
   });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const updateUrlWithEncodedEmail = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        if (!token) {
+          console.error("Token não encontrado. Usuário não autenticado.");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:7000/api/user/info",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const userEmail = response.data.email || response.data.email_comercial;
+        if (!userEmail) {
+          console.error("Email do usuário não disponível.");
+          return;
+        }
+
+        const encodedEmail = btoa(userEmail); // Codifica o email
+        const currentPath = window.location.pathname;
+
+        // Atualiza a URL se necessário
+        if (!currentPath.includes(encodedEmail)) {
+          navigate(`/public-profile/${encodedEmail}`, { replace: true });
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar a URL:", error);
+      }
+    };
+
+    updateUrlWithEncodedEmail();
+  }, [navigate]);
+
 
   const handleBadgeVisibilityChange = async (e, badgeId, index) => {
     const isPublic = e.target.checked;
