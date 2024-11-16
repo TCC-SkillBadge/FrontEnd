@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Badge.css";
 import axios from "axios";
-import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Carousel } from "react-responsive-carousel";
 import { Link, useNavigate } from "react-router-dom";
@@ -195,7 +194,6 @@ const Consult = () => {
 
   return (
     <div className="badge-page-consult">
-      <Navbar />
       <div className="badge-container-consult">
         <div className="badge-header">
           <div className="badge-search-group">

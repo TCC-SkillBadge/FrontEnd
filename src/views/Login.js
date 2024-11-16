@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EnvelopeFill, LockFill, Eye, EyeSlash } from "react-bootstrap-icons";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -136,6 +135,11 @@ const handleLogin = async (
           toast.success("Login successful");
           setTimeout(() => {
             navigate("/home");
+            //Aqui, após o login, um evento é disparado para atualizar o estado do usuário logado
+            //O evento é capturado no App.js
+            //Escolheu-se esta posição pois disparar o evento juntamente aos métodos do sessionStorage nas linahs acima faria com que a Navbar muda-se
+            //antes do redirecionamento para a página home, o que criaria uma experiência ruim para o usuário
+            window.dispatchEvent(new Event("LoginChange-SS"));
           }, 2000);
         } else {
           setLoginFailed(true);
@@ -202,7 +206,6 @@ const handleLogin = async (
 
   return (
     <div>
-      <Navbar />
       <div className="login-page">
         <div className="login-container default-border-image">
           <h2>Login</h2>

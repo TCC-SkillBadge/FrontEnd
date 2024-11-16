@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from "../Navbar";
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { InputNumber } from 'primereact/inputnumber';
@@ -20,6 +19,7 @@ import { protectRoute } from '../../utils/general-functions/ProtectRoutes';
 import { jwtExpirationHandler } from '../../utils/general-functions/JWTExpirationHandler';
 import '../../styles/ManageTest.css';
 import '../../styles/GlobalStylings.css';
+import '../../styles/JWTExpirationModal.css';
 
 const generalServicesURL = 'http://localhost:6004';
 
@@ -78,17 +78,16 @@ const ManageTest = () => {
     }, [questions, alternativesM, alternativesR, alternativesMV]); // eslint-disable-line
 
     useEffect(() => {
-        if(!saved){
-            window.onbeforeunload = (e) => {
-                e.preventDefault();
-                e.returnValue = '';
-            };  
-        }
-        else{
-            window.onbeforeunload = null;
-        }
+        window.onbeforeunload = (e) => {
+            if(saved) return;
 
-        return () => { window.onbeforeunload = null };
+            e.preventDefault();
+            e.returnValue = '';
+        };
+
+        return () => { 
+            window.onbeforeunload = null;
+        };
     }, [saved]);
 
     const mountPage = () => {
@@ -523,7 +522,6 @@ const ManageTest = () => {
 
     return (
         <div>
-            <Navbar/>
             <div className='m-test-box default-border-image'>
                 <h1>Proficiency Test Management</h1>
                 <Divider/>
@@ -645,17 +643,7 @@ const ManageTest = () => {
 
             <ConfirmPopup/>
 
-            <ConfirmDialog
-            closable={false}
-            draggable={false}
-            pt={{
-                header: {className: 'p-cd-header'},
-                footer: {className: 'p-cd-footer'},
-                acceptButton: {className: 'dbuttons dbuttons-success ml-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-                rejectButton: {className: 'dbuttons dbuttons-danger mr-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-                message: {style: {fontWeight: 'bold', fontSize: 'calc(15px + 1vw)', width: 'fit-content'}},
-                content: {style: {width: 'fit-content', marginTop: '20px', marginRight: '40px'}},
-            }}/>
+            <ConfirmDialog/>
         </div>
     );
 };

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/Login.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import { LockFill, Eye, EyeSlash, QuestionCircle } from "react-bootstrap-icons";
 import PasswordRequirements from "../components/PasswordRequirements";
@@ -86,7 +85,6 @@ const ResetPassword = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="login-page">
         <div className="login-container">
           <h2>Reset Password</h2>

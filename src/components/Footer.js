@@ -33,13 +33,13 @@ const Footer = ({ userType, user }) => {
     return (
       <>
         <NavLink to="https://br.linkedin.com/in/rodrigobossini" className="footer-rede">
-          <i className="footer-item bi bi-linkedin"></i>
+          <i className="bi bi-linkedin"></i>
         </NavLink>
         <NavLink to="https://fatecipiranga.cps.sp.gov.br" className="footer-rede">
-          <i className="footer-item bi bi-google" href="https://fatecipiranga.cps.sp.gov.br"></i>
+          <i className="bi bi-google" href="https://fatecipiranga.cps.sp.gov.br"></i>
         </NavLink>
         <NavLink to="https://github.com/professorbossini" className="footer-rede">
-          <i className="footer-item bi bi-github" href="https://github.com/professorbossini"></i>
+          <i className="bi bi-github" href="https://github.com/professorbossini"></i>
         </NavLink>
       </>
     );
@@ -47,8 +47,8 @@ const Footer = ({ userType, user }) => {
 
   return (
     <footer className="footer">
-      <div className="footer-item">{renderFooterItems()}</div>
-      <div className="footer-item">{renderFooterRedes()}</div>
+      <div className="footer-components-display">{renderFooterItems()}</div>
+      <div className="footer-components-display">{renderFooterRedes()}</div>
     </footer>
   );
 };

@@ -49,27 +49,40 @@ import About from "./About";
 // import TestPage from "./TestPage"; // Remova se não precisar
 
 function App() {
-  // Gerenciar o userType e user no App.js
-  // const [userType, setUserType] = useState(null);
-  // const [user, setUser] = useState(null);
+  // Gerenciar o userType, user e token no App.js
+  const [user, setUser] = useState(null);
+  const [userType, setUserType] = useState(null);
+  const [token, setToken] = useState(null);
 
-  // useEffect(() => {
-  //   const storedUserType = sessionStorage.getItem("tipoUsuario");
-  //   const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+  useEffect(() => {
+    const verifyLoggedIn = () => {
+      console.log("Verifying logged in");
 
-  //   if (storedUserType) {
-  //     setUserType(storedUserType);
-  //   }
+      const storedUserType = sessionStorage.getItem("tipoUsuario");
+      const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+      const storedToken = sessionStorage.getItem("token");
 
-  //   if (storedUserInfo) {
-  //     setUser(storedUserInfo);
-  //   }
-  // }, []);
+      console.log("Stored user type:", storedUserType);
+      console.log("Stored user info:", storedUserInfo);
+      console.log("Stored token:", storedToken);
+
+      setUserType(() => storedUserType);
+      setUser(() => storedUserInfo)
+      setToken(() => storedToken);
+    };
+
+    verifyLoggedIn();
+
+    window.addEventListener("LoginChange-SS", verifyLoggedIn);
+
+    return () => { window.removeEventListener("LoginChange-SS", verifyLoggedIn); };
+  }, []);
 
   return (
     <div className="App">
       {/* Passar userType e user como props para NavBar */}
       {/* <NavBar userType={userType} user={user} /> */}
+      <NavBar token={token} user={user} userType={userType}/>
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Home />} />
@@ -115,7 +128,7 @@ function App() {
           {/* Remova se não precisar */}
         </Routes>
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

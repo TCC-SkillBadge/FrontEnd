@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "react-bootstrap-icons";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/Price.css";
 import PlanCard from "../components/PlanCard";
@@ -84,7 +83,6 @@ const Price = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="price-page">
         <h1 className="title">
           The <span className="highlight">BEST</span> plans
