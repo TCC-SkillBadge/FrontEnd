@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
 import "../styles/Wallet.css";
+import "../styles/GlobalStylings.css";
 
 const Wallet = () => {
   const [medals, setMedals] = useState([]);
@@ -127,7 +128,11 @@ const Wallet = () => {
           <div className="wallet-medals">
             <div className="wallet-medal-slide">
               {currentMedals.map((medal, index) => (
-                <div key={medal.id} className="wallet-medal-card">
+                <div
+                  key={medal.id}
+                  className="wallet-medal-card default-border-image"
+                  style={{border: '1px'}}
+                >
                   <img
                     src={medal.image_url}
                     alt={medal.name_badge}
