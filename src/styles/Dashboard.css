@@ -1,0 +1,71 @@
+/* src/styles/Dashboard.css */
+
+.dashboard-container {
+  padding: 40px;
+  background-color: #121212; /* Fundo mais escuro para contraste */
+  min-height: 100vh;
+  color: #e0e0e0; /* Texto claro */
+}
+
+.dashboard-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 40px;
+}
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+}
+
+.loading-text {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: #cccccc;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.chart-card {
+  background-color: #1e1e1e; /* Fundo levemente mais claro para seções */
+  padding: 25px;
+  border-radius: 10px;
+  border-left: 5px solid #d273ff; /* Destaque para a seção */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.chart-card h2 {
+  font-size: 1.75rem;
+  color: #d273ff; /* Cor destacada */
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 20px;
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+  }
+
+  .chart-card h2 {
+    font-size: 1.5rem;
+  }
+}

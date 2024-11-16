@@ -21,6 +21,7 @@
   position: relative;
   padding: 0 10px;
   transition: color 0.3s, border-bottom 0.3s;
+  border-bottom: 2px solid transparent;
 }
 
 .navbar .nav-link.active::after {
@@ -107,7 +108,6 @@
 .signUp {
   border: 2px solid white; /* Borda branca visível o tempo todo */
   padding: 5px 20px; /* Ajuste o padding para criar mais espaço */
-  border-radius: 8px; /* Ajuste o border-radius para bordas mais arredondadas */
   background: transparent; /* Fundo transparente */
   /*margin-left: 10px; /* Adiciona espaço entre Sign In e Sign Up */
 }

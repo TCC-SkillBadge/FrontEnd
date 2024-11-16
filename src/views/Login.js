@@ -91,6 +91,15 @@ const handleLogin = async (
 
       if (userInfoResponse && userInfoResponse.status === 200) {
         const userInfo = userInfoResponse.data;
+
+        // Salve o email original e o codificado
+        const email =
+          tipoUsuario === "UC" ? userInfo.email : userInfo.email_comercial;
+        if (email) {
+          sessionStorage.setItem("email", email); // Email original
+          sessionStorage.setItem("encodedEmail", btoa(email)); // Email codificado
+        }
+
         sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
         return true;
       }

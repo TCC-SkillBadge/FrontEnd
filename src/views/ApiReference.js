@@ -2,127 +2,127 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "../styles/ApiReference.css"; // Arquivo de estilos específico
+import "../styles/ApiReference.css"; // Specific stylesheet
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify"; // Importações do react-toastify
-import "react-toastify/dist/ReactToastify.css"; // Importação dos estilos do react-toastify
-import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importação dos ícones de olho
- 
+import { ToastContainer, toast } from "react-toastify"; // react-toastify imports
+import "react-toastify/dist/ReactToastify.css"; // react-toastify styles
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Eye icons import
+
 const ApiReference = () => {
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
-  const [apiKey, setApiKey] = useState(null); // Inicialmente null
-  const [loadingApiKey, setLoadingApiKey] = useState(true); // Estado para controlar o carregamento
-  const [generatingApiKey, setGeneratingApiKey] = useState(false); // Estado para controlar a geração da API Key
+  const [apiKey, setApiKey] = useState(null); // Initially null
+  const [loadingApiKey, setLoadingApiKey] = useState(true); // State to control loading
+  const [generatingApiKey, setGeneratingApiKey] = useState(false); // State to control API Key generation
   const [selectedLanguage, setSelectedLanguage] = useState("Java");
-  const [showApiKey, setShowApiKey] = useState(false); // Estado para controlar a visibilidade da API Key
+  const [showApiKey, setShowApiKey] = useState(false); // State to control API Key visibility
 
-  // Função para verificar o login e definir os estados
-  const verificaLogin = () => {
-    const tipoUsuario = sessionStorage.getItem("tipoUsuario");
-    const userInfo = sessionStorage.getItem("userInfo");
-    const token = sessionStorage.getItem("token"); // Obter o token
+  // Function to verify login and set states
+  const verifyLogin = () => {
+    const userTypeStored = sessionStorage.getItem("tipoUsuario");
+    const userInfoStored = sessionStorage.getItem("userInfo");
+    const token = sessionStorage.getItem("token"); // Get token
 
-    if (tipoUsuario) {
-      setUserType(tipoUsuario);
+    if (userTypeStored) {
+      setUserType(userTypeStored);
     }
 
-    if (userInfo) {
-      setUser(JSON.parse(userInfo));
+    if (userInfoStored) {
+      setUser(JSON.parse(userInfoStored));
     }
 
     if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`; // Definir o cabeçalho de autorização globalmente
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`; // Set authorization header globally
     }
   };
 
-  // useEffect para verificar o login ao montar o componente
+  // useEffect to verify login on component mount
   useEffect(() => {
-    verificaLogin();
-    window.addEventListener("storage", verificaLogin);
+    verifyLogin();
+    window.addEventListener("storage", verifyLogin);
     return () => {
-      window.removeEventListener("storage", verificaLogin);
+      window.removeEventListener("storage", verifyLogin);
     };
   }, []);
 
-  // Define fetchApiKey fora do useEffect para reutilização
+  // Define fetchApiKey outside useEffect for reuse
   const fetchApiKey = async () => {
     if (userType === "UE" && user) {
       setLoadingApiKey(true);
       try {
-        // Definir a URL correta com base no tipo de usuário
-        const backendUrl = "http://localhost:7003/api/acessar-info-usuario-jwt"; // URL completa do backend para UE
+        // Define the correct URL based on user type
+        const backendUrl = "http://localhost:7003/api/acessar-info-usuario-jwt"; // Complete backend URL for UE
 
         const response = await axios.get(backendUrl, {
           params: { email_comercial: user.email_comercial },
         });
 
-        // Ajuste aqui com base na estrutura real da resposta da API
+        // Adjust based on the actual API response structure
         const receivedApiKey = response.data.api_key || response.data.apiKey;
 
         console.log("Fetch API Key Response Status:", response.status);
         console.log("Fetch API Key Response Data:", response.data);
 
         if (response.status === 200 && receivedApiKey) {
-          setApiKey(receivedApiKey); // Ajuste conforme a estrutura da resposta
+          setApiKey(receivedApiKey); // Adjust based on response structure
         } else {
           setApiKey(null);
-          toast.error("Falha ao obter API Key.");
+          toast.error("Failed to obtain API Key.");
         }
       } catch (error) {
-        console.error("Erro ao obter API Key:", error);
+        console.error("Error obtaining API Key:", error);
         setApiKey(null);
-        toast.error("Erro ao obter API Key.");
+        toast.error("Error obtaining API Key.");
       } finally {
         setLoadingApiKey(false);
       }
     }
   };
 
-  // useEffect para buscar a API Key quando userType ou user muda
+  // useEffect to fetch API Key when userType or user changes
   useEffect(() => {
     fetchApiKey();
   }, [userType, user]);
 
-  // Função para gerar uma nova API Key
+  // Function to generate a new API Key
   const handleGenerateApiKey = async () => {
     if (!user || !user.email_comercial) {
-      toast.error("Informações do usuário não disponíveis.");
+      toast.error("User information not available.");
       return;
     }
 
     setGeneratingApiKey(true);
     try {
-      const backendUrl = "http://localhost:7003/api/generate-api-key"; // Ajuste para a URL correta do backend
+      const backendUrl = "http://localhost:7003/api/generate-api-key"; // Adjust to the correct backend URL
       const response = await axios.post(backendUrl, {
         email_comercial: user.email_comercial,
       });
 
-      console.log("Gerar API Key Response Status:", response.status);
-      console.log("Gerar API Key Response Data:", response.data);
+      console.log("Generate API Key Response Status:", response.status);
+      console.log("Generate API Key Response Data:", response.data);
 
-      // Ajuste aqui com base na estrutura real da resposta da API
+      // Adjust based on the actual API response structure
       const newApiKey = response.data.api_key || response.data.apiKey;
 
       if (response.status === 200 && newApiKey) {
         setApiKey(newApiKey);
-        toast.success("API Key gerada com sucesso e enviada por email!");
+        toast.success("API Key successfully generated and sent via email!");
       } else {
-        // Caso a API não retorne a chave diretamente, buscar novamente
+        // If the API does not return the key directly, fetch it again
         await fetchApiKey();
-        toast.success("API Key gerada com sucesso e enviada por email!");
+        toast.success("API Key successfully generated and sent via email!");
       }
     } catch (error) {
-      console.error("Erro ao gerar API Key:", error);
-      toast.error("Erro ao gerar API Key.");
+      console.error("Error generating API Key:", error);
+      toast.error("Error generating API Key.");
     } finally {
       setGeneratingApiKey(false);
     }
   };
 
-  // Exemplos de código para diferentes linguagens
+  // Code examples for different languages
   const codeExamples = {
-    Java: `// Exemplo em Java usando HttpClient
+    Java: `// Example in Java using HttpClient
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -130,8 +130,8 @@ import java.net.http.HttpResponse;
 
 public class AssignBadge {
     public static void main(String[] args) throws Exception {
-        String apiKey = "SUA_API_KEY_AQUI";
-        String json = "{\\"email_com\\": \\"usuario@exemplo.com\\", \\"id_badge\\": \\"badge1234\\"}";
+        String apiKey = "YOUR_API_KEY_HERE";
+        String json = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -146,10 +146,10 @@ public class AssignBadge {
     }
 }`,
     PHP: `<?php
-// Exemplo em PHP usando cURL
-$apiKey = "SUA_API_KEY_AQUI";
+// Example in PHP using cURL
+$apiKey = "YOUR_API_KEY_HERE";
 $data = array(
-    "email_com" => "usuario@exemplo.com",
+    "email_com" => "user@example.com",
     "id_badge" => "badge1234"
 );
 $payload = json_encode($data);
@@ -168,12 +168,12 @@ curl_close($ch);
 
 echo $response;
 ?>`,
-    "Node.js": `// Exemplo em Node.js usando axios
+    "Node.js": `// Example in Node.js using axios
 const axios = require('axios');
 
-const apiKey = 'SUA_API_KEY_AQUI';
+const apiKey = 'YOUR_API_KEY_HERE';
 const data = {
-  email_com: 'usuario@exemplo.com',
+  email_com: 'user@example.com',
   id_badge: 'badge1234'
 };
 
@@ -189,12 +189,12 @@ axios.post('http://localhost:7001/api/badges/assign', data, {
 .catch(error => {
   console.error(error);
 });`,
-    Python: `# Exemplo em Python usando requests
+    Python: `# Example in Python using requests
 import requests
 
-api_key = 'SUA_API_KEY_AQUI'
+api_key = 'YOUR_API_KEY_HERE'
 data = {
-    'email_com': 'usuario@exemplo.com',
+    'email_com': 'user@example.com',
     'id_badge': 'badge1234'
 }
 headers = {
@@ -204,15 +204,15 @@ headers = {
 
 response = requests.post('http://localhost:7001/api/badges/assign', json=data, headers=headers)
 print(response.text)`,
-    C: `/* Exemplo em C usando libcurl */
+    C: `/* Example in C using libcurl */
 #include <curl/curl.h>
 
 int main(void) {
     CURL *curl = curl_easy_init();
     if(curl) {
         CURLcode res;
-        const char *apiKey = "SUA_API_KEY_AQUI";
-        const char *data = "{\\"email_com\\": \\"usuario@exemplo.com\\", \\"id_badge\\": \\"badge1234\\"}";
+        const char *apiKey = "YOUR_API_KEY_HERE";
+        const char *data = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
 
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -229,7 +229,7 @@ int main(void) {
     }
     return 0;
 }`,
-    "C++": `// Exemplo em C++ usando libcurl
+    "C++": `// Example in C++ using libcurl
 #include <curl/curl.h>
 #include <string>
 
@@ -237,8 +237,8 @@ int main() {
     CURL *curl = curl_easy_init();
     if(curl) {
         CURLcode res;
-        std::string apiKey = "SUA_API_KEY_AQUI";
-        std::string data = "{\\"email_com\\": \\"usuario@exemplo.com\\", \\"id_badge\\": \\"badge1234\\"}";
+        std::string apiKey = "YOUR_API_KEY_HERE";
+        std::string data = "{\\"email_com\\": \\"user@example.com\\", \\"id_badge\\": \\"badge1234\\"}";
 
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, "Content-Type: application/json");
@@ -254,7 +254,7 @@ int main() {
     }
     return 0;
 }`,
-    "C#": `// Exemplo em C# usando HttpClient
+    "C#": `// Example in C# using HttpClient
 using System;
 using System.Net.Http;
 using System.Text;
@@ -266,10 +266,10 @@ namespace AssignBadge
     {
         static async Task Main(string[] args)
         {
-            string apiKey = "SUA_API_KEY_AQUI";
+            string apiKey = "YOUR_API_KEY_HERE";
             var data = new
             {
-                email_com = "usuario@exemplo.com",
+                email_com = "user@example.com",
                 id_badge = "badge1234"
             };
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
@@ -287,15 +287,15 @@ namespace AssignBadge
 }`,
   };
 
-  // Função para alterar a linguagem selecionada
+  // Function to change the selected language
   const handleLanguageChange = (language) => {
     setSelectedLanguage(language);
   };
 
-  // Lista de linguagens disponíveis
+  // List of available languages
   const languages = Object.keys(codeExamples);
 
-  // Função para alternar a visibilidade da API Key
+  // Function to toggle API Key visibility
   const toggleApiKeyVisibility = () => {
     setShowApiKey((prevState) => !prevState);
   };
@@ -306,16 +306,16 @@ namespace AssignBadge
       <div className="api-reference-container">
         <h1 className="api-title">API Reference</h1>
         <p className="api-description">
-          Use esta API para integrar a atribuição de badges diretamente em seu
-          sistema. Siga as instruções abaixo para configurar e utilizar os
-          endpoints.
+          Use this API to integrate badge assignment directly into your system.
+          Follow the instructions below to configure and use the endpoints.
         </p>
-        {/* Se o usuário for Empresarial (UE), exibir a seção da API Key */}
+
+        {/* If the user is Business (UE), display the API Key section */}
         {userType === "UE" && (
           <div className="api-section">
-            <h2>Sua API Key</h2>
+            <h2>Your API Key</h2>
             {loadingApiKey ? (
-              <p>Carregando sua API Key...</p>
+              <p>Loading your API Key...</p>
             ) : apiKey ? (
               <>
                 <div className="api-key-container">
@@ -324,13 +324,12 @@ namespace AssignBadge
                     value={apiKey}
                     readOnly
                     className="api-key-input"
+                    aria-label="API Key"
                   />
                   <button
                     className="toggle-api-key-button"
                     onClick={toggleApiKeyVisibility}
-                    aria-label={
-                      showApiKey ? "Ocultar API Key" : "Mostrar API Key"
-                    }
+                    aria-label={showApiKey ? "Hide API Key" : "Show API Key"}
                   >
                     {showApiKey ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -340,7 +339,7 @@ namespace AssignBadge
                   onClick={handleGenerateApiKey}
                   disabled={generatingApiKey}
                 >
-                  {generatingApiKey ? "Gerando..." : "Gerar Nova API Key"}
+                  {generatingApiKey ? "Generating..." : "Generate New API Key"}
                 </button>
               </>
             ) : (
@@ -349,84 +348,95 @@ namespace AssignBadge
                 onClick={handleGenerateApiKey}
                 disabled={generatingApiKey}
               >
-                {generatingApiKey ? "Gerando..." : "Gerar API Key"}
+                {generatingApiKey ? "Generating..." : "Generate API Key"}
               </button>
             )}
           </div>
         )}
-        {/* Seção de Autenticação */}
+
+        {/* Authentication Section */}
         <div className="api-section">
-          <h2>Autenticação</h2>
+          <h2>Authentication</h2>
           <p>
-            Cada solicitação à API requer uma <strong>API Key</strong> no
-            cabeçalho <code>x-api-key</code>. Você pode gerar ou recuperar sua
-            API Key no painel da conta empresarial.
+            Each API request requires an <strong>API Key</strong> in the{" "}
+            <code>x-api-key</code> header. You can generate or retrieve your API
+            Key in the business account dashboard.
           </p>
           <p className="code-snippet">
-            <code>{`x-api-key: SUA_API_KEY_AQUI`}</code>
+            <code>{`x-api-key: YOUR_API_KEY_HERE`}</code>
           </p>
         </div>
-        {/* Seção de Endpoints */}
+
+        {/* Endpoints Section */}
         <div className="api-section">
           <h2>Endpoints</h2>
+
           <div className="endpoint">
             <h3>POST /api/badges/assign</h3>
-            <p>Este endpoint permite atribuir uma badge a um usuário final.</p>
-            <h4>Parâmetros:</h4>
+            <p>This endpoint allows assigning a badge to an end user.</p>
+            <h4>Parameters:</h4>
             <ul>
               <li>
-                <strong>email_com</strong> (string): Email do destinatário da
-                badge.
+                <strong>email_com</strong> (string): Email of the badge
+                recipient.
               </li>
               <li>
-                <strong>id_badge</strong> (string): ID da badge a ser atribuída.
+                <strong>id_badge</strong> (string): ID of the badge to be
+                assigned.
               </li>
             </ul>
-            <h4>Exemplo de Requisição:</h4>
+            <h4>Request Example:</h4>
             <p className="code-snippet">
               <code>
-                {`curl -X POST "http://localhost:7001/api/badges/assign" \\-H "x-api-key: SUA_API_KEY_AQUI" \ -H "Content-Type: application/json" \ -d '{ "email_com": "usuario@exemplo.com", "id_badge": "badge1234" }'} </code> </p> <h4>Resposta de Sucesso:</h4> <p className="code-snippet"> <code>{{ "message": "Email de atribuição de badge enviado com sucesso" }`}
-              </code>{" "}
-            </p>{" "}
-          </div>{" "}
+                {`curl -X POST "http://localhost:7001/api/badges/assign" \\
+-H "x-api-key: YOUR_API_KEY_HERE" \\
+-H "Content-Type: application/json" \\
+-d '{ "email_com": "user@example.com", "id_badge": "badge1234" }'`}
+              </code>
+            </p>
+            <h4>Success Response:</h4>
+            <p className="code-snippet">
+              <code>{`{ "message": "Badge assignment email sent successfully" }`}</code>
+            </p>
+          </div>
         </div>
-        {/* Seção de Erros Possíveis */}
+
+        {/* Possible Errors Section */}
         <div className="api-section">
-          <h2>Erros Possíveis</h2>
+          <h2>Possible Errors</h2>
           <ul>
             <li>
-              <strong>400 Bad Request:</strong> Parâmetros inválidos ou
-              faltando.
+              <strong>400 Bad Request:</strong> Invalid or missing parameters.
             </li>
             <li>
-              <strong>401 Unauthorized:</strong> API Key não fornecida ou
-              inválida.
+              <strong>401 Unauthorized:</strong> API Key not provided or
+              invalid.
             </li>
             <li>
-              <strong>403 Forbidden:</strong> Sem permissão para acessar o
-              recurso.
+              <strong>403 Forbidden:</strong> No permission to access the
+              resource.
             </li>
             <li>
-              <strong>404 Not Found:</strong> Endpoint ou recurso não
-              encontrado.
+              <strong>404 Not Found:</strong> Endpoint or resource not found.
             </li>
             <li>
-              <strong>500 Internal Server Error:</strong> Erro interno no
-              servidor.
+              <strong>500 Internal Server Error:</strong> Server encountered an
+              internal error.
             </li>
           </ul>
         </div>
-        {/* Seção de Exemplos de Requisição no Insomnia/Postman */}
+
+        {/* Request Examples in Insomnia/Postman Section */}
         <div className="api-section">
-          <h2>Exemplo de Requisição no Insomnia/Postman</h2>
+          <h2>Request Example in Insomnia/Postman</h2>
           <p>
-            Você pode utilizar o Insomnia ou Postman para testar este endpoint.
-            Veja abaixo como configurar a requisição:
+            You can use Insomnia or Postman to test this endpoint. See below how
+            to configure the request:
           </p>
-          <h4>Configuração da Requisição:</h4>
+          <h4>Request Configuration:</h4>
           <ul>
             <li>
-              <strong>Método:</strong> POST
+              <strong>Method:</strong> POST
             </li>
             <li>
               <strong>URL:</strong> http://localhost:7001/api/badges/assign
@@ -438,7 +448,7 @@ namespace AssignBadge
                   <code>Content-Type: application/json</code>
                 </li>
                 <li>
-                  <code>x-api-key: SUA_API_KEY_AQUI</code>
+                  <code>x-api-key: YOUR_API_KEY_HERE</code>
                 </li>
               </ul>
             </li>
@@ -447,22 +457,25 @@ namespace AssignBadge
             </li>
             <pre className="code-snippet">
               <code>
-                {`{"email_com": "usuario@exemplo.com", "id_badge": "badge1234" }`}{" "}
-              </code>{" "}
-            </pre>{" "}
-          </ul>{" "}
+                {`{
+  "email_com": "user@example.com",
+  "id_badge": "badge1234"
+}`}
+              </code>
+            </pre>
+          </ul>
           <p>
-            {" "}
-            Certifique-se de substituir <code>SUA_API_KEY_AQUI</code> pela sua
-            API Key e os valores dos parâmetros conforme necessário.{" "}
-          </p>{" "}
-        </div>{" "}
-        {/* Seção de Exemplos de Implementação */}
+            Make sure to replace <code>YOUR_API_KEY_HERE</code> with your API
+            Key and adjust the parameter values as needed.
+          </p>
+        </div>
+
+        {/* Implementation Examples Section */}
         <div className="api-section">
-          <h2>Exemplos de Implementação</h2>
+          <h2>Implementation Examples</h2>
           <p>
-            Veja abaixo exemplos de como integrar este endpoint em diferentes
-            linguagens de programação.
+            Below are examples of how to integrate this endpoint in different
+            programming languages.
           </p>
           <div className="language-tabs">
             {languages.map((language) => (
@@ -485,7 +498,7 @@ namespace AssignBadge
         </div>
       </div>
       <Footer />
-      {/* Apenas um ToastContainer para evitar duplicação */}
+      {/* Only one ToastContainer to avoid duplication */}
       <ToastContainer
         position="top-center"
         autoClose={3000}
