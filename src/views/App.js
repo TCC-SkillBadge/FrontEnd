@@ -49,6 +49,7 @@ import FuncionalidadesManager from "../components/FuncionalidadesManager";
 import ApiReference from "./ApiReference";
 import About from "./About";
 import Dashboard from "./Dashboard";
+import DataVisualization from "./DataVisualization";
 // Import TestPage apenas se estiver usando
 // import TestPage from "./TestPage"; // Remova se não precisar
 
@@ -133,7 +134,7 @@ function App() {
     <div className="App">
       {/* Passar userType e user como props para NavBar */}
       {/* <NavBar userType={userType} user={user} /> */}
-      <NavBar token={token} user={user} userType={userType}/>
+      <NavBar token={token} user={user} userType={userType} />
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Home />} />
@@ -177,6 +178,7 @@ function App() {
           <Route path="/claim-badge" element={<ClaimBadgePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/data-visualization" element={<DataVisualization />} />
           {/* <Route path="/test" element={<TestPage />} /> */}{" "}
           {/* Remova se não precisar */}
         </Routes>
