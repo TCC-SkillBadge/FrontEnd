@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from "../Navbar";
 import { Divider } from 'primereact/divider';
 import { useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,23 +18,20 @@ export const ResultScreen = protectRoute(() => {
     , []);
 
     return (
-        <div>
-            <Navbar/>
-            <div className='result-box default-border-image'>
-                <h1>Your Results</h1>
-                <Divider/>
-                <div className='flex flex-column align-items-center'>
-                    <ResultChart resultShow={resultShow}/>
-                </div>
-                <div className='flex flex-row justify-content-center mt-5 mb-3'>
-                    <button
-                    id='results-return-home-btn'
-                    className='dbuttons dbuttons-primary pr-6 pl-6'
-                    style={{fontSize: 'calc(0.8rem + 1.2vw)'}}
-                    onClick={() => window.location.replace('/')}>
-                        Go Back
-                    </button>
-                </div>
+        <div className='result-box default-border-image'>
+            <h1>Your Results</h1>
+            <Divider/>
+            <div className='flex flex-column align-items-center'>
+                <ResultChart resultShow={resultShow}/>
+            </div>
+            <div className='flex flex-row justify-content-center mt-5 mb-3'>
+                <button
+                id='results-return-home-btn'
+                className='dbuttons dbuttons-primary pr-6 pl-6'
+                style={{fontSize: 'calc(0.8rem + 1.2vw)'}}
+                onClick={() => window.location.replace('/')}>
+                    Go Back
+                </button>
             </div>
         </div>
     )

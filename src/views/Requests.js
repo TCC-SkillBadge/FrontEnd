@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/Requests.css";
 
@@ -109,7 +108,6 @@ const Requests = () => {
 
   return (
     <div className="pedidos-page">
-      <Navbar />
       <div className="container pedidos-container">
         <div className="pedidos-header">
           <div className="pedidos-search-group">

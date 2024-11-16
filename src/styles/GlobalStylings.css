@@ -33,8 +33,6 @@
 /*Confirm Dialog*/
 
 .p-confirm-dialog{
-    background-color: #0e102a;
-    color: white;
     position: relative;
     backdrop-filter: blur(10px);
     padding: 1%;
@@ -50,22 +48,6 @@
     mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
     pointer-events: none;
-}
-
-.p-cd-footer{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin: auto;
-    background-color: #0e102a;
-    color: white;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
-
-.p-cd-header{
-    background-color: #0e102a;
-    color: white;
 }
 
 /*Confirm Popup*/
@@ -116,6 +98,7 @@
 .dbuttons:hover{
     box-shadow: 0 10px 20px 0 rgba(0,0,0,0.8);
     scale: 1.05;
+    transition: 0.5s;
 }
 
 .dbuttons-success{
@@ -221,6 +204,12 @@
     border-bottom-left-radius: 10px;
     width: fit-content;
     color: white;
+}
+
+/*Toastify*/
+
+.Toastify__toast-container{
+    margin-top: 5rem;
 }
 
 /*Various*/

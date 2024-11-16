@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar"; // Certifique-se de que o caminho está correto
-import Footer from "../components/Footer";
 import FeatureCard from "../components/FeatureCard"; // Importe o novo componente
 import "../styles/Home.css"; // Certifique-se de criar este arquivo de estilo
 import "../styles/GlobalStylings.css"
@@ -32,7 +30,6 @@ const Home = () => {
 
   return (
     <div>
-      <Navbar userType={userType} user={user} />
       <div className="coinBackgroundHome">
       </div>
       
@@ -178,7 +175,6 @@ const Home = () => {
         />
         
       </div>
-      <Footer />
     </div>
   );
 };

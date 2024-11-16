@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import WorkflowCard from "../components/WorkflowCard";
 import "../styles/Workflow.css";
 
@@ -35,7 +34,6 @@ const Workflow = () => {
   if (userType === "business") {
     return (
       <div className="workflow-page">
-        <Navbar userType={userType} user={user} />
         <div className="workflow-container">
           <h1 className="workflow-title">Badge Issuance Workflow</h1>
           <p className="workflow-subtitle">
@@ -71,7 +69,6 @@ const Workflow = () => {
   else {
     return (
       <div className="workflow-page">
-        <Navbar userType={userType} user={user} />
         <div className="workflow-container-adm">
           <h1 className="workflow-title-adm">Badge  Workflow  </h1>
           <div className="row workflow-section-adm">

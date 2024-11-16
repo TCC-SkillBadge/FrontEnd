@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from "../Navbar";
 import { Divider } from 'primereact/divider';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
@@ -129,7 +128,7 @@ export const ListSoftSkills = () => {
             setSoftSkills(list => list.map(ss => ss.id_soft_skill === managedSS.id_soft_skill ? managedSS : ss));
             setManagedSS(() => objSSInit);
             toast.update(editing, {
-                render: 'Soft SKill edited successfully!',
+                render: 'Soft Skill edited successfully!',
                 type: 'success',
                 isLoading: false,
                 autoClose: 3000
@@ -185,7 +184,7 @@ export const ListSoftSkills = () => {
                 render: `${msg}`,
                 type: 'error',
                 isLoading: false,
-                autoClose: 3000
+                autoClose: 3000,
             });
         });
     };
@@ -245,7 +244,6 @@ export const ListSoftSkills = () => {
 
     return (
         <div>
-            <Navbar/>
             <div id='softskills-component' className='list-box default-border-image'>
                 <h1>Soft Skill List</h1>
                 <Divider className='mb-4'/>
@@ -259,8 +257,8 @@ export const ListSoftSkills = () => {
                             key={item.id_soft_skill}
                             className='list-skill-box'>
                                 <div className='flex flex-row mt-1'>
-                                   <h3
-                                   id={`SSName-[${item.nome_soft_skill}]`}
+                                    <h3
+                                    id={`SSName-[${item.nome_soft_skill}]`}
                                     className='mr-3'
                                     style={{textTransform: 'uppercase'}}>
                                         {item.nome_soft_skill}
@@ -324,46 +322,36 @@ export const ListSoftSkills = () => {
                         <Loading show={loading} msg='Loading Soft Skills...'/>
                     </div>
                 </div>
-
-                <ManageSSBox
-                showPopUp={showPopUp}
-                setShowPopUp={setShowPopUp}
-                editing={editing}
-                setEditing={setEditing}
-                managedSS={managedSS}
-                setManagedSS={setManagedSS}
-                confirmEdit={confirmEdit}
-                registerSoftSkill={registerSoftSkill}
-                objSSInit={objSSInit}/>
-
-                {/* Messages and confirmation parts */}
-
-                <ToastContainer
-                position="top-center"
-                autoClose={3000}
-                hideProgressBar
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"/>
-
-                <ConfirmPopup/>
-
-                <ConfirmDialog
-                closable={false}
-                draggable={false}
-                pt={{
-                    header: {className: 'p-cd-header'},
-                    footer: {className: 'p-cd-footer'},
-                    acceptButton: {className: 'dbuttons dbuttons-success ml-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-                    rejectButton: {className: 'dbuttons dbuttons-danger mr-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-                    message: {style: {fontWeight: 'bold', fontSize: 'calc(15px + 1vw)', width: 'fit-content'}},
-                    content: {style: {width: 'fit-content', marginTop: '20px', marginRight: '40px'}},
-                }}/>
             </div>
+
+            <ManageSSBox
+            showPopUp={showPopUp}
+            setShowPopUp={setShowPopUp}
+            editing={editing}
+            setEditing={setEditing}
+            managedSS={managedSS}
+            setManagedSS={setManagedSS}
+            confirmEdit={confirmEdit}
+            registerSoftSkill={registerSoftSkill}
+            objSSInit={objSSInit}/>
+
+            {/* Messages and confirmation parts */}
+
+            <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"/>
+
+            <ConfirmPopup/>
+
+            <ConfirmDialog/>
         </div>
     );
 }

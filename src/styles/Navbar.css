@@ -2,17 +2,15 @@
 .navbar {
   width: 100%;
   height: 87px;
-  background-color: rgba(0, 0, 0, 0.7) !important; /* Preto com 70% de opacidade */
+  background-color: rgba(0, 0, 0, 0.8) !important; /* Preto com 80% de opacidade */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  align-self: start;
   padding: 0 20px; /* Diminui o padding nas laterais */
   box-sizing: border-box; /* Garante que o padding seja incluído na largura total */
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
   font-family: 'Inter', sans-serif;
-  position: fixed; /* Faz a navbar ficar fixa no topo */
-  top: 0; /* Posiciona a navbar no topo */
   z-index: 1000; /* Garante que a navbar fique acima de outros elementos */
 }
 
@@ -23,6 +21,7 @@
   position: relative;
   padding: 0 10px;
   transition: color 0.3s, border-bottom 0.3s;
+  border-bottom: 2px solid transparent;
 }
 
 .navbar .nav-link.active::after {
@@ -40,12 +39,36 @@
   border-bottom: 2px solid #d273ff;
 }
 
+.collapsed-menu{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 7px;
+  margin-right: 5px;
+  max-width: 65px;
+}
+
+.collapsed-menu .dropdown-menu{
+  bottom: auto;
+}
+
+.collapsed-menu .dropdown-toggle::after{
+  display: none !important;
+}
+
+.collapsed-menu .dropdown-item{
+  font-size: calc(20px + 1.2vw);
+}
+
 .searchSection {
   display: flex;
   align-items: center;
   margin-right: 20px;
+  margin-left: auto; /* Move a barra de pesquisa para a direita */
   flex-grow: 0; /* Impede que a barra de pesquisa cresça demais */
   max-width: 300px; /* Define uma largura máxima para a barra de pesquisa */
+  
 }
 
 .searchInput {
@@ -58,6 +81,18 @@
   color: white;
 }
 
+.search-icon{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border: 3px solid white;
+  border-radius: 50%;
+  height: 30px;
+  width: 35px;
+  margin-right: 10px;
+}
 
 .searchInput::placeholder {
   color: white;
@@ -85,9 +120,8 @@
 .signUp {
   border: 2px solid white; /* Borda branca visível o tempo todo */
   padding: 5px 20px; /* Ajuste o padding para criar mais espaço */
-  border-radius: 8px; /* Ajuste o border-radius para bordas mais arredondadas */
   background: transparent; /* Fundo transparente */
-  margin-left: 10px; /* Adiciona espaço entre Sign In e Sign Up */
+  /*margin-left: 10px; /* Adiciona espaço entre Sign In e Sign Up */
 }
 
 .signUp:hover {
@@ -100,44 +134,26 @@
   height: 40px;
 }
 
-.userMenu {
-  background-color: rgba(0, 0, 0, 0.9);
-  border-radius: 8px;
-  padding: 10px;
-  text-align: left;
-}
-
-.userMenu .menuItem {
+.user-menu {
   color: white;
-  padding: 10px 15px;
-  cursor: pointer;
-  text-decoration: none;
 }
 
-.userMenu .menuItem:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.userMenu .menuItem i {
-  margin-right: 10px;
-}
-
-.navbar-nav .dropdown-menu {
+.user-menu .dropdown-menu {
   right: 0 !important;
   left: auto !important;
 }
 
-.navbar-nav .dropdown-menu {
+.navbar .dropdown-menu {
   background-color: rgba(0, 0, 0, 0.8) !important; /* Preto com 80% de opacidade */
   border: none; /* Remove a borda padrão */
   border-radius: 8px; /* Aplica bordas arredondadas */
 }
 
-.navbar-nav .dropdown-menu .dropdown-item {
+.navbar .dropdown-menu .dropdown-item {
   color: white !important; /* Define a cor do texto como branca */
 }
 
-.navbar-nav .dropdown-menu .dropdown-item:hover {
+.navbar .dropdown-menu .dropdown-item:hover {
   background-color: rgba(210, 115, 255) !important; /* Cor de fundo rosa com 80% de opacidade ao passar o mouse */
   color: white !important; /* Cor do texto ao passar o mouse */
 }
@@ -215,16 +231,22 @@
 /*ChatBox part*/
 
 .chatbox-panel{
-  background-color: #1c193b;
+  /*Local CSS variables*/
+  --chatbox-panel-background-color: #180738;
+
+  margin-top: 2rem;
+  background-color: var(--chatbox-panel-background-color);
   border-radius: 10px;
   box-sizing: border-box;
-  z-index: 1000;
+  z-index: 1500;
   box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
   position: fixed;
 }
 
 .p-overlaypanel{
   min-height: fit-content;
+  margin-left: 45px;
+  margin-right: 45px;
 }
 
 .p-overlaypanel-content{
@@ -234,12 +256,12 @@
 
 @media (max-width: 800px){
   .p-overlaypanel-content{
-    width: 90vw;
+    width: 80vw;
   }
 }
 
 .p-overlaypanel-close{
-  background-color: #1c193b;
+  background-color: var(--chatbox-panel-background-color);
   border-radius: 50%;
   box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
 }
@@ -254,4 +276,15 @@
 }
 .p-overlaypanel.p-overlaypanel::after {
   content: none;
+}
+
+/*Various*/
+
+.collapse-icon{
+  color: white;
+  scale: 1.5;
+}
+
+.collapse-icon:hover{
+  scale: 1.6;
 }

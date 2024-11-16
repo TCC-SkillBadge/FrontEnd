@@ -1,4 +1,6 @@
 import { confirmDialog } from 'primereact/confirmdialog';
+import '../../styles/GlobalStylings.css';
+import '../../styles/JWTExpirationModal.css';
 
 export const jwtExpirationHandler = () => {
     confirmDialog({
@@ -14,7 +16,17 @@ export const jwtExpirationHandler = () => {
             sessionStorage.clear();
             window.location.href = '/login';
         },
-        acceptLabel: 'Ok',
+        closable: false,
+        draggable: false,
+        acceptLabel: 'OK',
+        acceptClassName: 'confirm-relogin-btn',
         rejectClassName: 'hidden',
+        pt: {
+            root: {className: 'p-cd-jwth-container'},
+            header: {className: 'p-cd-jwth-header'},
+            footer: {className: 'p-cd-jwth-footer'},
+            message: {className: 'p-cd-jwth-message'},
+            content: {className: 'p-cd-jwth-content'},
+        },
     });
 };

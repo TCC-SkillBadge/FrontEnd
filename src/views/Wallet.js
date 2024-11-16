@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import { ClipLoader } from "react-spinners";
 import "../styles/Wallet.css";
@@ -91,7 +90,6 @@ const Wallet = () => {
 
   return (
     <div className="wallet-page">
-      <Navbar />
       <div className="coinBackgroundWallet"></div>
       <div className="wallet-container">
         <div className="wallet-header">

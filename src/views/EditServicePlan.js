@@ -1,6 +1,5 @@
 // EditServicePlan.js
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
@@ -293,7 +292,6 @@ const EditServicePlan = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="create-plan-page">
         <div className="create-plan-container">
           <h2>Edit Service Plan</h2>

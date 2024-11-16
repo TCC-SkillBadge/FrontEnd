@@ -64,7 +64,7 @@ const ChatBox = () => {
 
 
   useEffect(() => {
-    setSocket(() => io(chatServiceURL, { auth: { user: userEmail } } ))
+    setSocket(() => io(chatServiceURL, { auth: { token, user: userEmail } } ))
     
     return () => {
       socket?.disconnect();
@@ -155,6 +155,9 @@ const ChatBox = () => {
     socket?.on('connect_error', (error) => {
       console.error('An error occurred while connecting to the chat service');
       console.error(error);
+      
+      if(error.message === 'Token has expired') jwtExpirationHandler();
+
       setLoading(() => false);
       setInoperant(() => true);
     });
@@ -217,8 +220,8 @@ const ChatBox = () => {
       }
     }
     catch (error) {
-      console.error('An error occurred while fetching users profile pictures');
-      console.error(error);
+      // console.error('An error occurred while fetching users profile pictures');
+      // console.error(error);
       handleRequestError(error);
     }
     cont.profile_picture = profile_picture;
@@ -262,17 +265,20 @@ const ChatBox = () => {
   };
 
   const handleRequestError = (error) => {
+    console.error('Entering handleRequestError');
     let msg = '';
     if(error.response){
         msg = error.response.data.message
-        if(error.response.data.type === 'TokenExpired') jwtExpirationHandler();
+        if(error.response.data.name === 'TokenExpiredError') jwtExpirationHandler();
     }
-    else if(error.request) msg = 'Error while trying to access server!'
-    toast.error(msg);
+    else if(error.request){
+      msg = `Error while trying to access server: ${error.request}`;
+    }
+    console.log(msg);
   };
 
   return (
-    <div id='chatbox-component' className='chatbox'>
+    <div id='chatbox-component' className='chat-box'>
       {
         loading ?
         <Loading show={loading} msg='Loading Chat Service'/> :
@@ -318,17 +324,7 @@ const ChatBox = () => {
       pauseOnHover
       theme="dark"/>
 
-      <ConfirmDialog
-      closable={false}
-      draggable={false}
-      pt={{
-          header: {className: 'p-cd-header'},
-          footer: {className: 'p-cd-footer'},
-          acceptButton: {className: 'dbuttons dbuttons-success ml-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-          rejectButton: {className: 'dbuttons dbuttons-danger mr-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-          message: {style: {fontWeight: 'bold', fontSize: 'calc(15px + 1vw)', width: 'fit-content'}},
-          content: {style: {width: 'fit-content', marginTop: '20px', marginRight: '40px'}},
-      }}/>
+      <ConfirmDialog/>
     </div>
   )
 };
@@ -358,7 +354,7 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
             return (
               <div
               key={contact.email}
-              className='flex flex-row align-items-center mb-3'>
+              className='flex flex-row align-items-center mb-2 mt-2'>
                 <button
                 id={`contact-${contact.email}`}
                 className='contact-button'
@@ -385,7 +381,7 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
       <div className='flex flex-row mt-3 mb-3 w-full bottom-0'>
         <button
         id='add-contact-btn'
-        className='btn btn-primary'
+        className='dbuttons dbuttons-primary w-full'
         onClick={() => setSearching(() => true)}>
           <i className='pi pi-plus'/> New Chat
         </button>
@@ -555,7 +551,6 @@ const SearchBox = ({token, userEmail, userUsername, searching, setSearching, con
       catch (error) {
         console.error('An error occurred while fetching users');
         console.error(error);
-        setSearching(() => false);
         handleRequestError(error);
       }
 
@@ -661,7 +656,7 @@ const SearchBox = ({token, userEmail, userUsername, searching, setSearching, con
         onChange={(e) => {setSearchTerm(() => e.target.value)}}/>
         <Button
         id='chat-search-users-btn'
-        className='dbuttons dbuttons-primary ml-3 pr-4 pl-4'
+        className='dbuttons dbuttons-primary ml-3 pr-5 pl-4'
         label='Search'
         onClick={searchUsers}/>
       </div>
@@ -790,8 +785,7 @@ const SearchResults = ({user, userEmail, userUsername, sendMessage, resetSearch}
                 onChange={setFirstMessage}
                 onEnter={() => send()}
                 placeholder='Enter your message'
-                shouldReturn
-                borderRadius={0}/>
+                shouldReturn/>
               </div>
               <div className='flex flex-row justify-content-center'>
                 <button

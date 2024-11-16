@@ -53,27 +53,87 @@ import Dashboard from "./Dashboard";
 // import TestPage from "./TestPage"; // Remova se não precisar
 
 function App() {
-  // Gerenciar o userType e user no App.js
-  // const [userType, setUserType] = useState(null);
-  // const [user, setUser] = useState(null);
+  // Gerenciar o userType, user e token no App.js
+  const [user, setUser] = useState(null);
+  const [userType, setUserType] = useState(null);
+  const [token, setToken] = useState(null);
 
-  // useEffect(() => {
-  //   const storedUserType = sessionStorage.getItem("tipoUsuario");
-  //   const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+  useEffect(() => {
+    const verifyStoredLogin = () => {
+      console.log("Verifying stored login");
 
-  //   if (storedUserType) {
-  //     setUserType(storedUserType);
-  //   }
+      const storedTokenLS = localStorage.getItem("token");
+      const storedUserTypeLS = localStorage.getItem("tipoUsuario");
+      const storedUserInfoLS = JSON.parse(localStorage.getItem("userInfo"));
 
-  //   if (storedUserInfo) {
-  //     setUser(storedUserInfo);
-  //   }
-  // }, []);
+      console.log("User type stored in LocalStorage:", storedUserTypeLS);
+      console.log("User info stored in LocalStorage:", storedUserInfoLS);
+      console.log("Token stored in LocalStorage:", storedTokenLS);
+
+      setToken(() => storedTokenLS);
+      setUserType(() => storedUserTypeLS);
+      setUser(() => storedUserInfoLS);
+
+      const storedTokenSS = sessionStorage.getItem("token");
+      const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
+      const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
+
+      console.log("User type stored in SessionStorage:", storedUserTypeSS);
+      console.log("User info stored in SessionStorage:", storedUserInfoSS);
+      console.log("Token stored in SessionStorage:", storedTokenSS);
+
+      if(storedTokenSS && storedUserTypeSS && storedUserInfoSS){
+        setUserType(() => storedUserTypeSS);
+        setUser(() => storedUserInfoSS)
+        setToken(() => storedTokenSS);
+      }
+      else if(storedTokenLS && storedUserTypeLS && storedUserInfoLS){
+        sessionStorage.setItem("tipoUsuario", storedUserTypeLS);
+        sessionStorage.setItem("userInfo", JSON.stringify(storedUserInfoLS));
+        sessionStorage.setItem("token", storedTokenLS);
+
+        const storedEmail = localStorage.getItem("email");
+        const storedEncodedEmail = localStorage.getItem("encodedEmail");
+
+        if(storedEmail) sessionStorage.setItem("email", storedEmail);
+        if(storedEncodedEmail) sessionStorage.setItem("encodedEmail", storedEncodedEmail);
+
+        setUserType(() => storedUserTypeLS);
+        setUser(() => storedUserInfoLS)
+        setToken(() => storedTokenLS);
+      }
+
+      console.log("Exiting verifyStoredLogin");
+    };
+
+    const verifyLoggedIn = () => {
+      console.log("Verifying logged in");
+
+      const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
+      const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
+      const storedTokenSS = sessionStorage.getItem("token");
+
+      console.log("User type stored in SessionStorage:", storedUserTypeSS);
+      console.log("User info stored in SessionStorage:", storedUserInfoSS);
+      console.log("Token stored in SessionStorage:", storedTokenSS);
+
+      setUserType(() => storedUserTypeSS);
+      setUser(() => storedUserInfoSS)
+      setToken(() => storedTokenSS);
+    };
+
+    verifyStoredLogin();
+
+    window.addEventListener("LoginChange", verifyLoggedIn);
+
+    return () => { window.removeEventListener("LoginChange", verifyLoggedIn); };
+  }, []);
 
   return (
     <div className="App">
       {/* Passar userType e user como props para NavBar */}
       {/* <NavBar userType={userType} user={user} /> */}
+      <NavBar token={token} user={user} userType={userType}/>
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Home />} />
@@ -98,7 +158,7 @@ function App() {
           <Route path="/edit-plan/:id" element={<EditServicePlan />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/profile/:encodedEmail" element={<UserProfile />} />
           <Route path="/api-reference" element={<ApiReference />} />
           <Route path="/funcionalidades" element={<FuncionalidadesManager />} />
           <Route
@@ -121,7 +181,7 @@ function App() {
           {/* Remova se não precisar */}
         </Routes>
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }
