@@ -2,7 +2,7 @@
 
 .data-visualization-container {
   padding: 40px;
-  background-color: rgba(0, 0, 0, 0.85); /* Dark background for better contrast */
+  background-color: rgba(0, 0, 0, 0.85); /* Fundo escuro para melhor contraste */
   border-radius: 15px;
   color: #ffffff;
   max-width: 1400px;
@@ -25,13 +25,27 @@
 }
 
 .chart-card {
+  position: relative; /* Necessário para posicionar o tooltip */
   background-color: rgba(255, 255, 255, 0.1);
   padding: 25px;
   border-radius: 10px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.chart-card h3 {
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Estilos para o título com tooltip */
+.chart-card .tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.chart-card .tooltip h3 {
   font-size: 1.6rem;
   font-weight: 600;
   text-align: center;
@@ -39,8 +53,45 @@
   color: #ffffff;
 }
 
+/* Tooltip text */
+.chart-card .tooltip .tooltiptext {
+  visibility: hidden;
+  width: 220px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Posiciona acima do elemento */
+  left: 50%;
+  margin-left: -110px; /* Centraliza horizontalmente */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Seta do tooltip */
+.chart-card .tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Na parte inferior do tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+}
+
+/* Mostrar o tooltip ao passar o mouse */
+.chart-card .tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
 .error-message,
-.info-message {
+.info-message,
+.loading {
   padding: 20px;
   border-radius: 8px;
   text-align: center;
@@ -50,16 +101,21 @@
 }
 
 .error-message {
-  background-color: #ff4d4f; /* Red for errors */
+  background-color: #ff4d4f; /* Vermelho para erros */
   color: #ffffff;
 }
 
 .info-message {
-  background-color: #1890ff; /* Blue for information */
+  background-color: #1890ff; /* Azul para informações */
   color: #ffffff;
 }
 
-/* Responsive Adjustments */
+.loading {
+  background-color: #f0f0f0;
+  color: #333333;
+}
+
+/* Ajustes responsivos */
 @media (max-width: 1200px) {
   .charts-grid {
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -69,7 +125,7 @@
     padding: 30px;
   }
 
-  .chart-card h3 {
+  .chart-card .tooltip h3 {
     font-size: 1.4rem;
     margin-bottom: 20px;
   }
@@ -84,13 +140,13 @@
     padding: 20px;
   }
 
-  .chart-card h3 {
+  .chart-card .tooltip h3 {
     font-size: 1.2rem;
     margin-bottom: 15px;
   }
 }
 
-/* Tooltip Styling */
+/* Estilização dos tooltips das bibliotecas Recharts */
 .recharts-tooltip-wrapper {
   background: rgba(0, 0, 0, 0.75);
   border-radius: 5px;
@@ -112,14 +168,24 @@
   margin-right: 5px;
 }
 
-/* Legend Styling */
+/* Estilização da legenda */
 .recharts-legend-wrapper {
   font-size: 0.9rem;
   color: #ffffff;
 }
 
-/* Axis Labels */
+/* Estilização das labels dos eixos */
 .recharts-text.recharts-label {
   fill: #ffffff;
   font-size: 1rem;
+}
+
+/* Melhorar a opacidade das barras */
+.recharts-bar-rectangle {
+  fill-opacity: 0.8;
+}
+
+/* Aumentar a largura das linhas */
+.recharts-line {
+  stroke-width: 3;
 }

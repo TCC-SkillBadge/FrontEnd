@@ -178,7 +178,7 @@ function App() {
           <Route path="/claim-badge" element={<ClaimBadgePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/data-visualization" element={<DataVisualization />} />
+          <Route path="/analysis" element={<DataVisualization />} />
           {/* <Route path="/test" element={<TestPage />} /> */}{" "}
           {/* Remova se não precisar */}
         </Routes>

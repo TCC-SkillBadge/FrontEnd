@@ -1,35 +1,24 @@
 // src/views/DataVisualization.js
 import React, { useMemo } from "react";
 import axios from "axios";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { useNavigate } from "react-router-dom";
-import { useQueries } from "@tanstack/react-query"; // Correct import
+import { useQueries } from "@tanstack/react-query";
+import BarChartComponent from "../components/charts/BarChartComponent";
+import PieChartComponent from "../components/charts/PieChartComponent";
+import LineChartComponent from "../components/charts/LineChartComponent";
+import RadarChartComponent from "../components/charts/RadarChartComponent";
 import "../styles/DataVisualization.css";
 
 const DataVisualization = () => {
   const token = sessionStorage.getItem("token");
-  const userType = sessionStorage.getItem("tipoUsuario");
+  const userType = sessionStorage.getItem("tipoUsuario"); // Usando a chave correta
   const userInfo = useMemo(() => {
     const info = sessionStorage.getItem("userInfo");
     return info ? JSON.parse(info) : {};
   }, []);
+
+  console.log("Tipo de Usuário:", userType);
+  console.log("Email Comercial:", userInfo.email_comercial);
 
   const navigate = useNavigate();
 
@@ -173,195 +162,106 @@ const DataVisualization = () => {
 
   return (
     <div className="data-visualization-container">
-      <h2>Data Visualization</h2>
+      <h2>Data Analysis</h2>
       <div className="charts-grid">
         {/* Badges Assigned */}
-        <div className="chart-card">
-          <h3>Badges Assigned in the Last 6 Months</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={[{ name: "Badges", count: badgesAssigned }]}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="count" fill="#8884d8" name="Badges Assigned" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <BarChartComponent
+          data={[{ name: "Badges", count: badgesAssigned }]}
+          title="Badges Assigned in the Last 6 Months"
+          dataKey="count"
+          fill="#4A90E2"
+          name="Badges Assigned"
+        />
 
         {/* Attribution Rate */}
-        <div className="chart-card">
-          <h3>Attribution Rate</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={[
-                  { name: "Attributed", value: attributionRate },
-                  { name: "Not Attributed", value: 100 - attributionRate },
-                ]}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                fill="#82ca9d"
-                label
-              />
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+        <PieChartComponent
+          data={[
+            { name: "Attributed", value: attributionRate },
+            { name: "Not Attributed", value: 100 - attributionRate },
+          ]}
+          title="Attribution Rate"
+          dataKey="value"
+          nameKey="name"
+          fill="#50E3C2"
+        />
 
         {/* Average Time */}
-        <div className="chart-card">
-          <h3>Average Time Between Emission and Assignment</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={[
-                {
-                  name: "Average Time",
-                  time: averageTime ? (averageTime / 60).toFixed(2) : 0,
-                },
-              ]}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis
-                label={{ value: "Minutes", angle: -90, position: "insideLeft" }}
-                allowDecimals={false}
-              />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="time" fill="#ffc658" name="Avg Time (min)" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        <BarChartComponent
+          data={[
+            {
+              name: "Average Time",
+              time: averageTime ? (averageTime / 60).toFixed(2) : 0,
+            },
+          ]}
+          title="Average Time Between Emission and Assignment"
+          dataKey="time"
+          fill="#F5A623"
+          name="Avg Time (min)"
+        />
 
         {/* Acceptance Rate */}
-        <div className="chart-card">
-          <h3>Acceptance Rate</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={[
-                  { name: "Accepted", value: acceptanceRate },
-                  { name: "Not Accepted", value: 100 - acceptanceRate },
-                ]}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                fill="#ff8042"
-                label
-              />
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+        <PieChartComponent
+          data={[
+            { name: "Accepted", value: acceptanceRate },
+            { name: "Not Accepted", value: 100 - acceptanceRate },
+          ]}
+          title="Acceptance Rate"
+          dataKey="value"
+          nameKey="name"
+          fill="#4A90E2"
+        />
 
         {/* Assignment Trends */}
-        <div className="chart-card">
-          <h3>Assignment Trends Over the Last 6 Months</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={assignmentTrends}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="count"
-                stroke="#8884d8"
-                name="Assignments"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <LineChartComponent
+          data={assignmentTrends}
+          title="Assignment Trends Over the Last 6 Months"
+          dataKey="count"
+          stroke="#9013FE"
+          name="Assignments"
+        />
 
         {/* Soft Skills Impact */}
-        <div className="chart-card">
-          <h3>Impact on Soft Skills</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={softSkillsImpact}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="skill" />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="assigned_count"
-                stroke="#ff7300"
-                strokeWidth={2}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
-        </div>
+        <RadarChartComponent
+          data={softSkillsImpact}
+          title="Impact on Soft Skills"
+          dataKey="assigned_count"
+          stroke="#F8E71C"
+          name="Assigned Count"
+        />
 
         {/* Conversion Analysis */}
-        <div className="chart-card">
-          <h3>Conversion Analysis</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={[
-                  {
-                    name: "Conversions",
-                    value: conversionAnalysis
-                      ? conversionAnalysis.conversion_rate
-                      : 0,
-                  },
-                  {
-                    name: "Non-Conversions",
-                    value: conversionAnalysis
-                      ? 100 - conversionAnalysis.conversion_rate
-                      : 0,
-                  },
-                ]}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                fill="#8884d8"
-                label
-              />
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
+        <PieChartComponent
+          data={[
+            {
+              name: "Conversions",
+              value: conversionAnalysis
+                ? conversionAnalysis.conversion_rate
+                : 0,
+            },
+            {
+              name: "Non-Conversions",
+              value: conversionAnalysis
+                ? 100 - conversionAnalysis.conversion_rate
+                : 0,
+            },
+          ]}
+          title="Conversion Analysis"
+          dataKey="value"
+          nameKey="name"
+          fill="#B8E986"
+        />
 
         {/* Popularity Trends */}
-        <div className="chart-card">
-          <h3>Badge Popularity Trends</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={popularityTrends}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="period" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="recent_badges.assigned_count"
-                stroke="#82ca9d"
-                name="Recent Badges"
-              />
-              <Line
-                type="monotone"
-                dataKey="old_badges.assigned_count"
-                stroke="#ffc658"
-                name="Old Badges"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        <LineChartComponent
+          data={popularityTrends}
+          title="Badge Popularity Trends"
+          dataKeys={[
+            "recent_badges.assigned_count",
+            "old_badges.assigned_count",
+          ]}
+          colors={["#7ED321", "#417505"]}
+          names={["Recent Badges", "Old Badges"]}
+        />
       </div>
     </div>
   );
