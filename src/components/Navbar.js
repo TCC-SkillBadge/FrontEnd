@@ -174,11 +174,58 @@ const NavBar = () => {
 const renderUserMenu = () => {
   const email = sessionStorage.getItem("email"); // Obtém o email do sessionStorage
   const encodedEmail = email ? btoa(email) : null; // Codifica o email em Base64
+  const userImage =
+    user?.imageUrl ||
+    sessionStorage.getItem("userImage") ||
+    "/default-avatar.png"; // Fallback para avatar padrão
+
   let menuItems;
 
   switch (userType) {
     case "UC":
+      menuItems = (
+        <>
+          <NavDropdown.Item
+            as={NavLink}
+            to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
+          >
+            <i className="bi bi-person"></i> Profile
+          </NavDropdown.Item>
+          <NavDropdown.Item as={NavLink} to="/config">
+            <i className="bi bi-gear"></i> Config
+          </NavDropdown.Item>
+          <NavDropdown.Item as={NavLink} to="/portfolio">
+            <i className="bi bi-briefcase"></i> Portfolio
+          </NavDropdown.Item>
+          <NavDropdown.Divider />
+          <NavDropdown.Item onClick={handleLogout}>
+            <i className="bi bi-box-arrow-right"></i> Log Out
+          </NavDropdown.Item>
+        </>
+      );
+      break;
     case "UE":
+      menuItems = (
+        <>
+          <NavDropdown.Item
+            as={NavLink}
+            to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
+          >
+            <i className="bi bi-person"></i> Profile
+          </NavDropdown.Item>
+          <NavDropdown.Item as={NavLink} to="/config">
+            <i className="bi bi-gear"></i> Config
+          </NavDropdown.Item>
+          <NavDropdown.Item as={NavLink} to="/analysis">
+            <i className="bi bi-bar-chart"></i> Analysis
+          </NavDropdown.Item>
+          <NavDropdown.Divider />
+          <NavDropdown.Item onClick={handleLogout}>
+            <i className="bi bi-box-arrow-right"></i> Log Out
+          </NavDropdown.Item>
+        </>
+      );
+      break;
     case "UA":
       menuItems = (
         <>
@@ -191,16 +238,9 @@ const renderUserMenu = () => {
           <NavDropdown.Item as={NavLink} to="/config">
             <i className="bi bi-gear"></i> Config
           </NavDropdown.Item>
-          {userType === "UC" && (
-            <NavDropdown.Item as={NavLink} to="/portfolio">
-              <i className="bi bi-briefcase"></i> Portfolio
-            </NavDropdown.Item>
-          )}
-          {userType === "UE" && (
-            <NavDropdown.Item as={NavLink} to="/analysis">
-              <i className="bi bi-bar-chart"></i> Analysis
-            </NavDropdown.Item>
-          )}
+          <NavDropdown.Item as={NavLink} to="/analytics">
+            <i className="bi bi-bar-chart"></i> Analytics
+          </NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={handleLogout}>
             <i className="bi bi-box-arrow-right"></i> Log Out
@@ -215,16 +255,18 @@ const renderUserMenu = () => {
   return (
     <NavDropdown
       title={
-        user && user.image ? (
-          <Image src={user.image} roundedCircle width="40" height="40" />
-        ) : (
-          <i className="bi bi-person-circle userAvatar"></i>
-        )
+        <Image
+          src={userImage}
+          roundedCircle
+          width="40"
+          height="40"
+          onError={(e) => (e.target.src = "/default-avatar.png")}
+        />
       }
       id="user-menu"
       alignRight
       show={showMenu}
-      onClick={() => setShowMenu(() => !showMenu)}
+      onClick={() => setShowMenu((prev) => !prev)}
       className={showMenu ? "show" : "hide"}
     >
       {menuItems}
