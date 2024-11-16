@@ -1,9 +1,8 @@
 .App {
   background-color: #191A2E;
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 .App-logo {

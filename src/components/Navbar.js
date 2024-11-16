@@ -13,272 +13,232 @@ import {
 } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { OverlayPanel } from 'primereact/overlaypanel';
+import { OverlayPanel } from "primereact/overlaypanel";
 import ChatBox from "./ChatBox";
 import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
-const NavBar = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [userType, setUserType] = useState(null);
-  const [user, setUser] = useState(null);
+const NavBar = (props) => {
+  const [token, setToken] = useState(() => props.token);
+  const [user, setUser] = useState(() => props.user);
+  const [userType, setUserType] = useState(() => props.userType);
   const [notifications, setNotifications] = useState([]); // Estado para notificações
   const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para o dropdown
   const navigate = useNavigate();
-
-  let op = useRef(null);
+  const op = useRef(null);
 
   useEffect(() => {
-    const storedUserType = sessionStorage.getItem("tipoUsuario");
-    const storedUserInfo = JSON.parse(sessionStorage.getItem("userInfo"));
-    const token = sessionStorage.getItem("token");
-
-    if (storedUserType) {
-      setUserType(storedUserType);
+    if(token !== props.token) {
+      setToken(() => props.token);
     }
-
-    if (storedUserInfo) {
-      setUser(storedUserInfo);
+    if(user !== props.user) {
+      setUser(() => props.user);
     }
+    if(userType !== props.userType) {
+      setUserType(() => props.userType);
+    }
+  }, [props.token, props.user, props.userType]);
 
+
+  useEffect(() => {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(
           "http://localhost:7004/admin/notificacoes",
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
-
         if (response.status === 200) {
           setNotifications(response.data);
-        } else {
-          console.error("Failed to fetch notifications");
         }
       } catch (error) {
-        console.error("Error fetching notifications", error);
+        console.error("Error fetching notifications:", error);
       }
     };
 
-    fetchNotifications();
+    let interval;
+    if (token) {
+      fetchNotifications();
+      interval = setInterval(fetchNotifications, 60000);
+    }
 
-    const interval = setInterval(fetchNotifications, 60000); // Checa a cada 60 segundos
-
-    return () => clearInterval(interval); // Limpa o intervalo ao desmontar o componente
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, []);
 
   const handleLogout = () => {
     sessionStorage.clear();
+    localStorage.clear();
     navigate("/login");
+    window.dispatchEvent(new Event("LoginChange"));
   };
 
   const handleClearNotifications = async () => {
-    const token = sessionStorage.getItem("token");
-
     try {
       const response = await axios.post(
         "http://localhost:7004/admin/limpar-notificacoes",
         null,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (response.status === 200) {
-        setNotifications([]); // Limpa as notificações no frontend
-      } else {
-        console.error("Failed to clear notifications");
+        setNotifications([]);
       }
     } catch (error) {
-      console.error("Error clearing notifications", error);
+      console.error("Error clearing notifications:", error);
     }
   };
 
-  const renderNavItems = () => {
+  //Lista de páginas do menu e o tipo de usuário que pode acessá-las
+  const menuPageCollection = [
+    { page: "/home", title: "Home", user: 'any' },
+    { page: "/about", title: "About", user: 'any' },
+    { page: "/wallet", title: "Wallet", user: 'UC' },
+    { page: "/proficiency-test", title: "Skill Test", user: 'UC' },
+    { page: "/price", title: "Plans", user: 'UE' },
+    { page: "/badges", title: "Badges", user: 'UE' },
+    { page: "/contact", title: "Contact", user: 'UE' },
+    { page: "/api-reference", title: "API Reference", user: 'UE' },
+    { page: "/orders", title: "Service Request", user: 'UA' },
+    { page: "/list-soft-skills", title: "Skills", user: 'UA' },
+    { page: "/manage-test", title: "Test", user: 'UA' },
+    { page: "/portfolio", title: "Portfolio", user: 'UC' },
+    { page: "/price", title: "Service Plans", user: 'UA' },
+  ];
+
+  //Novo renderizador de itens do menu
+  const renderNavItems = (renderType) => {
+    const filteredPages = menuPageCollection.filter((page) => page.user === userType || page.user === 'any');
+
+    if(renderType === 'nav') {
+      return (
+        <>
+          {filteredPages.map((page) => (
+            <Nav.Link as={NavLink} to={page.page} key={page.page}>
+              {page.title}
+            </Nav.Link>
+          ))}
+        </>
+      );
+    } else if(renderType === 'dropdown') {
+      return (
+        <>
+          {filteredPages.map((page) => (
+            <NavDropdown.Item as={NavLink} to={page.page} key={page.page}>
+              {page.title}
+            </NavDropdown.Item>
+          ))}
+        </>
+      );
+    }
+  };
+
+  const renderUserMenu = () => {
+    const email = sessionStorage.getItem("email");
+    const encodedEmail = email ? btoa(email) : null;
+    const userImage = (
+      user?.imageUrl ||
+      sessionStorage.getItem("userImage") ||
+      "/default-avatar.png"
+    );
+
+    let menuItems;
+
     switch (userType) {
       case "UC":
-        return (
+        menuItems = (
           <>
-            <Nav.Link as={NavLink} to="/home">
-              Home
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/wallet">
-              Wallet
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/proficiency-test">
-              Skill Test
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/about">
-              About
-            </Nav.Link>
+            <NavDropdown.Item
+              as={NavLink}
+              to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
+            >
+              <i className="bi bi-person"></i> Profile
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/config">
+              <i className="bi bi-gear"></i> Config
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/portfolio">
+              <i className="bi bi-briefcase"></i> Portfolio
+            </NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={handleLogout}>
+              <i className="bi bi-box-arrow-right"></i> Log Out
+            </NavDropdown.Item>
           </>
         );
+        break;
       case "UE":
-        return (
+        menuItems = (
           <>
-            <Nav.Link as={NavLink} to="/home">
-              Home
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/price">
-              Plans
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/badges">
-              Badges
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/contact">
-              Contact
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/api-reference">
-              API Reference
-            </Nav.Link>
+            <NavDropdown.Item
+              as={NavLink}
+              to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
+            >
+              <i className="bi bi-person"></i> Profile
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/config">
+              <i className="bi bi-gear"></i> Config
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/analysis">
+              <i className="bi bi-bar-chart"></i> Analysis
+            </NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={handleLogout}>
+              <i className="bi bi-box-arrow-right"></i> Log Out
+            </NavDropdown.Item>
           </>
         );
+        break;
       case "UA":
-        return (
+        menuItems = (
           <>
-            <Nav.Link as={NavLink} to="/home">
-              Home
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/orders">
-              Service Request
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/list-soft-skills">
-              Skills
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/manage-test">
-              Test
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/price">
-              Service Plans
-            </Nav.Link>
+            <NavDropdown.Item
+              as={NavLink}
+              to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
+            >
+              <i className="bi bi-person"></i> Profile
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/config">
+              <i className="bi bi-gear"></i> Config
+            </NavDropdown.Item>
+            <NavDropdown.Item as={NavLink} to="/analytics">
+              <i className="bi bi-bar-chart"></i> Analytics
+            </NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={handleLogout}>
+              <i className="bi bi-box-arrow-right"></i> Log Out
+            </NavDropdown.Item>
           </>
         );
+        break;
       default:
-        return (
-          <>
-            <Nav.Link as={NavLink} to="/home">
-              Home
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/about">
-              About
-            </Nav.Link>
-          </>
-        );
+        menuItems = null;
     }
+  
+    return (
+      <NavDropdown
+        title={
+          <Image
+            src={userImage}
+            roundedCircle
+            width="40"
+            height="40"
+            onError={(e) => (e.target.src = "/default-avatar.png")}
+          />
+        }
+        id="user-menu"
+        className="user-menu"
+        >
+        {menuItems}
+      </NavDropdown>
+    );
   };
 
-const renderUserMenu = () => {
-  const email = sessionStorage.getItem("email"); // Obtém o email do sessionStorage
-  const encodedEmail = email ? btoa(email) : null; // Codifica o email em Base64
-  const userImage =
-    user?.imageUrl ||
-    sessionStorage.getItem("userImage") ||
-    "/default-avatar.png"; // Fallback para avatar padrão
-
-  let menuItems;
-
-  switch (userType) {
-    case "UC":
-      menuItems = (
-        <>
-          <NavDropdown.Item
-            as={NavLink}
-            to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
-          >
-            <i className="bi bi-person"></i> Profile
-          </NavDropdown.Item>
-          <NavDropdown.Item as={NavLink} to="/config">
-            <i className="bi bi-gear"></i> Config
-          </NavDropdown.Item>
-          <NavDropdown.Item as={NavLink} to="/portfolio">
-            <i className="bi bi-briefcase"></i> Portfolio
-          </NavDropdown.Item>
-          <NavDropdown.Divider />
-          <NavDropdown.Item onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right"></i> Log Out
-          </NavDropdown.Item>
-        </>
-      );
-      break;
-    case "UE":
-      menuItems = (
-        <>
-          <NavDropdown.Item
-            as={NavLink}
-            to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
-          >
-            <i className="bi bi-person"></i> Profile
-          </NavDropdown.Item>
-          <NavDropdown.Item as={NavLink} to="/config">
-            <i className="bi bi-gear"></i> Config
-          </NavDropdown.Item>
-          <NavDropdown.Item as={NavLink} to="/analysis">
-            <i className="bi bi-bar-chart"></i> Analysis
-          </NavDropdown.Item>
-          <NavDropdown.Divider />
-          <NavDropdown.Item onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right"></i> Log Out
-          </NavDropdown.Item>
-        </>
-      );
-      break;
-    case "UA":
-      menuItems = (
-        <>
-          <NavDropdown.Item
-            as={NavLink}
-            to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
-          >
-            <i className="bi bi-person"></i> Profile
-          </NavDropdown.Item>
-          <NavDropdown.Item as={NavLink} to="/config">
-            <i className="bi bi-gear"></i> Config
-          </NavDropdown.Item>
-          <NavDropdown.Item as={NavLink} to="/analytics">
-            <i className="bi bi-bar-chart"></i> Analytics
-          </NavDropdown.Item>
-          <NavDropdown.Divider />
-          <NavDropdown.Item onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right"></i> Log Out
-          </NavDropdown.Item>
-        </>
-      );
-      break;
-    default:
-      menuItems = null;
-  }
-
-  return (
-    <NavDropdown
-      title={
-        <Image
-          src={userImage}
-          roundedCircle
-          width="40"
-          height="40"
-          onError={(e) => (e.target.src = "/default-avatar.png")}
-        />
-      }
-      id="user-menu"
-      alignRight
-      show={showMenu}
-      onClick={() => setShowMenu((prev) => !prev)}
-      className={showMenu ? "show" : "hide"}
-    >
-      {menuItems}
-    </NavDropdown>
-  );
-};
-
-
-
-
   const renderNotifications = () => {
-    if (!user) return null; // Não renderiza o sino se não houver usuário conectado
+    if (!user) return null;
 
     return (
       <Dropdown
@@ -322,56 +282,71 @@ const renderUserMenu = () => {
     );
   };
 
-  const renderChat = () => {
-    return (
-      <button className="btn-chat" onClick={(e) => op.current.toggle(e)}>
-        <i className="bi bi-chat-left"></i>
-      </button>
-    );
+  const renderChat = () => (
+    <button className="btn-chat" onClick={(e) => op.current.toggle(e)}>
+      <i className="bi bi-chat-left"></i>
+    </button>
+  );
+
+  const defineBreakpoints = () => {
+    switch(userType){
+      default:
+        return {
+          nav: 'd-xl-flex d-lg-none d-md-none d-sm-none',
+          dropdown: 'd-xl-none d-lg-flex d-md-flex d-sm-flex'
+        }
+    }
   };
 
   return (
-    <Navbar expand="lg" className="navbar">
+    <Navbar className="navbar" sticky="top">
       <Container fluid>
         <Navbar.Brand as={NavLink} to="/home">
-          Brand
+          <img height={50} width='auto' src="/Icone.png"/>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">{renderNavItems()}</Nav>
-          <Form className="d-flex mx-auto searchSection">
-            <FormControl
-              type="text"
-              placeholder="Search"
-              className="searchInput"
-            />
-          </Form>
-          <Nav>
-            {user && (userType !== 'UA') && renderChat()}{" "}
-            {/* Exibe o ícone do chat apenas se houver usuário e ele não for um usuário administrativo */}
-            {user && renderNotifications()}{" "}
-            {/* Exibe o sino de notificações apenas se houver usuário */}
-            {user ? (
-              renderUserMenu()
-            ) : (
-              <>
-                <Nav.Link as={NavLink} to="/login" className="signIn">
-                  Sign In
-                </Nav.Link>
-                <Nav.Link as={NavLink} to="/create" className="signUp">
-                  Sign Up
-                </Nav.Link>
-              </>
-            )}
-          </Nav>
-        </Navbar.Collapse>
+        <Nav className={"me-auto " + defineBreakpoints().nav}>{renderNavItems('nav')}</Nav>
+        <NavDropdown
+        className={"collapsed-menu flex-1 " + defineBreakpoints().dropdown}
+        title={<i className="pi pi-align-justify" style={{fontSize: '2rem'}}/>}
+        
+        >
+          {renderNavItems('dropdown')}
+        </NavDropdown>
+        <Form className="d-flex mx-auto searchSection">
+          <i className="bi bi-search search-icon"/>
+          <FormControl
+            type="text"
+            placeholder="Search"
+            className="searchInput"
+          />
+        </Form>
+        <Nav className="ml-3">
+          {user && (userType !== 'UA') && renderChat()}{" "}
+          {/* Exibe o ícone do chat apenas se houver usuário e ele não for um usuário administrativo */}
+          {user && renderNotifications()}{" "}
+          {/* Exibe o sino de notificações apenas se houver usuário */}
+          {user ? (
+            renderUserMenu()
+          ) : (
+            <>
+              <Nav.Link as={NavLink} to="/login" className="signIn">
+                Sign In
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/create" className="signUp">
+                Sign Up
+              </Nav.Link>
+            </>
+          )}
+        </Nav>
+
         <OverlayPanel
-        id="chat-panel"
-        className="chatbox-panel"
-        ref={op}
-        dismissable={false}
-        showCloseIcon>
-            <ChatBox/>
+          id="chat-panel"
+          className="chatbox-panel"
+          ref={op}
+          dismissable={false}
+          showCloseIcon
+        >
+          <ChatBox />
         </OverlayPanel>
       </Container>
     </Navbar>

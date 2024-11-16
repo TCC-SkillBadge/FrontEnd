@@ -44,10 +44,17 @@
     padding: 20px;
     margin: 2%;
     border-radius: 15px;
+    height: fit-content;
+    min-height: min-content;
     width: fit-content;
     min-width: 40%;
-    height: fit-content;
-    max-height: 800px;
     background-color: var(--background-color-1);
+}
+
+.show-results-box{
+    margin: 2%;
+    padding: 20px;
+    height: 700px;
+    overflow-y: auto;
     scrollbar-color: var(--scrollbar-color);
 }

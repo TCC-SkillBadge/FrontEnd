@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import axios from "axios";
-import Navbar from "../components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/Create.css";
@@ -136,7 +135,6 @@ const Create = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="cadastro-page">
         <div className="cadastro-container default-border-image">
           <h2>Register</h2>

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { PlusCircle } from "react-bootstrap-icons";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/Price.css";
 import PlanCard from "../components/PlanCard";
@@ -34,6 +33,36 @@ const Price = () => {
   const [planToPurchase, setPlanToPurchase] = useState(null);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const [cancellationStatus, setCancellationStatus] = useState(null); // 'success', 'failure', 'processing'
+
+  const [sticks, setSticks] = useState(false);
+
+  //Este useEffect é responsável por verificar se o botão de adicionar plano deve ficar fixo no rodapé da página
+  //Sua implementação foi necessária para que o botão de adicionar plano não ficasse em cima do footer
+  //Modificações foram feitas também no arquivo Price.css
+  useEffect(() => {
+    const handleScroll = () => {
+      const addButton = document.querySelector("#add-plan-button");
+      const footer = document.querySelector("#footer");
+
+      if (footer) {
+        const footerTop = footer.getBoundingClientRect().top;
+        const buttonHeight = addButton ? addButton.offsetHeight : 0;
+        const windowHeight = window.innerHeight;
+        
+        if (footerTop <= windowHeight + buttonHeight) {
+          setSticks(true);
+        } else {
+          setSticks(false);
+        }
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    }
+  }, []);
 
   useEffect(() => {
     // Fetch user information
@@ -233,7 +262,6 @@ const Price = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="price-page">
         <h1 className="title">
           The <span className="highlight">BEST</span> Plans
@@ -306,6 +334,7 @@ const Price = () => {
             overlay={plans.length >= 4 ? renderTooltip : <></>}
           >
             <button
+              id="add-plan-button"
               className={`add-plan-button ${
                 plans.length >= 4 ? "disabled" : ""
               }`}
@@ -315,6 +344,10 @@ const Price = () => {
                 } else {
                   window.location.href = "/createServicePlan";
                 }
+              }}
+              style={{
+                position: sticks ? "absolute" : "fixed",
+                bottom: sticks ? "10px" : "20px",
               }}
             >
               <PlusCircle className="icon" />

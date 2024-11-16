@@ -1,12 +1,9 @@
 import React from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import "../styles/About.css";
 
 const About = () => {
   return (
     <div>
-      <Navbar />
       <div className="about-background">
         <h1 className="about-title">About Us</h1>
         
@@ -35,7 +32,6 @@ const About = () => {
           />
         </section>
       </div>
-      <Footer />
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from "../Navbar";
 import { Divider } from 'primereact/divider';
 import { useNavigate } from 'react-router-dom';
 import { roundScore } from '../../utils/general-functions/RoundScore';
@@ -413,8 +412,7 @@ export const ProficiencyTest = () => {
 
     return (
         <div>
-            <Navbar/>
-            <div className='d-test-box'>
+             <div className='d-test-box'>
                 <h1>Competency Test</h1>
                 <Divider/>
                 {
@@ -505,17 +503,7 @@ export const ProficiencyTest = () => {
             pauseOnHover
             theme="dark"/>
             
-            <ConfirmDialog
-            closable={false}
-            draggable={false}
-            pt={{
-                header: {className: 'p-cd-header'},
-                footer: {className: 'p-cd-footer'},
-                acceptButton: {className: 'dbuttons dbuttons-success ml-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-                rejectButton: {className: 'dbuttons dbuttons-danger mr-4 p-3', style: {fontSize: 'calc(15px + 1vw)'}},
-                message: {style: {fontWeight: 'bold', fontSize: 'calc(15px + 1vw)', width: 'fit-content'}},
-                content: {style: {width: 'fit-content', marginTop: '20px', marginRight: '40px'}},
-            }}/>
+            <ConfirmDialog/>
         </div>
     )
 };
@@ -656,7 +644,7 @@ const AltR = ({alt, index}) => {
     return (
         <Draggable draggableId={`${alt.id_questao}:${alt.id_alternativa}`} index={index}>
             {
-                (provided, snapshot) => (
+                (provided) => (
                     <div
                     id={`R-question-alternative-${alt.id_questao}:${alt.id_alternativa}`}
                     className='alts-r flex flex-row align-items-center p-4'
@@ -691,24 +679,25 @@ const CalculatingResultsBox = ({loadingResults, setLoadingResults}) => {
 const GreetingsModal = ({startTest, loading, setLoading, allFine, alreadyTaken, lastScores, setStartTest, lastTestDate, error}) => {
     const alreadyTakenAlert = () => {
         return(
-            <div
-            className='show-results-box'>
+            <div>
             <h1 className='text-center'>Test Done</h1>
             <Divider/>
-            <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
-                <p>You've already taken the test this week. Wait at least 7 days to take it again.</p>
-                <p>Here are your last scores:</p>
-            </div>
-            <div className='flex flex-column align-items-center'>
-                <ResultChart resultShow={lastScores}/>
-                <h4 className='mt-4'>Date of Realization: {new Date(lastTestDate).toLocaleDateString()}</h4>
-                <button
-                id='test-return-home-already-taken-btn'
-                style={{fontSize: 'calc(0.8rem + 1vw)'}}
-                className='dbuttons dbuttons-primary mt-3 pl-5 pr-5'
-                onClick={() => window.location.replace('/')}>
-                    Return to Home Page
-                </button>
+            <div className='show-results-box'>
+                <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
+                    <p>You've already taken the test this week. Wait at least 7 days to take it again.</p>
+                    <p>Here are your last scores:</p>
+                </div>
+                <div className='flex flex-column align-items-center'>
+                    <ResultChart resultShow={lastScores}/>
+                    <h4 className='mt-4'>Date of Realization: {new Date(lastTestDate).toLocaleDateString()}</h4>
+                    <button
+                    id='test-return-home-already-taken-btn'
+                    style={{fontSize: 'calc(0.8rem + 1vw)'}}
+                    className='dbuttons dbuttons-primary mt-3 pl-5 pr-5'
+                    onClick={() => window.location.replace('/')}>
+                        Return to Home Page
+                    </button>
+                </div> 
             </div>
         </div>
         )
@@ -757,7 +746,7 @@ const GreetingsModal = ({startTest, loading, setLoading, allFine, alreadyTaken, 
         draggable={false}
         onHide={() => {if (startTest) return; setLoading(() => true);}}
         contentStyle={{
-            overflow: loading ? 'hidden' : 'auto',
+            overflow: 'hidden',
         }}>
             <Loading show={loading} msg='Loading Test...'/>
             {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar"; // Adicionando o componente Navbar
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -118,7 +117,6 @@ const Orders = () => {
 
   return (
     <div>
-      <Navbar userType={userType} /> {/* Adicionando o Navbar */}
       <div className="container orders-container">
         <ToastContainer />
         {/* <Aside userType={userType} /> Componente Aside comentado */}

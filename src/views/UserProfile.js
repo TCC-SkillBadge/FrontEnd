@@ -25,7 +25,6 @@ import {
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../styles/UserProfile.css";
-import NavBar from "../components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
@@ -670,7 +669,6 @@ if (tipoUsuario === "UC") {
   return (
     <div className="profile-page">
       <ToastContainer />
-      <NavBar />
       <div className="profile-container">
         {/* Cabeçalho do Perfil */}
         <div className="profile-header">
@@ -1154,7 +1152,6 @@ if (tipoUsuario === "UC") {
   return (
     <div className="profile-page">
       <ToastContainer />
-      <NavBar />
       <div className="profile-container">
         <div className="profile-header">
           <div className="profile-photo-wrapper">

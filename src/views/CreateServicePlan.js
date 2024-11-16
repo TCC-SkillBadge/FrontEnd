@@ -1,7 +1,6 @@
 // CreateServicePlan.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import axios from "axios";
 import "../styles/CreateServicePlan.css";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -223,7 +222,6 @@ const CreateServicePlan = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="create-plan-page">
         <div className="create-plan-container">
           <h2>Create Service Plan</h2>

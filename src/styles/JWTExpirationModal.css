@@ -1,0 +1,50 @@
+:root{
+    --jwt-expiration-modal-background-color: #03000a;
+    --confirm-relogin-btn-color: #8DFD8B;
+}
+
+.p-cd-jwth-container{
+    background-color: var(--jwt-expiration-modal-background-color);
+    font-size: calc(1rem + 0.9vw);
+}
+
+.p-cd-jwth-footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 5%;
+    background-color: var(--jwt-expiration-modal-background-color);
+    color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.p-cd-jwth-header{
+    background-color: var(--jwt-expiration-modal-background-color);
+    color: white;
+}
+
+.p-cd-jwth-message{
+    width: fit-content;
+    color: white;
+}
+
+.p-cd-jwth-content{
+    width: fit-content;
+    padding-right: 40px;
+}
+
+.confirm-relogin-btn{
+    border-radius: 10px;
+    padding-left: 15%;
+    padding-right: 15%;
+    color: var(--confirm-relogin-btn-color);
+    background-color: var(--jwt-expiration-modal-background-color);
+    border: 3px solid var(--confirm-relogin-btn-color);
+}
+
+.confirm-relogin-btn:hover{
+    background-color: var(--confirm-relogin-btn-color);
+    color: var(--jwt-expiration-modal-background-color);
+    border-color: var(--confirm-relogin-btn-color);
+}
