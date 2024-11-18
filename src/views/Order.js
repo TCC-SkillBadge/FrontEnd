@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar"; 
-import Footer from "../components/Footer";
+import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeFill } from "react-bootstrap-icons";
@@ -153,7 +152,6 @@ const Orders = () => {
 
   return (
     <div>
-      <Navbar userType={userType} /> {/* Adicionando o Navbar */}
       <div className="container orders-container">
         <ToastContainer />
         {/* <Aside userType={userType} /> Componente Aside comentado */}
@@ -229,7 +227,6 @@ const Orders = () => {
           </tbody>
         </table>
       </div>
-      <Footer />
     </div>
   );
 };

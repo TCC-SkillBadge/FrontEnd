@@ -1,26 +1,28 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from "../Navbar";
 import { Divider } from 'primereact/divider';
 import { useNavigate } from 'react-router-dom';
-import ClipLoader from "react-spinners/ClipLoader";
 import { roundScore } from '../../utils/general-functions/RoundScore';
 import { selectionSortObject } from '../../utils/general-functions/SelectionSortObject';
-import { Messages } from 'primereact/messages';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { RadioButton } from 'primereact/radiobutton';
-import { ConfirmPopup } from 'primereact/confirmpopup';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import { Dialog } from 'primereact/dialog';
-import { confirmPopup } from 'primereact/confirmpopup';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
+import { ResultChart } from './ResultScreen';
+import Loading from '../Loading';
+import ErrorMessage from '../ErrorMessage';
+import { protectRoute } from '../../utils/general-functions/ProtectRoutes';
+import { jwtExpirationHandler } from '../../utils/general-functions/JWTExpirationHandler';
 import '../../styles/ProficiencyTest.css';
+import '../../styles/GlobalStylings.css';
 
-const baseUrlServicosGeraisSS = axios.create({
+const baseUrlGeneralServicesSS = axios.create({
     baseURL: 'http://localhost:6004/softskills'
 });
 
-const baseUrlServicosGeraisTeste = axios.create({
+const baseUrlGeneralServicesTest = axios.create({
     baseURL: 'http://localhost:6004/teste'
 });
 
@@ -29,54 +31,130 @@ const baseURLUC = axios.create({
 });
 
 export const ProficiencyTest = () => {
+    const [token, _setToken] = useState(sessionStorage.getItem('token'));
+    const [userType, _setUserType] = useState(sessionStorage.getItem('tipoUsuario'));
+    const [userInfo, _setUserInfo] = useState(JSON.parse(sessionStorage.getItem('userInfo')));
+    const [userEmail, _setUserEmail] = useState(userInfo.email);
+
     const [softSkills, setSoftSkills] = useState([]);
-    const [respostas, setRespostas] = useState([]);
-    const [carregando, setCarregando] = useState(true);
-    const [tudoOK, setTudoOK] = useState(false);
-    const [timerMinutos, setTimerMinutos] = useState(35);
-    const [timerSegundos, setTimerSegundos] = useState(0);
-    const [carregandoResultados, setCarregandoResultados] = useState(false);
+    const [answers, setAnswers] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [allFine, setAllFine] = useState(true);
+    const [timerMinutes, setTimerMinutes] = useState(35);
+    const [timerSeconds, setTimerSeconds] = useState(0);
+    const [loadingResults, setLoadingResults] = useState(false);
+    const [startTest, setStartTest] = useState(false);
+    const [alreadyTaken, setAlreadyTaken] = useState(false);
+    const [lastScores, setLastScores] = useState([]);
+    const [lastTestDate, setLastTestDate] = useState('');
+    const [error, setError] = useState('');
     
     const navigate = useNavigate();
 
-    let messages = useRef(null);
-
-    const token = sessionStorage.getItem('token');
-    const tipoUsuario = sessionStorage.getItem('tipoUsuario');
-    const userInfo = sessionStorage.getItem('userInfo');
+    //Iniciating the page
+    useEffect(() => {
+        mountPage();
+    }, []);
 
     useEffect(() => {
-        if(!token || !tipoUsuario || !userInfo){
-            toast.error('User not authenticated! You will not be able to proceed until you authenticate.');
-            return;
+        if(!startTest) return;
+        const interval = setInterval(() => {
+            setTimerSeconds((prev) => prev - 1);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [startTest]);
+
+    useEffect(() => {
+        if(timerSeconds === -1){
+            setTimerMinutes((prev) => prev - 1);
+            setTimerSeconds(59);
         }
-        
-        const fetchSoftSkills = async () => {
+        if(timerMinutes === 0 && timerSeconds === 0) finalize();
+    }, [timerSeconds, timerMinutes]);
+
+    useEffect(() => {
+        if(startTest){
+            window.onbeforeunload = (e) => {
+                e.preventDefault();
+                e.returnValue = '';
+            };
+        }
+
+        return () => {
+            window.onbeforeunload = null;
+        };
+    }, [startTest]);
+
+    const mountPage = () => {
+        //Verification of the last test date
+        const verifyLastTest = async () => {
             try{
-                const response = (await baseUrlServicosGeraisSS.get('/listar',
+                const response = (await baseURLUC.get('/user/verify-last-test',
                     {
                         headers: {Authorization: `Bearer ${token}`},
-                        params: {tipoUsuario}
+                        params: {email_user: userEmail}
+                    }
+                )).data;
+    
+                if(response.length !== 0){
+                    const lastTestDateAux = new Date(response[0].dt_realizacao);
+                    console.log(lastTestDateAux);
+                    const diffInDays = (new Date() - lastTestDateAux) / (1000 * 60 * 60 * 24);
+    
+                    if(diffInDays < 7){
+                        const lastScoresAux = response.map((result) => {
+                            return {
+                                id_soft_skill: result.id_soft_skill,
+                                nome_soft_skill: result.nome_soft_skill,
+                                descricao_soft_skill: result.descricao_soft_skill,
+                                cor_soft_skill: result.cor_soft_skill,
+                                data_realizacao: result.dt_realizacao,
+                                notaShow: roundScore((result.nota / result.nota_max) * 100)
+                            };
+                        });
+    
+                        setAlreadyTaken(() => true);
+                        setLastScores(() => lastScoresAux);
+                        setLoading(() => false);
+                        setLastTestDate(() => lastTestDateAux);
+                        return Promise.reject();
+                    }
+                }
+
+                return Promise.resolve();
+            }
+            catch(error){
+                const msg = handleRequestError(error);
+                setError(msg);
+                setAllFine(false);
+                setLoading(false);
+                return Promise.reject();
+            }
+        };
+
+        //Fetch Soft Skills and Test methods
+        const fetchSoftSkills = async () => {
+            try{
+                const response = (await baseUrlGeneralServicesSS.get('/listar',
+                    {
+                        headers: {Authorization: `Bearer ${token}`},
+                        params: {tipoUsuario: userType}
                     }
                 )).data;
                 return Promise.resolve(response);
             }
             catch(error){
-                let msg
-                if(error.response) 
-                    msg = error.response.data.message
-                else if(error.request) 
-                    msg = 'Error trying to access the server'
+                const msg = handleRequestError(error);
                 return Promise.reject(msg);
             }
         };
 
-        const fetchTeste = async () => {
+        const fetchTestData = async () => {
             try{
-                const response = (await baseUrlServicosGeraisTeste.get('/fetch',
+                const response = (await baseUrlGeneralServicesTest.get('/fetch',
                     {
                         headers: {Authorization: `Bearer ${token}`},
-                        params: {tipoUsuario}
+                        params: {tipoUsuario: userType}
                     }
                 )).data;
                 const {
@@ -88,19 +166,15 @@ export const ProficiencyTest = () => {
                 return Promise.resolve({questoes, alternativasMultiplaEscolha, alternativasRankeamento, alternativasMultiplaEscolhaComValores});
             }
             catch(error){
-                let msg
-                if(error.response) 
-                    msg = error.response.data.message
-                else if(error.request) 
-                    msg = 'Error trying to access the server'
+                const msg = handleRequestError(error);
                 return Promise.reject(msg);
             }
         };
 
-        const fluxo = async () => {
+        const mountTest = async () => {
             try{
                 const auxSSs = await fetchSoftSkills();
-                const response = await fetchTeste();
+                const response = await fetchTestData();
                 const {
                     questoes,
                     alternativasMultiplaEscolha,
@@ -117,7 +191,7 @@ export const ProficiencyTest = () => {
                         }
                     }
                 };
-
+    
                 const resps = [];
                 const alts = [
                     { tpQ: 'multipla_escolha', alts: [...alternativasMultiplaEscolha] },
@@ -141,46 +215,33 @@ export const ProficiencyTest = () => {
                         }
                     };
                 };
-
-                setTudoOK(true);
-                setRespostas(resps);
+    
+                setAnswers(resps);
                 setSoftSkills(SSs);
-                return Promise.resolve();
             }
             catch(error){
-                messages.replace({severity: 'error', summary: 'Erro', detail: `${error}`, sticky: true, closable: false});
-                return Promise.reject();
+                setError(error);
+                setAllFine(false);
             }
             finally{
-                setCarregando(false);
+                setLoading(false);
             }
         };
 
-        const timer = fluxo().then(() => setInterval(() => setTimerSegundos((prev) => prev - 1), 1000)).catch(() => {return null});
-
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
-
-    useEffect(() => {
-        if(timerSegundos === -1){
-            setTimerMinutos((prev) => prev - 1);
-            setTimerSegundos(59);
-        }
-        if(timerMinutos === 0 && timerSegundos === 0) finalizar();
-    }, [timerSegundos, timerMinutos]);
+        //Iniciation of the process
+        verifyLastTest().then(() => mountTest()).catch(() => {}) ;
+    };
     
-    const finalizarDoUsuario = () => {
-        if(realizarVerificacoes()) finalizar();
+    const userrFinalize = () => {
+        if(doVerifications()) finalize();
     }
 
-    const realizarVerificacoes = () => {
-        for(let i = 0; i < respostas.length; i++){
-            if(respostas[i].tipo_questao === 'multipla_escolha' || respostas[i].tipo_questao === 'multipla_escolha_com_valores'){
-                const escolhas = respostas[i].alternativas.filter((alt) => alt.escolha_feita);
+    const doVerifications = () => {
+        for(let i = 0; i < answers.length; i++){
+            if(answers[i].tipo_questao === 'multipla_escolha' || answers[i].tipo_questao === 'multipla_escolha_com_valores'){
+                const escolhas = answers[i].alternativas.filter((alt) => alt.escolha_feita);
                 if(escolhas.length === 0){
-                    toast.error(`Answer all questions.`);
+                    toast.error(`Answer all questions before finishing the test!`);
                     return false;
                 }
             }
@@ -188,70 +249,62 @@ export const ProficiencyTest = () => {
         return true;
     }
 
-    const finalizar = () => {
-        const { resultShow, resultSend } = calcularNotas();
-        
-        const email_user = JSON.parse(userInfo).email;
+    const finalize = () => {
+        const { resultShow, resultSend } = calculateScores();
 
-        setCarregandoResultados(true);
+        setLoadingResults(true);
         baseURLUC.post('/user/register-test-scores', {
-            email_user,
+            email_user: userEmail,
             resultados: resultSend,
             dt_realizacao: new Date()
-        },
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
         })
         .then(() => {
             setTimeout(() => {
-                setCarregandoResultados(false);
+                window.onbeforeunload = null;
+                setLoadingResults(false);
                 navigate(`/result-screen`, { state: resultShow });
             }, 2000);
         })
         .catch((error) => {
-            setCarregandoResultados(false);
+            setLoadingResults(false);
             let msg;
-            if(error.response) 
-                msg = error.response.data.message;
-            else if(error.request) 
-                msg = 'Error trying to access the server';
+            if(error.response) msg = error.response.data.message;
+            else if(error.request) msg = 'Error while trying to access the server!';
             toast.error(msg);
         });
     };
 
-    const calcularNotas = () => {
-        const pegarNotasMaximas = (SSs) => {
-            const notasMaximas = [];
+    const calculateScores = () => {
+        const getMaxSoftSkillScores = (SSs) => {
+            const maxScores = [];
             for(let i = 0; i < SSs.length; i++){
                 const obj = {
                     id_soft_skill: SSs[i].id_soft_skill,
                     maxNota: SSs[i].max_nota_soft_skill
                 };
-                notasMaximas.push(obj);
+                maxScores.push(obj);
             }
-            return notasMaximas;
+            return maxScores;
         };
 
-        const NM = pegarNotasMaximas(softSkills);
+        const NM = getMaxSoftSkillScores(softSkills);
 
-        const calcularNotasFinais = (SSs, resps) => {
-            const notasFinais = [];
+        const calculateFinalScores = (SSs, resps) => {
+            const finalScores = [];
             for(let i = 0; i < SSs.length; i++){
                 let aux = 0;
                 for(let j = 0; j < resps.length; j++){
                     if(SSs[i].id_soft_skill === resps[j].id_soft_skill){
                        switch(resps[j].tipo_questao){
                             case 'multipla_escolha':
-                                let acertou = false;
+                                let isCorrect = false;
                                 for(let k = 0; k < resps[j].alternativas.length; k++){
-                                    if(resps[j].alternativas[k].correta && resps[j].alternativas[k].escolha_feita) acertou = true;
+                                    if(resps[j].alternativas[k].correta && resps[j].alternativas[k].escolha_feita) isCorrect = true;
                                 }
-                                if(acertou) aux += resps[j].valor_questao;
+                                if(isCorrect) aux += resps[j].valor_questao;
                                 break;
                             case 'rankeamento':
-                                const auxAlternativas = selectionSortObject(resps[j].alternativas, 'valor_alternativa');
+                                const auxAlternatives = selectionSortObject(resps[j].alternativas, 'valor_alternativa');
                                 const maxCombinacao = (array) => {
                                     let max = 0;
                                     for(let k = 0; k < array.length; k++){
@@ -259,7 +312,7 @@ export const ProficiencyTest = () => {
                                     }
                                     return max;
                                 };
-                                const max = maxCombinacao(auxAlternativas);
+                                const max = maxCombinacao(auxAlternatives);
                                 const contarPontos = (array) => {
                                     let nota = 0;
                                     for(let k = 0; k < array.length; k++){
@@ -267,10 +320,10 @@ export const ProficiencyTest = () => {
                                     }
                                     return nota;
                                 };
-                                const pontos = contarPontos(resps[j].alternativas);
-                                const porcentagem = pontos / max;
-                                const auxNota = resps[j].valor_questao * porcentagem;
-                                aux += roundScore(auxNota);
+                                const points = contarPontos(resps[j].alternativas);
+                                const scoreRatio = points / max;
+                                const auxScore = resps[j].valor_questao * scoreRatio;
+                                aux += roundScore(auxScore);
                                 break;
                             case 'multipla_escolha_com_valores':
                                 for(let k = 0; k < resps[j].alternativas.length; k++){
@@ -287,14 +340,14 @@ export const ProficiencyTest = () => {
                     id_soft_skill: SSs[i].id_soft_skill,
                     notaF: aux
                 };
-                notasFinais.push(obj);
+                finalScores.push(obj);
             }
-            return notasFinais;
+            return finalScores;
         };
 
-        const NF = calcularNotasFinais(softSkills, respostas);
+        const NF = calculateFinalScores(softSkills, answers);
 
-        const montarResultados = (NM, NF, SSs) => {
+        const mountResults = (NM, NF, SSs) => {
             const resultShow = [], resultSend = [];
             for(let i = 0; i < SSs.length; i++){
                 const notaShow = roundScore((NF[i].notaF / NM[i].maxNota) * 100);
@@ -309,6 +362,8 @@ export const ProficiencyTest = () => {
 
                 const obj2 = {
                     id_soft_skill: SSs[i].id_soft_skill,
+                    nome_soft_skill: SSs[i].nome_soft_skill,
+                    cor_soft_skill: SSs[i].cor_soft_skill,
                     nota: NF[i].notaF,
                     nota_max: NM[i].maxNota
                 };
@@ -317,84 +372,76 @@ export const ProficiencyTest = () => {
             return { resultShow, resultSend };
         };
 
-        const { resultShow, resultSend } = montarResultados(NM, NF, softSkills);
+        const { resultShow, resultSend } = mountResults(NM, NF, softSkills);
 
         return { resultShow, resultSend };
     };
 
-    const confimarCancelar = (e) => {
-        confirmPopup({
-            target: e.currentTarget,
-            message: 'Do you really want to cancel the test?',
-            icon: 'pi pi-exclamation-circle',
-            acceptLabel: 'Yes',
-            rejectLabel: 'No',
-            accept: () => cancelar(),
-        });
-    };
-
-    const cancelar = () => navigate('/');
-
-    const handleChangeEscolhaFeita = (idQ, idA) => {
-        const resps = [...respostas];
-        const resp = resps.find((resp) => resp.id_questao === idQ);
+    const handleSelectionChange = (idQ, idA) => {
+        const answs = [...answers];
+        const answ = answs.find((resp) => resp.id_questao === idQ);
         
-        const alts = resp.alternativas;
+        const alts = answ.alternativas;
         for(let i = 0; i < alts.length; i++){
             if(alts[i].escolha_feita){
                 alts[i].escolha_feita = false;
             }
         }
 
-        const alt = resp.alternativas.find((alt) => alt.id_alternativa === idA);
+        const alt = answ.alternativas.find((alt) => alt.id_alternativa === idA);
         alt.escolha_feita = true;
-        setRespostas(resps);
+        setAnswers(answs);
     }
 
-    const handleChangeOrdem = (idQ, alts) => {
-        const resps = [...respostas];
+    const handleOrderChange = (idQ, alts) => {
+        const resps = [...answers];
         const resp = resps.find((resp) => resp.id_questao === idQ);
         resp.alternativas = alts;
-        setRespostas(resps);
+        setAnswers(resps);
+    };
+
+    const handleRequestError = (error) => {
+        let msg = '';
+        if(error.response){
+            msg = error.response.data.message
+            if(error.response.data.type === 'TokenExpired') jwtExpirationHandler();
+        }
+        else if(error.request) msg = 'Error while trying to access server!'
+        return msg;
     };
 
     return (
         <div>
-            <Navbar/>
-            <div className='d-test-box'>
-                <h1>Proficiency Test</h1>
+             <div className='d-test-box'>
+                <h1>Competency Test</h1>
                 <Divider/>
-                <div className='flex justify-content-center'>
-                    <Messages ref={(el) => messages = el}/>
-                    <ClipLoader color='#F8F8FF' loading={carregando} size={150}/>
-                </div>
                 {
-                    tudoOK &&
+                    startTest &&
                     <div>
                         <div className='flex flex-row justify-content-between'>
                             <div>
-                                The test duration is 35 minutes.
+                                The test has a duration of 35 minutes.
                             </div>
                             <div>
                                 <i className='pi pi-clock mr-2'/>
-                                <span>{timerMinutos < 10 ? `0${timerMinutos}` : timerMinutos}:{timerSegundos < 10 ? `0${timerSegundos}` : timerSegundos}</span>
+                                <span>{timerMinutes < 10 ? `0${timerMinutes}` : timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span>
                             </div>
                         </div>
                         <div className='d-test-skill-box'>
                             {
                                 softSkills.map((softSkill) => {
-                                    const resps = respostas.filter((resp) => resp.id_soft_skill === softSkill.id_soft_skill);
+                                    const answs = answers.filter((resp) => resp.id_soft_skill === softSkill.id_soft_skill);
                                     return (
                                         <div key={softSkill.id_soft_skill}>
                                             <h2 className='text-center'>{softSkill.nome_soft_skill}</h2>
                                             {
-                                                resps.map((resp) => {
+                                                answs.map((answ) => {
                                                     return (
                                                         <Answer
-                                                        key={resp.id_questao}
-                                                        resposta={resp}
-                                                        handleChangeEscolhaFeita={handleChangeEscolhaFeita}
-                                                        handleChangeOrdem={handleChangeOrdem}/>
+                                                        key={answ.id_questao}
+                                                        answer={answ}
+                                                        handleSelectionChange={handleSelectionChange}
+                                                        handleOrderChange={handleOrderChange}/>
                                                     );
                                                 })
                                             }
@@ -404,61 +451,86 @@ export const ProficiencyTest = () => {
                             }
                         </div>
                         <div className='flex flex-row justify-content-between'>
-                            <button className='btn btn-danger' onClick={(e) => confimarCancelar(e)}>Cancel</button>
-                            <button className='btn btn-success' onClick={finalizarDoUsuario}>Finish</button>
+                            <button
+                            className='dbuttons dbuttons-danger pr-4 pl-4'
+                            onClick={() => window.location.replace('/')}
+                            style={{
+                                fontSize: 'calc(15px + 0.6vw)',
+                                fontWeight: 'bold'
+                            }}>
+                                Cancel
+                            </button>
+                            <button
+                            className='dbuttons dbuttons-success pr-4 pl-4'
+                            onClick={userrFinalize}
+                            style={{
+                                fontSize: 'calc(15px + 0.6vw)',
+                                fontWeight: 'bold'
+                            }}>
+                                Finish
+                            </button>
                         </div>
                     </div>
                 }
-                <ToastContainer
-                position="top-center"
-                autoClose={3000}
-                hideProgressBar
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"/>
-                <ConfirmPopup/>
             </div>
-            <Dialog
-            className='loading-box'
-            visible={carregandoResultados}
-            closable={false}
-            onHide={() => {if (!carregandoResultados) return; setCarregandoResultados(false);}}>
-                <div className='flex flex-column align-items-center'>
-                    <ClipLoader color='#F8F8FF' loading={carregandoResultados} size={150}/>
-                    <h2 className='text-center'>Calculating results...</h2>
-                </div>
-            </Dialog>
+
+            <CalculatingResultsBox
+            loadingResults={loadingResults}
+            setLoadingResults={setLoadingResults}/>
+
+            <GreetingsModal
+            startTest={startTest}
+            loading={loading}
+            setLoading={setLoading}
+            allFine={allFine}
+            alreadyTaken={alreadyTaken}
+            lastScores={lastScores}
+            setStartTest={setStartTest}
+            lastTestDate={lastTestDate}
+            error={error}/>
+
+            {/* Messages and confirmation parts */}
+
+            <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"/>
+            
+            <ConfirmDialog/>
         </div>
     )
 };
 
 const Answer = (props) => {
-    const resposta = props.resposta;
+    const answer = props.answer;
 
-    const montarAlternativas = (tpQ) => {
+    const mountAlternatives = (tpQ) => {
         switch(tpQ){
             case 'multipla_escolha':
                 return (
                     <AlternativesM
-                    alternativas={resposta.alternativas}
-                    handleChangeEscolhaFeita={props.handleChangeEscolhaFeita}/>
+                    alternatives={answer.alternativas}
+                    handleSelectionChange={props.handleSelectionChange}/>
                 );
             case 'rankeamento':
                 return (
                     <AlternativesR
-                    idQuestao={resposta.id_questao}
-                    alternativas={resposta.alternativas}
-                    handleChangeOrdem={props.handleChangeOrdem}/>
+                    questionID={answer.id_questao}
+                    alternatives={answer.alternativas}
+                    handleOrderChange={props.handleOrderChange}/>
                 )
             case 'multipla_escolha_com_valores':
                 return (
                     <AlternativesMV
-                    alternativas={resposta.alternativas}
-                    handleChangeEscolhaFeita={props.handleChangeEscolhaFeita}/>
+                    alternatives={answer.alternativas}
+                    handleSelectionChange={props.handleSelectionChange}/>
                 )
             default:
         };
@@ -466,9 +538,9 @@ const Answer = (props) => {
 
     return (
         <div className='d-question-box'>
-            <div className='mb-4' key={resposta.id_questao}>
-                <h3 className='mb-3'>{resposta.enunciado_questao}</h3>
-                {montarAlternativas(resposta.tipo_questao)}
+            <div className='mb-4' key={answer.id_questao}>
+                <h3 className='mb-3'>{answer.enunciado_questao}</h3>
+                {mountAlternatives(answer.tipo_questao)}
             </div>
         </div>
     )
@@ -478,14 +550,14 @@ const AlternativesM = (props) => {
     return (
         <div>
             {
-                props.alternativas.map((alt) => {
+                props.alternatives.map((alt) => {
                     return (
                         <div className='flex flex-row align-items-center' key={alt.id_alternativa}>
                             <RadioButton
-                            id={`rb-${alt.id_questao}:${alt.id_alternativa}`}
+                            id={`M-question-selection-rb-${alt.id_questao}:${alt.id_alternativa}`}
                             className='mr-3'
                             checked={alt.escolha_feita}
-                            onChange={() => props.handleChangeEscolhaFeita(alt.id_questao, alt.id_alternativa)}/>
+                            onChange={() => props.handleSelectionChange(alt.id_questao, alt.id_alternativa)}/>
                             <label htmlFor={`rb-${alt.id_questao}:${alt.id_alternativa}`}>
                                 <h4>{alt.texto_alternativa}</h4>
                             </label>
@@ -501,13 +573,14 @@ const AlternativesMV = (props) => {
     return (
         <div>
             {
-                props.alternativas.map((alt) => {
+                props.alternatives.map((alt) => {
                     return (
                         <div className='flex flex-row align-items-center' key={alt.id_alternativa}>
                             <RadioButton
+                            id={`MV-question-selection-rb-${alt.id_questao}:${alt.id_alternativa}`}
                             className='mr-3'
                             checked={alt.escolha_feita}
-                            onChange={() => props.handleChangeEscolhaFeita(alt.id_questao, alt.id_alternativa)}/>
+                            onChange={() => props.handleSelectionChange(alt.id_questao, alt.id_alternativa)}/>
                             <h4>{alt.texto_alternativa}</h4>
                         </div>
                     );
@@ -518,31 +591,37 @@ const AlternativesMV = (props) => {
 };
 
 const AlternativesR = (props) => {
+    useEffect(() => {
+        console.log('AlternativesR Mounted');
+        console.log(props);
+    }, []);
+
     const onDragEnd = (result) => {
         const {destination, source} = result;
 
         if(!destination) return;
         if(destination.index === source.index) return;
 
-        const newAlts = [...props.alternativas];
+        const newAlts = [...props.alternatives];
         const alt = newAlts[source.index];
         newAlts.splice(source.index, 1);
         newAlts.splice(destination.index, 0, alt);
 
-        props.handleChangeOrdem(props.idQuestao, newAlts);
+        props.handleOrderChange(props.questionID, newAlts);
     };
 
     return (
         <div>
             <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId={`${props.idQuestao}`} direction='vertical'>
+                <Droppable droppableId={`${props.questionID}`} direction='vertical'>
                     {
                         (provided) => (
                             <div
+                            id={`R-question-alternatives-${props.questionID}`}
                             ref={provided.innerRef}
                             {...provided.droppableProps}>
                                 {
-                                    props.alternativas.map((alt, index) => {
+                                    props.alternatives.map((alt, index) => {
                                         return (
                                             <AltR
                                             key={alt.id_alternativa}
@@ -563,10 +642,11 @@ const AlternativesR = (props) => {
 
 const AltR = ({alt, index}) => {
     return (
-        <Draggable draggableId={`${alt.id_alternativa}`} index={index}>
+        <Draggable draggableId={`${alt.id_questao}:${alt.id_alternativa}`} index={index}>
             {
                 (provided) => (
                     <div
+                    id={`R-question-alternative-${alt.id_questao}:${alt.id_alternativa}`}
                     className='alts-r flex flex-row align-items-center p-4'
                     ref={provided.innerRef}
                     {...provided.draggableProps}
@@ -578,6 +658,112 @@ const AltR = ({alt, index}) => {
         </Draggable>
         
     )
-}
+};
 
-export default ProficiencyTest;
+const CalculatingResultsBox = ({loadingResults, setLoadingResults}) => {
+    return(
+        <Dialog
+        className='loading-box default-border-image'
+        visible={loadingResults}
+        draggable={false}
+        closable={false}
+        onHide={() => {if (!loadingResults) return; setLoadingResults(() => false);}}
+        contentStyle={{
+            overflow: loadingResults ? 'hidden' : 'auto',
+        }}>
+            <Loading show={loadingResults} msg='Calculating Results...'/>
+        </Dialog>
+    );
+};
+
+const GreetingsModal = ({startTest, loading, setLoading, allFine, alreadyTaken, lastScores, setStartTest, lastTestDate, error}) => {
+    const alreadyTakenAlert = () => {
+        return(
+            <div>
+            <h1 className='text-center'>Test Done</h1>
+            <Divider/>
+            <div className='show-results-box'>
+                <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
+                    <p>You've already taken the test this week. Wait at least 7 days to take it again.</p>
+                    <p>Here are your last scores:</p>
+                </div>
+                <div className='flex flex-column align-items-center'>
+                    <ResultChart resultShow={lastScores}/>
+                    <h4 className='mt-4'>Date of Realization: {new Date(lastTestDate).toLocaleDateString()}</h4>
+                    <button
+                    id='test-return-home-already-taken-btn'
+                    style={{fontSize: 'calc(0.8rem + 1vw)'}}
+                    className='dbuttons dbuttons-primary mt-3 pl-5 pr-5'
+                    onClick={() => window.location.replace('/')}>
+                        Return to Home Page
+                    </button>
+                </div> 
+            </div>
+        </div>
+        )
+    };
+
+    const startTestAlert = () => {
+        return(
+            <div>
+                <h1 className='text-center'>The Test is about to Start</h1>
+                <Divider/>
+                <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
+                    <p>
+                        This test will evaluate your proficiency in a series of Soft Skills, 
+                        which are certain socio-behavioural abilities extremely valued nowadays 
+                        in a myriad of different environments.
+                    </p>
+                    <p>You have 35 minutes to complete it.</p>
+                    <p>Press Start to inciate it.</p>
+                    <p><b>Good Luck!</b></p>
+                    <div className='flex flex-column align-items-center'>
+                        <button
+                        id='test-start-btn'
+                        style={{fontSize: 'calc(0.8rem + 1vw)'}}
+                        className='dbuttons dbuttons-success w-4'
+                        onClick={() => setStartTest(() => true)}>
+                            Start
+                        </button>
+                        <button
+                        id='test-return-home-start-test-btn'
+                        style={{fontSize: 'calc(0.8rem + 1vw)'}}
+                        className='dbuttons dbuttons-primary mt-3 w-4'
+                        onClick={() => window.location.replace('/')}>
+                            Return to Home Page
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    };
+
+    return(
+        <Dialog
+        className='loading-box default-border-image'
+        visible={!startTest}
+        closable={false}
+        draggable={false}
+        onHide={() => {if (startTest) return; setLoading(() => true);}}
+        contentStyle={{
+            overflow: 'hidden',
+        }}>
+            <Loading show={loading} msg='Loading Test...'/>
+            {
+                loading ?
+                null :
+                (
+                    allFine ?
+                    (
+                        alreadyTaken ?
+                        alreadyTakenAlert() :
+                        startTestAlert()
+                    ) :
+                    <ErrorMessage msg={error}/>
+                )
+            }
+        </Dialog>
+    );
+};
+
+export default protectRoute(ProficiencyTest);

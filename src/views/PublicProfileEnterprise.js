@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
 import {
   GeoAlt,
@@ -11,7 +11,6 @@ import {
 } from "react-bootstrap-icons";
 import "../styles/PublicProfileEnterprise.css";
 import { toast } from "react-toastify";
-import NavBar from "../components/Navbar";
 import {
   FaFacebookF,
   FaTwitter,
@@ -22,6 +21,7 @@ import {
 const PublicProfileEnterprise = () => {
   const { encodedEmail } = useParams();
   const [userData, setUserData] = useState(null);
+  const [badges, setBadges] = useState([]);
   const [activeTab, setActiveTab] = useState("sobre");
   const [loading, setLoading] = useState(true);
 
@@ -41,11 +41,46 @@ const PublicProfileEnterprise = () => {
           `http://localhost:7003/api/public-profile/${encodedEmail}`
         );
         setUserData(response.data);
+
+        // Supondo que a resposta tenha o email comercial
+        const emailComercial = response.data.email_comercial || "tgempresarial2@gmail.com";
+        await fetchBadges("UE", emailComercial);
+
         setLoading(false);
       } catch (error) {
         console.error("Erro ao carregar o perfil público:", error);
         toast.error("Erro ao carregar o perfil público.");
         setLoading(false);
+      }
+    };
+
+    const fetchBadges = async (tipoUsuario, email) => {
+      try {
+        let response;
+        const token = sessionStorage.getItem("token"); // Verifique se precisa de token para a API pública
+
+        if (tipoUsuario === "UC") {
+          // Endpoint para usuários comuns
+          response = await axios.get(`http://localhost:7001/badges/wallet?email=${email}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } else if (tipoUsuario === "UE") {
+          // Endpoint para usuários empresariais
+          response = await axios.get(`http://localhost:7001/badges/consult?search=${email}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        } else {
+          throw new Error("Tipo de usuário inválido");
+        }
+
+        setBadges(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar badges:", error);
+        setBadges([]);
       }
     };
 
@@ -133,7 +168,6 @@ const PublicProfileEnterprise = () => {
 
   return (
     <div className="profile-page">
-      <NavBar />
       <div className="public-profile-container">
         <div className="profile-header">
           <img
@@ -305,12 +339,15 @@ const PublicProfileEnterprise = () => {
           {activeTab === "badges" && (
             <div className="badges-section">
               <h3>Badges</h3>
-              {userData.badges && userData.badges.length > 0 ? (
+              {badges && badges.length > 0 ? (
                 <div className="badges-grid">
-                  {userData.badges.map((badge, index) => (
-                    <div key={index} className="badge-item">
-                      <AwardFill className="badge-icon" />
-                      <span>{badge.name}</span>
+                  {badges.map((badge) => (
+                    <div key={badge.id_badge} className="badge-card">
+                      <img src={badge.image_url} alt={badge.name_badge} className="badge-preview" />
+                      <h3>{badge.name_badge}</h3>
+                      <Link to={`/badges/details/${badge.id_badge}`}>
+                        <button>Details</button>
+                      </Link>
                     </div>
                   ))}
                 </div>

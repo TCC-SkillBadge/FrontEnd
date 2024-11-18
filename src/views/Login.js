@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Login.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { EnvelopeFill, LockFill } from "react-bootstrap-icons";
-import Navbar from "../components/Navbar";
+import { EnvelopeFill, LockFill, Eye, EyeSlash } from "react-bootstrap-icons";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal component
+import "../styles/Login.css";
+import "../styles/GlobalStylings.css";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -17,7 +16,21 @@ const Login = () => {
   const [loginFailed, setLoginFailed] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State to control the confirmation modal
   const [confirmationMessage, setConfirmationMessage] = useState(""); // State to hold the confirmation message
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleShowPassword = () => {
+    const passwordInput = document.querySelector("#password");
+    if (showPassword) {
+      setShowPassword(false);
+      passwordInput.type = "password";
+    } else {
+      setShowPassword(true);
+      passwordInput.type = "text";
+    }
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -31,6 +44,7 @@ const handleLogin = async (
   params = {},
   headers = {}
 ) => {
+  console.log("Remenber me: ", rememberMe);
   try {
     const response = await axios({
       url,
@@ -44,6 +58,12 @@ const handleLogin = async (
       sessionStorage.setItem("token", token);
       sessionStorage.setItem("tipoUsuario", tipoUsuario);
 
+      if (rememberMe) {
+        console.log("Entered Remember me for token and tipoUsuario");
+        localStorage.setItem("token", token);
+        localStorage.setItem("tipoUsuario", tipoUsuario);
+      }
+
       let userInfoResponse;
       if (tipoUsuario === "UC") {
         userInfoResponse = await axios.get(
@@ -52,6 +72,7 @@ const handleLogin = async (
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: { userType: 'UC' },
           }
         );
       } else if (tipoUsuario === "UE") {
@@ -61,6 +82,7 @@ const handleLogin = async (
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: { userType: 'UE' },
           }
         );
       } else if (tipoUsuario === "UA") {
@@ -70,13 +92,33 @@ const handleLogin = async (
             headers: {
               Authorization: `Bearer ${token}`,
             },
+            params: { userType: 'UA' },
           }
         );
       }
 
       if (userInfoResponse && userInfoResponse.status === 200) {
         const userInfo = userInfoResponse.data;
+
+        // Salve o email original e o codificado
+        const email =
+          tipoUsuario === "UC" ? userInfo.email : userInfo.email_comercial;
+        if (email) {
+          sessionStorage.setItem("email", email); // Email original
+          sessionStorage.setItem("encodedEmail", btoa(email)); // Email codificado
+
+          if (rememberMe) {
+            console.log("Entered Remember me for email");
+            localStorage.setItem("email", email);
+            localStorage.setItem("encodedEmail", btoa(email));
+          }
+        }
+
         sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+        if (rememberMe){
+          console.log("Entered Remember me for userInfo");
+          localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        }
         return true;
       }
     }
@@ -120,6 +162,11 @@ const handleLogin = async (
           toast.success("Login successful");
           setTimeout(() => {
             navigate("/home");
+            //Aqui, após o login, um evento é disparado para atualizar o estado do usuário logado
+            //O evento é capturado no App.js
+            //Escolheu-se esta posição pois disparar o evento juntamente aos métodos do sessionStorage nas linahs acima faria com que a Navbar muda-se
+            //antes do redirecionamento para a página home, o que criaria uma experiência ruim para o usuário
+            window.dispatchEvent(new Event("LoginChange"));
           }, 2000);
         } else {
           setLoginFailed(true);
@@ -130,6 +177,8 @@ const handleLogin = async (
         pending: "Logging in...",
       }
     );
+
+
   };
 
   const handleForgotPassword = async () => {
@@ -165,28 +214,6 @@ const handleLogin = async (
       }
       setShowConfirmationModal(false);
     })
-
-    // const promise = axios.post(
-    //   "http://localhost:7000/api/user/request-password-reset",
-    //   {
-    //     email: formData.email,
-    //   }
-    // );
-
-    // toast.promise(promise, {
-    //   pending: "Sending reset link...",
-    //   success: "A link to reset your password has been sent to your email.",
-    //   error: "Error sending password reset link",
-    // });
-
-    // try {
-    //   const response = await promise;
-    //   if (response.status === 200) {
-    //     setShowConfirmationModal(false); // Hide the confirmation modal
-    //   }
-    // } catch (error) {
-    //   // Handle the error case in the toast.promise
-    // }
   };
 
   const handleForgotPasswordClick = () => {
@@ -204,20 +231,10 @@ const handleLogin = async (
     handleForgotPassword(); // Call the forgot password handler
   };
 
-  const showPassword = () => {
-    const passwordInput = document.getElementById("password");
-    if (passwordInput.type === "password") {
-      passwordInput.type = "text";
-    } else {
-      passwordInput.type = "password";
-    }
-  };
-
   return (
     <div>
-      <Navbar />
       <div className="login-page">
-        <div className="login-container">
+        <div className="login-container default-border-image">
           <h2>Login</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -246,7 +263,11 @@ const handleLogin = async (
                   onChange={handleChange}
                   required
                 />
-                
+                {
+                  showPassword ?
+                  <EyeSlash onClick={handleShowPassword} /> :
+                  <Eye onClick={handleShowPassword} />
+                }
               </div>
             </div>
             <div className="form-options">
@@ -255,6 +276,8 @@ const handleLogin = async (
                   type="checkbox"
                   className="form-check-input"
                   id="rememberMe"
+                  value={rememberMe}
+                  onChange={() => setRememberMe((olValue) => !olValue)}
                 />
                 <label className="form-check-label" htmlFor="rememberMe">
                   Remember me
@@ -278,7 +301,7 @@ const handleLogin = async (
           </form>
           <div className="signup-options">
             <span className="dont-have-account">Don't have an account?</span>
-            <Link to="/cadastro" className="sign-up">
+            <Link to="/create" className="sign-up">
               Sign Up
             </Link>
           </div>

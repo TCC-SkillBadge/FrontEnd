@@ -1,6 +1,7 @@
 .footer {
   width: 100%;
-  height: 87px;
+  height: auto;
+  min-height: 87px;
   background-color: rgba(0, 0, 0, 0.7); /* Preto com 70% de opacidade */
   display: flex;
   align-items: center;
@@ -8,26 +9,27 @@
   padding: 0 20px;
   padding-left: 35px;
   padding-right: 35px;
-  font-family: 'Inter', sans-serif;  
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  bottom: 0;
+}
+
+.footer-components-display{
+  display: flex;
+  gap: 1.5vw;
 }
 
 .footer-item {
-  display: flex;
   color: white;
   font-size: 0.8rem;
   font-weight: 500;
   text-decoration: none;
-  position: relative;
-  gap: 50px;
 }
 
 .footer-rede {
-  display: flex;
-  gap: 20px;
   color: white;
   font-weight: 800;
   text-decoration: none;
-  position: relative;
   border: 1px solid white;
   padding: 8px;
   border-radius: 4px;

@@ -1,6 +1,6 @@
 .App {
   background-color: #191A2E;
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
 }
@@ -30,7 +30,9 @@
 .App-link {
   color: #61dafb;
 }
-
+.content {
+  flex: 1; /* Permite que o conteúdo cresça para ocupar o espaço disponível */
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

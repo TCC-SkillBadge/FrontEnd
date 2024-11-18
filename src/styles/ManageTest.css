@@ -1,306 +1,65 @@
 .m-test-box{
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    border-radius: 10px;
+    background-color: var(--background-color-1);
+    padding: 1%;
+    border-radius: 15px;
     box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
     width: 80%;
     margin: auto;
-    border: 2px solid;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
     color: white;
-    padding: 1%;
     margin-top: 4rem;
     margin-bottom: 4rem;
 }
 
-.m-test-skill-box{
-    background-color: #110e2d;
-    padding: 1%;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    border-radius: 10px;
-    border: 2px solid;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+@media (max-width: 900px){
+    .m-test-box{
+        width: 90%;
+    }
 }
 
-.m-test-skill-box .p-inputnumber-input{
-    width: 100%;
-    text-align: center;
+.accordion-h{
+    background-color: var(--background-color-2);
+    color: white;
+    border: none;
+    padding: 10px;
+    text-decoration: none;
 }
 
-.me-quest-box{
-    border-style: solid;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: #4682B4;
-    color: #4682B4;
+.m-test-box .p-accordion-content{
+    border: none;
+    background-color: var(--background-color-2);
+    color: white;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding: 10px;
+    margin-bottom: 2%;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+}
+
+.m-test-box .dbuttons-danger{
+    min-width: 3rem;
+    padding: 7px;
+    font-size: larger;
+}
+
+.dropdown-buttons{
+    color: white;
+}
+
+.dropdown-buttons:hover{
+    color: var(--background-color-1);
+    background-color: white;
+}
+
+.dropdown-buttons:active{
+    color: var(--background-color-1);
+    background-color: white;
+}
+
+.m-quest-box{
+    border-radius: 15px;
     padding: 20px;
     margin-bottom: 2%;
-}
-
-.me-quest-box textarea{
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #4682B4;
-    background-color: transparent;
-    color: #4682B4;
-}
-
-.me-quest-box input{
-    border-radius: 5px;
-    border: 1px solid #4682B4;
-    background-color: transparent;
-    color: #4682B4;
-}
-
-.me-quest-box span{
-    background-color: transparent;
-    color: #4682B4;
-    border-color: #4682B4;
-}
-
-.me-quest-box .btn-primary{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #4682B4;
-    font-weight: bold;
-    border: 2px solid #4682B4;
-    padding: 7px;
-    font-size: larger;
-}
-
-.me-quest-box .btn-primary:hover{
-    background-color: #4682B4;
+    background-color: var(--background-color-3);
     color: white;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
 }
-
-.mv-quest-box{
-    border-style: solid;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: #aba00e;
-    color: #aba00e;
-    padding: 20px;
-    margin-bottom: 2%;
-}
-
-.mv-quest-box textarea{
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #aba00e;
-    background-color: transparent;
-    color: #aba00e;
-}
-
-.mv-quest-box input{
-    border-radius: 5px;
-    border: 1px solid #aba00e;
-    background-color: transparent;
-    color: #aba00e;
-}
-
-.mv-quest-box span{
-    background-color: transparent;
-    color: #aba00e;
-    border-color: #aba00e;
-}
-
-.mv-quest-box .btn-primary{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #aba00e;
-    font-weight: bold;
-    border: 2px solid #aba00e;
-    padding: 7px;
-    font-size: larger;
-}
-
-.mv-quest-box .btn-primary:hover{
-    background-color: #aba00e;
-    color: white;
-}
-
-.r-quest-box{
-    border-style: solid;
-    border-radius: 8px;
-    border-width: 1px;
-    border-color: #008080;
-    color: #008080;
-    padding: 20px;
-    margin-bottom: 2%;
-}
-
-.r-quest-box textarea{
-    width: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #008080;
-    background-color: transparent;
-    color: #008080;
-}
-
-.r-quest-box input{
-    border-radius: 5px;
-    border: 1px solid #008080;
-    background-color: transparent;
-    color: #008080;
-}
-
-.r-quest-box span{
-    background-color: transparent;
-    color: #008080;
-    border-color: #008080;
-}
-
-.r-quest-box .btn-primary{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #008080;
-    font-weight: bold;
-    border: 2px solid #008080;
-    padding: 7px;
-    font-size: larger;
-}
-
-.r-quest-box .btn-primary:hover{
-    background-color: #008080;
-    color: white;
-}
-
-.m-test-box .btn{
-    margin-left: 1%;
-    margin-right: 1%;
-}
-
-.m-test-box .p-message-error{
-    background-color: #FF6347;
-    font-size: larger;
-}
-
-#btn-add-qr{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #008080;
-    font-weight: bold;
-    border: 2px solid #008080;
-    padding: 7px;
-    max-width: 12rem;
-    min-width: 12rem;
-}
-
-#btn-add-qr:hover{
-    background-color: #008080;
-    color: white;
-}
-
-#btn-add-qm{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #4682B4;
-    font-weight: bold;
-    border: 2px solid #4682B4;
-    padding: 7px;
-    max-width: 14rem;
-    min-width: 14rem;
-}
-
-#btn-add-qm:hover{
-    background-color: #4682B4;
-    color: white;
-}
-
-#btn-add-qmv{
-    border-radius: 5px;
-    background-color: transparent;
-    color: #c5b914;
-    font-weight: bold;
-    border: 2px solid #c5b914;
-    padding: 7px;
-    max-width: 20rem;
-    min-width: 20rem;
-}
-
-#btn-add-qmv:hover{
-    background-color: #c5b914;
-    color: white;
-}
-
-
-.m-test-box .btn-success{
-    min-width: 40%;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #32CD32;
-    font-weight: bold;
-    border: 2px solid #32CD32;
-    padding: 7px;
-    font-size: larger;
-}
-
-.m-test-box .btn-success:hover{
-    background-color: #32CD32;
-    color: white;
-}
-
-.m-test-box .btn-danger{
-    min-width: 3rem;
-    border-radius: 5px;
-    background-color: transparent;
-    color: #FF6347;
-    font-weight: bold;
-    border: 2px solid #FF6347;
-    padding: 7px;
-    font-size: larger;
-}
-
-.m-test-box .btn-danger:hover{
-    background-color: #FF6347;
-    color: white;
-}
-
-.p-confirm-popup{
-    background-color: #0e102a;
-    color: white;
-    border: 2px solid;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-}
-
-.p-confirm-popup-footer{
-    width: 50%;
-    margin: auto;
-}
-
-.p-confirm-popup-footer button{
-    color: white;
-    border-radius: 10px;
-    margin-left: 1%;
-    margin-right: 1%;
-}
-
-.p-dialog{
-    padding: 20px;
-    border: 2px solid;
-    background-color: #0e102a;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    box-shadow: 0 0 10px rgba(246, 206, 206, 0.5);
-}
-
-.p-dialog button{
-    color: white;
-    border-radius: 10px;
-    margin-left: 1%;
-    margin-right: 1%;
-}
-
-.confirm-d-back{
-    background-color: #0e102a;
-    color: white;
-}
-

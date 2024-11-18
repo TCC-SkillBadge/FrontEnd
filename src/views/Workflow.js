@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import WorkflowCard from "../components/WorkflowCard";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -135,7 +133,6 @@ const Workflow = () => {
   if (userType === "UE") {
     return (
       <div className="workflow-page">
-        <Navbar userType={userType} user={user} />
         <div className="workflow-container">
           <h1 className="workflow-title">Badge Issuance Workflow</h1>
           <p className="workflow-subtitle">
@@ -168,14 +165,12 @@ const Workflow = () => {
             />
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
   else if (userType === "UA") {
     return (
       <div className="workflow-page">
-        <Navbar userType={userType} user={user} />
         <div className="workflow-container-adm">
           <h1 className="workflow-title-adm">Badge  Workflow  </h1>
           <div className="row workflow-section-adm">
@@ -223,7 +218,6 @@ const Workflow = () => {
           pauseOnHover
           theme="dark"
         />
-        <Footer />
       </div>
     );
   }

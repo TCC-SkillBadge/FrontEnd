@@ -49,6 +49,18 @@
   color: #8dfd8b;
 }
 
+.coinBackgroundHome {
+  background-image: url('../../public/images/background-image-home.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 140%;
+  z-index: 1;
+}
+
 /* Estilo para a primeira divisória */
 .divisoria1 {
   display: flex;
@@ -74,12 +86,10 @@
   margin-top: 50px;
   padding: 40px;
   background-color: rgba(0, 0, 0, 0.25); /* Preto com 25% de opacidade */
-  border-radius: 8px; /* Borda arredondada */
+  border-radius: 15px; /* Borda arredondada */
   color: white;
   max-width: 900px;
   margin: 50px auto; /* Centraliza a div horizontalmente */
-  border: 2px solid; /* Borda com gradiente */
-  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1; /* Ajuste a direção do gradiente */
 }
 
 .why-digital-medals h2 {
@@ -122,13 +132,11 @@
   margin-top: 50px;
   padding: 40px;
   background-color: rgba(0, 0, 0, 0.25); /* Preto com 25% de opacidade */
-  border-radius: 8px; /* Borda arredondada */
+  border-radius: 15px; /* Borda arredondada */
   color: white;
   text-align: left;
   max-width: 900px;
   margin: 50px auto; /* Centraliza a div horizontalmente */
-  border: 2px solid; /* Borda com gradiente */
-  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1; /* Ajuste a direção do gradiente */
 }
 
 .credibilidade-seguranca h2 {
@@ -197,13 +205,11 @@
 
 .feature-card {
   background-color: rgba(0, 0, 0, 0.25); /* Preto com 25% de opacidade */
-  border-radius: 8px; /* Borda arredondada */
+  border-radius: 15px; /* Borda arredondada */
   color: white;
   text-align: center;
   flex: 0 0 calc(33.333% - 20px); /* Três cartões por linha */
   padding: 20px;
-  border: 2px solid; /* Borda com gradiente */
-  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
 }
 
 .feature-card img.feature-icon {

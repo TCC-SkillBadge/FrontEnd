@@ -121,3 +121,18 @@
     margin-bottom: 15px;
   }
 }
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Ocupa a altura total da janela */
+  background-color: #f5f5f5; /* Cor de fundo opcional */
+}
+
+.spinner-container p {
+  margin-top: 20px;
+  font-size: 1.2em;
+  color: #333;
+}

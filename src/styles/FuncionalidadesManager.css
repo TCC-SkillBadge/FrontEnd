@@ -1,0 +1,30 @@
+/* FuncionalidadesManager.css */
+.funcionalidades-manager {
+  padding: 20px;
+  margin-top: 80px; /* Para evitar sobreposição com a navbar */
+}
+
+.add-funcionalidade {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.add-funcionalidade input {
+  flex: 1;
+  padding: 10px;
+  margin-right: 10px;
+}
+
+.add-funcionalidade button {
+  padding: 10px 20px;
+}
+
+.funcionalidades-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.funcionalidades-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}

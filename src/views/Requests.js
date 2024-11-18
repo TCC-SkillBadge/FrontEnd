@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { EyeFill } from "react-bootstrap-icons";
@@ -150,11 +148,9 @@ const Requests = () => {
   }
 
   return (
-    <div>
-      <Navbar userType={userType} /> {/* Adicionando o Navbar */}
+    <div className="orders-page">
       <div className="container orders-container">
-        <ToastContainer />
-        {/* <Aside userType={userType} /> Componente Aside comentado */}
+      <ToastContainer />
         <div className="orders-header">
           <div className="orders-search-group">
             <input
@@ -227,7 +223,6 @@ const Requests = () => {
           </tbody>
         </table>
       </div>
-      <Footer />
     </div>
   );
 };

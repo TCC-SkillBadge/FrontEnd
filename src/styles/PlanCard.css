@@ -1,16 +1,21 @@
+/* src/styles/PlanCard.css */
+
 .plan-card {
   background-color: rgba(0, 0, 0, 0.3);
-  border: 2px solid #8DFD8B;
+  border: 2px solid #8dfd8b;
   border-radius: 10px;
   padding: 20px;
   width: 300px;
-  height: 600px; /* Definindo uma altura fixa maior */
+  height: 600px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   text-align: left;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
+  position: relative;
+  color: inherit;
+  overflow: hidden; /* Garante que o conteúdo permaneça dentro do card */
 }
 
 .plan-card:hover {
@@ -19,27 +24,34 @@
 }
 
 .plan-card.highlight {
-  border-color: #FFD700; /* Cor de destaque para planos prioritários */
-  background-color: rgba(40, 40, 40, 0.9); /* Fundo mais escuro para destacar */
-  color: #FFD700; /* Cor dourada para o texto */
-  transform: scale(1.05); /* Aumenta um pouco o tamanho do plano destacado */
+  border-color: #ffd700;
+  background-color: rgba(40, 40, 40, 0.9);
+  color: #ffd700;
+  transform: scale(1.05);
 }
 
 .plan-card.highlight:hover {
   transform: scale(1.08) translateY(-10px);
   box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
 }
-.edit-icon {
+
+.plan-card.current-plan {
+  border-color: #007bff;
+  background-color: rgba(30, 30, 30, 0.95);
+  color: #007bff;
+}
+
+.current-plan-badge {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 10px;
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #ffd700;
-  cursor: pointer;
+  border-radius: 5px;
+  font-size: 0.9em;
 }
 
-.edit-icon:hover {
-  color: #ffdd57;
-}
 .icon-container {
   display: flex;
   justify-content: center;
@@ -49,20 +61,20 @@
 
 .icon {
   font-size: 2em;
-  color: #8DFD8B;
+  color: #8dfd8b;
 }
 
 .plan-title {
   font-size: 1.5em;
   margin: 10px 0;
-  text-align: center; /* Centralizando o nome do plano */
-  color: inherit; /* Herdar cor para planos destacados */
+  text-align: center;
+  color: inherit;
 }
 
 .description {
   font-size: 1em;
   margin: 10px 0;
-  color: inherit; /* Herdar cor para planos destacados */
+  color: inherit;
 }
 
 .features {
@@ -75,12 +87,12 @@
   margin: 5px 0;
   display: flex;
   align-items: center;
-  color: inherit; /* Herdar cor para planos destacados */
+  color: inherit;
 }
 
 .feature-icon {
   margin-right: 8px;
-  color: #8DFD8B;
+  color: #8dfd8b;
 }
 
 .features.unavailable .feature-icon {
@@ -89,7 +101,7 @@
 
 .features.unavailable li {
   opacity: 0.5;
-  color: inherit; /* Herdar cor para planos destacados */
+  color: inherit;
 }
 
 .price {
@@ -99,32 +111,157 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: inherit; /* Herdar cor para planos destacados */
+  color: inherit;
 }
 
+/* Ícones de administração */
+.admin-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px; /* Ajusta os ícones para o canto superior direito */
+  display: flex;
+  gap: 8px; /* Espaçamento consistente entre os ícones */
+  z-index: 1;
+}
+
+.admin-icons .edit-icon,
+.admin-icons .delete-icon {
+  cursor: pointer;
+  font-size: 1.2em;
+  color: white;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.admin-icons .edit-icon:hover {
+  color: #ffd700;
+  transform: scale(1.2);
+}
+
+.admin-icons .delete-icon:hover {
+  color: #ff6b6b;
+  transform: scale(1.2);
+}
+
+/* Botões */
 .buy-button {
-  background-color: #D273FF;
+  background-color: #d273ff;
   border: none;
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
-  margin-top: auto;
-  align-self: center; /* Centralizando o botão */
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .buy-button:hover {
-  background-color: #8DFD8B;
+  background-color: #8dfd8b;
   color: black;
 }
 
+/* Estilo para o botão quando está desabilitado */
+.buy-button:disabled {
+  background-color: #aaa; /* Cor mais clara para indicar desativação */
+  color: #fff; /* Cor do texto */
+  cursor: not-allowed; /* Cursor indica que o botão está desativado */
+  opacity: 0.6; /* Tornar o botão mais transparente */
+  pointer-events: none; /* Impedir interações */
+}
+
 .plan-card.highlight .buy-button {
-  background-color: #FFD700; /* Dourado para o botão de compra em planos prioritários */
+  background-color: #ffd700;
   color: black;
 }
 
 .plan-card.highlight .buy-button:hover {
-  background-color: #8DFD8B; /* Cor de hover para o botão de compra em planos prioritários */
+  background-color: #8dfd8b;
   color: white;
+}
+
+/* Botão de Cancelamento */
+.cancel-button {
+  background-color: #f94144;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s, color 0.3s;
+  margin-top: 10px;
+  text-align: center; /* Centraliza o texto */
+  display: flex;
+  justify-content: center; /* Garante a centralização horizontal */
+  align-items: center; /* Garante a centralização vertical */
+}
+
+.cancel-button:hover {
+  background-color: #d00000;
+  color: white;
+}
+
+.plan-card .cancel-button {
+  margin-top: 10px;
+  width: 100%;
+  max-width: 200px;
+  align-self: center;
+}
+
+/* Ajuste para modo de edição */
+.plan-card.edit-mode .cancel-button {
+  background-color: #ffb703;
+  border: 2px solid #ff8800;
+  color: #fff;
+}
+
+.plan-card.edit-mode .cancel-button:hover {
+  background-color: #ff8800;
+  border-color: #d07000;
+  color: #ffffff;
+}
+
+/* Dimmed style para planos não atuais */
+.dimmed {
+  opacity: 0.6;
+  transform: scale(0.95);
+  pointer-events: none;
+}
+
+.dimmed:hover {
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Informação para plano atual */
+.current-plan-info {
+  margin-top: 10px;
+  color: #28a745;
+  font-weight: bold;
+}
+.admin-icons {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px; /* Espaçamento entre os ícones */
+  align-items: center;
+  z-index: 2; /* Garante que os ícones fiquem acima de outros elementos */
+}
+
+.admin-icons .edit-icon,
+.admin-icons .delete-icon {
+  cursor: pointer;
+  font-size: 1.2em;
+  color: white;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.admin-icons .edit-icon:hover {
+  color: #ffd700;
+  transform: scale(1.2);
+}
+
+.admin-icons .delete-icon:hover {
+  color: #ff6b6b;
+  transform: scale(1.2);
 }
