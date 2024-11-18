@@ -21,7 +21,7 @@ const commonUserURL = 'http://localhost:7000/api';
 const enterpriseUserURL = 'http://localhost:7003/api';
 
 const connectionCommonUser = axios.create({
-  baseURL: `${commonUserURL}/user`,	
+  baseURL: commonUserURL,
 });
 
 const connectionEnterpriseUser = axios.create({
@@ -64,7 +64,12 @@ const ChatBox = () => {
 
 
   useEffect(() => {
-    setSocket(() => io(chatServiceURL, { auth: { token, user: userEmail } } ))
+    setSocket(() => io(chatServiceURL,
+      { 
+        auth: { token, user: userEmail },
+        transports: ['websocket'],
+      } 
+    ))
     
     return () => {
       socket?.disconnect();
@@ -197,7 +202,7 @@ const ChatBox = () => {
     let profile_picture = '';
     try{
       if(contact.user_type === 'UC') {
-        const response = (await connectionCommonUser.get('/find', {
+        const response = (await connectionCommonUser.get('/find-users', {
           headers: { Authorization: `Bearer ${token}` },
           params: { 
             search: contact.email,
@@ -208,7 +213,7 @@ const ChatBox = () => {
         profile_picture = response[0].imageUrl;
       }
       else{
-        const response = (await connectionEnterpriseUser.get('/find-user', {
+        const response = (await connectionEnterpriseUser.get('/find-users', {
           headers: { Authorization: `Bearer ${token}` },
           params: { 
             search: contact.email,
@@ -533,14 +538,14 @@ const SearchBox = ({token, userEmail, userUsername, searching, setSearching, con
       let UCs = [];
 
       try{
-        UCs = (await connectionCommonUser.get('/find', {
+        UCs = (await connectionCommonUser.get('/find-users', {
           headers: { Authorization: `Bearer ${token}` },
           params: { 
             search: searchTerm,
             researcher: userEmail,
           },
         })).data;
-        UEs = (await connectionEnterpriseUser.get('/find-user', {
+        UEs = (await connectionEnterpriseUser.get('/find-users', {
           headers: { Authorization: `Bearer ${token}` },
           params: { 
             search: searchTerm,
@@ -574,7 +579,7 @@ const SearchBox = ({token, userEmail, userUsername, searching, setSearching, con
         }
         if(!alreadyInContacts){
           users.push({
-            username: UEs[i].username ? UEs[i].username : 'Anonimous',
+            username: UEs[i].username ? UEs[i].username : 'Username',
             email: UEs[i].email_comercial,
             name: UEs[i].razao_social,
             profile_picture: UEs[i].imageUrl,
@@ -593,7 +598,7 @@ const SearchBox = ({token, userEmail, userUsername, searching, setSearching, con
         }
         if(!alreadyInContacts) {
           users.push({
-            username: UCs[i].username ? UCs[i].username : 'Anonimous',
+            username: UCs[i].username ? UCs[i].username : 'Username',
             email: UCs[i].email,
             name: UCs[i].fullName,
             profile_picture: UCs[i].imageUrl,

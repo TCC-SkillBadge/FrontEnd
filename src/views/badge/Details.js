@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
 import BadgeDetails from "../../components/BadgeDetails";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -52,9 +50,7 @@ const Details = () => {
 
     return (
       <div className="badge-details-page">
-        <Navbar userType={userType} user={user} />
         <BadgeDetails id_badge={id_badge} url_origem="/badges" />
-        <Footer />
       </div>
     );  
 };

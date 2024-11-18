@@ -45,6 +45,8 @@ import { ResultScreen } from "../components/UserComum/ResultScreen";
 import Requests from "./Requests";
 import ClaimBadgePage from "./ClaimBadgePage";
 import FuncionalidadesManager from "../components/FuncionalidadesManager";
+import GeneralSearch from "./GeneralSearch";
+import BadgePublicDisplay from "./BadgePublicDisplay";
 
 import ApiReference from "./ApiReference";
 import About from "./About";
@@ -177,6 +179,8 @@ function App() {
           <Route path="/claim-badge" element={<ClaimBadgePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/general-search" element={<GeneralSearch />} />
+          <Route path="/badge-public-display/:id_badge/:razao_social" element={<BadgePublicDisplay />} />
           {/* <Route path="/test" element={<TestPage />} /> */}{" "}
           {/* Remova se não precisar */}
         </Routes>

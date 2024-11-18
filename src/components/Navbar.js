@@ -24,6 +24,7 @@ const NavBar = (props) => {
   const [userType, setUserType] = useState(() => props.userType);
   const [notifications, setNotifications] = useState([]); // Estado para notificações
   const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para o dropdown
+  const [search, setSearch] = useState(""); // Estado para a barra de pesquisa
   const navigate = useNavigate();
   const op = useRef(null);
 
@@ -288,38 +289,50 @@ const NavBar = (props) => {
     </button>
   );
 
-  const defineBreakpoints = () => {
-    switch(userType){
-      default:
-        return {
-          nav: 'd-xl-flex d-lg-none d-md-none d-sm-none',
-          dropdown: 'd-xl-none d-lg-flex d-md-flex d-sm-flex'
-        }
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if(search !== "") {
+      console.log("Search: ", search);
+      navigate('/general-search', { state: search });
+      setSearch(() => "");
     }
   };
 
   return (
     <Navbar className="navbar" sticky="top">
       <Container fluid>
-        <Navbar.Brand as={NavLink} to="/home">
-          <img height={50} width='auto' src="/Icone.png"/>
-        </Navbar.Brand>
-        <Nav className={"me-auto " + defineBreakpoints().nav}>{renderNavItems('nav')}</Nav>
-        <NavDropdown
-        className={"collapsed-menu flex-1 " + defineBreakpoints().dropdown}
-        title={<i className="pi pi-align-justify" style={{fontSize: '2rem'}}/>}
-        
-        >
-          {renderNavItems('dropdown')}
-        </NavDropdown>
-        <Form className="d-flex mx-auto searchSection">
-          <i className="bi bi-search search-icon"/>
-          <FormControl
-            type="text"
-            placeholder="Search"
-            className="searchInput"
-          />
-        </Form>
+        <div className="flex flex-row align-items-center">
+          <Navbar.Brand as={NavLink} to="/home">
+            <img height={50} width='auto' src="/Icone.png"/>
+          </Navbar.Brand>
+          <div className="expanded-menu">
+            <Nav className={"me-auto"}>
+              {renderNavItems('nav')}
+            </Nav>
+          </div>
+          <NavDropdown
+          className={"collapsed-menu flex-1"}
+          title={<i className="pi pi-align-justify" style={{fontSize: '2rem'}}/>}
+          >
+            {renderNavItems('dropdown')}
+          </NavDropdown>
+        </div>
+        {
+          token &&
+          <Form className="d-flex mx-auto searchSection">
+            <FormControl
+              type="text"
+              placeholder="Search"
+              className="searchInput"
+              value={search}
+              onChange={(e) =>  setSearch(e.target.value)}
+              onKeyDown={(e) => { if(e.key === 'Enter') handleSearch(e); }}
+            />
+            <button className="search-btn" onClick={(e) => handleSearch(e)}>
+              <i className="bi bi-search"/>
+            </button>
+          </Form>
+        }
         <Nav className="ml-3">
           {user && (userType !== 'UA') && renderChat()}{" "}
           {/* Exibe o ícone do chat apenas se houver usuário e ele não for um usuário administrativo */}
