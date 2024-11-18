@@ -6,6 +6,7 @@
   flex: 0 0 calc(20% - 20px);
   max-width: 317px;
   min-width: 200px;
+  min-height: 200px;
   padding: 20px;
   border: 1px solid; 
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
@@ -34,6 +35,12 @@
   margin-bottom: 30px;
 }
 
+.workflow-card-active i.workflow-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 30px;
+}
+
 .workflow-card h3 {
   font-family: 'Inter', sans-serif;
   font-size: 1.5rem;
@@ -44,7 +51,25 @@
   text-align: left;
 }
 
+.workflow-card-active h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 33.89px;
+  color: white;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
 .workflow-card p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 300;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.workflow-card-active p {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 300;
@@ -66,9 +91,33 @@
   border: 1px solid; 
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
   margin: auto;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.workflow-card-adm-active {
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center; 
+  flex-direction: column;
+  max-width: 1200px;
+  min-width: 400px;
+  padding: 20px;
+  border: 1px solid; 
+  border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  margin: auto;
 }
 
 .workflow-card-adm i.workflow-icon-adm {
+  width: 44px;
+  height: 44px;
+  margin-right: 10px;
+}
+
+.workflow-card-adm-active i.workflow-icon-adm {
   width: 44px;
   height: 44px;
   margin-right: 10px;
@@ -84,7 +133,26 @@
   text-align: justify;  
 }
 
+.workflow-card-adm-active h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 33.89px;
+  color: white;
+  margin-left: -30px;
+  text-align: justify;  
+}
+
 .workflow-card-adm p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 300;
+  margin-top: 10px;
+  margin-left: -30px; 
+  text-align: justify;
+}
+
+.workflow-card-adm-active p {
   font-family: 'Inter', sans-serif;
   font-size: 0.8rem;
   font-weight: 300;

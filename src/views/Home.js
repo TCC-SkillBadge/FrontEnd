@@ -32,6 +32,19 @@ const Home = () => {
   return (
     <div>
       <Navbar userType={userType} user={user} />
+      <div className="container-fluid home-content">
+        <div className="text-container">
+          <h1 className="home-title">
+            Your badges with the security of our Blockchain.
+          </h1>
+          <p className="home-subtitle">
+            A single place to <span className="emitir">issue</span>,{" "}
+            <span className="conquistar">earn</span> and{" "}
+            <span className="armazenar">store</span> all your badges
+            securely.
+          </p>
+        </div>
+      </div>
       <div className="divisoria1">
         <img
           className="iconShieldSmall"

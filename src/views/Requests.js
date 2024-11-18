@@ -205,8 +205,8 @@ const Requests = () => {
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
-              <tr key={order.numero_pedido}>
-                <td>{order.numero_pedido}</td>
+              <tr key={order.id_request}>
+                <td>{order.id_request}</td>
                 <td>{new Date(order.data).toLocaleDateString()}</td>{" "}
                 <td>{channelMap[order.canal] || order.canal}</td>{" "}
                 <td>{order.prioridade}</td>
@@ -217,7 +217,7 @@ const Requests = () => {
                 </td>
                 <td style={{ textAlign: "center" }}>
                   {order.id_badge && (
-                    <Link to={`/workflow/${order.id_badge}`}>
+                    <Link to={`/workflow/${order.id_request}`}>
                       <EyeFill className="eye-icon"/>
                     </Link>
                   )}

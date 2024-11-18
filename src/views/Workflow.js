@@ -3,26 +3,37 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import WorkflowCard from "../components/WorkflowCard";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "../styles/Workflow.css";
 
 const Workflow = () => {
-  const { id_badge } = useParams();
+  const { id_request } = useParams();
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
-  const [badge, setBadge] = useState({
-    id_badge: "",
-    name_badge: "",
-    status_badge: 0,
-    image_url: "",
-  });
+  const [request, setRequest] = useState({});
 
   const navigate = useNavigate();
 
-  const fetchBadge = async () => {
+  const fetchRequest = async () => {
     try {
-      const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
-      setBadge(response.data);
+      const token = sessionStorage.getItem("token");
+
+      const response = await axios.get(
+        `http://localhost:7004/admin/request`,
+        {
+          params: {
+            id_request: id_request,
+            token: token,
+          }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setRequest(response.data);
     } catch (error) {
       console.error('Error fetching the badge:', error);
     }
@@ -31,7 +42,7 @@ const Workflow = () => {
   const checkLogin = async () => {
     const token = sessionStorage.getItem("token");
     const userType = sessionStorage.getItem("tipoUsuario");
-    
+
     if (userType === "UE") {
       let userInfoResponse = await axios.get(
         `http://localhost:7003/api/acessar-info-usuario-jwt`,
@@ -44,7 +55,7 @@ const Workflow = () => {
 
       setUserType("UE");
       setUser(userInfoResponse.data);
-    } 
+    }
     else if (userType === "UA") {
       let userInfoResponse = await axios.get(
         `http://localhost:7004/admin/acessa-info`,
@@ -60,13 +71,66 @@ const Workflow = () => {
     }
     else {
       navigate("/home")
-    }    
+    }
   };
 
   useEffect(() => {
     checkLogin();
-    fetchBadge();
+    fetchRequest();
   }, []);
+
+  const handleAdvance = async (e) => {
+    e.preventDefault();
+    const loadingToastId = toast.loading("Loading...");
+    const token = sessionStorage.getItem("token");
+
+    try {
+      let response = await axios.put(`http://localhost:7004/admin/workflow-advance`, {
+        id_request: request.id_request,
+        email_admin: user.email_admin,
+        email_enterprise: user.email_comercial
+      });
+
+      toast.dismiss(loadingToastId);
+
+      if (response.status === 200) {
+        toast.success("Order updated successfully");
+        setTimeout(() => {
+          fetchRequest();
+        }, 2000);   
+      }
+    } catch (error) {
+      toast.dismiss(loadingToastId);
+      console.error("Error updating order:", error);
+      toast.error("Error updating order");
+    }
+  };
+
+  const handleRetreat = async (e) => {
+    e.preventDefault();
+    const loadingToastId = toast.loading("Loading...");
+    const token = sessionStorage.getItem("token");
+
+    try {
+      let response = await axios.put(`http://localhost:7004/admin/workflow-retreat`, {
+        id_request: request.id_request,
+        email_enterprise: user.email_comercial
+      });
+
+      toast.dismiss(loadingToastId);
+
+      if (response.status === 200) {
+        toast.success("Order updated successfully");
+        setTimeout(() => {
+          fetchRequest();
+        }, 2000);   
+      }
+    } catch (error) {
+      toast.dismiss(loadingToastId);
+      console.error("Error updating order:", error);
+      toast.error("Error updating order");
+    }
+  };
 
   if (userType === "UE") {
     return (
@@ -82,25 +146,25 @@ const Workflow = () => {
               icon="bi bi-journal-check fs-1"
               title="Requested"
               children="Your badge request has been submitted."
-              {...badge.status_badge === 1 ? { active: "-active" } : {active: ""}}
+              {...request.status_badge === "Requested" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-fan fs-1"
               title="In production"
               children="Your badge is being manufactured."
-              {...badge.status_badge === 2 ? { active: "-active" } : {active: ""}}
+              {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-eye fs-1"
               title="Review"
               children="Your badge is for your review."
-              {...badge.status_badge === 3 ? { active: "-active" } : {active: ""}}
+              {...request.status_badge === "Review" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-check2 fs-1"
               title="Issued"
               children="Your badge has been issued."
-              {...badge.status_badge === 4 ? { active: "-active" } : {active: ""}}
+              {...request.status_badge === "Issued" ? { active: "-active" } : { active: "" }}
             />
           </div>
         </div>
@@ -118,33 +182,47 @@ const Workflow = () => {
             <WorkflowCard
               icon="bi bi-journal-bookmark-fill fs-1"
               title="Requested"
-              children="Your badge request has been submitted."
-              button="Move to Production"
-              {...badge.status_badge === 1 ? { active: "-active" } : {active: ""}}
+              children="The badge request has been submitted."
+              button={
+                <button className="button-card" onClick={handleAdvanceUA}>Move to Production</button>
+              }
+              {...request.status_badge === "Requested" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-power fs-1"
               title="In production"
-              children="Your badge is currently being produced."
-              button="Move to Analysist"
-              {...badge.status_badge === 2 ? { active: "-active" } : {active: ""}}
+              children="The badge is currently being production."
+              button={
+                <button className="button-card" onClick={handleAdvance}>Move to Analysist</button>
+              }
+              {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-eye fs-1"
               title="Analysis"
-              children="Your badge is being reviewed for quality and accuracy."
-              button="Move to Issued"
-              {...badge.status_badge === 3 ? { active: "-active" } : {active: ""}}
+              children="The badge is being reviewed for quality and accuracy."
+              {...request.status_badge === "Review" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-award fs-1"
               title="Issued"
-              children="Your badge has been successfully issued."
-              button="End Flow"
-              {...badge.status_badge === 4 ? { active: "-active" } : {active: ""}}
+              children="The badge has been successfully issued."
+              {...request.status_badge === "Issued" ? { active: "-active" } : { active: "" }}
             />
           </div>
         </div>
+        <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
         <Footer />
       </div>
     );

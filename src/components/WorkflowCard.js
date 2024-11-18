@@ -69,9 +69,7 @@ const WorkflowCard = ({ icon, title, children, button, active }) => {
           <div className="col-sm-9">
             <h3>{title}</h3>
             <p>{children}</p>
-            <button className="button-card">
-              {button}
-            </button>
+            {button}
           </div>
         </div>
       </div>

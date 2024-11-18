@@ -207,19 +207,19 @@ const Orders = () => {
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
-              <tr key={order.numero_pedido}>
-                <td>{order.numero_pedido}</td>
+              <tr key={order.id_request}>
+                <td>{order.id_request}</td>
                 <td>{new Date(order.data).toLocaleDateString()}</td>{" "}
                 {/* Formatação de data */}
                 <td>{channelMap[order.canal] || order.canal}</td>{" "}
                 {/* Mapeamento de canal */}
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>
-                <td>{order.cliente}</td>
-                <td>{order.badgeId}</td>
+                <td>{order.email_request}</td>
+                <td>{order.id_badge}</td>
                 <td style={{ textAlign: "center" }}>
                   {order.id_badge && (
-                    <Link to={`/workflow/${order.id_badge}`}>
+                    <Link to={`/workflow/${order.id_request}`}>
                       <EyeFill className="eye-icon"/>
                     </Link>
                   )}

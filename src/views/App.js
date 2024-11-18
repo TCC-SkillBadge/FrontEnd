@@ -46,7 +46,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/wallet" element={<Wallet />} />
-        <Route path="/workflow/:id_badge" element={<Workflow />} />
+        <Route path="/workflow/:id_request" element={<Workflow />} />
         <Route path="/badges" element={<BadgeConsult />} />
         <Route path="/badges/create" element={<BadgeCreate />} />
         <Route path="/badges/edit/:id_badge" element={<BadgeEdit />} />
