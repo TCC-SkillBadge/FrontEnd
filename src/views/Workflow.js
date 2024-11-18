@@ -179,7 +179,7 @@ const Workflow = () => {
               title="Requested"
               children="The badge request has been submitted."
               button={
-                <button className="button-card" onClick={handleAdvanceUA}>Move to Production</button>
+                <button className="button-card" onClick={handleAdvance}>Move to Production</button>
               }
               {...request.status_badge === "Requested" ? { active: "-active" } : { active: "" }}
             />
