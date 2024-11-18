@@ -6,6 +6,7 @@ const AdminUserForm = ({ formData, handleChange }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [showValidationCode, setShowValidationCode] = useState(false);
 
   const handleShowPassword = () => {
     const passwordInput = document.querySelector("#password");
@@ -26,6 +27,17 @@ const AdminUserForm = ({ formData, handleChange }) => {
     } else {
       setShowConfirmPassword(true);
       confirmPasswordInput.type = "text";
+    }
+  };
+
+  const handleShowValidationCode = () => {
+    const validationCodeInput = document.querySelector("#validationCode");
+    if (showValidationCode) {
+      setShowValidationCode(false);
+      validationCodeInput.type = "password";
+    } else {
+      setShowValidationCode(true);
+      validationCodeInput.type = "text";
     }
   };
 
@@ -131,7 +143,7 @@ const AdminUserForm = ({ formData, handleChange }) => {
         <div className="input-icon">
           <LockFill />
           <input
-            type="text"
+            type="password"
             className="form-control"
             id="validationCode"
             placeholder="Validation Code"
@@ -139,6 +151,11 @@ const AdminUserForm = ({ formData, handleChange }) => {
             onChange={handleChange}
             required
           />
+          {
+            showValidationCode ?
+            <EyeSlash onClick={handleShowValidationCode} /> :
+            <Eye onClick={handleShowValidationCode} />
+          }
         </div>
       </div>
     </>

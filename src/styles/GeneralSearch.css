@@ -1,0 +1,107 @@
+.general-search-container {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 1%;
+    border-radius: 15px;
+    width: 80%;
+    margin: auto;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    color: white;
+    min-width: 500px;
+}
+
+@media (max-width: 1100px){
+    .general-search-container{
+        width: 90%;
+        padding: 2%;
+    }
+}
+
+@media (max-width: 800px){
+    .general-search-container{
+        width: 95%;
+        padding: 3%;
+    }
+}
+
+.general-search-term-span{
+    font-size: calc(1.5rem + 0.3vw);
+    font-weight: bold;
+    min-width: fit-content;
+}
+
+.general-search-page-btn{
+    background-color: transparent;
+    border-color: white;
+    color: white;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.general-search-page-btn:hover{
+    background-color: rgba(0, 0, 0, 0.8)
+}
+
+.general-search-user-image{
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.general-search-badge-image{
+    border-radius: 10px;
+}
+
+.general-results-container{
+    background-color: rgba(49, 29, 84, 0.3);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 2%;
+    border-radius: 15px;
+    border-left: 5px solid #D273FF;
+    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+}
+
+.general-search-badge-results-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3%;
+    width: 100%;
+    background-color: rgba(49, 29, 84, 0.3);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    border-radius: 15px;
+    border-left: 5px solid #D273FF;
+}
+
+.purple-lines{
+    color: #D273FF;
+    width: fit-content;
+}
+
+.green-lines{
+    color: #8DFD8B;
+    width: fit-content;
+    margin-right: 10px;
+}
+
+.redirect-link{
+    color: #8DFD8B;
+    background-color: transparent;
+    border: 2px solid #8DFD8B;
+    padding: 5px;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: calc(1rem + 0.4vw);
+}
+
+.redirect-link:hover{
+    background-color: #8DFD8B;
+    color: var(--background-color-3);
+    transition: 0.5s;
+}

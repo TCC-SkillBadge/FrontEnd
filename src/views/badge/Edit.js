@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Badge.css";
 import axios from "axios";
-import Navbar from "../../components/Navbar";
-import Footer from "../../components/Footer";
 import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -153,7 +151,6 @@ const EditBadge = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="badge-page">
         <div className="badge-container">
           <h2>Edit Badge</h2>
@@ -248,7 +245,6 @@ const EditBadge = () => {
         pauseOnHover
         theme="dark"
       />
-      <Footer />
     </div>
   );
 };

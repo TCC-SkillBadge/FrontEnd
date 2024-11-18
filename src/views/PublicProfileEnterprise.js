@@ -11,7 +11,6 @@ import {
 } from "react-bootstrap-icons";
 import "../styles/PublicProfileEnterprise.css";
 import { toast } from "react-toastify";
-import NavBar from "../components/Navbar";
 import {
   FaFacebookF,
   FaTwitter,
@@ -169,7 +168,6 @@ const PublicProfileEnterprise = () => {
 
   return (
     <div className="profile-page">
-      <NavBar />
       <div className="public-profile-container">
         <div className="profile-header">
           <img
