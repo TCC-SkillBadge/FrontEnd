@@ -57,11 +57,15 @@ const ChatBox = () => {
   const [contacts, setContacts] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
   const [messagesDisplayed, setMessagesDisplayed] = useState(null);
+  const [chosenContact, setChosenContact] = useState('');
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [inoperant, setInoperant] = useState(false);
   const [socket, setSocket] = useState(null);
 
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [showNormalContacts, setShowNormalContacts] = useState(true);
+  const [showContractedContacts, setShowContractedContacts] = useState(false);
 
   useEffect(() => {
     setSocket(() => io(chatServiceURL,
@@ -70,11 +74,25 @@ const ChatBox = () => {
         transports: ['websocket'],
       } 
     ))
+
+    window.onresize = () => {
+      setScreenWidth(() => window.innerWidth);
+    };
     
     return () => {
       socket?.disconnect();
+      window.onresize = null;
     }
   }, []);
+
+  useEffect(() => {
+    if(screenWidth < 900) {
+      setShowNormalContacts(() => false);
+    }
+    else{
+      setShowNormalContacts(() => true);
+    }
+  }, [screenWidth]);
 
   useEffect(() => {
     socket?.on('connect', () => {
@@ -264,10 +282,18 @@ const ChatBox = () => {
             contact_profile_picture: contact.profile_picture,
           }
         });
+        setChosenContact(() => contact.username);
         break;
       }
     }
   };
+
+  const contractedContactTransition = useTransition(showContractedContacts, {
+    from: { opacity: 0, transform: 'translateX(-20%)' },
+    enter: { opacity: 1, transform: 'translateX(0%)' },
+    leave: { opacity: 0, transform: 'translateX(-20%)' },
+    config: {duration: 400},
+  });
 
   const handleRequestError = (error) => {
     console.error('Entering handleRequestError');
@@ -291,11 +317,53 @@ const ChatBox = () => {
           inoperant ?
           <InoperantMessage/> :
           <div className='flex flex-row h-full'> 
-            <Contacts
-            contacts={contacts}
-            setSearching={setSearching}
-            chooseContact={chooseContact}/>
+            {
+              showNormalContacts ?
+              <Contacts
+              contacts={contacts}
+              setSearching={setSearching}
+              chooseContact={chooseContact}/> :
+              <div className='flex flex-row'>
+                {
+                  !showContractedContacts &&
+                  <div
+                  className='show-contact-overlay-btn flex column align-items-center mr-2 h-full'
+                  onClick={() => setShowContractedContacts((oldValue) => !oldValue)}>
+                    <i className={'pi pi-angle-right'}/>
+                  </div>
+                }
+                <div className='flex flex-row align-items-center absolute'
+                style={{
+                  zIndex: 100,
+                }}>
+                  {
+                    contractedContactTransition((styles, item) =>
+                      item &&
+                      <animated.div id='contracted-contacts-component' style={styles}>
+                        <Contacts
+                        contacts={contacts}
+                        setSearching={setSearching}
+                        chooseContact={chooseContact}/>
+                      </animated.div>
+                    )
+                  }
+                  {
+                    showContractedContacts &&
+                    <div
+                    className='show-contact-overlay-btn'
+                    style={{
+                      height: 'fit-content',
+                      padding: '0.5rem',
+                    }}
+                    onClick={() => setShowContractedContacts((oldValue) => !oldValue)}>
+                      <i className='pi pi-angle-left'/>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
             <MessagesD
+            chosenContact={chosenContact}
             contactMessages={messagesDisplayed}
             userInfo={userInfo}
             userEmail={userEmail}
@@ -395,7 +463,7 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
   )
 };
 
-const MessagesD = ({contactMessages, userEmail, userType, userInfo, userUsername, sendMessage}) => {
+const MessagesD = ({chosenContact, contactMessages, userEmail, userType, userInfo, userUsername, sendMessage}) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
 
@@ -485,8 +553,8 @@ const MessagesD = ({contactMessages, userEmail, userType, userInfo, userUsername
   };
 
   return(
-    <div className='relative w-full'>
-      <h3 className='mb-4'>Messages</h3>
+    <div className='message-container w-full'>
+      <h3 className='mb-4'>{chosenContact === '' ? 'Messages' : chosenContact}</h3>
       {
         messages.length !== 0 ?
         <div>

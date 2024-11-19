@@ -18,12 +18,6 @@ import { jwtExpirationHandler } from '../../utils/general-functions/JWTExpiratio
 import '../../styles/ListSoftSkills.css';
 import '../../styles/GlobalStylings.css';
 
-const generalServicesURL = 'http://localhost:6004';
-
-const connectionSoftSkills = axios.create({
-    baseURL: `${generalServicesURL}/softskills`
-});
-
 export const ListSoftSkills = () => {
     const objSSInit = {
         id_soft_skill: 0,
@@ -46,6 +40,19 @@ export const ListSoftSkills = () => {
     const [error, setError] = useState('');
     const [allFine, setAllFine] = useState(false);
 
+    //Definindo conexão com o back-end
+    const generalServicesURL = 'https://ms-softskill.azurewebsites.net';
+
+    //URL Local: http://localhost:6004
+    //URL Azure: https://ms-softskill.azurewebsites.net
+    //URL Heroku: https://test-softskills-bb1e48ce063a.herokuapp.com
+
+    const connectionSoftSkills = axios.create({
+        baseURL: `${generalServicesURL}/softskills`,
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    //-----------------------------------------------------------------------------------
+
     //Iniciating the page
     useEffect(() => {
         fetchList();
@@ -56,12 +63,7 @@ export const ListSoftSkills = () => {
     }, [editing]);
 
     const fetchList = async () => {
-        await connectionSoftSkills.get('/listar', 
-            { 
-                headers: { Authorization: `Bearer ${token}` }, 
-                params: { tipoUsuario: userType }
-            }
-        )
+        await connectionSoftSkills.get('/listar')
         .then((response) => {
             const softSkillList = response.data;
             setSoftSkills(() => softSkillList);
@@ -118,7 +120,6 @@ export const ListSoftSkills = () => {
             email_admin: userEmail
         },
         {
-            headers: { Authorization: `Bearer ${token}` },
             params: {
                 id_soft_skill: managedSS.id_soft_skill,
                 tipoUsuario: userType
@@ -163,7 +164,6 @@ export const ListSoftSkills = () => {
     const deleteSoftSkill = async (id) => {
         const deleting = toast.loading('Deleting Soft Skill...');
         connectionSoftSkills.delete('/deletar', {
-            headers: { Authorization: `Bearer ${token}` },
             params: {
                 id_soft_skill: id,
                 tipoUsuario: userType
@@ -200,7 +200,6 @@ export const ListSoftSkills = () => {
             email_admin: userEmail
         },
         {
-            headers: { Authorization: `Bearer ${token}` },
             params: { tipoUsuario: userType }
         })
         .then((response) => {

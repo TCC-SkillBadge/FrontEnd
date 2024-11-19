@@ -21,12 +21,6 @@ import '../../styles/ManageTest.css';
 import '../../styles/GlobalStylings.css';
 import '../../styles/JWTExpirationModal.css';
 
-const generalServicesURL = 'http://localhost:6004';
-
-const connectionGeneralServices = axios.create({
-    baseURL: generalServicesURL
-});
-
 const springAnimationsConfig = {
     from: { opacity: 0, transform: 'scale(0)' },
     enter: { opacity: 1, transform: 'scale(1)' },
@@ -54,6 +48,19 @@ const ManageTest = () => {
     const [savedAlternativesM, setSavedAlternativesM] = useState('');
     const [savedAlternativesR, setSavedAlternativesR] = useState('');
     const [savedAlternativesMV, setSavedAlternativesMV] = useState('');
+
+    //Definindo conexão com o backend
+    const generalServicesURL = 'https://ms-softskill.azurewebsites.net';
+
+    //URL Local: http://localhost:6004
+    //URL Azure: https://ms-softskill.azurewebsites.net
+    //URL Heroku: https://test-softskills-bb1e48ce063a.herokuapp.com
+
+    const connectionGeneralServices = axios.create({
+        baseURL: generalServicesURL,
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    //-----------------------------------------------------------------------------------
 
     //Iniciating the page
     useEffect(() => {
@@ -93,12 +100,7 @@ const ManageTest = () => {
     const mountPage = () => {
         const fetchSoftSkills = async () => {
             try{
-                const response = (await connectionGeneralServices.get('/softskills/listar',
-                    { 
-                        headers: { Authorization: `Bearer ${token}` },
-                        params: { tipoUsuario: userType }
-                    }
-                )).data;
+                const response = (await connectionGeneralServices.get('/softskills/listar')).data;
                 return Promise.resolve(response);
             }
             catch(error){
@@ -109,12 +111,7 @@ const ManageTest = () => {
 
         const fetchTeste = async (SSs) => {
             try{
-                const response = (await connectionGeneralServices.get('/teste/fetch',
-                { 
-                    headers: { Authorization: `Bearer ${token}` },
-                    params: { tipoUsuario: userType }
-                }    
-                )).data;
+                const response = (await connectionGeneralServices.get('/teste/fetch')).data;
                 const {
                     questoes,
                     alternativasMultiplaEscolha,
@@ -338,10 +335,6 @@ const ManageTest = () => {
             alternativasMultiplaEscolha: alternativesM,
             alternativasRankeamento: alternativesR,
             alternativasMultiplaEscolhaComValores: alternativesMV
-        },
-        {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { tipoUsuario: userType }
         })
         .then(() => {
             toast.update(saving, {

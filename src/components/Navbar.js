@@ -26,7 +26,7 @@ const NavBar = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para o dropdown
   const [search, setSearch] = useState(""); // Estado para a barra de pesquisa
   const navigate = useNavigate();
-  const op = useRef(null);
+  const chatRef = useRef(null);
 
   useEffect(() => {
     if(token !== props.token) {
@@ -284,7 +284,7 @@ const NavBar = (props) => {
   };
 
   const renderChat = () => (
-    <button className="btn-chat" onClick={(e) => op.current.toggle(e)}>
+    <button className="btn-chat" onClick={(e) => chatRef.current.toggle(e)}>
       <i className="bi bi-chat-left"></i>
     </button>
   );
@@ -355,7 +355,7 @@ const NavBar = (props) => {
         <OverlayPanel
           id="chat-panel"
           className="chatbox-panel"
-          ref={op}
+          ref={chatRef}
           dismissable={false}
           showCloseIcon
         >

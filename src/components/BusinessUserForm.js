@@ -61,6 +61,7 @@ const BusinessUserForm = ({
             type="text"
             className="form-control"
             id="username"
+            maxLength={15}
             placeholder="Username"
             value={formData.username}
             onChange={handleChange}
