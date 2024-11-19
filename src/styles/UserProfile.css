@@ -53,26 +53,72 @@
 
 .profile-photo-wrapper {
   position: relative;
+  width: 150px;
+  height: 150px;
 }
 
 .profile-photo {
-  width: 150px;
-  height: 150px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--color-secondary);
-  margin-right: 30px;
+  border: 3px solid var(--color-secondary);
+  box-shadow: var(--box-shadow);
+}
+
+.edit-photo-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente */
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: background-color var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-photo-overlay:hover {
+  background-color: rgba(0, 0, 0, 0.8);
 }
 
 .edit-photo-icon {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: var(--color-primary);
   color: var(--color-text-light);
-  padding: 5px;
-  border-radius: 50%;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-photo-icon:hover {
+  color: var(--color-primary);
+}
+
+/* Ajustando o tamanho do ícone */
+.edit-photo-icon .bi {
+  font-size: 1.2rem;
+}
+
+/* Opcional: adicionar animação de escala no hover */
+.edit-photo-overlay:hover .edit-photo-icon {
+  transform: scale(1.1);
+}
+
+/* Responsividade para a seção de foto */
+@media (max-width: 600px) {
+  .profile-photo-wrapper {
+    width: 120px;
+    height: 120px;
+  }
+
+  .edit-photo-overlay {
+    padding: 6px;
+  }
+
+  .edit-photo-icon .bi {
+    font-size: 1rem;
+  }
 }
 
 .profile-info {
