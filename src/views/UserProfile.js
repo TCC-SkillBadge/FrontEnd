@@ -1187,16 +1187,14 @@ if (tipoUsuario === "UC") {
         <div className="profile-header">
           <div className="profile-photo-wrapper">
             <img
-              src={
-                imagePreview || userData.imageUrl || "/default-company-logo.png"
-              } // Usa a pré-visualização se disponível
-              alt="Company Logo"
+              src={imagePreview || userData.imageUrl || "/default-avatar.png"}
+              alt="User Avatar"
               className="profile-photo"
             />
             {isEditing && (
-              <>
+              <div className="edit-photo-overlay">
                 <label htmlFor="upload-photo" className="edit-photo-icon">
-                  <PencilSquare />
+                  <CameraFill size={20} /> {/* Usando o ícone de câmera */}
                 </label>
                 <input
                   type="file"
@@ -1205,9 +1203,10 @@ if (tipoUsuario === "UC") {
                   onChange={handleFileChange}
                   style={{ display: "none" }}
                 />
-              </>
+              </div>
             )}
           </div>
+
           <div className="profile-info">
             {isEditing ? (
               <input
