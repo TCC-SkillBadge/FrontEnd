@@ -31,6 +31,7 @@
     padding: 2%;
     margin-top: 2rem;
     margin-bottom: 2rem;
+    border-left: 5px solid #d273ff;
 }
 
 .alts-r{
@@ -38,6 +39,7 @@
     border-radius: 10px;
     padding: 1%;
     margin-bottom: 1%;
+    border-left: 5px solid #d273ff;
 }
 
 .loading-box{

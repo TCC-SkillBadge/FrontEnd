@@ -234,6 +234,7 @@ const handleLogin = async (
   return (
     <div>
       <div className="login-page">
+        <div className="coinBackgroundLogin"></div>
         <div className="login-container default-border-image">
           <h2>Login</h2>
           <form onSubmit={handleSubmit}>
