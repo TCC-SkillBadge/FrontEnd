@@ -47,12 +47,10 @@ import ClaimBadgePage from "./ClaimBadgePage";
 import FuncionalidadesManager from "../components/FuncionalidadesManager";
 import GeneralSearch from "./GeneralSearch";
 import BadgePublicDisplay from "./BadgePublicDisplay";
-
 import ApiReference from "./ApiReference";
 import About from "./About";
 import Dashboard from "./Dashboard";
-// Import TestPage apenas se estiver usando
-// import TestPage from "./TestPage"; // Remova se não precisar
+import DataVisualization from "./DataVisualization"; // Importado do segundo arquivo
 
 function App() {
   // Gerenciar o userType, user e token no App.js
@@ -68,28 +66,15 @@ function App() {
       const storedUserTypeLS = localStorage.getItem("tipoUsuario");
       const storedUserInfoLS = JSON.parse(localStorage.getItem("userInfo"));
 
-      console.log("User type stored in LocalStorage:", storedUserTypeLS);
-      console.log("User info stored in LocalStorage:", storedUserInfoLS);
-      console.log("Token stored in LocalStorage:", storedTokenLS);
-
-      setToken(() => storedTokenLS);
-      setUserType(() => storedUserTypeLS);
-      setUser(() => storedUserInfoLS);
-
       const storedTokenSS = sessionStorage.getItem("token");
       const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
       const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
 
-      console.log("User type stored in SessionStorage:", storedUserTypeSS);
-      console.log("User info stored in SessionStorage:", storedUserInfoSS);
-      console.log("Token stored in SessionStorage:", storedTokenSS);
-
       if (storedTokenSS && storedUserTypeSS && storedUserInfoSS) {
-        setUserType(() => storedUserTypeSS);
-        setUser(() => storedUserInfoSS)
-        setToken(() => storedTokenSS);
-      }
-      else if (storedTokenLS && storedUserTypeLS && storedUserInfoLS) {
+        setUserType(storedUserTypeSS);
+        setUser(storedUserInfoSS);
+        setToken(storedTokenSS);
+      } else if (storedTokenLS && storedUserTypeLS && storedUserInfoLS) {
         sessionStorage.setItem("tipoUsuario", storedUserTypeLS);
         sessionStorage.setItem("userInfo", JSON.stringify(storedUserInfoLS));
         sessionStorage.setItem("token", storedTokenLS);
@@ -98,37 +83,32 @@ function App() {
         const storedEncodedEmail = localStorage.getItem("encodedEmail");
 
         if (storedEmail) sessionStorage.setItem("email", storedEmail);
-        if (storedEncodedEmail) sessionStorage.setItem("encodedEmail", storedEncodedEmail);
+        if (storedEncodedEmail)
+          sessionStorage.setItem("encodedEmail", storedEncodedEmail);
 
-        setUserType(() => storedUserTypeLS);
-        setUser(() => storedUserInfoLS)
-        setToken(() => storedTokenLS);
+        setUserType(storedUserTypeLS);
+        setUser(storedUserInfoLS);
+        setToken(storedTokenLS);
       }
-
-      console.log("Exiting verifyStoredLogin");
     };
 
     const verifyLoggedIn = () => {
-      console.log("Verifying logged in");
-
       const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
       const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
       const storedTokenSS = sessionStorage.getItem("token");
 
-      console.log("User type stored in SessionStorage:", storedUserTypeSS);
-      console.log("User info stored in SessionStorage:", storedUserInfoSS);
-      console.log("Token stored in SessionStorage:", storedTokenSS);
-
-      setUserType(() => storedUserTypeSS);
-      setUser(() => storedUserInfoSS)
-      setToken(() => storedTokenSS);
+      setUserType(storedUserTypeSS);
+      setUser(storedUserInfoSS);
+      setToken(storedTokenSS);
     };
 
     verifyStoredLogin();
 
     window.addEventListener("LoginChange", verifyLoggedIn);
 
-    return () => { window.removeEventListener("LoginChange", verifyLoggedIn); };
+    return () => {
+      window.removeEventListener("LoginChange", verifyLoggedIn);
+    };
   }, []);
 
   return (
@@ -161,8 +141,14 @@ function App() {
           <Route path="/profile/:encodedEmail" element={<UserProfile />} />
           <Route path="/api-reference" element={<ApiReference />} />
           <Route path="/funcionalidades" element={<FuncionalidadesManager />} />
-          <Route path="/public-profile/:encodedEmail" element={<PublicProfile />} />
-          <Route path="/public-profile-enterprise/:encodedEmail" element={<PublicProfileEnterprise />} />
+          <Route
+            path="/public-profile/:encodedEmail"
+            element={<PublicProfile />}
+          />
+          <Route
+            path="/public-profile-enterprise/:encodedEmail"
+            element={<PublicProfileEnterprise />}
+          />
           <Route path="/manage-test" element={<ManageTest />} />
           <Route path="/list-soft-skills" element={<ListSoftSkills />} />
           <Route path="/proficiency-test" element={<ProficiencyTest />} />
@@ -172,7 +158,11 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/general-search" element={<GeneralSearch />} />
-          <Route path="/badge-public-display/:id_badge/:razao_social" element={<BadgePublicDisplay />} />
+          <Route
+            path="/badge-public-display/:id_badge/:razao_social"
+            element={<BadgePublicDisplay />}
+          />
+          <Route path="/analysis" element={<DataVisualization />} />
         </Routes>
       </div>
       <Footer />

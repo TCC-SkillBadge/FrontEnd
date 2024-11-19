@@ -1,0 +1,262 @@
+/* src/styles/DataVisualization.css */
+
+.data-visualization-container {
+  padding: 40px;
+  background-color: rgba(0, 0, 0, 0.85); /* Fundo escuro para melhor contraste */
+  border-radius: 15px;
+  color: #ffffff;
+  max-width: 1400px;
+  margin: 50px auto;
+  font-family: 'Inter', sans-serif;
+}
+
+.data-visualization-container h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #ffffff;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+}
+
+.chart-card {
+  position: relative; /* Necessário para posicionar elementos internos */
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* Header dentro do chart-card */
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Estilização do título */
+.chart-header h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Controle de seleção de meses */
+.badge-months-control {
+  display: flex;
+  align-items: center;
+}
+
+.badge-months-control label {
+  margin-right: 10px;
+  font-size: 1rem;
+  color: #ffffff;
+}
+
+.badge-months-input {
+  width: 60px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.badge-months-input:focus {
+  outline: none;
+  border-color: #4A90E2;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Estilos para o título com tooltip */
+.chart-card .tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.chart-card .tooltip h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 25px;
+  color: #ffffff;
+}
+
+/* Tooltip text */
+.chart-card .tooltip .tooltiptext {
+  visibility: hidden;
+  width: 220px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; /* Posiciona acima do elemento */
+  left: 50%;
+  margin-left: -110px; /* Centraliza horizontalmente */
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Seta do tooltip */
+.chart-card .tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%; /* Na parte inferior do tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+}
+
+/* Mostrar o tooltip ao passar o mouse */
+.chart-card .tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+.error-message,
+.info-message,
+.loading {
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  margin: 20px auto;
+  max-width: 800px;
+  font-size: 1.2rem;
+}
+
+.error-message {
+  background-color: #ff4d4f; /* Vermelho para erros */
+  color: #ffffff;
+}
+
+.info-message {
+  background-color: #1890ff; /* Azul para informações */
+  color: #ffffff;
+}
+
+.loading {
+  background-color: #f0f0f0;
+  color: #333333;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+
+  .data-visualization-container {
+    padding: 30px;
+  }
+
+  .chart-card .tooltip h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  .badge-months-control {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .badge-months-control label {
+    margin-bottom: 5px;
+  }
+
+  .badge-months-input {
+    width: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .data-visualization-container {
+    padding: 20px;
+  }
+
+  .chart-card .tooltip h3 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+
+  .badge-months-control {
+    width: 100%;
+  }
+
+  .badge-months-control label {
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .badge-months-input {
+    width: 100%;
+  }
+}
+
+/* Estilização dos tooltips das bibliotecas Recharts */
+.recharts-tooltip-wrapper {
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 5px;
+  padding: 10px;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.recharts-tooltip-item-list {
+  margin: 0;
+}
+
+.recharts-tooltip-item {
+  display: flex;
+  align-items: center;
+}
+
+.recharts-tooltip-item span {
+  margin-right: 5px;
+}
+
+/* Estilização da legenda */
+.recharts-legend-wrapper {
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+/* Estilização das labels dos eixos */
+.recharts-text.recharts-label {
+  fill: #ffffff;
+  font-size: 1rem;
+}
+
+/* Melhorar a opacidade das barras */
+.recharts-bar-rectangle {
+  fill-opacity: 0.8;
+}
+
+/* Aumentar a largura das linhas */
+.recharts-line {
+  stroke-width: 3;
+}
