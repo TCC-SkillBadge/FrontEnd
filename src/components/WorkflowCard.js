@@ -1,48 +1,67 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../styles/WorkflowCard.css";
 
-const WorkflowCard = ({ icon, title, children, button }) => {
+const WorkflowCard = ({ icon, title, children, button, active }) => {
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
 
-  const verificaLogin = () => {
-    const usuarioEmpresarial = sessionStorage.getItem("usuarioEmpresarial");
-    const usuarioComum = sessionStorage.getItem("usuarioComum");
-    const usuarioAdmin = sessionStorage.getItem("usuarioAdmin");
+  const navigate = useNavigate();
 
-    if (usuarioEmpresarial) {
-      setUserType("business");
-      setUser(JSON.parse(usuarioEmpresarial));
-    } else if (usuarioComum) {
-      setUserType("common");
-      setUser(JSON.parse(usuarioComum));
-    } else if (usuarioAdmin) {
-      setUserType("admin");
-      setUser(JSON.parse(usuarioAdmin));
-    } else {
-      setUserType(null);
-      setUser(null);
+  const checkLogin = async () => {
+    const token = sessionStorage.getItem("token");
+    const userType = sessionStorage.getItem("tipoUsuario");
+
+    if (userType === "UE") {
+      let userInfoResponse = await axios.get(
+        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUserType("UE");
+      setUser(userInfoResponse.data);
+    }
+    else if (userType === "UA") {
+      let userInfoResponse = await axios.get(
+        `http://localhost:7004/admin/acessa-info`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUserType("UA");
+      setUser(userInfoResponse.data);
+    }
+    else {
+      navigate("/home")
     }
   };
 
   useEffect(() => {
-    verificaLogin();
-    window.onstorage = verificaLogin;
+    checkLogin();
+    window.onstorage = checkLogin;
   }, []);
 
-  if (userType === "business") {
+  if (userType === "UE") {
     return (
-      <div className="workflow-card">
+      console.log("active", active),
+      <div className={`workflow-card${active}`}>
         <i className={`workflow-icon ${icon}`} alt={title} ></i>
         <h3>{title}</h3>
         <p>{children}</p>
       </div>
     );
-  } 
-  //else if (userType === "admin") {
-  else {
+  }
+  else if (userType === "UA") {
     return (
-      <div className="workflow-card-adm">
+      <div className={`workflow-card-adm${active}`}>
         <div className="row">
           <div className="col-sm-1">
             <i className={`workflow-icon-adm ${icon}`} alt={title} ></i>
@@ -50,9 +69,7 @@ const WorkflowCard = ({ icon, title, children, button }) => {
           <div className="col-sm-9">
             <h3>{title}</h3>
             <p>{children}</p>
-            <button className="button-card">
-              {button}
-            </button>
+            {button}
           </div>
         </div>
       </div>

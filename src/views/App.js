@@ -45,6 +45,8 @@ import { ResultScreen } from "../components/UserComum/ResultScreen";
 import Requests from "./Requests";
 import ClaimBadgePage from "./ClaimBadgePage";
 import FuncionalidadesManager from "../components/FuncionalidadesManager";
+import GeneralSearch from "./GeneralSearch";
+import BadgePublicDisplay from "./BadgePublicDisplay";
 
 import ApiReference from "./ApiReference";
 import About from "./About";
@@ -82,12 +84,12 @@ function App() {
       console.log("User info stored in SessionStorage:", storedUserInfoSS);
       console.log("Token stored in SessionStorage:", storedTokenSS);
 
-      if(storedTokenSS && storedUserTypeSS && storedUserInfoSS){
+      if (storedTokenSS && storedUserTypeSS && storedUserInfoSS) {
         setUserType(() => storedUserTypeSS);
         setUser(() => storedUserInfoSS)
         setToken(() => storedTokenSS);
       }
-      else if(storedTokenLS && storedUserTypeLS && storedUserInfoLS){
+      else if (storedTokenLS && storedUserTypeLS && storedUserInfoLS) {
         sessionStorage.setItem("tipoUsuario", storedUserTypeLS);
         sessionStorage.setItem("userInfo", JSON.stringify(storedUserInfoLS));
         sessionStorage.setItem("token", storedTokenLS);
@@ -95,8 +97,8 @@ function App() {
         const storedEmail = localStorage.getItem("email");
         const storedEncodedEmail = localStorage.getItem("encodedEmail");
 
-        if(storedEmail) sessionStorage.setItem("email", storedEmail);
-        if(storedEncodedEmail) sessionStorage.setItem("encodedEmail", storedEncodedEmail);
+        if (storedEmail) sessionStorage.setItem("email", storedEmail);
+        if (storedEncodedEmail) sessionStorage.setItem("encodedEmail", storedEncodedEmail);
 
         setUserType(() => storedUserTypeLS);
         setUser(() => storedUserInfoLS)
@@ -131,16 +133,14 @@ function App() {
 
   return (
     <div className="App">
-      {/* Passar userType e user como props para NavBar */}
-      {/* <NavBar userType={userType} user={user} /> */}
-      <NavBar token={token} user={user} userType={userType}/>
+      <NavBar token={token} user={user} userType={userType} />
       <div className="content">
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/wallet" element={<Wallet />} />
-          <Route path="/workflow" element={<Workflow />} />
+          <Route path="/workflow/:id_request" element={<Workflow />} />
           <Route path="/badges" element={<BadgeConsult />} />
           <Route path="/badges/create" element={<BadgeCreate />} />
           <Route path="/badges/edit/:id_badge" element={<BadgeEdit />} />
@@ -161,14 +161,8 @@ function App() {
           <Route path="/profile/:encodedEmail" element={<UserProfile />} />
           <Route path="/api-reference" element={<ApiReference />} />
           <Route path="/funcionalidades" element={<FuncionalidadesManager />} />
-          <Route
-            path="/public-profile/:encodedEmail"
-            element={<PublicProfile />}
-          />
-          <Route
-            path="/public-profile-enterprise/:encodedEmail"
-            element={<PublicProfileEnterprise />}
-          />
+          <Route path="/public-profile/:encodedEmail" element={<PublicProfile />} />
+          <Route path="/public-profile-enterprise/:encodedEmail" element={<PublicProfileEnterprise />} />
           <Route path="/manage-test" element={<ManageTest />} />
           <Route path="/list-soft-skills" element={<ListSoftSkills />} />
           <Route path="/proficiency-test" element={<ProficiencyTest />} />
@@ -177,8 +171,8 @@ function App() {
           <Route path="/claim-badge" element={<ClaimBadgePage />} />
           <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* <Route path="/test" element={<TestPage />} /> */}{" "}
-          {/* Remova se não precisar */}
+          <Route path="/general-search" element={<GeneralSearch />} />
+          <Route path="/badge-public-display/:id_badge/:razao_social" element={<BadgePublicDisplay />} />
         </Routes>
       </div>
       <Footer />

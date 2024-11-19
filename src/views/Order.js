@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import { EyeFill } from "react-bootstrap-icons";
+import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/Orders.css";
 
@@ -15,6 +17,8 @@ const Orders = () => {
 
   const userType = sessionStorage.getItem("tipoUsuario");
 
+  const navigate = useNavigate();
+
   // Mapeamento dos nomes de canais para algo mais intuitivo
   const channelMap = {
     criacao_badge: "Badge Creation",
@@ -28,7 +32,7 @@ const Orders = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:7004/admin/meus-pedidos",
+          "http://localhost:7004/admin/orders",
           { token }, // Enviando o token no corpo da requisição
           {
             headers: {
@@ -53,6 +57,36 @@ const Orders = () => {
       }
     };
 
+    const checkLogin = async () => {
+      const token = sessionStorage.getItem("token");
+      const userType = sessionStorage.getItem("tipoUsuario");
+  
+      if (userType === "UE") {
+        let userInfoResponse = await axios.get(
+          `http://localhost:7003/api/acessar-info-usuario-jwt`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } 
+      else if (userType === "UA") {
+        let userInfoResponse = await axios.get(
+          `http://localhost:7004/admin/acessa-info`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+      else {
+        navigate("/home")
+      }
+    };
+
+    checkLogin();
     fetchOrders();
   }, []);
 
@@ -165,20 +199,28 @@ const Orders = () => {
               <th>Status</th>
               <th>Client</th>
               <th>Badge ID</th>
+              <th style={{ textAlign: "center" }}>Options</th>
             </tr>
           </thead>
           <tbody>
             {filteredOrders.map((order) => (
-              <tr key={order.numero_pedido}>
-                <td>{order.numero_pedido}</td>
+              <tr key={order.id_request}>
+                <td>{order.id_request}</td>
                 <td>{new Date(order.data).toLocaleDateString()}</td>{" "}
                 {/* Formatação de data */}
                 <td>{channelMap[order.canal] || order.canal}</td>{" "}
                 {/* Mapeamento de canal */}
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>
-                <td>{order.cliente}</td>
-                <td>{order.badgeId}</td>
+                <td>{order.email_request}</td>
+                <td>{order.id_badge}</td>
+                <td style={{ textAlign: "center" }}>
+                  {order.id_badge && (
+                    <Link to={`/workflow/${order.id_request}`}>
+                      <EyeFill className="eye-icon"/>
+                    </Link>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

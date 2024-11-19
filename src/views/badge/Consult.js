@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Badge.css";
 import axios from "axios";
-import Footer from "../../components/Footer";
 import { Carousel } from "react-responsive-carousel";
 import { Link, useNavigate } from "react-router-dom";
 import { PencilFill, TrashFill } from "react-bootstrap-icons";
@@ -258,7 +257,6 @@ const Consult = () => {
         pauseOnHover
         theme="dark"
       />
-      <Footer />
     </div>
   );
 };

@@ -29,6 +29,8 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
         imageUrl: "",
     });
 
+    const [razSoc, setRazSoc] = useState('');
+
     const fetchBadge = async () => {
         try {
             const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
@@ -52,12 +54,26 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
         fetchUser();
     }, [id_badge]);
 
+    useEffect(() => {
+        let inst = 'Unknown';
+        if (user && user.razao_social) {
+            console.log('user dentro if:', user);
+            inst = user.razao_social;
+        } else if (razao_social && !(razao_social === 'undefined')) {
+            console.log('razao_social dentro if:', razao_social);
+            inst = razao_social;
+        }
+        setRazSoc(() => inst);
+    }, [user, razao_social]);
+
     return (
         <div className="badge-details-container">
             <div className="row">
                 <div className="col-md-4">
                     <img src={badge.image_url} className="badge-details-image" alt={badge.name_badge} />
-                    <p className="badge-details-text">By {user.razao_social}</p>
+                    <p className="badge-details-text">
+                        By {razSoc}
+                    </p>
                 </div>
                 <div className="col-md-8">
                     <div className="badge-details-content">
@@ -67,9 +83,13 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
                         <h2 className="badge-details-subtitle">Description</h2>
                         <br />
                         <p className="badge-details-description">{badge.desc_badge}</p>
-                        <Link to={url_origem} className="badge-details-button">
-                            Back
-                        </Link>
+                        {
+                            url_origem ?
+                            <Link to={url_origem} className="badge-details-button">
+                                Back
+                            </Link> :
+                            null
+                        }
                     </div>
                 </div>
             </div>
