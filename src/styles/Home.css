@@ -10,6 +10,7 @@
   text-align: left;
   padding-right: 100px; 
   padding-left: 150px;
+  z-index: 1;
 }
 
 .home-title {
@@ -58,7 +59,7 @@
   left: 0;
   width: 100%;
   height: 140%;
-  z-index: 1;
+  z-index: 0;
 }
 
 /* Estilo para a primeira divisória */

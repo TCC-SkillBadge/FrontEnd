@@ -262,6 +262,7 @@ const Price = () => {
 
   return (
     <div>
+      <div className="coinBackgroundPrice"></div>
       <div className="price-page">
         <h1 className="title">
           The <span className="highlight">BEST</span> Plans
