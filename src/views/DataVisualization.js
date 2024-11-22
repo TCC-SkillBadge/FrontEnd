@@ -7,6 +7,7 @@ import BarChartComponent from "../components/charts/BarChartComponent";
 import PieChartComponent from "../components/charts/PieChartComponent";
 import LineChartComponent from "../components/charts/LineChartComponent";
 import RadarChartComponent from "../components/charts/RadarChartComponent";
+import { ClipLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/DataVisualization.css";
@@ -25,7 +26,7 @@ const DataVisualization = () => {
   const navigate = useNavigate();
 
   const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || "http://192.168.15.31:5000";
+    process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:5001";
 
   // Estado para controlar o número de meses para Badges Assigned
   const [badgeMonths, setBadgeMonths] = useState(6); // Valor padrão: 6 meses
@@ -164,7 +165,11 @@ const DataVisualization = () => {
   const errorMessage = queries.find((query) => query.isError)?.error?.message;
 
   if (isLoading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="loading-spinner">
+        <ClipLoader size={60} color="#4A90E2" loading={true} />
+      </div>
+    );
   }
 
   if (isError) {

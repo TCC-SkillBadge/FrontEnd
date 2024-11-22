@@ -1,0 +1,80 @@
+/* src/styles/ConfirmBadge.css */
+
+.confirm-badge-container {
+  padding: 40px;
+  color: #e0e0e0; /* Texto claro */
+  background-color: #1e1e1e; /* Fundo principal */
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.confirm-badge-container h1 {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.confirm-badge-container p {
+  text-align: center;
+  color: #cccccc;
+  font-size: 1.25rem;
+  margin-bottom: 30px;
+}
+
+/* Estilos para o modal de confirmação */
+.api-section {
+  background-color: #2d2d2d; /* Fundo levemente mais claro para seções */
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 5px solid #d273ff; /* Destaque para a seção */
+}
+
+.code-snippet {
+  background-color: #2d2d2d; /* Fundo do código */
+  color: #f8f8f2; /* Cor do texto */
+  padding: 10px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  margin-top: 10px;
+}
+
+code {
+  font-family: 'Fira Code', monospace;
+}
+
+strong {
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .confirm-badge-container {
+    padding: 20px;
+  }
+
+  .confirm-badge-container h1 {
+    font-size: 2rem;
+  }
+
+  .confirm-badge-container p {
+    font-size: 1rem;
+  }
+
+  .loading-spinner {
+    width: 100%;
+  }
+}

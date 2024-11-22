@@ -30,8 +30,9 @@ import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
 import { Link } from "react-router-dom"; 
 import PostForm from "../components/PostForm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { protectRoute } from "../utils/general-functions/ProtectRoutes";
+import { CameraFill } from "react-bootstrap-icons";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -57,45 +58,46 @@ const UserProfile = () => {
   const [imagePreview, setImagePreview] = useState(null); // Novo estado para a pré-visualização
 
   const navigate = useNavigate();
+  const { encodedEmail } = useParams();
 
-  useEffect(() => {
-    const updateUrlWithEncodedEmail = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        if (!token) {
-          console.error("Token não encontrado. Usuário não autenticado.");
-          return;
-        }
+  // useEffect(() => {
+  //   const updateUrlWithEncodedEmail = async () => {
+  //     try {
+  //       const token = sessionStorage.getItem("token");
+  //       if (!token) {
+  //         console.error("Token não encontrado. Usuário não autenticado.");
+  //         return;
+  //       }
 
-        const response = await axios.get(
-          "http://localhost:7000/api/user/info",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+  //       const response = await axios.get(
+  //         "http://localhost:7000/api/user/info",
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
 
-        const userEmail = response.data.email || response.data.email_comercial;
-        if (!userEmail) {
-          console.error("Email do usuário não disponível.");
-          return;
-        }
+  //       const userEmail = response.data.email || response.data.email_comercial;
+  //       if (!userEmail) {
+  //         console.error("Email do usuário não disponível.");
+  //         return;
+  //       }
 
-        const encodedEmail = btoa(userEmail); // Codifica o email
-        const currentPath = window.location.pathname;
+  //       const encodedEmail = btoa(userEmail); // Codifica o email
+  //       const currentPath = window.location.pathname;
 
-        // Atualiza a URL se necessário
-        if (!currentPath.includes(encodedEmail)) {
-          navigate(`/public-profile/${encodedEmail}`, { replace: true });
-        }
-      } catch (error) {
-        console.error("Erro ao atualizar a URL:", error);
-      }
-    };
+  //       // Atualiza a URL se necessário
+  //       if (!currentPath.includes(encodedEmail)) {
+  //         navigate(`/public-profile/${encodedEmail}`, { replace: true });
+  //       }
+  //     } catch (error) {
+  //       console.error("Erro ao atualizar a URL:", error);
+  //     }
+  //   };
 
-    updateUrlWithEncodedEmail();
-  }, [navigate]);
+  //   updateUrlWithEncodedEmail();
+  // }, [navigate]);
 
   const handleBadgeVisibilityChange = async (e, badgeId, index) => {
     const isPublic = e.target.checked;
@@ -151,6 +153,104 @@ const UserProfile = () => {
     }));
   };
 
+  // Função para buscar as informações do usuário
+  const fetchUserInfo = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      let response;
+
+      if (!token) {
+        setError("Usuário não autenticado");
+        setLoading(false);
+        return;
+      }
+
+      // Carregar os idiomas disponíveis primeiro
+      const languagesResponse = await axios.get(
+        "http://localhost:7000/api/languages",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setAvailableLanguages(languagesResponse.data);
+
+      if (tipoUsuario === "UC") {
+        response = await axios.get("http://localhost:7000/api/user/info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // Mapear os idiomas do usuário para objetos com id e name
+        const userLanguages = Array.isArray(response.data.languages)
+          ? response.data.languages
+          : [];
+
+        setUserData({
+          ...response.data,
+          education: Array.isArray(response.data.education)
+            ? response.data.education
+            : [],
+          professionalExperience: Array.isArray(
+            response.data.professional_experience
+          )
+            ? response.data.professional_experience
+            : [],
+          languages: userLanguages,
+        });
+
+        // Chamar fetchBadges para usuários comuns
+        const email = response.data.email || "teste@email.com";
+        await fetchBadges("UC", email);
+      } else if (tipoUsuario === "UE") {
+        response = await axios.get(
+          "http://localhost:7003/api/acessar-info-usuario-jwt",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const eventsResponse = await axios.get(
+          "http://localhost:7003/api/eventos",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setUserData({
+          ...response.data,
+          email_comercial: response.data.email_comercial,
+          sobre: response.data.sobre || "",
+          website: response.data.website || "",
+          events: eventsResponse.data || [],
+          badges: [], // Inicializa como vazio
+        });
+
+        console.log("Loaded events:", eventsResponse.data);
+
+        // Chamar fetchBadges para usuários empresariais
+        const email =
+          response.data.email_comercial || "teste_comercial@email.com";
+        await fetchBadges("UE", email);
+      } else {
+        setError("Tipo de usuário inválido");
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao obter informações do usuário:", error);
+      setError("Falha ao carregar os dados do usuário");
+      setLoading(false);
+    }
+  };
+
+  // Função para buscar as badges do usuário
   const fetchBadges = async (tipoUsuario, email) => {
     try {
       let response;
@@ -192,6 +292,7 @@ const UserProfile = () => {
     }
   };
 
+  // Função para formatar data e hora
   const formatDateTime = (dateString) => {
     const options = {
       year: "numeric",
@@ -204,102 +305,160 @@ const UserProfile = () => {
     return date.toLocaleString("pt-BR", options);
   };
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const token = sessionStorage.getItem("token");
-        let response;
+  // Verificar autenticação e buscar informações do usuário
+useEffect(() => {
+  const checkAuthentication = async () => {
+    const token = sessionStorage.getItem("token");
 
-        if (!token) {
-          setError("Usuário não autenticado");
-          setLoading(false);
+    // Se o usuário não estiver autenticado
+    if (!token) {
+      try {
+        // Verificar se o perfil público de usuário comum (UC) está acessível
+        const responseUC = await axios.get(
+          `http://localhost:7009/api/public-profile/${encodedEmail}`
+        );
+        if (responseUC.data) {
+          // Redirecionar para o perfil público de UC
+          navigate(`/public-profile/${encodedEmail}`, { replace: true });
           return;
         }
-
-        // Carregar os idiomas disponíveis primeiro
-        const languagesResponse = await axios.get(
-          "http://localhost:7000/api/languages",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setAvailableLanguages(languagesResponse.data);
-
-        if (tipoUsuario === "UC") {
-          response = await axios.get("http://localhost:7000/api/user/info", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          // Mapear os idiomas do usuário para objetos com id e name
-          const userLanguages = Array.isArray(response.data.languages)
-            ? response.data.languages
-            : [];
-
-          setUserData({
-            ...response.data,
-            education: Array.isArray(response.data.education)
-              ? response.data.education
-              : [],
-            professionalExperience: Array.isArray(
-              response.data.professional_experience
-            )
-              ? response.data.professional_experience
-              : [],
-            languages: userLanguages,
-          });
-
-          // Chamar fetchBadges para usuários comuns
-          const email = response.data.email || "teste@email.com";
-          await fetchBadges("UC", email);
-        } else if (tipoUsuario === "UE") {
-          response = await axios.get(
-            "http://localhost:7003/api/acessar-info-usuario-jwt",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          const eventsResponse = await axios.get(
-            "http://localhost:7003/api/eventos",
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          setUserData({
-            ...response.data,
-            email_comercial: response.data.email_comercial,
-            sobre: response.data.sobre || "",
-            website: response.data.website || "",
-            events: eventsResponse.data || [],
-            badges: [], // Inicializa como vazio
-          });
-
-          console.log("Loaded events:", eventsResponse.data);
-
-          // Chamar fetchBadges para usuários empresariais
-          const email =
-            response.data.email_comercial || "teste_comercial@email.com";
-          await fetchBadges("UE", email);
-        } else {
-          setError("Tipo de usuário inválido");
-        }
-
-        setLoading(false);
       } catch (error) {
-        console.error("Erro ao obter informações do usuário:", error);
-        setError("Falha ao carregar os dados do usuário");
-        setLoading(false);
+        console.error("Perfil público UC não encontrado, tentando UE...");
       }
-    };
+
+      try {
+        // Verificar se o perfil público de usuário empresarial (UE) está acessível
+        const responseUE = await axios.get(
+          `http://localhost:7003/api/public-profile/${encodedEmail}`
+        );
+        if (responseUE.data) {
+          // Redirecionar para o perfil público de UE
+          navigate(`/public-profile-enterprise/${encodedEmail}`, {
+            replace: true,
+          });
+          return;
+        }
+      } catch (error) {
+        console.error("Perfil público UE não encontrado.");
+      }
+
+      // Se nenhum perfil público for encontrado, redirecionar para a página inicial
+      navigate(`/`, { replace: true });
+      return;
+    }
+
+    // Usuário autenticado, carregar informações privadas
+    try {
+      await fetchUserInfo();
+    } catch (error) {
+      console.error(
+        "Erro ao buscar informações do usuário autenticado:",
+        error
+      );
+      navigate(`/`, { replace: true });
+    }
+  };
+
+  checkAuthentication();
+}, [navigate, encodedEmail]);
+
+
+  useEffect(() => {
+    // const fetchUserInfo = async () => {
+    //   try {
+    //     const token = sessionStorage.getItem("token");
+    //     let response;
+
+    //     if (!token) {
+    //       setError("Usuário não autenticado");
+    //       setLoading(false);
+    //       return;
+    //     }
+
+    //     // Carregar os idiomas disponíveis primeiro
+    //     const languagesResponse = await axios.get(
+    //       "http://localhost:7000/api/languages",
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       }
+    //     );
+    //     setAvailableLanguages(languagesResponse.data);
+
+    //     if (tipoUsuario === "UC") {
+    //       response = await axios.get("http://localhost:7000/api/user/info", {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //       });
+
+    //       // Mapear os idiomas do usuário para objetos com id e name
+    //       const userLanguages = Array.isArray(response.data.languages)
+    //         ? response.data.languages
+    //         : [];
+
+    //       setUserData({
+    //         ...response.data,
+    //         education: Array.isArray(response.data.education)
+    //           ? response.data.education
+    //           : [],
+    //         professionalExperience: Array.isArray(
+    //           response.data.professional_experience
+    //         )
+    //           ? response.data.professional_experience
+    //           : [],
+    //         languages: userLanguages,
+    //       });
+
+    //       // Chamar fetchBadges para usuários comuns
+    //       const email = response.data.email || "teste@email.com";
+    //       await fetchBadges("UC", email);
+    //     } else if (tipoUsuario === "UE") {
+    //       response = await axios.get(
+    //         "http://localhost:7003/api/acessar-info-usuario-jwt",
+    //         {
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }
+    //       );
+
+    //       const eventsResponse = await axios.get(
+    //         "http://localhost:7003/api/eventos",
+    //         {
+    //           headers: {
+    //             Authorization: `Bearer ${token}`,
+    //           },
+    //         }
+    //       );
+
+    //       setUserData({
+    //         ...response.data,
+    //         email_comercial: response.data.email_comercial,
+    //         sobre: response.data.sobre || "",
+    //         website: response.data.website || "",
+    //         events: eventsResponse.data || [],
+    //         badges: [], // Inicializa como vazio
+    //       });
+
+    //       console.log("Loaded events:", eventsResponse.data);
+
+    //       // Chamar fetchBadges para usuários empresariais
+    //       const email =
+    //         response.data.email_comercial || "teste_comercial@email.com";
+    //       await fetchBadges("UE", email);
+    //     } else {
+    //       setError("Tipo de usuário inválido");
+    //     }
+
+    //     setLoading(false);
+    //   } catch (error) {
+    //     console.error("Erro ao obter informações do usuário:", error);
+    //     setError("Falha ao carregar os dados do usuário");
+    //     setLoading(false);
+    //   }
+    // };
 
     fetchUserInfo();
   }, [tipoUsuario]);
@@ -315,7 +474,6 @@ const UserProfile = () => {
     }
     setIsEditing(!isEditing);
   };
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -693,780 +851,789 @@ const UserProfile = () => {
     );
   }
 
-if (tipoUsuario === "UC") {
-  return (
-    <div className="profile-page">
-      <ToastContainer />
-      <div className="profile-container">
-        {/* Cabeçalho do Perfil */}
-        <div className="profile-header">
-          <div className="profile-photo-wrapper">
-            <img
-              src={imagePreview || userData.imageUrl || "/default-avatar.png"} // Usa a pré-visualização se disponível
-              alt="User Avatar"
-              className="profile-photo"
-            />
-            {isEditing && (
-              <>
-                <label htmlFor="upload-photo" className="edit-photo-icon">
-                  <PencilSquare />
-                </label>
-                <input
-                  type="file"
-                  id="upload-photo"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                />
-              </>
-            )}
-          </div>
-          <div className="profile-info">
-            {isEditing ? (
-              <>
-                {/* Campos de Edição */}
-                <div className="profile-input-group">
-                  <label htmlFor="fullName" className="profile-label">
-                    Nome
-                  </label>
-                  <input
-                    type="text"
-                    id="fullName"
-                    name="fullName"
-                    value={userData.fullName || ""}
-                    onChange={handleInputChange}
-                    className="profile-input"
-                    placeholder="Nome Completo"
-                  />
-                </div>
-                <div className="profile-input-group">
-                  <label htmlFor="occupation" className="profile-label">
-                    Ocupação
-                  </label>
-                  <input
-                    type="text"
-                    id="occupation"
-                    name="occupation"
-                    value={userData.occupation || ""}
-                    onChange={handleInputChange}
-                    className="profile-input"
-                    placeholder="Ocupação"
-                  />
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Exibição dos Dados */}
-                <h2 className="profile-name">{userData.fullName}</h2>
-                <p className="profile-title">
-                  {userData.occupation || "Ocupação não informada"}
-                </p>
-              </>
-            )}
-            <div className="profile-actions">
-              <button onClick={handleEditToggle} className="edit-button">
-                <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
-              </button>
-              <button onClick={handleShareProfile} className="share-button">
-                <ShareFill /> Compartilhar
-              </button>
-              <button
-                onClick={handleDownloadPortfolio}
-                className="download-button"
-              >
-                <FileEarmarkArrowDownFill /> Baixar Portfólio
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Guias de Perfil e Badges */}
-        <div className="tabs">
-          <button
-            onClick={() => handleTabChange("perfil")}
-            className={activeTab === "perfil" ? "active" : ""}
-          >
-            Perfil
-          </button>
-          <button
-            onClick={() => handleTabChange("badges")}
-            className={activeTab === "badges" ? "active" : ""}
-          >
-            Badges
-          </button>
-        </div>
-
-        {/* Conteúdo das Guias */}
-        <div className="tab-content">
-          {/* Guia Perfil */}
-          {activeTab === "perfil" &&
-            (isEditing ? (
-              <div className="profile-sections">
-                {/* Seção Sobre */}
-                <div className="profile-section">
-                  <p>
-                    <PersonFill className="icon" /> Sobre
-                  </p>
-                  <textarea
-                    name="about"
-                    value={userData.about || ""}
-                    onChange={handleInputChange}
-                    className="profile-about-input"
-                  />
-                </div>
-
-                {/* Seção Idiomas */}
-                <div className="profile-section">
-                  <h3>
-                    <Globe className="icon" /> Idiomas
-                  </h3>
-                  <div className="language-dropdown" ref={languageDropdownRef}>
-                    <button
-                      type="button"
-                      className="language-dropdown-button"
-                      onClick={toggleLanguageDropdown}
-                    >
-                      {userData.languages.length > 0
-                        ? userData.languages.map((lang) => lang.name).join(", ")
-                        : "Selecione os idiomas"}
-                      <span className="dropdown-icon">
-                        {isLanguageDropdownOpen ? (
-                          <ChevronUp />
-                        ) : (
-                          <ChevronDown />
-                        )}
-                      </span>
-                    </button>
-                    {isLanguageDropdownOpen && (
-                      <div className="language-dropdown-content">
-                        {availableLanguages.map((language) => (
-                          <div key={language.id} className="language-checkbox">
-                            <label>
-                              <input
-                                type="checkbox"
-                                value={language.id}
-                                checked={userData.languages.some(
-                                  (lang) => lang.id === language.id
-                                )}
-                                onChange={handleLanguageCheckboxChange}
-                              />
-                              {language.language}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Seção Educação */}
-                <div className="profile-section">
-                  <h3>
-                    <MortarboardFill className="icon" /> Educação
-                  </h3>
-                  {userData.education.map((edu, index) => (
-                    <div key={index} className="profile-array-item">
-                      <Building className="icon" />
-                      <input
-                        type="text"
-                        value={edu.institution || ""}
-                        placeholder="Instituição"
-                        onChange={(e) =>
-                          handleArrayChange(
-                            e,
-                            index,
-                            "institution",
-                            "education"
-                          )
-                        }
-                        className="profile-input"
-                      />
-                      <AwardFill className="icon" />
-                      <input
-                        type="text"
-                        value={edu.degree || ""}
-                        placeholder="Grau"
-                        onChange={(e) =>
-                          handleArrayChange(e, index, "degree", "education")
-                        }
-                        className="profile-input"
-                      />
-                      <CalendarFill className="icon" />
-                      <input
-                        type="text"
-                        value={edu.admissionYear || ""}
-                        placeholder="Ano de Ingresso"
-                        onChange={(e) =>
-                          handleArrayChange(
-                            e,
-                            index,
-                            "admissionYear",
-                            "education"
-                          )
-                        }
-                        className="profile-input"
-                      />
-                      <CalendarFill className="icon" />
-                      <input
-                        type="text"
-                        value={edu.graduationYear || ""}
-                        placeholder="Ano de Conclusão"
-                        onChange={(e) =>
-                          handleArrayChange(
-                            e,
-                            index,
-                            "graduationYear",
-                            "education"
-                          )
-                        }
-                        className="profile-input"
-                      />
-                      <button
-                        onClick={() => handleRemoveItem(index, "education")}
-                        className="delete-button"
-                      >
-                        <Trash />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    onClick={() =>
-                      handleAddItem("education", {
-                        degree: "",
-                        institution: "",
-                        admissionYear: "",
-                        graduationYear: "",
-                      })
-                    }
-                    className="add-button"
-                  >
-                    <PlusSquare /> Adicionar
-                  </button>
-                </div>
-
-                {/* Seção Experiência Profissional */}
-                <div className="profile-section">
-                  <h3>
-                    <Briefcase className="icon" /> Experiência Profissional
-                  </h3>
-                  {userData.professionalExperience.map((exp, index) => (
-                    <div key={index} className="profile-array-item">
-                      <Building className="icon" />
-                      <input
-                        type="text"
-                        value={exp.company || ""}
-                        placeholder="Empresa"
-                        onChange={(e) =>
-                          handleArrayChange(
-                            e,
-                            index,
-                            "company",
-                            "professionalExperience"
-                          )
-                        }
-                        className="profile-input"
-                      />
-                      <Briefcase className="icon" />
-                      <input
-                        type="text"
-                        value={exp.position || ""}
-                        placeholder="Cargo"
-                        onChange={(e) =>
-                          handleArrayChange(
-                            e,
-                            index,
-                            "position",
-                            "professionalExperience"
-                          )
-                        }
-                        className="profile-input"
-                      />
-                      <CalendarFill className="icon" />
-                      <input
-                        type="text"
-                        value={exp.startDate || ""}
-                        placeholder="Ano de Início"
-                        onChange={(e) =>
-                          handleArrayChange(
-                            e,
-                            index,
-                            "startDate",
-                            "professionalExperience"
-                          )
-                        }
-                        className="profile-input"
-                      />
-                      <CalendarFill className="icon" />
-                      <input
-                        type="text"
-                        value={exp.endDate || ""}
-                        placeholder="Ano de Término"
-                        onChange={(e) =>
-                          handleArrayChange(
-                            e,
-                            index,
-                            "endDate",
-                            "professionalExperience"
-                          )
-                        }
-                        className="profile-input"
-                      />
-                      <button
-                        onClick={() =>
-                          handleRemoveItem(index, "professionalExperience")
-                        }
-                        className="delete-button"
-                      >
-                        <Trash />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    onClick={() =>
-                      handleAddItem("professionalExperience", {
-                        company: "",
-                        position: "",
-                        startDate: "",
-                        endDate: "",
-                      })
-                    }
-                    className="add-button"
-                  >
-                    <PlusSquare /> Adicionar
-                  </button>
-                </div>
-
-                {/* Botão Salvar Alterações */}
-                <button onClick={handleSaveChanges} className="save-button">
-                  Salvar Alterações
-                </button>
-              </div>
-            ) : (
-              <div className="profile-sections">
-                {/* Seção Sobre */}
-                <div className="profile-section">
-                  <h3>
-                    <PersonFill className="icon" /> Sobre
-                  </h3>
-                  <p>{userData.about || "Nenhuma descrição fornecida."}</p>
-                </div>
-
-                {/* Seção Educação */}
-                <div className="profile-section">
-                  <h3>
-                    <MortarboardFill className="icon" /> Educação
-                  </h3>
-                  {Array.isArray(userData.education) &&
-                  userData.education.length > 0 ? (
-                    userData.education.map((edu, index) => (
-                      <div key={index} className="education-item">
-                        <div className="profile-info-row">
-                          <Building className="icon" />
-                          <span className="institution-name">
-                            {edu.institution}
-                          </span>
-                        </div>
-                        <div className="profile-info-row">
-                          <AwardFill className="icon" />
-                          <span className="education-degree">{edu.degree}</span>
-                        </div>
-                        <div className="profile-info-row">
-                          <CalendarFill className="icon" />
-                          <span className="education-dates">
-                            {edu.admissionYear} - {edu.graduationYear}
-                          </span>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>Nenhuma informação educacional fornecida.</p>
-                  )}
-                </div>
-
-                {/* Seção Experiência Profissional */}
-                <div className="profile-section">
-                  <h3>
-                    <Briefcase className="icon" /> Experiência Profissional
-                  </h3>
-                  {Array.isArray(userData.professionalExperience) &&
-                  userData.professionalExperience.length > 0 ? (
-                    userData.professionalExperience.map((exp, index) => (
-                      <div key={index} className="experience-item">
-                        <div className="profile-info-row">
-                          <Building className="icon" />
-                          <span className="profile-info-text">
-                            {exp.company}
-                          </span>
-                        </div>
-                        <div className="profile-info-row">
-                          <Briefcase className="icon" />
-                          <span className="profile-info-text">
-                            {exp.position}
-                          </span>
-                        </div>
-                        <div className="profile-info-row">
-                          <CalendarFill className="icon" />
-                          <span className="education-dates">
-                            {exp.startDate} - {exp.endDate}
-                          </span>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <p>Nenhuma experiência profissional fornecida.</p>
-                  )}
-                </div>
-
-                {/* Seção Idiomas */}
-                <div className="profile-section">
-                  <h3>
-                    <Globe className="icon" /> Idiomas
-                  </h3>
-                  {Array.isArray(userData.languages) &&
-                  userData.languages.length > 0 ? (
-                    userData.languages.map((language, index) => (
-                      <div key={index} className="profile-info-row">
-                        <Flag className="icon" />
-                        <span className="profile-info-text">
-                          {language.name}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <p>Nenhum idioma fornecido.</p>
-                  )}
-                </div>
-              </div>
-            ))}
-
-          {/* Guia Badges */}
-          {activeTab === "badges" && (
-            <div className="badges-section">
-              <h3>Badges</h3>
-              {userData.badges && userData.badges.length > 0 ? (
-                <div className="badges-grid">
-                  {userData.badges.map((badge, index) => (
-                    <div key={badge.id} className="badge-card">
-                      <img
-                        src={badge.image_url}
-                        alt="Badge"
-                        className="badge-preview"
-                      />
-                      <h4>{badge.name_badge}</h4>
-                      <div className="badge-visibility">
-                        <label className="custom-checkbox">
-                          <input
-                            type="checkbox"
-                            checked={badge.is_public}
-                            onChange={(e) =>
-                              handleBadgeVisibilityChange(e, badge.id, index)
-                            }
-                          />
-                          <span className="checkmark"></span>
-                          {badge.is_public ? "Pública" : "Privada"}
-                        </label>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>Nenhuma badge disponível.</p>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-} else if (tipoUsuario === "UE") {
-  return (
-    <div className="profile-page">
-      <ToastContainer />
-      <div className="profile-container">
-        <div className="profile-header">
-          <div className="profile-photo-wrapper">
-            <img
-              src={
-                imagePreview || userData.imageUrl || "/default-company-logo.png"
-              } // Usa a pré-visualização se disponível
-              alt="Company Logo"
-              className="profile-photo"
-            />
-            {isEditing && (
-              <>
-                <label htmlFor="upload-photo" className="edit-photo-icon">
-                  <PencilSquare />
-                </label>
-                <input
-                  type="file"
-                  id="upload-photo"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  style={{ display: "none" }}
-                />
-              </>
-            )}
-          </div>
-          <div className="profile-info">
-            {isEditing ? (
-              <input
-                type="text"
-                name="razao_social"
-                value={userData.razao_social || ""}
-                onChange={handleInputChange}
-                className="profile-name-input"
+  if (tipoUsuario === "UC") {
+    return (
+      <div className="profile-page">
+        <ToastContainer />
+        <div className="profile-container">
+          {/* Cabeçalho do Perfil */}
+          <div className="profile-header">
+            <div className="profile-photo-wrapper">
+              <img
+                src={imagePreview || userData.imageUrl || "/default-avatar.png"}
+                alt="User Avatar"
+                className="profile-photo"
               />
-            ) : (
-              <h2 className="profile-name">{userData.razao_social}</h2>
-            )}
-            <p className="profile-title">
-              {userData.cnpj || "CNPJ não fornecido"}
-            </p>
-            <div className="company-badges">
-              {userData.municipio && (
-                <span className="company-badge">
-                  <GeoAlt /> {userData.municipio}
-                </span>
-              )}
-              {userData.segmento && (
-                <span className="company-badge">
-                  <Briefcase /> {userData.segmento}
-                </span>
-              )}
-              {userData.tamanho && (
-                <span className="company-badge">
-                  <PeopleFill /> {userData.tamanho}
-                </span>
+              {isEditing && (
+                <div className="edit-photo-overlay">
+                  <label htmlFor="upload-photo" className="edit-photo-icon">
+                    <CameraFill size={20} /> {/* Usando o ícone de câmera */}
+                  </label>
+                  <input
+                    type="file"
+                    id="upload-photo"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                </div>
               )}
             </div>
-            <div className="profile-actions">
-              <button onClick={handleEditToggle} className="edit-button">
-                <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
-              </button>
-              <button onClick={handleShareProfile} className="share-button">
-                <ShareFill /> Compartilhar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="tabs">
-          <button
-            onClick={() => handleTabChange("sobre")}
-            className={activeTab === "sobre" ? "active" : ""}
-          >
-            Sobre
-          </button>
-          <button
-            onClick={() => handleTabChange("eventos")}
-            className={activeTab === "eventos" ? "active" : ""}
-          >
-            Eventos
-          </button>
-          <button
-            onClick={() => handleTabChange("badges")}
-            className={activeTab === "badges" ? "active" : ""}
-          >
-            Badges
-          </button>
-        </div>
-
-        <div className="tab-content">
-          {activeTab === "sobre" && (
-            <div className="sobre-section">
+            <div className="profile-info">
               {isEditing ? (
                 <>
-                  <div className="profile-section">
-                    <label>
-                      <PersonFill className="icon" /> Sobre
+                  {/* Campos de Edição */}
+                  <div className="profile-input-group">
+                    <label htmlFor="fullName" className="profile-label">
+                      Nome
                     </label>
+                    <input
+                      type="text"
+                      id="fullName"
+                      name="fullName"
+                      value={userData.fullName || ""}
+                      onChange={handleInputChange}
+                      className="profile-input"
+                      placeholder="Nome Completo"
+                    />
+                  </div>
+                  <div className="profile-input-group">
+                    <label htmlFor="occupation" className="profile-label">
+                      Ocupação
+                    </label>
+                    <input
+                      type="text"
+                      id="occupation"
+                      name="occupation"
+                      value={userData.occupation || ""}
+                      onChange={handleInputChange}
+                      className="profile-input"
+                      placeholder="Ocupação"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Exibição dos Dados */}
+                  <h2 className="profile-name">{userData.fullName}</h2>
+                  <p className="profile-title">
+                    {userData.occupation || "Ocupação não informada"}
+                  </p>
+                </>
+              )}
+              <div className="profile-actions">
+                <button onClick={handleEditToggle} className="edit-button">
+                  <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+                </button>
+                <button onClick={handleShareProfile} className="share-button">
+                  <ShareFill /> Compartilhar
+                </button>
+                <button
+                  onClick={handleDownloadPortfolio}
+                  className="download-button"
+                >
+                  <FileEarmarkArrowDownFill /> Baixar Portfólio
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Guias de Perfil e Badges */}
+          <div className="tabs">
+            <button
+              onClick={() => handleTabChange("perfil")}
+              className={activeTab === "perfil" ? "active" : ""}
+            >
+              Perfil
+            </button>
+            <button
+              onClick={() => handleTabChange("badges")}
+              className={activeTab === "badges" ? "active" : ""}
+            >
+              Badges
+            </button>
+          </div>
+
+          {/* Conteúdo das Guias */}
+          <div className="tab-content">
+            {/* Guia Perfil */}
+            {activeTab === "perfil" &&
+              (isEditing ? (
+                <div className="profile-sections">
+                  {/* Seção Sobre */}
+                  <div className="profile-section">
+                    <p>
+                      <PersonFill className="icon" /> Sobre
+                    </p>
                     <textarea
-                      name="sobre"
-                      value={userData.sobre || ""}
+                      name="about"
+                      value={userData.about || ""}
                       onChange={handleInputChange}
                       className="profile-about-input"
                     />
                   </div>
+
+                  {/* Seção Idiomas */}
                   <div className="profile-section">
-                    <label>
-                      <Globe className="icon" /> Website
-                    </label>
-                    <input
-                      type="text"
-                      name="website"
-                      value={userData.website || ""}
-                      onChange={handleInputChange}
-                      className="profile-input"
-                    />
+                    <h3>
+                      <Globe className="icon" /> Idiomas
+                    </h3>
+                    <div
+                      className="language-dropdown"
+                      ref={languageDropdownRef}
+                    >
+                      <button
+                        type="button"
+                        className="language-dropdown-button"
+                        onClick={toggleLanguageDropdown}
+                      >
+                        {userData.languages.length > 0
+                          ? userData.languages
+                              .map((lang) => lang.name)
+                              .join(", ")
+                          : "Selecione os idiomas"}
+                        <span className="dropdown-icon">
+                          {isLanguageDropdownOpen ? (
+                            <ChevronUp />
+                          ) : (
+                            <ChevronDown />
+                          )}
+                        </span>
+                      </button>
+                      {isLanguageDropdownOpen && (
+                        <div className="language-dropdown-content">
+                          {availableLanguages.map((language) => (
+                            <div
+                              key={language.id}
+                              className="language-checkbox"
+                            >
+                              <label>
+                                <input
+                                  type="checkbox"
+                                  value={language.id}
+                                  checked={userData.languages.some(
+                                    (lang) => lang.id === language.id
+                                  )}
+                                  onChange={handleLanguageCheckboxChange}
+                                />
+                                {language.language}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  {/* Seção Educação */}
                   <div className="profile-section">
-                    <label>
-                      <Phone className="icon" /> Telefone
-                    </label>
-                    <input
-                      type="text"
-                      name="numero_contato"
-                      value={userData.numero_contato || ""}
-                      onChange={handleInputChange}
-                      className="profile-input"
-                    />
+                    <h3>
+                      <MortarboardFill className="icon" /> Educação
+                    </h3>
+                    {userData.education.map((edu, index) => (
+                      <div key={index} className="profile-array-item">
+                        <Building className="icon" />
+                        <input
+                          type="text"
+                          value={edu.institution || ""}
+                          placeholder="Instituição"
+                          onChange={(e) =>
+                            handleArrayChange(
+                              e,
+                              index,
+                              "institution",
+                              "education"
+                            )
+                          }
+                          className="profile-input"
+                        />
+                        <AwardFill className="icon" />
+                        <input
+                          type="text"
+                          value={edu.degree || ""}
+                          placeholder="Grau"
+                          onChange={(e) =>
+                            handleArrayChange(e, index, "degree", "education")
+                          }
+                          className="profile-input"
+                        />
+                        <CalendarFill className="icon" />
+                        <input
+                          type="text"
+                          value={edu.admissionYear || ""}
+                          placeholder="Ano de Ingresso"
+                          onChange={(e) =>
+                            handleArrayChange(
+                              e,
+                              index,
+                              "admissionYear",
+                              "education"
+                            )
+                          }
+                          className="profile-input"
+                        />
+                        <CalendarFill className="icon" />
+                        <input
+                          type="text"
+                          value={edu.graduationYear || ""}
+                          placeholder="Ano de Conclusão"
+                          onChange={(e) =>
+                            handleArrayChange(
+                              e,
+                              index,
+                              "graduationYear",
+                              "education"
+                            )
+                          }
+                          className="profile-input"
+                        />
+                        <button
+                          onClick={() => handleRemoveItem(index, "education")}
+                          className="delete-button"
+                        >
+                          <Trash />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() =>
+                        handleAddItem("education", {
+                          degree: "",
+                          institution: "",
+                          admissionYear: "",
+                          graduationYear: "",
+                        })
+                      }
+                      className="add-button"
+                    >
+                      <PlusSquare /> Adicionar
+                    </button>
                   </div>
+
+                  {/* Seção Experiência Profissional */}
+                  <div className="profile-section">
+                    <h3>
+                      <Briefcase className="icon" /> Experiência Profissional
+                    </h3>
+                    {userData.professionalExperience.map((exp, index) => (
+                      <div key={index} className="profile-array-item">
+                        <Building className="icon" />
+                        <input
+                          type="text"
+                          value={exp.company || ""}
+                          placeholder="Empresa"
+                          onChange={(e) =>
+                            handleArrayChange(
+                              e,
+                              index,
+                              "company",
+                              "professionalExperience"
+                            )
+                          }
+                          className="profile-input"
+                        />
+                        <Briefcase className="icon" />
+                        <input
+                          type="text"
+                          value={exp.position || ""}
+                          placeholder="Cargo"
+                          onChange={(e) =>
+                            handleArrayChange(
+                              e,
+                              index,
+                              "position",
+                              "professionalExperience"
+                            )
+                          }
+                          className="profile-input"
+                        />
+                        <CalendarFill className="icon" />
+                        <input
+                          type="text"
+                          value={exp.startDate || ""}
+                          placeholder="Ano de Início"
+                          onChange={(e) =>
+                            handleArrayChange(
+                              e,
+                              index,
+                              "startDate",
+                              "professionalExperience"
+                            )
+                          }
+                          className="profile-input"
+                        />
+                        <CalendarFill className="icon" />
+                        <input
+                          type="text"
+                          value={exp.endDate || ""}
+                          placeholder="Ano de Término"
+                          onChange={(e) =>
+                            handleArrayChange(
+                              e,
+                              index,
+                              "endDate",
+                              "professionalExperience"
+                            )
+                          }
+                          className="profile-input"
+                        />
+                        <button
+                          onClick={() =>
+                            handleRemoveItem(index, "professionalExperience")
+                          }
+                          className="delete-button"
+                        >
+                          <Trash />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() =>
+                        handleAddItem("professionalExperience", {
+                          company: "",
+                          position: "",
+                          startDate: "",
+                          endDate: "",
+                        })
+                      }
+                      className="add-button"
+                    >
+                      <PlusSquare /> Adicionar
+                    </button>
+                  </div>
+
+                  {/* Botão Salvar Alterações */}
                   <button onClick={handleSaveChanges} className="save-button">
                     Salvar Alterações
                   </button>
-                </>
+                </div>
               ) : (
-                <>
+                <div className="profile-sections">
+                  {/* Seção Sobre */}
                   <div className="profile-section">
                     <h3>
                       <PersonFill className="icon" /> Sobre
                     </h3>
-                    <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+                    <p>{userData.about || "Nenhuma descrição fornecida."}</p>
                   </div>
+
+                  {/* Seção Educação */}
                   <div className="profile-section">
                     <h3>
-                      <Globe className="icon" /> Website
+                      <MortarboardFill className="icon" /> Educação
                     </h3>
-                    <p>{userData.website || "Não fornecido"}</p>
+                    {Array.isArray(userData.education) &&
+                    userData.education.length > 0 ? (
+                      userData.education.map((edu, index) => (
+                        <div key={index} className="education-item">
+                          <div className="profile-info-row">
+                            <Building className="icon" />
+                            <span className="institution-name">
+                              {edu.institution}
+                            </span>
+                          </div>
+                          <div className="profile-info-row">
+                            <AwardFill className="icon" />
+                            <span className="education-degree">
+                              {edu.degree}
+                            </span>
+                          </div>
+                          <div className="profile-info-row">
+                            <CalendarFill className="icon" />
+                            <span className="education-dates">
+                              {edu.admissionYear} - {edu.graduationYear}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p>Nenhuma informação educacional fornecida.</p>
+                    )}
                   </div>
+
+                  {/* Seção Experiência Profissional */}
                   <div className="profile-section">
                     <h3>
-                      <Phone className="icon" /> Telefone
+                      <Briefcase className="icon" /> Experiência Profissional
                     </h3>
-                    <p>{userData.numero_contato || "Não fornecido"}</p>
+                    {Array.isArray(userData.professionalExperience) &&
+                    userData.professionalExperience.length > 0 ? (
+                      userData.professionalExperience.map((exp, index) => (
+                        <div key={index} className="experience-item">
+                          <div className="profile-info-row">
+                            <Building className="icon" />
+                            <span className="profile-info-text">
+                              {exp.company}
+                            </span>
+                          </div>
+                          <div className="profile-info-row">
+                            <Briefcase className="icon" />
+                            <span className="profile-info-text">
+                              {exp.position}
+                            </span>
+                          </div>
+                          <div className="profile-info-row">
+                            <CalendarFill className="icon" />
+                            <span className="education-dates">
+                              {exp.startDate} - {exp.endDate}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p>Nenhuma experiência profissional fornecida.</p>
+                    )}
                   </div>
-                </>
+
+                  {/* Seção Idiomas */}
+                  <div className="profile-section">
+                    <h3>
+                      <Globe className="icon" /> Idiomas
+                    </h3>
+                    {Array.isArray(userData.languages) &&
+                    userData.languages.length > 0 ? (
+                      userData.languages.map((language, index) => (
+                        <div key={index} className="profile-info-row">
+                          <Flag className="icon" />
+                          <span className="profile-info-text">
+                            {language.name}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <p>Nenhum idioma fornecido.</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+            {/* Guia Badges */}
+            {activeTab === "badges" && (
+              <div className="badges-section">
+                <h3>Badges</h3>
+                {userData.badges && userData.badges.length > 0 ? (
+                  <div className="badges-grid">
+                    {userData.badges.map((badge, index) => (
+                      <div key={badge.id} className="badge-card">
+                        <img
+                          src={badge.image_url}
+                          alt="Badge"
+                          className="badge-preview"
+                        />
+                        <h4>{badge.name_badge}</h4>
+                        <div className="badge-visibility">
+                          <label className="custom-checkbox">
+                            <input
+                              type="checkbox"
+                              checked={badge.is_public}
+                              onChange={(e) =>
+                                handleBadgeVisibilityChange(e, badge.id, index)
+                              }
+                            />
+                            <span className="checkmark"></span>
+                            {badge.is_public ? "Pública" : "Privada"}
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>Nenhuma badge disponível.</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  } else if (tipoUsuario === "UE") {
+    return (
+      <div className="profile-page">
+        <ToastContainer />
+        <div className="profile-container">
+          <div className="profile-header">
+            <div className="profile-photo-wrapper">
+              <img
+                src={imagePreview || userData.imageUrl || "/default-avatar.png"}
+                alt="User Avatar"
+                className="profile-photo"
+              />
+              {isEditing && (
+                <div className="edit-photo-overlay">
+                  <label htmlFor="upload-photo" className="edit-photo-icon">
+                    <CameraFill size={20} /> {/* Usando o ícone de câmera */}
+                  </label>
+                  <input
+                    type="file"
+                    id="upload-photo"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                </div>
               )}
             </div>
-          )}
 
-          {activeTab === "eventos" && (
-            <div className="eventos-section">
-              <h3>Eventos Promovidos</h3>
-
-              {/* Componente para criar novos posts */}
-              <PostForm onPostCreated={handleNewPost} />
-
-              {/* Renderizar o PostForm para edição */}
-              {editingEvent && (
-                <PostForm
-                  existingEvent={editingEvent}
-                  onPostUpdated={handlePostUpdated}
-                  onClose={() => setEditingEvent(null)}
-                  isEditAllowed={isWithin24Hours(editingEvent.createdAt)}
+            <div className="profile-info">
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="razao_social"
+                  value={userData.razao_social || ""}
+                  onChange={handleInputChange}
+                  className="profile-name-input"
                 />
+              ) : (
+                <h2 className="profile-name">{userData.razao_social}</h2>
               )}
+              <p className="profile-title">
+                {userData.cnpj || "CNPJ não fornecido"}
+              </p>
+              <div className="company-badges">
+                {userData.municipio && (
+                  <span className="company-badge">
+                    <GeoAlt /> {userData.municipio}
+                  </span>
+                )}
+                {userData.segmento && (
+                  <span className="company-badge">
+                    <Briefcase /> {userData.segmento}
+                  </span>
+                )}
+                {userData.tamanho && (
+                  <span className="company-badge">
+                    <PeopleFill /> {userData.tamanho}
+                  </span>
+                )}
+              </div>
+              <div className="profile-actions">
+                <button onClick={handleEditToggle} className="edit-button">
+                  <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+                </button>
+                <button onClick={handleShareProfile} className="share-button">
+                  <ShareFill /> Compartilhar
+                </button>
+              </div>
+            </div>
+          </div>
 
-              {/* Renderização dos eventos */}
-              {userData.events && userData.events.length > 0 ? (
-                userData.events.map((event, index) => (
-                  <div key={index} className="event-item">
-                    <div className="event-header">
-                      <img
-                        src={
-                          imagePreview ||
-                          userData.imageUrl ||
-                          "/default-avatar.png"
-                        } // Usa a pré-visualização se disponível
-                        alt="User Avatar"
-                        className="event-user-avatar"
+          <div className="tabs">
+            <button
+              onClick={() => handleTabChange("sobre")}
+              className={activeTab === "sobre" ? "active" : ""}
+            >
+              Sobre
+            </button>
+            <button
+              onClick={() => handleTabChange("eventos")}
+              className={activeTab === "eventos" ? "active" : ""}
+            >
+              Eventos
+            </button>
+            <button
+              onClick={() => handleTabChange("badges")}
+              className={activeTab === "badges" ? "active" : ""}
+            >
+              Badges
+            </button>
+          </div>
+
+          <div className="tab-content">
+            {activeTab === "sobre" && (
+              <div className="sobre-section">
+                {isEditing ? (
+                  <>
+                    <div className="profile-section">
+                      <label>
+                        <PersonFill className="icon" /> Sobre
+                      </label>
+                      <textarea
+                        name="sobre"
+                        value={userData.sobre || ""}
+                        onChange={handleInputChange}
+                        className="profile-about-input"
                       />
-                      <span className="event-user-name">
-                        {userData.razao_social}
-                      </span>
+                    </div>
+                    <div className="profile-section">
+                      <label>
+                        <Globe className="icon" /> Website
+                      </label>
+                      <input
+                        type="text"
+                        name="website"
+                        value={userData.website || ""}
+                        onChange={handleInputChange}
+                        className="profile-input"
+                      />
+                    </div>
+                    <div className="profile-section">
+                      <label>
+                        <Phone className="icon" /> Telefone
+                      </label>
+                      <input
+                        type="text"
+                        name="numero_contato"
+                        value={userData.numero_contato || ""}
+                        onChange={handleInputChange}
+                        className="profile-input"
+                      />
+                    </div>
+                    <button onClick={handleSaveChanges} className="save-button">
+                      Salvar Alterações
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="profile-section">
+                      <h3>
+                        <PersonFill className="icon" /> Sobre
+                      </h3>
+                      <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+                    </div>
+                    <div className="profile-section">
+                      <h3>
+                        <Globe className="icon" /> Website
+                      </h3>
+                      <p>{userData.website || "Não fornecido"}</p>
+                    </div>
+                    <div className="profile-section">
+                      <h3>
+                        <Phone className="icon" /> Telefone
+                      </h3>
+                      <p>{userData.numero_contato || "Não fornecido"}</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
 
-                      {/* Exibição da Data e Hora de Publicação */}
-                      {event.createdAt && (
-                        <span className="event-publication-time">
-                          {formatDateTime(event.createdAt)}
-                        </span>
-                      )}
+            {activeTab === "eventos" && (
+              <div className="eventos-section">
+                <h3>Eventos Promovidos</h3>
 
-                      {/* Ícone de três pontinhos sempre visível */}
-                      <div className="event-options">
-                        <ThreeDotsVertical
-                          className="options-icon"
-                          onClick={() => handleOptionsClick(index)}
+                {/* Componente para criar novos posts */}
+                <PostForm onPostCreated={handleNewPost} />
+
+                {/* Renderizar o PostForm para edição */}
+                {editingEvent && (
+                  <PostForm
+                    existingEvent={editingEvent}
+                    onPostUpdated={handlePostUpdated}
+                    onClose={() => setEditingEvent(null)}
+                    isEditAllowed={isWithin24Hours(editingEvent.createdAt)}
+                  />
+                )}
+
+                {/* Renderização dos eventos */}
+                {userData.events && userData.events.length > 0 ? (
+                  userData.events.map((event, index) => (
+                    <div key={index} className="event-item">
+                      <div className="event-header">
+                        <img
+                          src={
+                            imagePreview ||
+                            userData.imageUrl ||
+                            "/default-avatar.png"
+                          } // Usa a pré-visualização se disponível
+                          alt="User Avatar"
+                          className="event-user-avatar"
                         />
-                        {optionsVisibleIndex === index && (
-                          <div className="options-menu">
-                            {/* Botão "Editar" habilitado apenas se dentro de 24h */}
-                            <button
-                              onClick={() => handleEditEvent(event)}
-                              disabled={!isWithin24Hours(event.createdAt)}
-                              style={{
-                                cursor: isWithin24Hours(event.createdAt)
-                                  ? "pointer"
-                                  : "not-allowed",
-                                opacity: isWithin24Hours(event.createdAt)
-                                  ? 1
-                                  : 0.5,
-                              }}
-                              title={
-                                !isWithin24Hours(event.createdAt)
-                                  ? "Edição disponível apenas nas primeiras 24 horas"
-                                  : "Editar Evento"
-                              }
-                            >
-                              Editar
-                            </button>
-                            {/* Botão "Excluir" sempre habilitado */}
-                            <button onClick={() => handleDeleteEvent(event)}>
-                              Excluir
-                            </button>
-                          </div>
+                        <span className="event-user-name">
+                          {userData.razao_social}
+                        </span>
+
+                        {/* Exibição da Data e Hora de Publicação */}
+                        {event.createdAt && (
+                          <span className="event-publication-time">
+                            {formatDateTime(event.createdAt)}
+                          </span>
+                        )}
+
+                        {/* Ícone de três pontinhos sempre visível */}
+                        <div className="event-options">
+                          <ThreeDotsVertical
+                            className="options-icon"
+                            onClick={() => handleOptionsClick(index)}
+                          />
+                          {optionsVisibleIndex === index && (
+                            <div className="options-menu">
+                              {/* Botão "Editar" habilitado apenas se dentro de 24h */}
+                              <button
+                                onClick={() => handleEditEvent(event)}
+                                disabled={!isWithin24Hours(event.createdAt)}
+                                style={{
+                                  cursor: isWithin24Hours(event.createdAt)
+                                    ? "pointer"
+                                    : "not-allowed",
+                                  opacity: isWithin24Hours(event.createdAt)
+                                    ? 1
+                                    : 0.5,
+                                }}
+                                title={
+                                  !isWithin24Hours(event.createdAt)
+                                    ? "Edição disponível apenas nas primeiras 24 horas"
+                                    : "Editar Evento"
+                                }
+                              >
+                                Editar
+                              </button>
+                              {/* Botão "Excluir" sempre habilitado */}
+                              <button onClick={() => handleDeleteEvent(event)}>
+                                Excluir
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="event-details">
+                        <p>{event.descricao || "Nenhuma descrição"}</p>
+                        {event.imageUrl && (
+                          <img
+                            src={event.imageUrl}
+                            alt="Event Image"
+                            className="event-image"
+                          />
                         )}
                       </div>
                     </div>
-                    <div className="event-details">
-                      <p>{event.descricao || "Nenhuma descrição"}</p>
-                      {event.imageUrl && (
-                        <img
-                          src={event.imageUrl}
-                          alt="Event Image"
-                          className="event-image"
-                        />
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>Nenhum evento disponível.</p>
-              )}
-            </div>
-          )}
+                  ))
+                ) : (
+                  <p>Nenhum evento disponível.</p>
+                )}
+              </div>
+            )}
 
-          {activeTab === "badges" && (
-            <div className="badges-section">
-              <h3>Badges</h3>
-              {userData.badges && userData.badges.length > 0 ? (
-                <div className="badges-grid">
-                  {userData.badges.map((badge) => (
-                    <div key={badge.id_badge} className="badge-card">
-                      <img
-                        src={badge.image_url}
-                        alt="Badge"
-                        className="badge-preview"
-                      />
-                      <h3>{badge.name_badge}</h3>
-                      <Link to={`/badges/details/${badge.id_badge}`}>
-                        <button>Detalhes</button>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>Nenhuma badge disponível.</p>
-              )}
-            </div>
-          )}
+            {activeTab === "badges" && (
+              <div className="badges-section">
+                <h3>Badges</h3>
+                {userData.badges && userData.badges.length > 0 ? (
+                  <div className="badges-grid">
+                    {userData.badges.map((badge) => (
+                      <div key={badge.id_badge} className="badge-card">
+                        <img
+                          src={badge.image_url}
+                          alt="Badge"
+                          className="badge-preview"
+                        />
+                        <h3>{badge.name_badge}</h3>
+                        <Link to={`/badges/details/${badge.id_badge}`}>
+                          <button>Detalhes</button>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p>Nenhuma badge disponível.</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-} else {
-  return null; // Ou redirecione para o login
-}
+    );
+  } else {
+    return null; // Ou redirecione para o login
+  }
 };
 
-export default protectRoute(UserProfile);
+export default UserProfile;

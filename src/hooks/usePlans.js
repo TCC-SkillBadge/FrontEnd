@@ -16,7 +16,7 @@ const usePlans = () => {
       const token = sessionStorage.getItem("token");
       if (token) {
         const currentPlanResponse = await axios.get(
-          "http://localhost:7003/api/current-plan",
+          "http://localhost:7003/api/current-plan", // Adicionado '/api'
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ const usePlans = () => {
     fetchPlansAndCurrentPlan();
   }, []);
 
-  // Função para atualizar o plano atual após cancelamento
+  // Função para cancelar o plano atual
   const cancelCurrentPlan = async () => {
     try {
       const token = sessionStorage.getItem("token");
@@ -55,7 +55,7 @@ const usePlans = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:7003/api/usuarios/cancelar-plano",
+        "http://localhost:7003/api/usuarios/cancelar-plano", // Adicionado '/api'
         {},
         {
           headers: {

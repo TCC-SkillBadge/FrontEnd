@@ -1,3 +1,5 @@
+// src/pages/Login.js
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EnvelopeFill, LockFill, Eye, EyeSlash } from "react-bootstrap-icons";
@@ -7,6 +9,12 @@ import "react-toastify/dist/ReactToastify.css";
 import ConfirmationModal from "../components/ConfirmationModal"; // Import the modal component
 import "../styles/Login.css";
 import "../styles/GlobalStylings.css";
+
+// Definindo as variáveis de ambiente
+const API_COMUM = process.env.REACT_APP_API_COMUM;
+const API_ENTERPRISE = process.env.REACT_APP_API_ENTERPRISE;
+const API_ADMIN = process.env.REACT_APP_API_ADMIN;
+const API_BADGES = process.env.REACT_APP_API_BADGES; // Adicione esta variável para o serviço de badges
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -37,98 +45,130 @@ const Login = () => {
     setFormData((prevData) => ({ ...prevData, [id]: value }));
   };
 
-const handleLogin = async (
-  url,
-  data,
-  method = "post",
-  params = {},
-  headers = {}
-) => {
-  console.log("Remenber me: ", rememberMe);
-  try {
-    const response = await axios({
-      url,
-      method,
-      data,
-      params,
-      headers,
-    });
-    if (response.status === 200) {
-      const { token, tipoUsuario } = response.data;
-      sessionStorage.setItem("token", token);
-      sessionStorage.setItem("tipoUsuario", tipoUsuario);
+  const handleLogin = async (
+    url,
+    data,
+    method = "post",
+    params = {},
+    headers = {}
+  ) => {
+    console.log("Remember me: ", rememberMe);
+    try {
+      const response = await axios({
+        url,
+        method,
+        data,
+        params,
+        headers,
+      });
+      if (response.status === 200) {
+        const { token, tipoUsuario } = response.data;
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("tipoUsuario", tipoUsuario);
 
-      if (rememberMe) {
-        console.log("Entered Remember me for token and tipoUsuario");
-        localStorage.setItem("token", token);
-        localStorage.setItem("tipoUsuario", tipoUsuario);
-      }
+        if (rememberMe) {
+          console.log("Entered Remember me for token and tipoUsuario");
+          localStorage.setItem("token", token);
+          localStorage.setItem("tipoUsuario", tipoUsuario);
+        }
 
-      let userInfoResponse;
-      if (tipoUsuario === "UC") {
-        userInfoResponse = await axios.get(
-          `http://localhost:7000/api/user/info`,
-          {
+        let userInfoResponse;
+        if (tipoUsuario === "UC") {
+          userInfoResponse = await axios.get(`${API_COMUM}/api/user/info`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            params: { userType: 'UC' },
-          }
-        );
-      } else if (tipoUsuario === "UE") {
-        userInfoResponse = await axios.get(
-          `http://localhost:7003/api/acessar-info-usuario-jwt`,
-          {
+            params: { userType: "UC" },
+          });
+        } else if (tipoUsuario === "UE") {
+          userInfoResponse = await axios.get(
+            `${API_ENTERPRISE}/api/acessar-info-usuario-jwt`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              params: { userType: "UE" },
+            }
+          );
+        } else if (tipoUsuario === "UA") {
+          userInfoResponse = await axios.get(`${API_ADMIN}/admin/acessa-info`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            params: { userType: 'UE' },
+            params: { userType: "UA" },
+          });
+        }
+
+        if (userInfoResponse && userInfoResponse.status === 200) {
+          const userInfo = userInfoResponse.data;
+
+          // Salve o email original e o codificado
+          const email =
+            tipoUsuario === "UC" ? userInfo.email : userInfo.email_comercial;
+          if (email) {
+            sessionStorage.setItem("email", email); // Email original
+            sessionStorage.setItem("encodedEmail", btoa(email)); // Email codificado
+
+            if (rememberMe) {
+              console.log("Entered Remember me for email");
+              localStorage.setItem("email", email);
+              localStorage.setItem("encodedEmail", btoa(email));
+            }
           }
-        );
-      } else if (tipoUsuario === "UA") {
-        userInfoResponse = await axios.get(
-          `http://localhost:7004/admin/acessa-info`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: { userType: 'UA' },
-          }
-        );
-      }
 
-      if (userInfoResponse && userInfoResponse.status === 200) {
-        const userInfo = userInfoResponse.data;
-
-        // Salve o email original e o codificado
-        const email =
-          tipoUsuario === "UC" ? userInfo.email : userInfo.email_comercial;
-        if (email) {
-          sessionStorage.setItem("email", email); // Email original
-          sessionStorage.setItem("encodedEmail", btoa(email)); // Email codificado
-
+          sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
           if (rememberMe) {
-            console.log("Entered Remember me for email");
-            localStorage.setItem("email", email);
-            localStorage.setItem("encodedEmail", btoa(email));
+            console.log("Entered Remember me for userInfo");
+            localStorage.setItem("userInfo", JSON.stringify(userInfo));
           }
+          return true;
         }
-
-        sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
-        if (rememberMe){
-          console.log("Entered Remember me for userInfo");
-          localStorage.setItem("userInfo", JSON.stringify(userInfo));
-        }
-        return true;
       }
+    } catch (error) {
+      console.error(`Error logging in at ${url}:`, error);
     }
-  } catch (error) {
-    console.error(`Error logging in at ${url}:`, error);
-  }
-  return false;
-};
+    return false;
+  };
 
+  // Função para confirmar a badge após o login
+  const confirmBadge = async (token) => {
+    try {
+      const storedAuthToken =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
 
+      if (!storedAuthToken) {
+        // Se o usuário não está logado, não é possível confirmar a badge
+        toast.error("Você precisa estar logado para confirmar a badge.");
+        return;
+      }
+
+      // Enviar a solicitação para confirmar a badge
+      const response = await axios.post(
+        `${API_BADGES}/badges/confirm-badge`,
+        { token },
+        {
+          headers: {
+            Authorization: `Bearer ${storedAuthToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Badge confirmada com sucesso!");
+        // Remover o token de confirmação do localStorage
+        localStorage.removeItem("badgeConfirmationToken");
+      }
+    } catch (error) {
+      console.error("Erro ao confirmar a badge:", error);
+      if (error.response && error.response.data) {
+        toast.error(error.response.data);
+      } else {
+        toast.error("Erro ao confirmar a badge. Por favor, tente novamente mais tarde.");
+      }
+      // Opcional: remover o token de confirmação para evitar tentativas futuras
+      localStorage.removeItem("badgeConfirmationToken");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -136,18 +176,24 @@ const handleLogin = async (
 
     const loginEndpoints = [
       {
-        url: "http://localhost:7000/api/user/login",
+        url: `${API_COMUM}/api/user/login`,
         data: { email: formData.email, password: formData.password },
         method: "post",
       },
       {
-        url: "http://localhost:7004/admin/login",
-        data: { email_admin: formData.email, senha: formData.password },
+        url: `${API_ADMIN}/admin/login`,
+        data: {
+          email_admin: formData.email,
+          senha: formData.password,
+        },
         method: "post",
       },
       {
-        url: "http://localhost:7003/api/login",
-        data: { email_comercial: formData.email, senha: formData.password },
+        url: `${API_ENTERPRISE}/api/login`,
+        data: {
+          email_comercial: formData.email,
+          senha: formData.password,
+        },
         method: "post",
       },
     ];
@@ -159,70 +205,68 @@ const handleLogin = async (
     toast.promise(
       Promise.all(loginPromises).then((results) => {
         if (results.some((success) => success)) {
-          toast.success("Login successful");
+          toast.success("Login realizado com sucesso!");
           setTimeout(() => {
             navigate("/home");
-            //Aqui, após o login, um evento é disparado para atualizar o estado do usuário logado
-            //O evento é capturado no App.js
-            //Escolheu-se esta posição pois disparar o evento juntamente aos métodos do sessionStorage nas linahs acima faria com que a Navbar muda-se
-            //antes do redirecionamento para a página home, o que criaria uma experiência ruim para o usuário
+            // Após o login, verificar se há um token de confirmação e confirmar a badge
+            const confirmationToken = localStorage.getItem("badgeConfirmationToken");
+            if (confirmationToken) {
+              confirmBadge(confirmationToken);
+            }
+            // Disparar um evento para atualizar o estado do usuário logado, se necessário
             window.dispatchEvent(new Event("LoginChange"));
           }, 2000);
         } else {
           setLoginFailed(true);
-          toast.error("Error logging in user");
+          toast.error("Erro ao fazer login. Verifique suas credenciais.");
         }
       }),
       {
-        pending: "Logging in...",
+        pending: "Fazendo login...",
       }
     );
-
-
   };
 
   const handleForgotPassword = async () => {
     const endpoints = [
-      "http://localhost:7000/api/user/request-password-reset",
-      "http://localhost:7003/api/request-password-reset",
-    ]
+      `${API_COMUM}/api/user/request-password-reset`,
+      `${API_ENTERPRISE}/api/request-password-reset`,
+    ];
 
-    const resetPasswordPromises = endpoints.map((endpoint) => 
+    const resetPasswordPromises = endpoints.map((endpoint) =>
       axios.post(endpoint, {
-        email: formData.email
+        email: formData.email,
       })
     );
 
-    const loading = toast.loading("Sending reset link...");
-    Promise.allSettled(resetPasswordPromises)
-    .then((results) => {
+    const loading = toast.loading("Enviando link de redefinição...");
+    Promise.allSettled(resetPasswordPromises).then((results) => {
       if (results.some((response) => response.status === "fulfilled")) {
         toast.update(loading, {
-          render: "A link to reset your password has been sent to your email.",
+          render: "Um link para redefinir sua senha foi enviado para seu email.",
           type: "success",
           isLoading: false,
           autoClose: 3000,
         });
-      }
-      else {
+      } else {
         toast.update(loading, {
-          render: "Fail to send password reset link",
+          render: "Falha ao enviar o link de redefinição de senha.",
           type: "error",
           isLoading: false,
           autoClose: 3000,
         });
       }
       setShowConfirmationModal(false);
-    })
+    });
   };
 
   const handleForgotPasswordClick = () => {
     if (!formData.email) {
-      toast.error("Please enter your email address before proceeding.");
+      toast.error("Por favor, insira seu email antes de prosseguir.");
       return;
     }
     setConfirmationMessage(
-      `Send the reset link to this email: ${formData.email}`
+      `Enviar o link de redefinição para este email: ${formData.email}`
     );
     setShowConfirmationModal(true); // Show the confirmation modal when forgot password is clicked
   };
@@ -259,16 +303,16 @@ const handleLogin = async (
                   type="password"
                   className="form-control"
                   id="password"
-                  placeholder="Password"
+                  placeholder="Senha"
                   value={formData.password}
                   onChange={handleChange}
                   required
                 />
-                {
-                  showPassword ?
-                  <EyeSlash onClick={handleShowPassword} /> :
+                {showPassword ? (
+                  <EyeSlash onClick={handleShowPassword} />
+                ) : (
                   <Eye onClick={handleShowPassword} />
-                }
+                )}
               </div>
             </div>
             <div className="form-options">
@@ -277,8 +321,8 @@ const handleLogin = async (
                   type="checkbox"
                   className="form-check-input"
                   id="rememberMe"
-                  value={rememberMe}
-                  onChange={() => setRememberMe((olValue) => !olValue)}
+                  checked={rememberMe}
+                  onChange={() => setRememberMe((oldValue) => !oldValue)}
                 />
                 <label className="form-check-label" htmlFor="rememberMe">
                   Remember me
