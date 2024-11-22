@@ -1,7 +1,7 @@
 .chat-box{
     /*Local CSS variables*/
-    --chat-box-background-color: #180738;
-    --contact-container-background-color: #19144f;
+    --chat-box-background-color:rgba(0, 0, 0);
+    --contact-container-background-color: rgba(0, 0, 0);
     --contact-button-background-color: #37317b;
     --new-chat-button-background-color: #D273FF;
 
@@ -10,18 +10,18 @@
     border-radius: 10px;
     padding: 10px;
     color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     height: 100%;
+    
 }
 
 .contact-container{
     position: relative;
-    background-color: var(--contact-container-background-color);
     padding: 15px;
     margin-right: 3%;
-    border-radius: 15px;
-    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    border-right: 3px solid transparent;
+    width: 30%;
 }
 
 .contact-box{
@@ -30,24 +30,41 @@
     overflow-y: auto;
     scrollbar-color: transparent transparent;
     background-color: transparent;
-    width: fit-content;
     height: 400px;
 }
 
-.contact-button{
+.contact-button {
     display: flex;
     flex-direction: row;
     align-items: center;
     font-size: calc(0.5em + 1vw);
-    background-color: var(--contact-button-background-color);
     color: white;
     width: 100%;
     height: 100%;
-    border-radius: 10px;
+    background-color: transparent;
     margin-bottom: 10px;
-    padding: 17px;
+    padding-bottom: 5px;
+    padding-top: 5px;
     font-weight: bold;
-    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+
+    /* Apenas borda inferior */
+    border: none; /* Remove todas as bordas padrão */
+    border-bottom: 1px solid white;
+
+    /* Remove aparência de botão */
+    outline: none;
+
+    /* Desabilitar efeitos de clique */
+    user-select: none;
+    -webkit-tap-highlight-color: transparent; /* Remove destaque ao tocar */
+}
+
+
+.contact-button:active {
+    /* Prevenir o "afundar" ao clicar */
+    transform: none;
+    box-shadow: none;
+    
 }
 
 .message-container{
@@ -154,7 +171,7 @@
 
     width: 40%;
     min-width: 600px;
-    height: 20%;
+    height: auto;
     min-height: fit-content;
     background-color: var(--search-box-background-color);
 }
@@ -163,7 +180,7 @@
     color: white;
     background-color: transparent;
     border-radius: 50%;
-    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+   
 }
 
 .search-box-close-btn:hover{
@@ -237,5 +254,5 @@
     flex-direction: column;
     margin: 3%;
     padding: 2%;
-    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+
 }

@@ -432,7 +432,7 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
                 id={`contact-${contact.email}`}
                 className='contact-button'
                 onClick={() => chooseContact(contact)}>
-                  <div className='mr-2'>
+                  <div className='mr-3'>
                     {verifyImageValidity({type: contact.user_type, profile_picture: contact.profile_picture}, '35')}
                   </div>
                   <nobr>{contact.username}</nobr>
