@@ -436,22 +436,22 @@ body {
 }
 
 .ReactTags__tags {
-  display: flex;          /* Layout flexível */
-  flex-direction: column; /* Coloca tags e input em colunas (tags em cima, input embaixo) */
-  gap: 8px;               /* Espaçamento entre tags e input */
-  width: 100%;            /* Garante que o container ocupe a largura total */
+  display: flex;        
+  flex-direction: column; 
+  gap: 8px;              
+  width: 100%;           
 }
 
 .ReactTags__tag {
-  display: inline-flex;   /* Alinha o conteúdo de cada tag horizontalmente */
-  align-items: center;    /* Centraliza texto e botão de remoção */
+  display: inline-flex;   
+  align-items: center;    
   background-color: #8DFD8B;
   color: white;
   font-size: 14px;
   padding: 8px 12px;
   border-radius: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  white-space: nowrap;    /* Evita quebra de texto dentro das tags */
+  white-space: nowrap;    
 }
 
 .ReactTags__remove {

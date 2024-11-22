@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "../styles/Workflow.css";
 import ConfirmationModal from "../components/ConfirmationModal";
+import ApproveModal from "../components/ApproveModal";
 import { ShieldFill } from "react-bootstrap-icons";
 
 const Workflow = () => {
@@ -113,6 +114,7 @@ const Workflow = () => {
       toast.dismiss(loadingToastId);
 
       if (response.status === 200) {
+        handleCloseModal();
         toast.success("Order updated successfully");
         setTimeout(() => {
           fetchRequest();
@@ -139,6 +141,7 @@ const Workflow = () => {
       toast.dismiss(loadingToastId);
 
       if (response.status === 200) {
+        handleCloseModal();
         toast.success("Order updated successfully");
         setTimeout(() => {
           fetchRequest();
@@ -159,7 +162,7 @@ const Workflow = () => {
     setShowModal(false);
   };
 
-  const handleConfirm = async (e) => {   
+  const handleConfirm = async (e) => {
     if (image_badge) {
       handleCloseModal();
       handleAdvance(e);
@@ -192,6 +195,7 @@ const Workflow = () => {
               title="Review"
               children="Your badge is for your review."
               {...request.status_badge === "Review" ? { active: "-active" } : { active: "" }}
+              onClick={handleShowModal}
             />
             <WorkflowCard
               icon="bi bi-check2 fs-1"
@@ -201,6 +205,36 @@ const Workflow = () => {
             />
           </div>
         </div>
+        <ApproveModal
+          show={showModal}
+          onHide={handleCloseModal}
+          onApprove={handleAdvance}
+          onReprove={handleRetreat}
+          title="Review Badge"
+          body={
+            <div key={request.id_badge} className="badge-card">
+              <img
+                src={request.image_url}
+                className="badge-preview"
+              />
+              <h3>{request.name_badge}</h3>
+            </div>
+          }
+          approveButtonText="Approve"
+          reproveButtonText="Reprove"
+        />
+        <ToastContainer
+          position="top-center"
+          autoClose={2000}
+          hideProgressBar
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
       </div>
     );
   }

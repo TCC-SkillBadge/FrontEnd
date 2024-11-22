@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/WorkflowCard.css";
 
-const WorkflowCard = ({ icon, title, children, button, active }) => {
+const WorkflowCard = ({ icon, title, children, button, active, onClick }) => {
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
 
@@ -51,8 +51,7 @@ const WorkflowCard = ({ icon, title, children, button, active }) => {
 
   if (userType === "UE") {
     return (
-      console.log("active", active),
-      <div className={`workflow-card${active}`}>
+      <div className={`workflow-card${active}`} onClick={onClick}>
         <i className={`workflow-icon ${icon}`} alt={title} ></i>
         <h3>{title}</h3>
         <p>{children}</p>
