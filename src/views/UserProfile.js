@@ -32,6 +32,7 @@ import { Link } from "react-router-dom";
 import PostForm from "../components/PostForm";
 import { useNavigate } from "react-router-dom";
 import { protectRoute } from "../utils/general-functions/ProtectRoutes";
+import { CameraFill } from "react-bootstrap-icons";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -702,14 +703,14 @@ if (tipoUsuario === "UC") {
         <div className="profile-header">
           <div className="profile-photo-wrapper">
             <img
-              src={imagePreview || userData.imageUrl || "/default-avatar.png"} // Usa a pré-visualização se disponível
+              src={imagePreview || userData.imageUrl || "/default-avatar.png"}
               alt="User Avatar"
               className="profile-photo"
             />
             {isEditing && (
-              <>
+              <div className="edit-photo-overlay">
                 <label htmlFor="upload-photo" className="edit-photo-icon">
-                  <PencilSquare />
+                  <CameraFill size={20} /> {/* Usando o ícone de câmera */}
                 </label>
                 <input
                   type="file"
@@ -718,7 +719,7 @@ if (tipoUsuario === "UC") {
                   onChange={handleFileChange}
                   style={{ display: "none" }}
                 />
-              </>
+              </div>
             )}
           </div>
           <div className="profile-info">
@@ -1186,16 +1187,14 @@ if (tipoUsuario === "UC") {
         <div className="profile-header">
           <div className="profile-photo-wrapper">
             <img
-              src={
-                imagePreview || userData.imageUrl || "/default-company-logo.png"
-              } // Usa a pré-visualização se disponível
-              alt="Company Logo"
+              src={imagePreview || userData.imageUrl || "/default-avatar.png"}
+              alt="User Avatar"
               className="profile-photo"
             />
             {isEditing && (
-              <>
+              <div className="edit-photo-overlay">
                 <label htmlFor="upload-photo" className="edit-photo-icon">
-                  <PencilSquare />
+                  <CameraFill size={20} /> {/* Usando o ícone de câmera */}
                 </label>
                 <input
                   type="file"
@@ -1204,9 +1203,10 @@ if (tipoUsuario === "UC") {
                   onChange={handleFileChange}
                   style={{ display: "none" }}
                 />
-              </>
+              </div>
             )}
           </div>
+
           <div className="profile-info">
             {isEditing ? (
               <input
@@ -1469,4 +1469,4 @@ if (tipoUsuario === "UC") {
 }
 };
 
-export default protectRoute(UserProfile);
+export default UserProfile;

@@ -25,7 +25,7 @@ const DataVisualization = () => {
   const navigate = useNavigate();
 
   const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL || "http://192.168.15.31:5000";
+    process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:5001";
 
   // Estado para controlar o número de meses para Badges Assigned
   const [badgeMonths, setBadgeMonths] = useState(6); // Valor padrão: 6 meses
