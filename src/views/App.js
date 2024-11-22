@@ -51,6 +51,7 @@ import ApiReference from "./ApiReference";
 import About from "./About";
 import Dashboard from "./Dashboard";
 import DataVisualization from "./DataVisualization"; // Importado do segundo arquivo
+import ConfirmBadge from "./ConfirmBadge";
 
 function App() {
   // Gerenciar o userType, user e token no App.js
@@ -163,6 +164,7 @@ function App() {
             element={<BadgePublicDisplay />}
           />
           <Route path="/analysis" element={<DataVisualization />} />
+          <Route path="/confirm-badge" element={<ConfirmBadge />} /> {/* Nova Rota */}
         </Routes>
       </div>
       <Footer />

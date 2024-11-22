@@ -1,3 +1,5 @@
+// src/pages/Login.js
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EnvelopeFill, LockFill, Eye, EyeSlash } from "react-bootstrap-icons";
@@ -12,6 +14,7 @@ import "../styles/GlobalStylings.css";
 const API_COMUM = process.env.REACT_APP_API_COMUM;
 const API_ENTERPRISE = process.env.REACT_APP_API_ENTERPRISE;
 const API_ADMIN = process.env.REACT_APP_API_ADMIN;
+const API_BADGES = process.env.REACT_APP_API_BADGES; // Adicione esta variável para o serviço de badges
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -127,6 +130,46 @@ const Login = () => {
     return false;
   };
 
+  // Função para confirmar a badge após o login
+  const confirmBadge = async (token) => {
+    try {
+      const storedAuthToken =
+        sessionStorage.getItem("token") || localStorage.getItem("token");
+
+      if (!storedAuthToken) {
+        // Se o usuário não está logado, não é possível confirmar a badge
+        toast.error("Você precisa estar logado para confirmar a badge.");
+        return;
+      }
+
+      // Enviar a solicitação para confirmar a badge
+      const response = await axios.post(
+        `${API_BADGES}/badges/confirm-badge`,
+        { token },
+        {
+          headers: {
+            Authorization: `Bearer ${storedAuthToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Badge confirmada com sucesso!");
+        // Remover o token de confirmação do localStorage
+        localStorage.removeItem("badgeConfirmationToken");
+      }
+    } catch (error) {
+      console.error("Erro ao confirmar a badge:", error);
+      if (error.response && error.response.data) {
+        toast.error(error.response.data);
+      } else {
+        toast.error("Erro ao confirmar a badge. Por favor, tente novamente mais tarde.");
+      }
+      // Opcional: remover o token de confirmação para evitar tentativas futuras
+      localStorage.removeItem("badgeConfirmationToken");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoginFailed(false);
@@ -162,22 +205,24 @@ const Login = () => {
     toast.promise(
       Promise.all(loginPromises).then((results) => {
         if (results.some((success) => success)) {
-          toast.success("Login successful");
+          toast.success("Login realizado com sucesso!");
           setTimeout(() => {
             navigate("/home");
-            //Aqui, após o login, um evento é disparado para atualizar o estado do usuário logado
-            //O evento é capturado no App.js
-            //Escolheu-se esta posição pois disparar o evento juntamente aos métodos do sessionStorage nas linahs acima faria com que a Navbar muda-se
-            //antes do redirecionamento para a página home, o que criaria uma experiência ruim para o usuário
+            // Após o login, verificar se há um token de confirmação e confirmar a badge
+            const confirmationToken = localStorage.getItem("badgeConfirmationToken");
+            if (confirmationToken) {
+              confirmBadge(confirmationToken);
+            }
+            // Disparar um evento para atualizar o estado do usuário logado, se necessário
             window.dispatchEvent(new Event("LoginChange"));
           }, 2000);
         } else {
           setLoginFailed(true);
-          toast.error("Error logging in user");
+          toast.error("Erro ao fazer login. Verifique suas credenciais.");
         }
       }),
       {
-        pending: "Logging in...",
+        pending: "Fazendo login...",
       }
     );
   };
@@ -194,18 +239,18 @@ const Login = () => {
       })
     );
 
-    const loading = toast.loading("Sending reset link...");
+    const loading = toast.loading("Enviando link de redefinição...");
     Promise.allSettled(resetPasswordPromises).then((results) => {
       if (results.some((response) => response.status === "fulfilled")) {
         toast.update(loading, {
-          render: "A link to reset your password has been sent to your email.",
+          render: "Um link para redefinir sua senha foi enviado para seu email.",
           type: "success",
           isLoading: false,
           autoClose: 3000,
         });
       } else {
         toast.update(loading, {
-          render: "Fail to send password reset link",
+          render: "Falha ao enviar o link de redefinição de senha.",
           type: "error",
           isLoading: false,
           autoClose: 3000,
@@ -217,11 +262,11 @@ const Login = () => {
 
   const handleForgotPasswordClick = () => {
     if (!formData.email) {
-      toast.error("Please enter your email address before proceeding.");
+      toast.error("Por favor, insira seu email antes de prosseguir.");
       return;
     }
     setConfirmationMessage(
-      `Send the reset link to this email: ${formData.email}`
+      `Enviar o link de redefinição para este email: ${formData.email}`
     );
     setShowConfirmationModal(true); // Show the confirmation modal when forgot password is clicked
   };
@@ -258,7 +303,7 @@ const Login = () => {
                   type="password"
                   className="form-control"
                   id="password"
-                  placeholder="Password"
+                  placeholder="Senha"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -276,8 +321,8 @@ const Login = () => {
                   type="checkbox"
                   className="form-check-input"
                   id="rememberMe"
-                  value={rememberMe}
-                  onChange={() => setRememberMe((olValue) => !olValue)}
+                  checked={rememberMe}
+                  onChange={() => setRememberMe((oldValue) => !oldValue)}
                 />
                 <label className="form-check-label" htmlFor="rememberMe">
                   Remember me
