@@ -434,3 +434,56 @@ body {
   margin-top: 20px;
   max-width: 80px;
 }
+
+.ReactTags__tags {
+  display: flex;          /* Layout flexível */
+  flex-direction: column; /* Coloca tags e input em colunas (tags em cima, input embaixo) */
+  gap: 8px;               /* Espaçamento entre tags e input */
+  width: 100%;            /* Garante que o container ocupe a largura total */
+}
+
+.ReactTags__tag {
+  display: inline-flex;   /* Alinha o conteúdo de cada tag horizontalmente */
+  align-items: center;    /* Centraliza texto e botão de remoção */
+  background-color: #8DFD8B;
+  color: white;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;    /* Evita quebra de texto dentro das tags */
+}
+
+.ReactTags__remove {
+  margin-left: 8px;
+  color: white;
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.ReactTags__remove:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.ReactTags__tagInput {
+  width: 100%;           /* O input ocupa a largura total */
+  min-height: 40px;      /* Define uma altura mínima */
+}
+
+.ReactTags__tagInputField {
+  width: 100%;           /* O input ocupa toda a largura do container */
+  height: 40px;          /* Define uma altura consistente */
+  font-size: 16px;
+  padding: 10px;
+  box-sizing: border-box; /* Inclui padding no tamanho total */
+  border: none;
+  outline: none;
+}

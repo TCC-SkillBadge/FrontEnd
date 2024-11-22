@@ -12,6 +12,7 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
         validity_badge: 0,
         image_url: "",
         institution: "",
+        skills_badge: null,
     });
 
     const [user, setUser] = useState({
@@ -31,9 +32,11 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
 
     const [razSoc, setRazSoc] = useState('');
 
+    const badgeUrl = process.env.REACT_APP_API_BADGE;
+
     const fetchBadge = async () => {
         try {
-            const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
+            const response = await axios.get(`${badgeUrl}/badges/consult?id_badge=${id_badge}`);
             setBadge(response.data);
         } catch (error) {
             console.error('Error fetching the badge:', error);
@@ -80,15 +83,25 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem }) => {
                         <h1 className="badge-details-title">{badge.name_badge}</h1>
                         <br />
                         <br />
+
                         <h2 className="badge-details-subtitle">Description</h2>
                         <br />
+
                         <p className="badge-details-description">{badge.desc_badge}</p>
+                        <br />
+
+                        <h2 className="badge-details-title">Skills</h2>
+                        <ul className="badge-details-skills-list">
+                            {badge.skills_badge ? badge.skills_badge.split(';').map((skill, index) => (
+                                <li key={index} className="badge-details-skill-tag">{skill.trim()}</li>
+                            )) : <li className="badge-details-skill-tag">No skills available</li>}
+                        </ul>
                         {
                             url_origem ?
-                            <Link to={url_origem} className="badge-details-button">
-                                Back
-                            </Link> :
-                            null
+                                <Link to={url_origem} className="badge-details-button">
+                                    Back
+                                </Link> :
+                                null
                         }
                     </div>
                 </div>

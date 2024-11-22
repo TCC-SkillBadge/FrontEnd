@@ -14,6 +14,7 @@ export const jwtExpirationHandler = () => {
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
             sessionStorage.clear();
+            localStorage.clear();
             window.location.href = '/login';
         },
         closable: false,

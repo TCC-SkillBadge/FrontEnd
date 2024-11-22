@@ -50,6 +50,14 @@
     box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
 }
 
+.message-container{
+    position: relative;
+    width: 100%;
+    overflow-y: hidden;
+    overflow-x: auto;
+    scrollbar-color: #3a365e transparent;
+}
+
 .message-box{
     display: flex;
     flex-direction: column-reverse;
@@ -57,6 +65,7 @@
     scrollbar-color: #3a365e transparent;
     height: 370px;
     width: 100%;
+    min-width: 400px;
 }
 
 .message-line-sender{
@@ -122,6 +131,17 @@
     height: 100%;
 }
 
+.show-contact-overlay-btn{
+    background-color: var(--chat-box-background-color);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.show-contact-overlay-btn:hover{
+    cursor: pointer;
+    scale: 1.02;
+}
+
 /*-----------------Configs of the search users box-----------------*/
 
 .search-box{
@@ -156,7 +176,7 @@
     flex-direction: column;
     overflow-y: auto;
     scrollbar-color: transparent transparent;
-    height: 600px;
+    height: 300px;
     width: 100%;
 }
 

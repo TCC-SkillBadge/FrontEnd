@@ -9,13 +9,15 @@ const Details = () => {
   const [user, setUser] = useState(null);
   const { id_badge } = useParams(); 
 
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+
   const verificaLogin = async () => {
     const token = sessionStorage.getItem("token");
     const userType = sessionStorage.getItem("tipoUsuario");
 
     if (userType === "UE") {
       let userInfoResponse = await axios.get(
-        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -24,18 +26,7 @@ const Details = () => {
       );
       setUserType("business");
       setUser(userInfoResponse.data);
-    } else if (userType === "UA") {
-      let userInfoResponse = await axios.get(
-        `http://localhost:7004/admin/acessa-info`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUserType("admin");
-      setUser(userInfoResponse.data);
-    }
+    } 
     else{
         navigate("/home")
     }
