@@ -260,3 +260,11 @@
 .recharts-line {
   stroke-width: 3;
 }
+
+/* src/styles/DataVisualization.css */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
