@@ -13,12 +13,15 @@ const Workflow = () => {
 
   const navigate = useNavigate();
 
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+  const adminUrl = process.env.REACT_APP_API_ADMIN;
+
   const fetchRequest = async () => {
     try {
       const token = sessionStorage.getItem("token");
 
       const response = await axios.get(
-        `http://localhost:7004/admin/request`,
+        `${adminUrl}/admin/request`,
         {
           params: {
             id_request: id_request,
@@ -43,7 +46,7 @@ const Workflow = () => {
 
     if (userType === "UE") {
       let userInfoResponse = await axios.get(
-        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,7 +59,7 @@ const Workflow = () => {
     }
     else if (userType === "UA") {
       let userInfoResponse = await axios.get(
-        `http://localhost:7004/admin/acessa-info`,
+        `${adminUrl}/admin/acessa-info`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -83,7 +86,7 @@ const Workflow = () => {
     const token = sessionStorage.getItem("token");
 
     try {
-      let response = await axios.put(`http://localhost:7004/admin/workflow-advance`, {
+      let response = await axios.put(`${adminUrl}/admin/workflow-advance`, {
         id_request: request.id_request,
         email_admin: user.email_admin,
         email_enterprise: user.email_comercial
@@ -110,7 +113,7 @@ const Workflow = () => {
     const token = sessionStorage.getItem("token");
 
     try {
-      let response = await axios.put(`http://localhost:7004/admin/workflow-retreat`, {
+      let response = await axios.put(`${adminUrl}/admin/workflow-retreat`, {
         id_request: request.id_request,
         email_enterprise: user.email_comercial
       });
