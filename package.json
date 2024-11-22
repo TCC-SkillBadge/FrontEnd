@@ -41,6 +41,7 @@
     "react-select": "^5.8.3",
     "react-spinners": "^0.14.1",
     "react-spring": "^9.7.4",
+    "react-tag-input": "^6.10.3",
     "react-toastify": "^10.0.6",
     "react-tooltip": "^5.28.0",
     "react-transition-group": "^4.4.5",

@@ -11,7 +11,9 @@ import {
   JournalText,
   HourglassSplit,
   ShieldFill,
+  LightbulbFill,
 } from "react-bootstrap-icons";
+import { WithContext as ReactTags, SEPARATORS } from 'react-tag-input';
 
 const CreateBadge = () => {
   const [userType, setUserType] = useState(null);
@@ -22,6 +24,10 @@ const CreateBadge = () => {
     validity_badge: 0,
   });
   const [image_badge, setImageBadge] = useState(null);
+  const [tags, setTags] = useState([]);
+
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
 
   const verificaLogin = async () => {
     const token = sessionStorage.getItem("token");
@@ -29,7 +35,7 @@ const CreateBadge = () => {
 
     if (userType === "UE") {
       let userInfoResponse = await axios.get(
-        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,6 +64,14 @@ const CreateBadge = () => {
   const handleValidityChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({ ...prevData, validity_badge: value }));
+  };
+
+  const handleDeleteSkill = (i) => {
+    setTags(tags.filter((tag, index) => index !== i));
+  };
+
+  const handleAdditionSkill = (tag) => {
+    setTags([...tags, tag]);
   };
 
   const handleImageChange = (e) => {
@@ -92,16 +106,19 @@ const CreateBadge = () => {
         user = { email: "teste@email.com" }
       }
 
+      const skillsString = tags.map(tag => tag.text).join(';');
+
       const formDataToSend = new FormData();
-      formDataToSend.append('institution', user.email_comercial);
+      formDataToSend.append('institution', user.email);
       formDataToSend.append('name_badge', formData.name_badge);
       formDataToSend.append('desc_badge', formData.desc_badge);
       formDataToSend.append('validity_badge', formData.validity_badge);
       formDataToSend.append('image_badge', image_badge);
-      formDataToSend.append('created_user', user.email_comercial);
+      formDataToSend.append('created_user', user.email);
+      formDataToSend.append('skills_badge', skillsString);
 
 
-      let response = await axios.post("http://localhost:7001/badges/create", formDataToSend, {
+      let response = await axios.post(`${badgeUrl}/badges/create`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -182,6 +199,27 @@ const CreateBadge = () => {
                     value={formData.validity_badge}
                     onChange={handleValidityChange}
                   />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">
+                  Skills
+                </label>
+                <div className="input-icon">
+                  <LightbulbFill />
+                  <ReactTags
+                    tags={tags}
+                    separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
+                    handleDelete={handleDeleteSkill}
+                    handleAddition={handleAdditionSkill}
+                    inputFieldPosition="bottom"
+                    autocomplete
+                    placeholder="Enter skills and press enter"
+                    maxTags={20}
+                    minTags={2}
+                    autoFocus={false}
+                  />
+
                 </div>
               </div>
               <div className="form-group">

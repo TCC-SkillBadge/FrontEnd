@@ -6,7 +6,7 @@ import App from "./views/App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // Import necessário
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Crie uma instância do QueryClient
 const queryClient = new QueryClient();
