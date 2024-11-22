@@ -40,7 +40,7 @@ const PublicProfile = () => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7000/api/public-profile/${encodedEmail}`
+          `http://localhost:7009/api/public-profile/${encodedEmail}`
         );
         const data = response.data;
 

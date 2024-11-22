@@ -315,7 +315,7 @@ useEffect(() => {
       try {
         // Verificar se o perfil público de usuário comum (UC) está acessível
         const responseUC = await axios.get(
-          `http://localhost:7000/api/public-profile/${encodedEmail}`
+          `http://localhost:7009/api/public-profile/${encodedEmail}`
         );
         if (responseUC.data) {
           // Redirecionar para o perfil público de UC
