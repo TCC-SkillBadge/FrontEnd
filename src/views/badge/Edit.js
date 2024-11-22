@@ -9,7 +9,9 @@ import {
   JournalText,
   HourglassSplit,
   ShieldFill,
+  LightbulbFill,
 } from "react-bootstrap-icons";
+import { WithContext as ReactTags, SEPARATORS } from 'react-tag-input';
 
 const EditBadge = () => {
   const { id_badge } = useParams();
@@ -21,13 +23,16 @@ const EditBadge = () => {
     desc_badge: "",
     validity_badge: 0,
     image_url: "",
+    skills_badge: "",
   });
   const [image_badge, setImageBadge] = useState(null);
+  const [tags, setTags] = useState([]);
 
   const fetchBadge = async () => {
     try {
       const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
       setBadge(response.data);
+      setTags(response.data.skills_badge.split(';').map((skill, index) => ({ id: index.toString(), text: skill.trim() })));
     } catch (error) {
       console.error('Error fetching the badge:', error);
     }
@@ -68,6 +73,14 @@ const EditBadge = () => {
   const handleValidityChange = (e) => {
     const { id, value } = e.target;
     setBadge((prevData) => ({ ...prevData, validity_badge: value }));
+  };
+
+  const handleDeleteSkill = (i) => {
+    setTags(tags.filter((tag, index) => index !== i));
+  };
+
+  const handleAdditionSkill = (tag) => {
+    setTags([...tags, tag]);
   };
 
   const handleImageChange = (e) => {
@@ -114,6 +127,8 @@ const EditBadge = () => {
         user = { email: "teste@email.com" }
       }
 
+      const skillsString = tags.map(tag => tag.text).join(';');
+
       const formDataToSend = new FormData();
       formDataToSend.append('id_badge', badge.id_badge);
       formDataToSend.append('name_badge', badge.name_badge);
@@ -121,7 +136,9 @@ const EditBadge = () => {
       formDataToSend.append('validity_badge', badge.validity_badge);
       formDataToSend.append('image_badge', image_badge);
       formDataToSend.append('updated_user', user.email_comercial);
+      formDataToSend.append('skills_badge', skillsString);
 
+      console.log(user)
       let response = await axios.put("http://localhost:7001/badges/update", formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -202,6 +219,26 @@ const EditBadge = () => {
                     placeholder="Enter badge validity"
                     value={badge.validity_badge}
                     onChange={handleValidityChange}
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label">
+                  Skills
+                </label>
+                <div className="input-icon">
+                  <LightbulbFill />
+                  <ReactTags
+                    tags={tags}
+                    separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
+                    handleDelete={handleDeleteSkill}
+                    handleAddition={handleAdditionSkill}
+                    inputFieldPosition="bottom"
+                    autocomplete
+                    placeholder="Enter skills and press enter"
+                    maxTags={20}
+                    minTags={2}
+                    autoFocus={false}
                   />
                 </div>
               </div>

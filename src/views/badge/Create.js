@@ -103,18 +103,18 @@ const CreateBadge = () => {
 
     try {
       if (user == null) {
-        user = { email: "teste@email.com" }
+        user = { email_comercial: "teste@email.com" }
       }
 
       const skillsString = tags.map(tag => tag.text).join(';');
 
       const formDataToSend = new FormData();
-      formDataToSend.append('institution', user.email);
+      formDataToSend.append('institution', user.email_comercial);
       formDataToSend.append('name_badge', formData.name_badge);
       formDataToSend.append('desc_badge', formData.desc_badge);
       formDataToSend.append('validity_badge', formData.validity_badge);
       formDataToSend.append('image_badge', image_badge);
-      formDataToSend.append('created_user', user.email);
+      formDataToSend.append('created_user', user.email_comercial);
       formDataToSend.append('skills_badge', skillsString);
 
 
