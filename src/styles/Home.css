@@ -7,9 +7,10 @@
 .text-container {
   width: 1070px;
   max-width: 90%;
-  text-align: left;
-  padding-right: 100px; 
-  padding-left: 150px;
+  text-align: center;
+  padding-right: 180px; 
+  padding-left: 180px;
+  margin: auto;
   z-index: 1;
 }
 
@@ -18,7 +19,7 @@
   font-size: 4rem; /* Ajuste para responsividade */
   font-weight: 600;
   line-height: 1.2; /* Ajuste para responsividade */
-  text-align: left;
+  text-align: center;
   color: white;
   margin-bottom: 20px; /* Ajuste para reduzir o espaço entre o título e o subtítulo */
 }
@@ -28,7 +29,7 @@
   font-size: 2rem; /* Ajuste para responsividade */
   font-weight: 500;
   line-height: 1.2; /* Ajuste para reduzir o espaço entre o título e o subtítulo */
-  text-align: left;
+  text-align: center;
   color: white;
   margin-top: 0; /* Ajuste para reduzir o espaço entre o título e o subtítulo */
 }

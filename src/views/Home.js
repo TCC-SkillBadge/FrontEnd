@@ -35,13 +35,12 @@ const Home = () => {
       <div className="container-fluid home-content">
         <div className="text-container">
           <h1 className="home-title">
-            Your badges with the security of our Blockchain.
+          All your achievements in one secure place.
           </h1>
           <p className="home-subtitle">
-            A single place to <span className="emitir">issue</span>,{" "}
-            <span className="conquistar">earn</span> and{" "}
-            <span className="armazenar">store</span> all your badges
-            securely.
+             <span className="emitir">Earn</span>,{" "}
+            <span className="conquistar">store</span>{" "}and{" "}
+            <span className="armazenar">showcase</span> your badges with ease and confidence.
           </p>
         </div>
       </div>
