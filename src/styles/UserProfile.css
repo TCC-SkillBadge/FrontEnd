@@ -49,12 +49,14 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* Adicionado para permitir quebra de linha */
 }
 
 .profile-photo-wrapper {
   position: relative;
   width: 150px;
   height: 150px;
+  flex-shrink: 0; /* Impede que a imagem encolha */
 }
 
 .profile-photo {
@@ -119,6 +121,49 @@
   .edit-photo-icon .bi {
     font-size: 1rem;
   }
+
+  /* Ajustes adicionais para evitar sobreposição */
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center; /* Centraliza o texto */
+  }
+
+  .profile-info {
+    width: 100%; /* Garante que a informação ocupe toda a largura */
+    margin-top: 15px; /* Espaço entre a imagem e as informações */
+  }
+
+  .profile-name {
+    font-size: 1.5rem; /* Reduz o tamanho da fonte para telas menores */
+  }
+
+  .profile-title {
+    font-size: 1rem; /* Ajusta o tamanho da fonte */
+  }
+
+  .profile-actions {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 15px; /* Espaço acima das ações */
+  }
+
+  .profile-actions button {
+    width: 100%; /* Botões ocupam toda a largura */
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .profile-array-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .profile-array-item input {
+    margin-right: 0;
+    width: 100%;
+  }
 }
 
 .profile-info {
@@ -129,17 +174,20 @@
   font-size: 2rem;
   margin-bottom: 5px;
   color: var(--color-primary);
+  word-wrap: break-word; /* Garante quebra de linha em palavras longas */
 }
 
 .profile-title {
   font-size: 1.2rem;
   color: var(--color-secondary);
+  word-wrap: break-word; /* Garante quebra de linha em palavras longas */
 }
 
 .company-badges {
   display: flex;
   gap: 10px;
   margin-top: 10px;
+  flex-wrap: wrap; /* Permite que as badges quebrem a linha em telas pequenas */
 }
 
 .company-badge {
@@ -149,6 +197,7 @@
   color: var(--color-text-light);
   display: flex;
   align-items: center;
+  flex-shrink: 0; /* Impede que as badges encolham */
 }
 
 .company-badge .bi {
@@ -729,7 +778,7 @@
 }
 
 .language-dropdown-content {
-  display: block;
+  display: none; /* Inicialmente escondido */
   position: absolute;
   background-color: rgba(45, 45, 45, 0.95); /* Dark background */
   width: 100%;
@@ -739,6 +788,11 @@
   border-radius: 5px;
   z-index: 1;
   margin-top: 5px;
+}
+
+/* Mostrar o conteúdo do dropdown quando estiver aberto */
+.language-dropdown.open .language-dropdown-content {
+  display: block;
 }
 
 .language-checkbox {
