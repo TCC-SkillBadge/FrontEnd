@@ -4,12 +4,16 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import "../styles/Workflow.css";
+import ConfirmationModal from "../components/ConfirmationModal";
+import { ShieldFill } from "react-bootstrap-icons";
 
 const Workflow = () => {
   const { id_request } = useParams();
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
   const [request, setRequest] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [image_badge, setImageBadge] = useState(null);
 
   const navigate = useNavigate();
 
@@ -80,6 +84,15 @@ const Workflow = () => {
     fetchRequest();
   }, []);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageBadge(file);
+    } else {
+      setImageBadge(null);
+    }
+  };
+
   const handleAdvance = async (e) => {
     e.preventDefault();
     const loadingToastId = toast.loading("Loading...");
@@ -89,7 +102,12 @@ const Workflow = () => {
       let response = await axios.put(`${adminUrl}/admin/workflow-advance`, {
         id_request: request.id_request,
         email_admin: user.email_admin,
-        email_enterprise: user.email_comercial
+        email_enterprise: user.email_comercial,
+        image_badge: image_badge
+      }, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
       toast.dismiss(loadingToastId);
@@ -98,7 +116,7 @@ const Workflow = () => {
         toast.success("Order updated successfully");
         setTimeout(() => {
           fetchRequest();
-        }, 2000);   
+        }, 2000);
       }
     } catch (error) {
       toast.dismiss(loadingToastId);
@@ -124,12 +142,27 @@ const Workflow = () => {
         toast.success("Order updated successfully");
         setTimeout(() => {
           fetchRequest();
-        }, 2000);   
+        }, 2000);
       }
     } catch (error) {
       toast.dismiss(loadingToastId);
       console.error("Error updating order:", error);
       toast.error("Error updating order");
+    }
+  };
+
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const handleConfirm = async (e) => {   
+    if (image_badge) {
+      handleCloseModal();
+      handleAdvance(e);
     }
   };
 
@@ -191,7 +224,7 @@ const Workflow = () => {
               title="In production"
               children="The badge is currently being production."
               button={
-                <button className="button-card" onClick={handleAdvance}>Move to Analysist</button>
+                <button className="button-card" onClick={handleShowModal}>Move to Analysist</button>
               }
               {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
             />
@@ -209,6 +242,30 @@ const Workflow = () => {
             />
           </div>
         </div>
+        <ConfirmationModal
+          show={showModal}
+          onHide={handleCloseModal}
+          onConfirm={handleConfirm}
+          title="Send to Analysis"
+          body={
+            <div className="workflow-input-icon">
+              <ShieldFill />
+              <label htmlFor="image_badge" className="custom-file-upload">
+                Choose File
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control"
+                id="image_badge"
+                onChange={handleImageChange}
+                required
+              />
+            </div>
+          }
+          confirmButtonText="Confirm"
+          cancelButtonText="Cancel"
+        />
         <ToastContainer
           position="top-center"
           autoClose={2000}

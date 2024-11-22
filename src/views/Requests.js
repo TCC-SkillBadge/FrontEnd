@@ -19,6 +19,9 @@ const Requests = () => {
   
   const navigate = useNavigate();
 
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+  const adminUrl = process.env.REACT_APP_API_ADMIN;
+
   // Mapeamento dos nomes de canais para algo mais intuitivo
   const channelMap = {
     criacao_badge: "Badge Creation",
@@ -32,7 +35,7 @@ const Requests = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:7004/admin/requests",
+          `${adminUrl}/admin/requests`,
           { token },
           {
             headers: {

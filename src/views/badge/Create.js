@@ -117,7 +117,6 @@ const CreateBadge = () => {
       formDataToSend.append('created_user', user.email_comercial);
       formDataToSend.append('skills_badge', skillsString);
 
-
       let response = await axios.post(`${badgeUrl}/badges/create`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -229,7 +228,7 @@ const CreateBadge = () => {
                 <div className="input-icon">
                   <ShieldFill />
                   <label htmlFor="image_badge" className="custom-file-upload">
-                    Escolher Arquivo
+                    Choose File
                   </label>
                   <input
                     type="file"

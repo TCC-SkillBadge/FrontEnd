@@ -3,7 +3,7 @@
   background-color: rgba(0, 0, 0, 0.8);
   border-bottom: 2px solid transparent;
   border-image: linear-gradient(to right, #D273FF, #8DFD8B) 1;
-  color: #ffffff; /* Define a cor do texto como branco */
+  color: #ffffff; 
 }
 
 .modal-body-custom {
@@ -15,7 +15,7 @@
 }
 
 .modal-footer-custom {
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.8) !important; 
   border-top: 2px solid transparent;
   border-image: linear-gradient(to right, #D273FF, #8DFD8B) 1;
 }
