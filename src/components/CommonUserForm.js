@@ -65,6 +65,7 @@ const CommonUserForm = ({ formData, handleChange, handlePhoneChange }) => {
             className="form-control"
             id="username"
             placeholder="Username"
+            maxLength={15}
             value={formData.username}
             onChange={handleChange}
             required

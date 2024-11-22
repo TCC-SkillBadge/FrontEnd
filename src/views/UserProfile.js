@@ -31,6 +31,7 @@ import { ClipLoader } from "react-spinners";
 import { Link } from "react-router-dom"; 
 import PostForm from "../components/PostForm";
 import { useNavigate } from "react-router-dom";
+import { protectRoute } from "../utils/general-functions/ProtectRoutes";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -50,7 +51,10 @@ const UserProfile = () => {
     numero_contato: "",
     events: [],
     badges: [],
+    photo: null, // Adicionado para armazenar o arquivo de foto
   });
+
+  const [imagePreview, setImagePreview] = useState(null); // Novo estado para a pré-visualização
 
   const navigate = useNavigate();
 
@@ -93,7 +97,6 @@ const UserProfile = () => {
     updateUrlWithEncodedEmail();
   }, [navigate]);
 
-
   const handleBadgeVisibilityChange = async (e, badgeId, index) => {
     const isPublic = e.target.checked;
     try {
@@ -126,15 +129,11 @@ const UserProfile = () => {
     }
   };
 
-
-
-
-
   const [optionsVisibleIndex, setOptionsVisibleIndex] = useState(null);
   const [editingEvent, setEditingEvent] = useState(null);
   const [availableLanguages, setAvailableLanguages] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -153,40 +152,45 @@ const UserProfile = () => {
   };
 
   const fetchBadges = async (tipoUsuario, email) => {
-  try {
-    let response;
-    const token = sessionStorage.getItem("token");
+    try {
+      let response;
+      const token = sessionStorage.getItem("token");
 
-    if (tipoUsuario === "UC") {
-      // Endpoint para usuários comuns
-      response = await axios.get(`http://localhost:7001/badges/wallet?email=${email}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    } else if (tipoUsuario === "UE") {
-      // Endpoint para usuários empresariais
-      response = await axios.get(`http://localhost:7001/badges/consult?search=${email}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-    } else {
-      throw new Error("Tipo de usuário inválido");
+      if (tipoUsuario === "UC") {
+        // Endpoint para usuários comuns
+        response = await axios.get(
+          `http://localhost:7001/badges/wallet?email=${email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (tipoUsuario === "UE") {
+        // Endpoint para usuários empresariais
+        response = await axios.get(
+          `http://localhost:7001/badges/consult?search=${email}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        throw new Error("Tipo de usuário inválido");
+      }
+
+      setUserData((prevData) => ({
+        ...prevData,
+        badges: response.data,
+      }));
+      setLoading(false);
+    } catch (error) {
+      console.error("Erro ao buscar badges:", error);
+      setUserData((prevData) => ({ ...prevData, badges: [] }));
+      setLoading(false);
     }
-
-    setUserData((prevData) => ({
-      ...prevData,
-      badges: response.data,
-    }));
-    setLoading(false);
-  } catch (error) {
-    console.error("Erro ao buscar badges:", error);
-    setUserData((prevData) => ({ ...prevData, badges: [] }));
-    setLoading(false);
-  }
-};
-
+  };
 
   const formatDateTime = (dateString) => {
     const options = {
@@ -201,110 +205,117 @@ const UserProfile = () => {
   };
 
   useEffect(() => {
-  const fetchUserInfo = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      let response;
+    const fetchUserInfo = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        let response;
 
-      if (!token) {
-        setError("Usuário não autenticado");
-        setLoading(false);
-        return;
-      }
-
-      // Carregar os idiomas disponíveis primeiro
-      const languagesResponse = await axios.get(
-        "http://localhost:7000/api/languages",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        if (!token) {
+          setError("Usuário não autenticado");
+          setLoading(false);
+          return;
         }
-      );
-      setAvailableLanguages(languagesResponse.data);
 
-      if (tipoUsuario === "UC") {
-        response = await axios.get("http://localhost:7000/api/user/info", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        // Mapear os idiomas do usuário para objetos com id e name
-        const userLanguages = Array.isArray(response.data.languages)
-          ? response.data.languages
-          : [];
-
-        setUserData({
-          ...response.data,
-          education: Array.isArray(response.data.education)
-            ? response.data.education
-            : [],
-          professionalExperience: Array.isArray(
-            response.data.professional_experience
-          )
-            ? response.data.professional_experience
-            : [],
-          languages: userLanguages,
-        });
-
-        // Chamar fetchBadges para usuários comuns
-        const email = response.data.email || "teste@email.com";
-        await fetchBadges("UC", email);
-
-      } else if (tipoUsuario === "UE") {
-        response = await axios.get(
-          "http://localhost:7003/api/acessar-info-usuario-jwt",
+        // Carregar os idiomas disponíveis primeiro
+        const languagesResponse = await axios.get(
+          "http://localhost:7000/api/languages",
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
+        setAvailableLanguages(languagesResponse.data);
 
-        const eventsResponse = await axios.get(
-          "http://localhost:7003/api/eventos",
-          {
+        if (tipoUsuario === "UC") {
+          response = await axios.get("http://localhost:7000/api/user/info", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
-        );
+          });
 
-        setUserData({
-          ...response.data,
-          email_comercial: response.data.email_comercial,
-          sobre: response.data.sobre || "",
-          website: response.data.website || "",
-          events: eventsResponse.data || [],
-          badges: [], // Inicializa como vazio
-        });
+          // Mapear os idiomas do usuário para objetos com id e name
+          const userLanguages = Array.isArray(response.data.languages)
+            ? response.data.languages
+            : [];
 
-        console.log("Loaded events:", eventsResponse.data);
+          setUserData({
+            ...response.data,
+            education: Array.isArray(response.data.education)
+              ? response.data.education
+              : [],
+            professionalExperience: Array.isArray(
+              response.data.professional_experience
+            )
+              ? response.data.professional_experience
+              : [],
+            languages: userLanguages,
+          });
 
-        // Chamar fetchBadges para usuários empresariais
-        const email = response.data.email_comercial || "teste_comercial@email.com";
-        await fetchBadges("UE", email);
+          // Chamar fetchBadges para usuários comuns
+          const email = response.data.email || "teste@email.com";
+          await fetchBadges("UC", email);
+        } else if (tipoUsuario === "UE") {
+          response = await axios.get(
+            "http://localhost:7003/api/acessar-info-usuario-jwt",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
-      } else {
-        setError("Tipo de usuário inválido");
+          const eventsResponse = await axios.get(
+            "http://localhost:7003/api/eventos",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          setUserData({
+            ...response.data,
+            email_comercial: response.data.email_comercial,
+            sobre: response.data.sobre || "",
+            website: response.data.website || "",
+            events: eventsResponse.data || [],
+            badges: [], // Inicializa como vazio
+          });
+
+          console.log("Loaded events:", eventsResponse.data);
+
+          // Chamar fetchBadges para usuários empresariais
+          const email =
+            response.data.email_comercial || "teste_comercial@email.com";
+          await fetchBadges("UE", email);
+        } else {
+          setError("Tipo de usuário inválido");
+        }
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Erro ao obter informações do usuário:", error);
+        setError("Falha ao carregar os dados do usuário");
+        setLoading(false);
       }
+    };
 
-      setLoading(false);
-    } catch (error) {
-      console.error("Erro ao obter informações do usuário:", error);
-      setError("Falha ao carregar os dados do usuário");
-      setLoading(false);
-    }
-  };
-
-  fetchUserInfo();
-}, [tipoUsuario]);
-
+    fetchUserInfo();
+  }, [tipoUsuario]);
 
   const handleEditToggle = () => {
+    if (isEditing) {
+      // Se estiver editando e o usuário clicar para cancelar, reseta imagePreview e photo
+      setImagePreview(null);
+      setUserData((prevData) => ({
+        ...prevData,
+        photo: null,
+      }));
+    }
     setIsEditing(!isEditing);
   };
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -373,8 +384,20 @@ const UserProfile = () => {
   };
 
   const handleFileChange = (e) => {
-    setUserData({ ...userData, photo: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      setUserData({ ...userData, photo: file });
+      setImagePreview(URL.createObjectURL(file)); // Define a pré-visualização
+    }
   };
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const validateDates = () => {
     let isValid = true;
@@ -463,6 +486,11 @@ const UserProfile = () => {
       }
 
       setIsEditing(false);
+      setImagePreview(null);
+      setUserData((prevData) => ({
+        ...prevData,
+        photo: null, // Opcional: garantir que photo também seja resetado
+      }));
       toast.success("Dados atualizados com sucesso");
     } catch (error) {
       console.error("Erro ao atualizar os dados do usuário:", error);
@@ -674,7 +702,7 @@ if (tipoUsuario === "UC") {
         <div className="profile-header">
           <div className="profile-photo-wrapper">
             <img
-              src={userData.imageUrl || "/default-avatar.png"}
+              src={imagePreview || userData.imageUrl || "/default-avatar.png"} // Usa a pré-visualização se disponível
               alt="User Avatar"
               className="profile-photo"
             />
@@ -696,6 +724,7 @@ if (tipoUsuario === "UC") {
           <div className="profile-info">
             {isEditing ? (
               <>
+                {/* Campos de Edição */}
                 <div className="profile-input-group">
                   <label htmlFor="fullName" className="profile-label">
                     Nome
@@ -727,6 +756,7 @@ if (tipoUsuario === "UC") {
               </>
             ) : (
               <>
+                {/* Exibição dos Dados */}
                 <h2 className="profile-name">{userData.fullName}</h2>
                 <p className="profile-title">
                   {userData.occupation || "Ocupação não informada"}
@@ -1156,7 +1186,9 @@ if (tipoUsuario === "UC") {
         <div className="profile-header">
           <div className="profile-photo-wrapper">
             <img
-              src={userData.imageUrl || "/default-company-logo.png"}
+              src={
+                imagePreview || userData.imageUrl || "/default-company-logo.png"
+              } // Usa a pré-visualização se disponível
               alt="Company Logo"
               className="profile-photo"
             />
@@ -1188,7 +1220,7 @@ if (tipoUsuario === "UC") {
               <h2 className="profile-name">{userData.razao_social}</h2>
             )}
             <p className="profile-title">
-              {userData.cnpj || "CNPJ not provided"}
+              {userData.cnpj || "CNPJ não fornecido"}
             </p>
             <div className="company-badges">
               {userData.municipio && (
@@ -1212,7 +1244,7 @@ if (tipoUsuario === "UC") {
                 <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
               </button>
               <button onClick={handleShareProfile} className="share-button">
-                <ShareFill /> Share Profile
+                <ShareFill /> Compartilhar
               </button>
             </div>
           </div>
@@ -1223,13 +1255,13 @@ if (tipoUsuario === "UC") {
             onClick={() => handleTabChange("sobre")}
             className={activeTab === "sobre" ? "active" : ""}
           >
-            About
+            Sobre
           </button>
           <button
             onClick={() => handleTabChange("eventos")}
             className={activeTab === "eventos" ? "active" : ""}
           >
-            Events
+            Eventos
           </button>
           <button
             onClick={() => handleTabChange("badges")}
@@ -1246,10 +1278,10 @@ if (tipoUsuario === "UC") {
                 <>
                   <div className="profile-section">
                     <label>
-                      <PersonFill className="icon" /> About
+                      <PersonFill className="icon" /> Sobre
                     </label>
                     <textarea
-                      name="sobre" // Ajuste 'about' para 'sobre'
+                      name="sobre"
                       value={userData.sobre || ""}
                       onChange={handleInputChange}
                       className="profile-about-input"
@@ -1269,7 +1301,7 @@ if (tipoUsuario === "UC") {
                   </div>
                   <div className="profile-section">
                     <label>
-                      <Phone className="icon" /> Phone
+                      <Phone className="icon" /> Telefone
                     </label>
                     <input
                       type="text"
@@ -1280,28 +1312,28 @@ if (tipoUsuario === "UC") {
                     />
                   </div>
                   <button onClick={handleSaveChanges} className="save-button">
-                    Save Changes
+                    Salvar Alterações
                   </button>
                 </>
               ) : (
                 <>
                   <div className="profile-section">
                     <h3>
-                      <PersonFill className="icon" /> About
+                      <PersonFill className="icon" /> Sobre
                     </h3>
-                    <p>{userData.sobre || "No description provided."}</p>
+                    <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
                   </div>
                   <div className="profile-section">
                     <h3>
                       <Globe className="icon" /> Website
                     </h3>
-                    <p>{userData.website || "Not provided"}</p>
+                    <p>{userData.website || "Não fornecido"}</p>
                   </div>
                   <div className="profile-section">
                     <h3>
-                      <Phone className="icon" /> Phone
+                      <Phone className="icon" /> Telefone
                     </h3>
-                    <p>{userData.numero_contato || "Not provided"}</p>
+                    <p>{userData.numero_contato || "Não fornecido"}</p>
                   </div>
                 </>
               )}
@@ -1310,7 +1342,7 @@ if (tipoUsuario === "UC") {
 
           {activeTab === "eventos" && (
             <div className="eventos-section">
-              <h3>Promoted Events</h3>
+              <h3>Eventos Promovidos</h3>
 
               {/* Componente para criar novos posts */}
               <PostForm onPostCreated={handleNewPost} />
@@ -1331,7 +1363,11 @@ if (tipoUsuario === "UC") {
                   <div key={index} className="event-item">
                     <div className="event-header">
                       <img
-                        src={userData.imageUrl || "/default-avatar.png"}
+                        src={
+                          imagePreview ||
+                          userData.imageUrl ||
+                          "/default-avatar.png"
+                        } // Usa a pré-visualização se disponível
                         alt="User Avatar"
                         className="event-user-avatar"
                       />
@@ -1368,22 +1404,22 @@ if (tipoUsuario === "UC") {
                               }}
                               title={
                                 !isWithin24Hours(event.createdAt)
-                                  ? "Editing available only within the first 24 hours"
-                                  : "Edit Event"
+                                  ? "Edição disponível apenas nas primeiras 24 horas"
+                                  : "Editar Evento"
                               }
                             >
-                              Edit
+                              Editar
                             </button>
                             {/* Botão "Excluir" sempre habilitado */}
                             <button onClick={() => handleDeleteEvent(event)}>
-                              Delete
+                              Excluir
                             </button>
                           </div>
                         )}
                       </div>
                     </div>
                     <div className="event-details">
-                      <p>{event.descricao || "No description"}</p>
+                      <p>{event.descricao || "Nenhuma descrição"}</p>
                       {event.imageUrl && (
                         <img
                           src={event.imageUrl}
@@ -1395,7 +1431,7 @@ if (tipoUsuario === "UC") {
                   </div>
                 ))
               ) : (
-                <p>No events available.</p>
+                <p>Nenhum evento disponível.</p>
               )}
             </div>
           )}
@@ -1414,13 +1450,13 @@ if (tipoUsuario === "UC") {
                       />
                       <h3>{badge.name_badge}</h3>
                       <Link to={`/badges/details/${badge.id_badge}`}>
-                        <button>Details</button>
+                        <button>Detalhes</button>
                       </Link>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p>No badges available.</p>
+                <p>Nenhuma badge disponível.</p>
               )}
             </div>
           )}
@@ -1433,4 +1469,4 @@ if (tipoUsuario === "UC") {
 }
 };
 
-export default UserProfile;
+export default protectRoute(UserProfile);

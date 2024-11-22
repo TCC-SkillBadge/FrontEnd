@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { protectRoute } from '../utils/general-functions/ProtectRoutes';
 import { Link } from 'react-router-dom';
 import Loading from '../components/Loading';
 import { shuffleArray } from '../utils/general-functions/shuffleArray';
+import { jwtExpirationHandler } from '../utils/general-functions/JWTExpirationHandler';
 import '../styles/GeneralSearch.css';
 import '../styles/GlobalStylings.css';
 
@@ -32,9 +36,13 @@ export const GeneralSearch = () => {
 
     const [token, _setToken] = useState(sessionStorage.getItem('token'));
     const [userInfo, _setUserInfo] = useState(JSON.parse(sessionStorage.getItem('userInfo')));
-    const [userEmail, _setUserEmail] = useState(userInfo.email ? userInfo.email : userInfo.email_comercial);
+    const [userEmail, _setUserEmail] = useState(() => {
+        if(userInfo.email) return userInfo.email;
+        if(userInfo.email_comercial) return userInfo.email_comercial;
+        if(userInfo.email_admin) return userInfo.email_admin;
+    });
 
-    const [search, setSearch] = useState(location.state);
+    const [search, _setSearch] = useState(location.state);
     const [searchAux, setSearchAux] = useState('');
     const [results, setResults] = useState([]);
     const [searching, setSearching] = useState(false);
@@ -44,19 +52,17 @@ export const GeneralSearch = () => {
     }, []);
 
     useEffect(() => {
-        setSearch(() => location.state);
+        console.log('Location change. New search: ', location.state);
+        const s = location.state;
+        setSearchAux(() => s);
+        searchFor(s);
     }, [location]);
 
-    useEffect(() => {
-        setSearchAux(() => search);
-        if(search !== '') searchFor();
-    }, [search]);
-
-    const searchFor = async () => {
+    const searchFor = async (search) => {
         setResults(() => []);
+        setSearching(() => true);
 
         //Encontrando os usuários comuns e empresariais
-        setSearching(() => true);
         let UCResponse = [], UEResponse = [];
         try{
             UCResponse = (await connectionCommonUser.get('/find-users', {
@@ -75,6 +81,8 @@ export const GeneralSearch = () => {
             })).data;
         }
         catch(err){
+            const msg = handleRequestError(err);
+            if(msg) toast.error(msg);
             console.log("Error: ", err);
         }
         //-----------------------------------------------------
@@ -205,14 +213,14 @@ export const GeneralSearch = () => {
                         height={400}/>
                         <h1>{result.name_badge ? result.name_badge : 'Badge Name'}</h1>
                         <div className='flex flex-row justify-content-center mt-3'>
-                        <Link
-                        className='redirect-link'
-                        to={`http://localhost:3000/badge-public-display/${result.id_badge}/${result.razao_social}`}
-                        target="_blank"
-                        rel="noopener noreferrer">
-                            View Details
-                        </Link>
-                    </div>
+                            <Link
+                            className='redirect-link'
+                            to={`http://localhost:3000/badge-public-display/${result.id_badge}/${result.razao_social}`}
+                            target="_blank"
+                            rel="noopener noreferrer">
+                                View Details
+                            </Link>
+                        </div>
                     </div>
                 );
             }
@@ -220,40 +228,77 @@ export const GeneralSearch = () => {
     };
 
     const handleSearch = () => {
+        if(searchAux === '') return;
         navigate('/general-search', { state: searchAux });
     };
 
-    return (
-        <div className='general-search-container default-border-image'>
-            <div className='p-inputgroup'>
-                <span className='p-inputgroup-addon general-search-term-span'>
-                    Search Term
-                </span>
-                <InputText
-                id='general-search-term'
-                value={searchAux}
-                onChange={e => setSearchAux(e.target.value)}
-                onKeyDown={e => { if(e.key === 'Enter') handleSearch(); }}
-                style={{
-                    borderRadius: '0px',
-                    fontSize: 'calc(1rem + 0.5vw)',
-                }}/>
-                <Button
-                className='general-search-page-btn'
-                icon='pi pi-search'
-                onClick={handleSearch}/>
-            </div>
-            <Loading show={searching} msg='Loading Search'/>
-            {
-                !searching && results.length === 0 ?
-                <div className='flex flex-row justify-content-center'>
-                    <h1 className='green-lines p-4'>No Results Found</h1>
-                </div> :
-                null
+    const handleRequestError = (error) => {
+        console.log("Error in handleRequestError: ", error);
+        let msg = '';
+        if(error.response){
+            msg = error.response.data.message
+            if(
+                (error.response.data.type === 'TokenExpired')
+                ||
+                (error.response.data.name === 'TokenExpiredError')
+            ){
+                jwtExpirationHandler();
+                return;
             }
-            <div>
-                { buildResults() }
+        }
+        else if(error.request) msg = 'Error while trying to access server!'
+        return msg;
+    };
+
+    return (
+        <div>
+            <div className='general-search-container default-border-image'>
+                <div className='p-inputgroup'>
+                    <span className='p-inputgroup-addon general-search-term-span'>
+                        Search Term
+                    </span>
+                    <InputText
+                    id='general-search-term'
+                    value={searchAux}
+                    onChange={e => setSearchAux(e.target.value)}
+                    onKeyDown={e => { if(e.key === 'Enter') handleSearch(); }}
+                    style={{
+                        borderRadius: '0px',
+                        fontSize: 'calc(1rem + 0.5vw)',
+                    }}/>
+                    <Button
+                    className='general-search-page-btn'
+                    icon='pi pi-search'
+                    onClick={handleSearch}/>
+                </div>
+                <Loading show={searching} msg='Loading Search'/>
+                {
+                    !searching && results.length === 0 ?
+                    <div className='flex flex-row justify-content-center'>
+                        <h1 className='green-lines p-4'>No Results Found</h1>
+                    </div> :
+                    null
+                }
+                <div>
+                    { buildResults() }
+                </div>
             </div>
+
+            {/* Messages and confirmation parts */}
+
+            <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"/>
+
+            <ConfirmDialog/>
         </div>
     )
 }
