@@ -20,13 +20,16 @@ const Consult = () => {
   const [showModal, setShowModal] = useState(false);
   const [badgeToInactivate, setBadgeToInactivate] = useState(null);
 
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+
   const navigate = useNavigate();
 
   const fetchBadges = async () => {
     try {
       const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
       const email = userInfo && (userInfo.email || userInfo.email_admin || userInfo.email_comercial) ? userInfo.email || userInfo.email_admin || userInfo.email_comercial : "teste@email.com";
-      const response = await axios.get(`http://localhost:7001/badges/consult?search=${email}`);
+      const response = await axios.get(`${badgeUrl}/badges/consult?search=${email}`);
       setBadges(response.data);
       setFilteredBadges(response.data);
       setLoading(false);
@@ -44,7 +47,7 @@ const Consult = () => {
 
     if (userType === "UE") {
       let userInfoResponse = await axios.get(
-        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -52,17 +55,6 @@ const Consult = () => {
         }
       );
       setUserType("business");
-      setUser(userInfoResponse.data);
-    } else if (userType === "UA") {
-      let userInfoResponse = await axios.get(
-        `http://localhost:7004/admin/acessa-info`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setUserType("admin");
       setUser(userInfoResponse.data);
     }
     else {
@@ -132,7 +124,7 @@ const Consult = () => {
       formDataToSend.append('id_badge', `${id_badge}`);
       formDataToSend.append('inactivated_user', `${user.email_comercial}`);
 
-      let response = await axios.put("http://localhost:7001/badges/inactivate", formDataToSend, {
+      let response = await axios.put(`${badgeUrl}/badges/inactivate`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -144,7 +136,7 @@ const Consult = () => {
         toast.success("Badge inactivated successfully");
         setTimeout(() => {
           fetchBadges();
-        }, 2000);       
+        }, 2000);
       }
     } catch (error) {
       toast.dismiss(loadingToastId);
