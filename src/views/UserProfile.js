@@ -1469,4 +1469,4 @@ if (tipoUsuario === "UC") {
 }
 };
 
-export default protectRoute(UserProfile);
+export default UserProfile;
