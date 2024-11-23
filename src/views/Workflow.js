@@ -232,7 +232,7 @@ const Workflow = () => {
           title="Review Badge"
           body={
             <div>
-              <div key={request.id_badge} className="workflow-badge-card">
+              <div key={request.id_badge} className="workflow-badge-card default-border-image">
                 <img
                   src={request.image_url}
                   className="workflow-badge-preview"
@@ -296,16 +296,13 @@ const Workflow = () => {
               }
               {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
               warningIcon={
-                <ExclamationTriangleFill
-                  className="warning-icon"
-                  onClick={handleShowFeedbackModal}
-                />
-                // request.feedback && (
-                //   <ExclamationTriangleFill
-                //     className="warning-icon"
-                //     onClick={handleShowFeedbackModal}
-                //   />
-                // )
+                request.status_badge === "In production" ?
+                  <ExclamationTriangleFill
+                    className="warning-icon"
+                    onClick={handleShowFeedbackModal}
+                  />
+                  : 
+                  ""
               }
             />
             <WorkflowCard
@@ -332,8 +329,8 @@ const Workflow = () => {
               {Array.isArray(request.feedbacks) && request.feedbacks.length > 0 ? (
                 request.feedbacks.map((feedback) => (
                   <div key={feedback.id_feedback} className="workflow-feedback-item">
-                    <p><strong>Date:</strong>{new Date(feedback.date).toLocaleString()}</p>
-                    <p><strong>Reason:</strong> {feedback.desc_feedback}</p>
+                    <p><strong>Date: </strong>{new Date(feedback.date).toLocaleString()}</p>
+                    <p><strong>Reason: </strong> {feedback.desc_feedback}</p>
                     <br />
                   </div>
                 ))
