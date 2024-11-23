@@ -53,6 +53,7 @@ import Dashboard from "./Dashboard";
 import DataVisualization from "./DataVisualization"; // Importado do segundo arquivo
 import ConfirmBadge from "./ConfirmBadge";
 import CommonDetails from "./badge/CommonDetails"; 
+import AdminDataVisualization from "./AdminDataVisualization";
 
 function App() {
   // Gerenciar o userType, user e token no App.js
@@ -143,6 +144,7 @@ function App() {
           <Route path="/profile/:encodedEmail" element={<UserProfile />} />
           <Route path="/api-reference" element={<ApiReference />} />
           <Route path="/funcionalidades" element={<FuncionalidadesManager />} />
+          <Route path="/admin/analysis" element={<AdminDataVisualization />} />
           <Route
             path="/details/common/:id_badge"
             element={<CommonDetails />}
