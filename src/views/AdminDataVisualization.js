@@ -1,14 +1,28 @@
 // src/views/AdminDataVisualization.js
-import React from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
 import { useQueries } from "@tanstack/react-query";
 import { ClipLoader } from "react-spinners";
-import BarChartComponent from "../components/charts/BarChartComponent";
-import PieChartComponent from "../components/charts/PieChartComponent";
-import LineChartComponent from "../components/charts/LineChartComponent";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/DataVisualization.css";
+
+const COLORS = ["#4A90E2", "#F5A623", "#50E3C2", "#9013FE", "#D0021B"];
 
 const AdminDataVisualization = () => {
   const token = sessionStorage.getItem("token");
@@ -94,6 +108,22 @@ const AdminDataVisualization = () => {
   const isError = queries.some((query) => query.isError);
   const errorMessage = queries.find((query) => query.isError)?.error?.message;
 
+  useEffect(() => {
+    console.log("Received Data:", {
+      generalStatsAdmin,
+      completedRequests,
+      requestsStatusBreakdown,
+      completedRequestsTrend,
+      requestStatusProportions,
+    });
+  }, [
+    generalStatsAdmin,
+    completedRequests,
+    requestsStatusBreakdown,
+    completedRequestsTrend,
+    requestStatusProportions,
+  ]);
+
   if (isLoading) {
     return (
       <div className="loading-spinner">
@@ -112,54 +142,158 @@ const AdminDataVisualization = () => {
 
   if (userType !== "UA") {
     return (
-      <div className="info-message">Access restricted to administrators.</div>
+      <div className="info-message">
+        Access restricted to administrators only.
+      </div>
+    );
+  }
+
+  const barData = [
+    {
+      name: "General Statistics",
+      Total: generalStatsAdmin?.total || 0,
+    },
+    {
+      name: "Completed Requests",
+      Completed: completedRequests || 0,
+    },
+  ];
+
+  const pieDataStatusBreakdown = Object.entries(
+    requestsStatusBreakdown || {}
+  ).map(([status, count]) => ({ name: status, value: count }));
+
+  const pieDataStatusProportions = Object.entries(
+    requestStatusProportions || {}
+  ).map(([status, proportion]) => ({ name: status, value: proportion }));
+
+  let lineData = [];
+
+  if (Array.isArray(completedRequestsTrend)) {
+    lineData = completedRequestsTrend.map((item) => ({
+      period: item.month || item.period || "N/A",
+      count: item.count || 0,
+    }));
+  } else if (
+    completedRequestsTrend &&
+    typeof completedRequestsTrend === "object"
+  ) {
+    lineData = Object.entries(completedRequestsTrend).map(
+      ([period, count]) => ({
+        period,
+        count: count || 0,
+      })
+    );
+  } else {
+    console.warn(
+      "completedRequestsTrend is not an array or expected object. Verify API response."
     );
   }
 
   return (
     <div className="data-visualization-container">
-      <h2>Admin Data Analysis</h2>
+      <h2>Administrative Data Analysis</h2>
       <div className="charts-grid">
-        <BarChartComponent
-          data={[{ name: "General Stats", count: generalStatsAdmin?.total }]}
-          title="General Statistics"
-          dataKey="count"
-          fill="#4A90E2"
-          name="General Stats"
-        />
-        <BarChartComponent
-          data={[{ name: "Completed Requests", count: completedRequests }]}
-          title="Completed Requests"
-          dataKey="count"
-          fill="#F5A623"
-          name="Completed Requests"
-        />
-        <PieChartComponent
-          data={Object.entries(requestsStatusBreakdown || {}).map(
-            ([status, count]) => ({ name: status, value: count })
-          )}
-          title="Request Status Breakdown"
-          dataKey="value"
-          nameKey="name"
-        />
-        <LineChartComponent
-          data={completedRequestsTrend}
-          title="Completed Requests Trend"
-          dataKey="count"
-          stroke="#9013FE"
-          name="Requests Trend"
-        />
-        <PieChartComponent
-          data={Object.entries(requestStatusProportions || {}).map(
-            ([status, proportion]) => ({
-              name: status,
-              value: proportion,
-            })
-          )}
-          title="Request Status Proportions"
-          dataKey="value"
-          nameKey="name"
-        />
+        <div className="chart-card">
+          <div className="chart-header">
+            <h3>General Statistics and Completed Requests</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={barData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="Total" fill="#4A90E2" />
+              <Bar dataKey="Completed" fill="#F5A623" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="chart-card">
+          <div className="chart-header">
+            <h3>Requests Status Distribution</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={pieDataStatusBreakdown}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label
+              >
+                {pieDataStatusBreakdown.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="chart-card">
+          <div className="chart-header">
+            <h3>Completed Requests Trend</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            {lineData.length > 0 ? (
+              <LineChart data={lineData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="period" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#9013FE"
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            ) : (
+              <p className="no-data-message">
+                Insufficient data to display the trend chart.
+              </p>
+            )}
+          </ResponsiveContainer>
+        </div>
+
+        <div className="chart-card">
+          <div className="chart-header">
+            <h3>Requests Status Proportion</h3>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={pieDataStatusProportions}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={40}
+                outerRadius={80}
+                label
+              >
+                {pieDataStatusProportions.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
       <ToastContainer
         position="top-center"
