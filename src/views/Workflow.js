@@ -6,7 +6,8 @@ import axios from "axios";
 import "../styles/Workflow.css";
 import ConfirmationModal from "../components/ConfirmationModal";
 import ApproveModal from "../components/ApproveModal";
-import { ShieldFill } from "react-bootstrap-icons";
+import FeedbackModal from "../components/ConfirmationModal";
+import { ShieldFill, JournalText, ExclamationTriangleFill } from "react-bootstrap-icons";
 
 const Workflow = () => {
   const { id_request } = useParams();
@@ -14,7 +15,9 @@ const Workflow = () => {
   const [user, setUser] = useState(null);
   const [request, setRequest] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [image_badge, setImageBadge] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   const navigate = useNavigate();
 
@@ -40,6 +43,7 @@ const Workflow = () => {
         }
       );
       setRequest(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error('Error fetching the badge:', error);
     }
@@ -132,10 +136,17 @@ const Workflow = () => {
     const loadingToastId = toast.loading("Loading...");
     const token = sessionStorage.getItem("token");
 
+    if (rejectionReason === '') {
+      toast.dismiss(loadingToastId);
+      toast.error("Please fill in the rejection reason field");
+      return;
+    }
+
     try {
       let response = await axios.put(`${adminUrl}/admin/workflow-retreat`, {
         id_request: request.id_request,
-        email_enterprise: user.email_comercial
+        email_enterprise: user.email_comercial,
+        desc_feedback: rejectionReason
       });
 
       toast.dismiss(loadingToastId);
@@ -160,6 +171,14 @@ const Workflow = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+  };
+
+  const handleShowFeedbackModal = () => {
+    setShowFeedbackModal(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setShowFeedbackModal(false);
   };
 
   const handleConfirm = async (e) => {
@@ -212,12 +231,27 @@ const Workflow = () => {
           onReprove={handleRetreat}
           title="Review Badge"
           body={
-            <div key={request.id_badge} className="badge-card">
-              <img
-                src={request.image_url}
-                className="badge-preview"
-              />
-              <h3>{request.name_badge}</h3>
+            <div>
+              <div key={request.id_badge} className="workflow-badge-card default-border-image">
+                <img
+                  src={request.image_url}
+                  className="workflow-badge-preview"
+                />
+                <h3>{request.name_badge}</h3>
+              </div>
+              <br />
+              <div className="workflow-form-group">
+                <label>Rejection Reason</label>
+                <div className="workflow-input-icon">
+                  <JournalText />
+                  <textarea
+                    className="form-control"
+                    placeholder="Provide a reason for rejection"
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
             </div>
           }
           approveButtonText="Approve"
@@ -261,6 +295,15 @@ const Workflow = () => {
                 <button className="button-card" onClick={handleShowModal}>Move to Analysist</button>
               }
               {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
+              warningIcon={
+                request.status_badge === "In production" ?
+                  <ExclamationTriangleFill
+                    className="warning-icon"
+                    onClick={handleShowFeedbackModal}
+                  />
+                  : 
+                  ""
+              }
             />
             <WorkflowCard
               icon="bi bi-eye fs-1"
@@ -276,6 +319,28 @@ const Workflow = () => {
             />
           </div>
         </div>
+        <FeedbackModal
+          show={showFeedbackModal}
+          showButtons={false}
+          onHide={handleCloseFeedbackModal}
+          title="Rejection Feedback"
+          body={
+            <div>
+              {Array.isArray(request.feedbacks) && request.feedbacks.length > 0 ? (
+                request.feedbacks.map((feedback) => (
+                  <div key={feedback.id_feedback} className="workflow-feedback-item">
+                    <p><strong>Date: </strong>{new Date(feedback.date).toLocaleString()}</p>
+                    <p><strong>Reason: </strong> {feedback.desc_feedback}</p>
+                    <br />
+                  </div>
+                ))
+              ) : (
+                <li>No feedback available</li>
+              )}
+            </div >
+          }
+          confirmButtonText="Close"
+        />
         <ConfirmationModal
           show={showModal}
           onHide={handleCloseModal}
