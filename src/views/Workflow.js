@@ -6,7 +6,8 @@ import axios from "axios";
 import "../styles/Workflow.css";
 import ConfirmationModal from "../components/ConfirmationModal";
 import ApproveModal from "../components/ApproveModal";
-import { ShieldFill, JournalText } from "react-bootstrap-icons";
+import FeedbackModal from "../components/ConfirmationModal";
+import { ShieldFill, JournalText, ExclamationTriangleFill } from "react-bootstrap-icons";
 
 const Workflow = () => {
   const { id_request } = useParams();
@@ -14,6 +15,7 @@ const Workflow = () => {
   const [user, setUser] = useState(null);
   const [request, setRequest] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [image_badge, setImageBadge] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
 
@@ -41,6 +43,7 @@ const Workflow = () => {
         }
       );
       setRequest(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error('Error fetching the badge:', error);
     }
@@ -170,6 +173,14 @@ const Workflow = () => {
     setShowModal(false);
   };
 
+  const handleShowFeedbackModal = () => {
+    setShowFeedbackModal(true);
+  };
+
+  const handleCloseFeedbackModal = () => {
+    setShowFeedbackModal(false);
+  };
+
   const handleConfirm = async (e) => {
     if (image_badge) {
       handleCloseModal();
@@ -284,6 +295,18 @@ const Workflow = () => {
                 <button className="button-card" onClick={handleShowModal}>Move to Analysist</button>
               }
               {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
+              warningIcon={
+                <ExclamationTriangleFill
+                  className="warning-icon"
+                  onClick={handleShowFeedbackModal}
+                />
+                // request.feedback && (
+                //   <ExclamationTriangleFill
+                //     className="warning-icon"
+                //     onClick={handleShowFeedbackModal}
+                //   />
+                // )
+              }
             />
             <WorkflowCard
               icon="bi bi-eye fs-1"
@@ -299,6 +322,28 @@ const Workflow = () => {
             />
           </div>
         </div>
+        <FeedbackModal
+          show={showFeedbackModal}
+          showButtons={false}
+          onHide={handleCloseFeedbackModal}
+          title="Rejection Feedback"
+          body={
+            <div>
+              {Array.isArray(request.feedbacks) && request.feedbacks.length > 0 ? (
+                request.feedbacks.map((feedback) => (
+                  <div key={feedback.id_feedback} className="workflow-feedback-item">
+                    <p><strong>Date:</strong>{new Date(feedback.date).toLocaleString()}</p>
+                    <p><strong>Reason:</strong> {feedback.desc_feedback}</p>
+                    <br />
+                  </div>
+                ))
+              ) : (
+                <li>No feedback available</li>
+              )}
+            </div >
+          }
+          confirmButtonText="Close"
+        />
         <ConfirmationModal
           show={showModal}
           onHide={handleCloseModal}

@@ -109,6 +109,7 @@
   border: 1px solid; 
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
   margin: auto;
+  position: relative;
 }
 
 .workflow-card-adm i.workflow-icon-adm {
@@ -179,6 +180,28 @@
   background-color: #8DFD8B; 
   border-color: rgba(255, 255, 255, 0);
   color: rgb(0, 0, 0); 
+}
+
+.warning-icon-container {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.warning-icon {
+  color: #ffcc00;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 24px;
+}
+
+.workflow-feedback-item {
+  margin-bottom: 10px; /* Ajuste conforme necessário */
+}
+
+.workflow-feedback-item p {
+  margin: 0;
+  padding: 0;
 }
 
 @media (max-width: 510px) {
