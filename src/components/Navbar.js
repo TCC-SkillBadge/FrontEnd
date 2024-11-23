@@ -257,7 +257,7 @@ const NavBar = (props) => {
             >
               <i className="bi bi-gear"></i> Config
             </NavDropdown.Item>
-            <NavDropdown.Item as={NavLink} to="/analytics">
+            <NavDropdown.Item as={NavLink} to="/admin/analysis">
               <i className="bi bi-bar-chart"></i> Analytics
             </NavDropdown.Item>
             <NavDropdown.Divider />
