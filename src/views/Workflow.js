@@ -6,7 +6,7 @@ import axios from "axios";
 import "../styles/Workflow.css";
 import ConfirmationModal from "../components/ConfirmationModal";
 import ApproveModal from "../components/ApproveModal";
-import { ShieldFill } from "react-bootstrap-icons";
+import { ShieldFill, JournalText } from "react-bootstrap-icons";
 
 const Workflow = () => {
   const { id_request } = useParams();
@@ -15,6 +15,7 @@ const Workflow = () => {
   const [request, setRequest] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [image_badge, setImageBadge] = useState(null);
+  const [rejectionReason, setRejectionReason] = useState('');
 
   const navigate = useNavigate();
 
@@ -132,10 +133,17 @@ const Workflow = () => {
     const loadingToastId = toast.loading("Loading...");
     const token = sessionStorage.getItem("token");
 
+    if (rejectionReason === '') {
+      toast.dismiss(loadingToastId);
+      toast.error("Please fill in the rejection reason field");
+      return;
+    }
+
     try {
       let response = await axios.put(`${adminUrl}/admin/workflow-retreat`, {
         id_request: request.id_request,
-        email_enterprise: user.email_comercial
+        email_enterprise: user.email_comercial,
+        desc_feedback: rejectionReason
       });
 
       toast.dismiss(loadingToastId);
@@ -212,12 +220,27 @@ const Workflow = () => {
           onReprove={handleRetreat}
           title="Review Badge"
           body={
-            <div key={request.id_badge} className="badge-card">
-              <img
-                src={request.image_url}
-                className="badge-preview"
-              />
-              <h3>{request.name_badge}</h3>
+            <div>
+              <div key={request.id_badge} className="workflow-badge-card">
+                <img
+                  src={request.image_url}
+                  className="workflow-badge-preview"
+                />
+                <h3>{request.name_badge}</h3>
+              </div>
+              <br />
+              <div className="workflow-form-group">
+                <label>Rejection Reason</label>
+                <div className="workflow-input-icon">
+                  <JournalText />
+                  <textarea
+                    className="form-control"
+                    placeholder="Provide a reason for rejection"
+                    onChange={(e) => setRejectionReason(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
             </div>
           }
           approveButtonText="Approve"
