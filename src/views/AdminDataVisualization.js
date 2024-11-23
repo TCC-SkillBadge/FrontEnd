@@ -22,7 +22,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/DataVisualization.css";
 
-const COLORS = ["#4A90E2", "#F5A623", "#50E3C2", "#9013FE", "#D0021B"];
+const COLORS = ["#1F2937", "#4B5563", "#9CA3AF", "#F3F4F6", "#6B7280"]; // Paleta personalizada
 
 const AdminDataVisualization = () => {
   const token = sessionStorage.getItem("token");
@@ -31,26 +31,20 @@ const AdminDataVisualization = () => {
   const API_BASE_URL =
     process.env.REACT_APP_API_BASE_URL || "http://127.0.0.1:5001";
 
+  // Definição das consultas (queries)
   const queries = useQueries({
     queries: [
       {
         queryKey: ["generalStatsAdmin"],
         queryFn: () =>
           axios
-            .get(`${API_BASE_URL}/api/analysis/admin/general_stats`, {
-              headers: { Authorization: `Bearer ${token}` },
-            })
+            .get(
+              `${API_BASE_URL}/api/analysis/admin/general_request_statistics`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            )
             .then((res) => res.data),
-        enabled: !!token && userType === "UA",
-      },
-      {
-        queryKey: ["completedRequests"],
-        queryFn: () =>
-          axios
-            .get(`${API_BASE_URL}/api/analysis/admin/completed_requests`, {
-              headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((res) => res.data.completed_requests),
         enabled: !!token && userType === "UA",
       },
       {
@@ -96,9 +90,9 @@ const AdminDataVisualization = () => {
     ],
   });
 
+  // Mapeamento dos dados recebidos
   const [
     generalStatsAdmin,
-    completedRequests,
     requestsStatusBreakdown,
     completedRequestsTrend,
     requestStatusProportions,
@@ -108,17 +102,16 @@ const AdminDataVisualization = () => {
   const isError = queries.some((query) => query.isError);
   const errorMessage = queries.find((query) => query.isError)?.error?.message;
 
+  // Log para depuração
   useEffect(() => {
     console.log("Received Data:", {
       generalStatsAdmin,
-      completedRequests,
       requestsStatusBreakdown,
       completedRequestsTrend,
       requestStatusProportions,
     });
   }, [
     generalStatsAdmin,
-    completedRequests,
     requestsStatusBreakdown,
     completedRequestsTrend,
     requestStatusProportions,
@@ -148,17 +141,23 @@ const AdminDataVisualization = () => {
     );
   }
 
+  // Verificação da existência dos campos esperados
+  const totalRequests = generalStatsAdmin?.total_requests;
+  const completedRequestsCount = generalStatsAdmin?.total_completed_requests;
+
+  console.log("Total Requests:", totalRequests);
+  console.log("Completed Requests:", completedRequestsCount);
+
+  // Estrutura de dados para o BarChart
   const barData = [
     {
-      name: "General Statistics",
-      Total: generalStatsAdmin?.total || 0,
-    },
-    {
-      name: "Completed Requests",
-      Completed: completedRequests || 0,
+      name: "Requests",
+      "Total Requests": totalRequests || 0,
+      "Completed Requests": completedRequestsCount || 0,
     },
   ];
 
+  // Estrutura de dados para os PieCharts
   const pieDataStatusBreakdown = Object.entries(
     requestsStatusBreakdown || {}
   ).map(([status, count]) => ({ name: status, value: count }));
@@ -167,6 +166,7 @@ const AdminDataVisualization = () => {
     requestStatusProportions || {}
   ).map(([status, proportion]) => ({ name: status, value: proportion }));
 
+  // Estrutura de dados para o LineChart
   let lineData = [];
 
   if (Array.isArray(completedRequestsTrend)) {
@@ -194,6 +194,7 @@ const AdminDataVisualization = () => {
     <div className="data-visualization-container">
       <h2>Administrative Data Analysis</h2>
       <div className="charts-grid">
+        {/* Gráfico de Barras Atualizado */}
         <div className="chart-card">
           <div className="chart-header">
             <h3>General Statistics and Completed Requests</h3>
@@ -205,12 +206,13 @@ const AdminDataVisualization = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="Total" fill="#4A90E2" />
-              <Bar dataKey="Completed" fill="#F5A623" />
+              <Bar dataKey="Total Requests" fill="#1F2937" />
+              <Bar dataKey="Completed Requests" fill="#6B7280" />
             </BarChart>
           </ResponsiveContainer>
         </div>
 
+        {/* Gráfico de Distribuição de Status de Solicitações */}
         <div className="chart-card">
           <div className="chart-header">
             <h3>Requests Status Distribution</h3>
@@ -239,6 +241,7 @@ const AdminDataVisualization = () => {
           </ResponsiveContainer>
         </div>
 
+        {/* Gráfico de Tendência de Solicitações Completadas */}
         <div className="chart-card">
           <div className="chart-header">
             <h3>Completed Requests Trend</h3>
@@ -266,6 +269,7 @@ const AdminDataVisualization = () => {
           </ResponsiveContainer>
         </div>
 
+        {/* Gráfico de Proporção de Status de Solicitações */}
         <div className="chart-card">
           <div className="chart-header">
             <h3>Requests Status Proportion</h3>
