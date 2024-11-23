@@ -97,9 +97,9 @@ body {
 }
 
 .workflow-input-icon input:focus {
-  border-color: #8DFD8B; /* Cor da borda quando o input está em foco */
-  box-shadow: 0 0 5px #8DFD8B; /* Adiciona um efeito de sombra verde */
-  outline: none; /* Remove o outline padrão */
+  border-color: #8DFD8B;
+  box-shadow: 0 0 5px #8DFD8B; 
+  outline: none;
 }
 
 .workflow-input-icon input {
@@ -120,6 +120,81 @@ body {
   padding: 10px;
   width: 100%;
   color: #8DFD8B;
+}
+
+.workflow-badge-card {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: white;
+  text-align: center;
+  width: 200px;
+  min-height: 210px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin: 10px auto;
+  border-radius: 15px;
+}
+
+.workflow-badge-card .workflow-badge-preview {
+  border-radius: 8px;
+  height: 180px;
+  object-fit: cover;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin: 10px;
+}
+
+.workflow-badge-card h3 {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.workflow-form-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.workflow-form-label {
+  color: white;
+}
+
+.workflow-input-icon textarea {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #8DFD8B;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.workflow-input-icon textarea::placeholder {
+  color: #8DFD8B;
+}
+
+.workflow-input-icon textarea:focus {
+  background-color: transparent;
+  border-color: #8DFD8B; 
+  color: #8DFD8B;
+  box-shadow: 0 0 5px #8DFD8B; 
+  outline: none; 
+}
+
+.workflow-input-icon input[type="text"]:-webkit-autofill,
+.workflow-input-icon input[type="text"]:-webkit-autofill:hover,
+.workflow-input-icon input[type="text"]:-webkit-autofill:focus,
+.workflow-input-icon input[type="text"]:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgba(0, 0, 0, 0.8) inset !important; 
+  -webkit-text-fill-color: #8DFD8B !important; 
+  -webkit-border-image: 8px;
 }
 
 @media (max-width: 1200px) {

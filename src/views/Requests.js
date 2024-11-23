@@ -64,7 +64,7 @@ const Requests = () => {
   
       if (userType === "UE") {
         let userInfoResponse = await axios.get(
-          `http://localhost:7003/api/acessar-info-usuario-jwt`,
+          `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -74,7 +74,7 @@ const Requests = () => {
       } 
       else if (userType === "UA") {
         let userInfoResponse = await axios.get(
-          `http://localhost:7004/admin/acessa-info`,
+          `${adminUrl}/admin/acessa-info`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
