@@ -23,6 +23,7 @@ import {
 import "../styles/PublicProfile.css";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
+import "../styles/GlobalStylings.css";
 import "react-toastify/dist/ReactToastify.css";
 // import ClipLoader from "react-spinners/ClipLoader"; // Importando o spinner
 import ScaleLoader from "react-spinners/ScaleLoader"; // Importando o spinner
@@ -111,7 +112,7 @@ const PublicProfile = () => {
   return (
     <div className="profile-page">
       <ToastContainer />
-      <div className="profile-container">
+      <div className="profile-container default-border-image">
         {/* Cabeçalho do Perfil */}
         <div className="profile-header">
           <img

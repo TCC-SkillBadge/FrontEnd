@@ -25,6 +25,7 @@ import {
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "../styles/UserProfile.css";
+import "../styles/GlobalStylings.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
@@ -855,7 +856,7 @@ useEffect(() => {
     return (
       <div className="profile-page">
         <ToastContainer />
-        <div className="profile-container">
+        <div className="profile-container default-border-image">
           {/* Cabeçalho do Perfil */}
           <div className="profile-header">
             <div className="profile-photo-wrapper">
@@ -1350,7 +1351,7 @@ useEffect(() => {
     return (
       <div className="profile-page">
         <ToastContainer />
-        <div className="profile-container">
+        <div className="profile-container default-border-image">
           <div className="profile-header">
             <div className="profile-photo-wrapper">
               <img
