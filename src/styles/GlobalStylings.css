@@ -14,7 +14,7 @@
 
 .default-border-image{
     position: relative;
-    padding: 1.3rem;
+    /* padding: 1.3rem; */
     backdrop-filter: blur(10px);
 }
 
@@ -29,6 +29,8 @@
     mask-composite: exclude;
     pointer-events: none;
 }
+
+
 
 /*Confirm Dialog*/
 
@@ -216,4 +218,88 @@
 
 .hide-component{
     display: none;
+}
+
+.card-common {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: white;
+  text-align: center;
+  width: 200px;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px auto;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: 15px;
+  position: relative; /* Para posicionamento dos ícones */
+}
+
+.card-common:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.card-common .card-preview,
+.card-common .medal-img {
+  border-radius: 8px;
+  height: 180px;
+  object-fit: cover;
+  margin: 10px;
+}
+
+.card-common h3 {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-common button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: 2px solid #8DFD8B;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 10px;
+}
+
+.card-common button:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Estilos para Ícones de Editar e Deletar */
+.card-common .edit-icon,
+.card-common .delete-icon {
+  position: absolute;
+  top: 10px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.card-common .edit-icon {
+  right: 10px;
+  color: #ffd700;
+}
+
+.card-common .edit-icon:hover {
+  color: #ffdd57;
+}
+
+.card-common .delete-icon {
+  left: 10px;
+  color: #ff0000;
+}
+
+.card-common .delete-icon:hover {
+  color: #ff5757;
 }

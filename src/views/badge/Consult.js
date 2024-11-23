@@ -8,6 +8,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import "../../styles/GlobalStylings.css";
 
 const Consult = () => {
   const [badges, setBadges] = useState([]);
@@ -155,17 +156,21 @@ const Consult = () => {
       slides.push(
         <div className="badge-slide" key={`slide-${i}`}>
           {badges.slice(i, i + itemsPerSlide).map((badge) => (
-            <div key={badge.id_badge} className="badge-card">
-              <Link onClick={openConfirmationModal} data-id_badge={badge.id_badge} className="delete-icon">
+            <div
+              key={badge.id_badge}
+              className="badge-card default-border-image"
+            >
+              <Link
+                onClick={openConfirmationModal}
+                data-id_badge={badge.id_badge}
+                className="delete-icon"
+              >
                 <TrashFill />
               </Link>
               <Link to={`/badges/edit/${badge.id_badge}`} className="edit-icon">
                 <PencilFill />
               </Link>
-              <img
-                src={badge.image_url}
-                className="badge-preview"
-              />
+              <img src={badge.image_url} className="badge-preview" />
               <h3>{badge.name_badge}</h3>
               <Link to={`/badges/details/${badge.id_badge}`}>
                 <button>Details</button>

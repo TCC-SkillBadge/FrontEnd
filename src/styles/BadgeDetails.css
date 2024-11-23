@@ -41,20 +41,23 @@ body {
 }
 
 .badge-details-image {
+    background-color: rgba(0, 0, 0, 0.25);
     color: white;
     max-width: 300px;
     margin-right: 20px;
     min-height: 315px;
-    border: 2px solid;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    /* border: 2px solid;
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1; */
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     overflow: hidden;
     transition: transform 0.3s, box-shadow 0.3s;
+    margin: 10px auto;
+    /* position: relative; */
+    /* padding: 20px; */
+    border-radius: 15px;
     margin: 10px;
-    position: relative;
-    padding: 20px;
 }
 
 .badge-details-content {

@@ -150,7 +150,7 @@ body {
     transform: translateY(0);
   }
 }
-
+/*badge card no card.css*/
 .wallet-medal-card {
   background-color: var(--card-background);
   color: var(--text-color);

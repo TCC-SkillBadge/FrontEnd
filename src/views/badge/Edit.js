@@ -107,14 +107,14 @@ const EditBadge = () => {
     }
     else {
       return (
-        <div className="badge-card">
+        <div className="badge-card default-border-image">
           <img
             src={badge.image_url ? badge.image_url : ""}
             className="badge-preview"
           />
           <h3>{badge.name_badge}</h3>
         </div>
-      )
+      );
     }
   };
 
