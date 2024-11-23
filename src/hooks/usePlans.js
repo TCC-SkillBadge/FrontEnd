@@ -1,29 +1,37 @@
 // src/hooks/usePlans.js
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const usePlans = () => {
+const usePlans = (userType) => {
+  // Adicionado userType como parâmetro
   const [plans, setPlans] = useState([]);
   const [currentPlan, setCurrentPlan] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchPlansAndCurrentPlan = async () => {
     try {
+      // Buscar todos os planos
       const response = await axios.get("http://localhost:9090/api/plans");
       setPlans(response.data);
 
-      const token = sessionStorage.getItem("token");
-      if (token) {
-        const currentPlanResponse = await axios.get(
-          "http://localhost:7003/api/current-plan", // Adicionado '/api'
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setCurrentPlan(currentPlanResponse.data);
+      // Condicional: Apenas buscar currentPlan se o usuário NÃO for administrativo
+      if (userType !== "UA") {
+        const token = sessionStorage.getItem("token");
+        if (token) {
+          const currentPlanResponse = await axios.get(
+            "http://localhost:7003/api/current-plan",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setCurrentPlan(currentPlanResponse.data);
+        }
+      } else {
+        setCurrentPlan(null); // Opcional: Definir currentPlan como null para admins
       }
 
       setLoading(false);
@@ -43,8 +51,11 @@ const usePlans = () => {
   };
 
   useEffect(() => {
-    fetchPlansAndCurrentPlan();
-  }, []);
+    if (userType !== null) {
+      // Garantir que userType esteja definido
+      fetchPlansAndCurrentPlan();
+    }
+  }, [userType]); // Adicionado userType como dependência
 
   // Função para cancelar o plano atual
   const cancelCurrentPlan = async () => {
@@ -55,7 +66,7 @@ const usePlans = () => {
       }
 
       const response = await axios.post(
-        "http://localhost:7003/api/usuarios/cancelar-plano", // Adicionado '/api'
+        "http://localhost:7003/api/usuarios/cancelar-plano",
         {},
         {
           headers: {

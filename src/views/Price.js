@@ -15,14 +15,6 @@ import CancellationConfirmationModal from "../components/CancellationConfirmatio
 import usePlans from "../hooks/usePlans";
 
 const Price = () => {
-  const {
-    plans,
-    setPlans,
-    currentPlan,
-    setCurrentPlan,
-    loading,
-    cancelCurrentPlan,
-  } = usePlans();
   const [userType, setUserType] = useState(null);
   const [emailComercial, setEmailComercial] = useState(null);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -36,9 +28,9 @@ const Price = () => {
 
   const [sticks, setSticks] = useState(false);
 
-  //Este useEffect é responsável por verificar se o botão de adicionar plano deve ficar fixo no rodapé da página
-  //Sua implementação foi necessária para que o botão de adicionar plano não ficasse em cima do footer
-  //Modificações foram feitas também no arquivo Price.css
+  // Este useEffect é responsável por verificar se o botão de adicionar plano deve ficar fixo no rodapé da página
+  // Sua implementação foi necessária para que o botão de adicionar plano não ficasse em cima do footer
+  // Modificações foram feitas também no arquivo Price.css
   useEffect(() => {
     const handleScroll = () => {
       const addButton = document.querySelector("#add-plan-button");
@@ -48,24 +40,24 @@ const Price = () => {
         const footerTop = footer.getBoundingClientRect().top;
         const buttonHeight = addButton ? addButton.offsetHeight : 0;
         const windowHeight = window.innerHeight;
-        
+
         if (footerTop <= windowHeight + buttonHeight) {
           setSticks(true);
         } else {
           setSticks(false);
         }
       }
-    }
+    };
 
     window.addEventListener("scroll", handleScroll);
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-    }
+    };
   }, []);
 
   useEffect(() => {
-    // Fetch user information
+    // Buscar informações do usuário armazenadas na sessão
     const storedUserType = sessionStorage.getItem("tipoUsuario");
     const storedUserInfo = sessionStorage.getItem("userInfo");
     let storedEmail = null;
@@ -75,16 +67,26 @@ const Price = () => {
         const userInfo = JSON.parse(storedUserInfo);
         storedEmail = userInfo.email_comercial || null;
       } catch (e) {
-        console.error("Error parsing userInfo from sessionStorage:", e);
+        console.error("Erro ao parsear userInfo do sessionStorage:", e);
       }
     }
 
     setUserType(storedUserType);
     setEmailComercial(storedEmail);
 
-    console.log("Stored User Type:", storedUserType);
-    console.log("Stored Email:", storedEmail);
+    console.log("Tipo de Usuário Armazenado:", storedUserType);
+    console.log("Email Comercial Armazenado:", storedEmail);
   }, []);
+
+  // Chamar o hook usePlans passando o userType
+  const {
+    plans,
+    setPlans,
+    currentPlan,
+    setCurrentPlan,
+    loading,
+    cancelCurrentPlan,
+  } = usePlans(userType); // Passando userType como parâmetro
 
   const openConfirmationModal = (planId) => {
     setPlanToDelete(planId);
@@ -102,7 +104,7 @@ const Price = () => {
       setPlans((prevPlans) =>
         prevPlans.filter((plan) => plan.id !== planToDelete)
       );
-      toast.success("Plan successfully deleted!", {
+      toast.success("Plano deletado com sucesso!", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -112,8 +114,8 @@ const Price = () => {
         theme: "dark",
       });
     } catch (error) {
-      console.error("Error deleting plan!", error);
-      toast.error("Failed to delete plan.", {
+      console.error("Erro ao deletar plano!", error);
+      toast.error("Falha ao deletar plano.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -144,11 +146,11 @@ const Price = () => {
   };
 
   const handleConfirmPayment = async () => {
-    console.log("Plan to Purchase:", planToPurchase);
-    console.log("Commercial Email:", emailComercial);
+    console.log("Plano a Comprar:", planToPurchase);
+    console.log("Email Comercial:", emailComercial);
 
     if (!emailComercial) {
-      toast.error("User not authenticated. Please log in again.", {
+      toast.error("Usuário não autenticado. Por favor, faça login novamente.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -163,7 +165,7 @@ const Price = () => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailComercial)) {
-      toast.error("Invalid commercial email.", {
+      toast.error("Email comercial inválido.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -188,7 +190,7 @@ const Price = () => {
         }
       );
       toast.success(
-        response.data.message || "Payment processed successfully!",
+        response.data.message || "Pagamento processado com sucesso!",
         {
           position: "top-center",
           autoClose: 3000,
@@ -202,12 +204,13 @@ const Price = () => {
       setCurrentPlan(response.data.plan);
       setPaymentStatus("success");
     } catch (error) {
-      console.error("Error processing payment:", error);
-      let errorMessage = "Failed to process payment.";
+      console.error("Erro ao processar pagamento:", error);
+      let errorMessage = "Falha ao processar pagamento.";
       if (error.response) {
         errorMessage = error.response.data.message || errorMessage;
       } else if (error.request) {
-        errorMessage = "No response from server. Please try again later.";
+        errorMessage =
+          "Sem resposta do servidor. Por favor, tente novamente mais tarde.";
       } else {
         errorMessage = error.message;
       }
@@ -253,7 +256,7 @@ const Price = () => {
 
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-      You cannot have more than 4 plans.
+      Você não pode ter mais de 4 planos.
     </Tooltip>
   );
 
@@ -362,10 +365,10 @@ const Price = () => {
         show={showModal}
         onHide={handleCloseModal}
         onConfirm={handleConfirmDelete}
-        title="Confirm Plan Deletion"
-        body="Are you sure you want to delete this plan?"
-        confirmButtonText="Delete"
-        cancelButtonText="Cancel"
+        title="Confirmar Deleção do Plano"
+        body="Você tem certeza que deseja deletar este plano?"
+        confirmButtonText="Deletar"
+        cancelButtonText="Cancelar"
       />
 
       <PaymentConfirmationModal
