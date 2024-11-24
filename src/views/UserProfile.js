@@ -578,7 +578,6 @@ useEffect(() => {
     );
 
     if (checked) {
-      // Adicionar idioma selecionado
       setUserData((prevState) => ({
         ...prevState,
         languages: [
@@ -587,13 +586,30 @@ useEffect(() => {
         ],
       }));
     } else {
-      // Remover idioma desmarcado
       setUserData((prevState) => ({
         ...prevState,
         languages: prevState.languages.filter((lang) => lang.id !== languageId),
       }));
     }
+    console.log(userData.languages); // Depuração
   };
+
+useEffect(() => {
+  const fetchLanguages = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      const response = await axios.get("http://localhost:7000/api/languages", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAvailableLanguages(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar idiomas:", error);
+      toast.error("Falha ao carregar idiomas.");
+    }
+  };
+
+  fetchLanguages();
+}, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -885,9 +901,9 @@ useEffect(() => {
     };
   }, []);
 
-  const toggleLanguageDropdown = () => {
-    setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
-  };
+const toggleLanguageDropdown = () => {
+  setIsLanguageDropdownOpen((prevState) => !prevState);
+};
 
   if (loading) {
     return (
@@ -1056,24 +1072,28 @@ useEffect(() => {
                       </button>
                       {isLanguageDropdownOpen && (
                         <div className="language-dropdown-content">
-                          {availableLanguages.map((language) => (
-                            <div
-                              key={language.id}
-                              className="language-checkbox"
-                            >
-                              <label>
-                                <input
-                                  type="checkbox"
-                                  value={language.id}
-                                  checked={userData.languages.some(
-                                    (lang) => lang.id === language.id
-                                  )}
-                                  onChange={handleLanguageCheckboxChange}
-                                />
-                                {language.language}
-                              </label>
-                            </div>
-                          ))}
+                          {availableLanguages.length > 0 ? (
+                            availableLanguages.map((language) => (
+                              <div
+                                key={language.id}
+                                className="language-checkbox"
+                              >
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    value={language.id}
+                                    checked={userData.languages.some(
+                                      (lang) => lang.id === language.id
+                                    )}
+                                    onChange={handleLanguageCheckboxChange}
+                                  />
+                                  {language.language}
+                                </label>
+                              </div>
+                            ))
+                          ) : (
+                            <p>Carregando idiomas...</p>
+                          )}
                         </div>
                       )}
                     </div>
