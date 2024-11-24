@@ -130,6 +130,7 @@ const Login = () => {
 
   // Função para confirmar a badge após o login
   const confirmBadge = async (token) => {
+    const toastId = toast.loading("Confirmando badge...");
     try {
       // Verificar se a URL da API está definida
       if (!API_BADGES) {
@@ -147,20 +148,21 @@ const Login = () => {
       });
 
       if (response.status === 200) {
-        toast.success("Badge confirmada com sucesso!");
-        // Remover o token de confirmação do localStorage
+        toast.update(toastId, {
+          render: "Badge confirmada com sucesso!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
         localStorage.removeItem("badgeConfirmationToken");
       }
     } catch (error) {
-      console.error("Erro ao confirmar a badge:", error);
-      if (error.response && error.response.data) {
-        toast.error(error.response.data);
-      } else {
-        toast.error(
-          "Erro ao confirmar a badge. Por favor, tente novamente mais tarde."
-        );
-      }
-      // Opcional: remover o token de confirmação para evitar tentativas futuras
+      toast.update(toastId, {
+        render: "Erro ao confirmar a badge. Tente novamente.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
       localStorage.removeItem("badgeConfirmationToken");
     }
   };
