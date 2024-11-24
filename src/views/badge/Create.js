@@ -316,7 +316,7 @@ const CreateBadge = () => {
                                   checked={badgeShape === "badge_model1.png"}
                                   onChange={handleBadgeShapeChange}
                                 />
-                                <img src={badgeModel1} alt="Circle Badge" className="badge-shape-image" />
+                                <img src={badgeModel1} className="badge-shape-image" />
                               </label>
                               <label className="input-icon-radio">
                                 <input
@@ -325,7 +325,7 @@ const CreateBadge = () => {
                                   checked={badgeShape === "badge_model2.png"}
                                   onChange={handleBadgeShapeChange}
                                 />
-                                <img src={badgeModel2} alt="Square Badge" className="badge-shape-image" />
+                                <img src={badgeModel2} className="badge-shape-image" />
                               </label>
                               <label className="input-icon-radio">
                                 <input
@@ -334,7 +334,7 @@ const CreateBadge = () => {
                                   checked={badgeShape === "badge_model3.png"}
                                   onChange={handleBadgeShapeChange}
                                 />
-                                <img src={badgeModel3} alt="Star Badge" className="badge-shape-image" />
+                                <img src={badgeModel3} className="badge-shape-image" />
                               </label>
                             </div>
                           </div>

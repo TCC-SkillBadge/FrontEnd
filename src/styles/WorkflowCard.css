@@ -180,15 +180,28 @@
 
 .warning-icon-container {
   position: absolute;
-  top: 15px;
-  right: 15px;
+  top: 30px;
+  right: 90px;
 }
 
 .warning-icon {
   color: #ffcc00;
   cursor: pointer;
   margin-left: 10px;
-  font-size: 24px;
+  font-size: 30px;
+}
+
+.eye-icon-container {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+
+.eye-icon {
+  color: #D273FF;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 30px;
 }
 
 .workflow-feedback-item {

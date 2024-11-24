@@ -7,7 +7,8 @@ import "../styles/Workflow.css";
 import ConfirmationModal from "../components/ConfirmationModal";
 import ApproveModal from "../components/ApproveModal";
 import FeedbackModal from "../components/ConfirmationModal";
-import { ShieldFill, JournalText, ExclamationTriangleFill } from "react-bootstrap-icons";
+import RequestModal from "../components/ConfirmationModal";
+import { ShieldFill, JournalText, ExclamationTriangleFill, EyeFill } from "react-bootstrap-icons";
 
 const Workflow = () => {
   const { id_request } = useParams();
@@ -16,6 +17,7 @@ const Workflow = () => {
   const [request, setRequest] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const [image_badge, setImageBadge] = useState(null);
   const [rejectionReason, setRejectionReason] = useState('');
 
@@ -181,6 +183,14 @@ const Workflow = () => {
     setShowFeedbackModal(false);
   };
 
+  const handleShowRequestModal = () => {
+    setShowRequestModal(true);
+  };
+
+  const handleCloseRequestModal = () => {
+    setShowRequestModal(false);
+  };
+
   const handleConfirm = async (e) => {
     if (image_badge) {
       handleCloseModal();
@@ -201,26 +211,26 @@ const Workflow = () => {
               icon="bi bi-journal-check fs-1"
               title="Requested"
               children="Your badge request has been submitted."
-              {...request.status_badge === "Requested" ? { active: "-active" } : { active: "" }}
+              {...request.status === "Requested" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-fan fs-1"
               title="In production"
               children="Your badge is being manufactured."
-              {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
+              {...request.status === "In production" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-eye fs-1"
               title="Review"
               children="Your badge is for your review."
-              {...request.status_badge === "Review" ? { active: "-active" } : { active: "" }}
+              {...request.status === "Review" ? { active: "-active" } : { active: "" }}
               onClick={handleShowModal}
             />
             <WorkflowCard
               icon="bi bi-check2 fs-1"
               title="Issued"
               children="Your badge has been issued."
-              {...request.status_badge === "Issued" ? { active: "-active" } : { active: "" }}
+              {...request.status === "Issued" ? { active: "-active" } : { active: "" }}
             />
           </div>
         </div>
@@ -241,7 +251,7 @@ const Workflow = () => {
               </div>
               <br />
               <div className="workflow-form-group">
-                <label>Rejection Reason</label>
+                <label className="workflow-form-label">Rejection Reason</label>
                 <div className="workflow-input-icon">
                   <JournalText />
                   <textarea
@@ -285,7 +295,7 @@ const Workflow = () => {
               button={
                 <button className="button-card" onClick={handleAdvance}>Move to Production</button>
               }
-              {...request.status_badge === "Requested" ? { active: "-active" } : { active: "" }}
+              {...request.status === "Requested" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-power fs-1"
@@ -294,14 +304,23 @@ const Workflow = () => {
               button={
                 <button className="button-card" onClick={handleShowModal}>Move to Analysist</button>
               }
-              {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
+              {...request.status === "In production" ? { active: "-active" } : { active: "" }}
               warningIcon={
-                request.status_badge === "In production" && request.feedbacks.length > 0 ?
+                request.status === "In production" && request.feedbacks.length > 0 ?
                   <ExclamationTriangleFill
                     className="warning-icon"
                     onClick={handleShowFeedbackModal}
                   />
-                  : 
+                  :
+                  ""
+              }
+              viewIcon={
+                request.status === "In production" ?
+                  <EyeFill
+                    className="eye-icon"
+                    onClick={handleShowRequestModal}
+                  />
+                  :
                   ""
               }
             />
@@ -309,16 +328,46 @@ const Workflow = () => {
               icon="bi bi-eye fs-1"
               title="Analysis"
               children="The badge is being reviewed for quality and accuracy."
-              {...request.status_badge === "Review" ? { active: "-active" } : { active: "" }}
+              {...request.status === "Review" ? { active: "-active" } : { active: "" }}
             />
             <WorkflowCard
               icon="bi bi-award fs-1"
               title="Issued"
               children="The badge has been successfully issued."
-              {...request.status_badge === "Issued" ? { active: "-active" } : { active: "" }}
+              {...request.status === "Issued" ? { active: "-active" } : { active: "" }}
             />
           </div>
         </div>
+        <RequestModal
+          show={showRequestModal}
+          showButtons={false}
+          onHide={handleCloseRequestModal}
+          title="Request Details"
+          body={
+            <div className="workflow-request-details">
+              <h4>Colors</h4>
+              <ul>
+                {request.color_badge ?
+                  request.color_badge.split(';').map((color, index) => (
+                    <li key={index}>{color}</li>
+                  ))
+                  :
+                  <li>No colors available</li>
+                }
+              </ul>
+              <br />
+
+              <h4>Badge shape</h4>
+              {/* <img src={`../assets/badge-models/`+ request.shape_badge} className="badge-shape-image" />*/}
+              <p>{request.shape_badge}</p>
+              <br />
+
+              <h4>Request description</h4>
+              <p>{request.desc_request}</p>
+            </div >
+          }
+          confirmButtonText="Close"
+        />
         <FeedbackModal
           show={showFeedbackModal}
           showButtons={false}
@@ -335,7 +384,7 @@ const Workflow = () => {
                   </div>
                 ))
               ) : (
-                <li>No feedback available</li>
+                <p>No feedback available</p>
               )}
             </div >
           }
