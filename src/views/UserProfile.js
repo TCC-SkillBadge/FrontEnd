@@ -154,6 +154,59 @@ const UserProfile = () => {
     }));
   };
 
+  useEffect(() => {
+    const checkAuthenticationAndRedirect = async () => {
+      const token = sessionStorage.getItem("token");
+
+      // Caso o usuário não esteja logado ou não seja o proprietário do perfil
+      if (!token) {
+        try {
+          // Verificar o perfil público do usuário comum
+          const publicProfileUCResponse = await axios.get(
+            `http://localhost:7000/api/public-profile/${encodedEmail}`
+          );
+          if (publicProfileUCResponse.data) {
+            navigate(`/public-profile/${encodedEmail}`, { replace: true });
+            return;
+          }
+        } catch (error) {
+          console.error("Perfil público de UC não encontrado:", error);
+        }
+
+        try {
+          // Verificar o perfil público do usuário empresarial
+          const publicProfileUEResponse = await axios.get(
+            `http://localhost:7003/api/public-profile/${encodedEmail}`
+          );
+          if (publicProfileUEResponse.data) {
+            navigate(`/public-profile-enterprise/${encodedEmail}`, {
+              replace: true,
+            });
+            return;
+          }
+        } catch (error) {
+          console.error("Perfil público de UE não encontrado:", error);
+        }
+
+        // Se nenhum perfil for encontrado, redirecionar para a página inicial
+        navigate("/", { replace: true });
+      } else {
+        // Carregar informações do perfil privado
+        try {
+          await fetchUserInfo();
+        } catch (error) {
+          console.error(
+            "Erro ao carregar informações do usuário autenticado:",
+            error
+          );
+          navigate("/", { replace: true });
+        }
+      }
+    };
+
+    checkAuthenticationAndRedirect();
+  }, [encodedEmail, navigate]);
+
   // Função para buscar as informações do usuário
   const fetchUserInfo = async () => {
     try {
