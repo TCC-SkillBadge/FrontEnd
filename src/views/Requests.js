@@ -197,7 +197,6 @@ const Requests = () => {
               <th>Channel</th>
               <th>Priority</th>
               <th>Status</th>
-              <th>Client</th>
               <th style={{ textAlign: "center" }}>Badge</th>
               <th style={{ textAlign: "center" }}>Options</th>
             </tr>
@@ -210,7 +209,6 @@ const Requests = () => {
                 <td>{channelMap[order.canal] || order.canal}</td>{" "}
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>
-                <td>{order.email_request}</td>
                 <td style={{ textAlign: "center" }}>
                   {order.name_badge || "-"}
                 </td>

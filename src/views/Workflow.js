@@ -296,7 +296,7 @@ const Workflow = () => {
               }
               {...request.status_badge === "In production" ? { active: "-active" } : { active: "" }}
               warningIcon={
-                request.status_badge === "In production" ?
+                request.status_badge === "In production" && request.feedbacks.length > 0 ?
                   <ExclamationTriangleFill
                     className="warning-icon"
                     onClick={handleShowFeedbackModal}

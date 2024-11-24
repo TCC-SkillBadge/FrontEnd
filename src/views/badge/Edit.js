@@ -12,6 +12,9 @@ import {
   LightbulbFill,
 } from "react-bootstrap-icons";
 import { WithContext as ReactTags, SEPARATORS } from 'react-tag-input';
+import badgeModel1 from '../../assets/badge-models/badge_model1.png';
+import badgeModel2 from '../../assets/badge-models/badge_model2.png';
+import badgeModel3 from '../../assets/badge-models/badge_model3.png';
 
 const EditBadge = () => {
   const { id_badge } = useParams();
@@ -24,13 +27,21 @@ const EditBadge = () => {
     validity_badge: 0,
     image_url: "",
     skills_badge: "",
+    desc_request: ""
   });
   const [image_badge, setImageBadge] = useState(null);
   const [tags, setTags] = useState([]);
+  const [hasPlan, setHasPlan] = useState(false);
+  const [badgeShape, setBadgeShape] = useState("");
+  const [requestOrder, setRequestOrder] = useState(false);
+  const [colors, setColor] = useState([]);
+
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
 
   const fetchBadge = async () => {
     try {
-      const response = await axios.get(`http://localhost:7001/badges/consult?id_badge=${id_badge}`);
+      const response = await axios.get(`${badgeUrl}/badges/consult?id_badge=${id_badge}`);
       setBadge(response.data);
       setTags(response.data.skills_badge.split(';').map((skill, index) => ({ id: index.toString(), text: skill.trim() })));
     } catch (error) {
@@ -44,15 +55,29 @@ const EditBadge = () => {
 
     if (userType === "UE") {
       let userInfoResponse = await axios.get(
-        `http://localhost:7003/api/acessar-info-usuario-jwt`,
+        `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
+
       setUserType("business");
       setUser(userInfoResponse.data);
+
+      let plan = await axios.get(
+        `${enterpriseUrl}/api/current-plan`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (plan) {
+        setHasPlan(true);
+      }
     } else {
       navigate("/home")
     }
@@ -118,6 +143,27 @@ const EditBadge = () => {
     }
   };
 
+  const handleRequestOrderChange = (event) => {
+    setRequestOrder(event.target.value === "yes");
+  };
+
+  const handleBadgeShapeChange = (event) => {
+    setBadgeShape(event.target.value);
+  };
+
+  const handleDeleteColor = (i) => {
+    setColor(colors.filter((color, index) => index !== i));
+  };
+
+  const handleAdditionColor = (color) => {
+    setColor([...colors, color]);
+  };
+
+  const handleDescRequest = (e) => {
+    const { id, value } = e.target;
+    setBadge((prevData) => ({ ...prevData, desc_request: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const loadingToastId = toast.loading("Loading...");
@@ -128,6 +174,7 @@ const EditBadge = () => {
       }
 
       const skillsString = tags.map(tag => tag.text).join(';');
+      const colorsString = colors.map(color => color.text).join(';');
 
       const formDataToSend = new FormData();
       formDataToSend.append('id_badge', badge.id_badge);
@@ -137,9 +184,13 @@ const EditBadge = () => {
       formDataToSend.append('image_badge', image_badge);
       formDataToSend.append('updated_user', user.email_comercial);
       formDataToSend.append('skills_badge', skillsString);
+      formDataToSend.append('hasPlan', hasPlan);
+      formDataToSend.append('color_badge', colorsString);
+      formDataToSend.append('shape_badge', badgeShape);
+      formDataToSend.append('desc_request', badge.desc_request);
 
       console.log(user)
-      let response = await axios.put("http://localhost:7001/badges/update", formDataToSend, {
+      let response = await axios.put(`${badgeUrl}/badges/update`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -242,25 +293,119 @@ const EditBadge = () => {
                   />
                 </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">
-                  Badge image
-                </label>
-                <div className="input-icon">
-                  <ShieldFill />
-                  <label htmlFor="image_badge" className="custom-file-upload">
-                    Escolher Arquivo
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="form-control"
-                    id="image_badge"
-                    onChange={handleImageChange}
-                  />
-                </div>
-              </div>
+
               {badgePreview()}
+
+              {hasPlan && (
+                <>
+                  <div className="form-group">
+                    <label className="form-label">Request image for your badge?</label>
+                    <select
+                      className="form-control input-icon"
+                      value={requestOrder ? "yes" : "no"}
+                      onChange={handleRequestOrderChange}
+                    >
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
+                    </select>
+                  </div>
+                  {requestOrder ?
+                    (
+                      <>
+                        <div className="form-group">
+                          <label className="form-label">
+                            Colors
+                          </label>
+                          <div className="input-icon">
+                            <LightbulbFill />
+                            <ReactTags
+                              tags={colors}
+                              separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
+                              handleDelete={handleDeleteColor}
+                              handleAddition={handleAdditionColor}
+                              inputFieldPosition="bottom"
+                              autocomplete
+                              placeholder="Enter color(Hexadecimal, RGB, RGBA...) and press enter"
+                              maxTags={10}
+                              minTags={2}
+                              autoFocus={false}
+                            />
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">Badge shape</label>
+                          <div className="badge-shape">
+                            <label className="input-icon-radio">
+                              <input
+                                type="radio"
+                                value="badge_model1.png"
+                                checked={badgeShape === "badge_model1.png"}
+                                onChange={handleBadgeShapeChange}
+                              />
+                              <img src={badgeModel1} alt="Circle Badge" className="badge-shape-image" />
+                            </label>
+                            <label className="input-icon-radio">
+                              <input
+                                type="radio"
+                                value="badge_model2.png"
+                                checked={badgeShape === "badge_model2.png"}
+                                onChange={handleBadgeShapeChange}
+                              />
+                              <img src={badgeModel2} alt="Square Badge" className="badge-shape-image" />
+                            </label>
+                            <label className="input-icon-radio">
+                              <input
+                                type="radio"
+                                value="badge_model3.png"
+                                checked={badgeShape === "badge_model3.png"}
+                                onChange={handleBadgeShapeChange}
+                              />
+                              <img src={badgeModel3} alt="Star Badge" className="badge-shape-image" />
+                            </label>
+                          </div>
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">
+                            Request description
+                          </label>
+                          <div className="input-icon">
+                            <JournalText />
+                            <textarea
+                              className="form-control"
+                              id="desc_request"
+                              placeholder="Enter request description"
+                              value={badge.desc_request}
+                              onChange={handleDescRequest}
+                              required
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )
+                    :
+                    (
+                      <div className="form-group">
+                        <label className="form-label">
+                          Badge image
+                        </label>
+                        <div className="input-icon">
+                          <ShieldFill />
+                          <label htmlFor="image_badge" className="custom-file-upload">
+                            Choose File
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="form-control"
+                            id="image_badge"
+                            onChange={handleImageChange}
+                          />
+                        </div>
+                      </div>
+                    )
+                  }
+                </>
+              )}
             </>
             <div className="btn-container">
               <button type="submit" className="btn btn-primary">
