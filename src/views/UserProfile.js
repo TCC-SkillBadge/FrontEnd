@@ -903,7 +903,7 @@ useEffect(() => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [languageDropdownRef]);
 
 const toggleLanguageDropdown = () => {
   setIsLanguageDropdownOpen((prevState) => !prevState);
@@ -1052,55 +1052,67 @@ const toggleLanguageDropdown = () => {
                     <h3>
                       <Globe className="icon" /> Idiomas
                     </h3>
-                    <div
-                      className="language-dropdown"
-                      ref={languageDropdownRef}
-                    >
-                      <button
-                        type="button"
-                        className="language-dropdown-button"
-                        onClick={toggleLanguageDropdown}
+                    {isEditing ? (
+                      // Renderiza o dropdown de idiomas apenas no modo de edição
+                      <div
+                        className="language-dropdown"
+                        ref={languageDropdownRef}
                       >
+                        <button
+                          type="button"
+                          className="language-dropdown-button"
+                          onClick={toggleLanguageDropdown}
+                        >
+                          {userData.languages.length > 0
+                            ? userData.languages
+                                .map((lang) => lang.name)
+                                .join(", ")
+                            : "Selecione os idiomas"}
+                          <span className="dropdown-icon">
+                            {isLanguageDropdownOpen ? (
+                              <ChevronUp />
+                            ) : (
+                              <ChevronDown />
+                            )}
+                          </span>
+                        </button>
+                        {isLanguageDropdownOpen && (
+                          <div className="language-dropdown-content">
+                            {availableLanguages.length > 0 ? (
+                              availableLanguages.map((language) => (
+                                <div
+                                  key={language.id}
+                                  className="language-checkbox"
+                                >
+                                  <label>
+                                    <input
+                                      type="checkbox"
+                                      value={language.id}
+                                      checked={userData.languages.some(
+                                        (lang) => lang.id === language.id
+                                      )}
+                                      onChange={handleLanguageCheckboxChange}
+                                    />
+                                    {language.language}
+                                  </label>
+                                </div>
+                              ))
+                            ) : (
+                              <p>Carregando idiomas...</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      // Renderiza apenas os idiomas selecionados quando não está no modo de edição
+                      <p>
                         {userData.languages.length > 0
                           ? userData.languages
                               .map((lang) => lang.name)
                               .join(", ")
-                          : "Selecione os idiomas"}
-                        <span className="dropdown-icon">
-                          {isLanguageDropdownOpen ? (
-                            <ChevronUp />
-                          ) : (
-                            <ChevronDown />
-                          )}
-                        </span>
-                      </button>
-                      {isLanguageDropdownOpen && (
-                        <div className="language-dropdown-content">
-                          {availableLanguages.length > 0 ? (
-                            availableLanguages.map((language) => (
-                              <div
-                                key={language.id}
-                                className="language-checkbox"
-                              >
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    value={language.id}
-                                    checked={userData.languages.some(
-                                      (lang) => lang.id === language.id
-                                    )}
-                                    onChange={handleLanguageCheckboxChange}
-                                  />
-                                  {language.language}
-                                </label>
-                              </div>
-                            ))
-                          ) : (
-                            <p>Carregando idiomas...</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                          : "Nenhum idioma selecionado."}
+                      </p>
+                    )}
                   </div>
 
                   {/* Seção Educação */}
@@ -1365,56 +1377,14 @@ const toggleLanguageDropdown = () => {
 
                   {/* Seção Idiomas */}
                   <div className="profile-section">
-                    <h3>Idiomas</h3>
-                    <div
-                      className="language-dropdown"
-                      ref={languageDropdownRef}
-                    >
-                      <button
-                        type="button"
-                        className="language-dropdown-button"
-                        onClick={toggleLanguageDropdown}
-                      >
-                        {userData.languages.length > 0
-                          ? userData.languages
-                              .map((lang) => lang.name)
-                              .join(", ")
-                          : "Selecione os idiomas"}
-                        <span className="dropdown-icon">
-                          {isLanguageDropdownOpen ? (
-                            <ChevronUp />
-                          ) : (
-                            <ChevronDown />
-                          )}
-                        </span>
-                      </button>
-                      {isLanguageDropdownOpen && (
-                        <div className="language-dropdown-content">
-                          {availableLanguages.length > 0 ? (
-                            availableLanguages.map((language) => (
-                              <div
-                                key={language.id}
-                                className="language-checkbox"
-                              >
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    value={language.id}
-                                    checked={userData.languages.some(
-                                      (lang) => lang.id === language.id
-                                    )}
-                                    onChange={handleLanguageCheckboxChange}
-                                  />
-                                  {language.language}
-                                </label>
-                              </div>
-                            ))
-                          ) : (
-                            <p>Carregando idiomas...</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <h3>
+                      <Globe className="icon" /> Idiomas
+                    </h3>
+                    <p>
+                      {userData.languages.length > 0
+                        ? userData.languages.map((lang) => lang.name).join(", ")
+                        : "Nenhum idioma selecionado."}
+                    </p>
                   </div>
                 </div>
               ))}
