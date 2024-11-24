@@ -1,15 +1,13 @@
-// src/pages/ConfirmBadge.js
-
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ConfirmationModal from "../components/ConfirmationModal"; // Ensure this component exists
-import "../styles/ConfirmBadge.css"; // Create this file for styles
+import ConfirmationModal from "../components/ConfirmationModal"; // Certifique-se de que este componente existe
+import "../styles/ConfirmBadge.css"; // Adicione estilos específicos se necessário
 
-const API_BADGES = process.env.REACT_APP_API_BADGES; // Ensure this environment variable is set
+const API_BADGES = process.env.REACT_APP_API_BADGES;
 
 const ConfirmBadge = () => {
   const location = useLocation();
@@ -20,46 +18,39 @@ const ConfirmBadge = () => {
     body: "",
     showButtons: false,
   });
-  const [token, setToken] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Extract the token from the URL
+    // Extrair o token da URL
     const params = new URLSearchParams(location.search);
     const tokenFromURL = params.get("token");
 
     if (tokenFromURL) {
-      setToken(tokenFromURL);
-      // Save the token in localStorage for later use (after login/signup)
+      // Armazena o token para futura referência
       localStorage.setItem("badgeConfirmationToken", tokenFromURL);
       confirmBadge(tokenFromURL);
     } else {
-      // Check if there's a token stored in localStorage
       const storedToken = localStorage.getItem("badgeConfirmationToken");
       if (storedToken) {
-        setToken(storedToken);
         confirmBadge(storedToken);
       } else {
-        // If no token is present, show an error and redirect
-        toast.error("Invalid confirmation token.");
-        navigate("/"); // Redirect to the home page or another appropriate page
+        toast.error("Token de confirmação inválido ou ausente.");
+        navigate("/"); // Redireciona para a página inicial
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.search]);
+  }, [location.search, navigate]);
 
   const confirmBadge = async (confirmationToken) => {
     setIsLoading(true);
     try {
-      // Check if the user is logged in
       const storedAuthToken =
         sessionStorage.getItem("token") || localStorage.getItem("token");
 
       if (!storedAuthToken) {
-        // User is not logged in, prompt to log in or sign up
+        // Caso o usuário não esteja logado, solicita login
         setModalContent({
-          title: "Badge Confirmation",
-          body: "You need to be logged in to confirm this badge. Would you like to log in now?",
+          title: "Confirmação de Badge",
+          body: "Você precisa estar logado para confirmar a badge. Deseja fazer login agora?",
           showButtons: true,
         });
         setShowModal(true);
@@ -67,9 +58,9 @@ const ConfirmBadge = () => {
         return;
       }
 
-      // User is logged in, send the token to confirm the badge
+      // Realiza a confirmação da badge
       const response = await axios.post(
-        `${API_BADGES}/badges/confirm-badge`,
+        `${API_BADGES}badges/confirm-badge`,
         { token: confirmationToken },
         {
           headers: {
@@ -79,21 +70,21 @@ const ConfirmBadge = () => {
       );
 
       if (response.status === 200) {
-        toast.success("Badge successfully confirmed!");
-        // Clear the confirmation token after successful confirmation
+        toast.success("Badge confirmada com sucesso!");
         localStorage.removeItem("badgeConfirmationToken");
-        setIsLoading(false);
-        navigate("/profile"); // Redirect to the user's profile or another appropriate page
+        navigate("/profile"); // Redireciona para o perfil do usuário
       }
     } catch (error) {
-      console.error("Error confirming the badge:", error);
+      console.error("Erro ao confirmar a badge:", error);
       if (error.response && error.response.data) {
-        toast.error(error.response.data);
+        toast.error(
+          error.response.data.message || "Erro ao confirmar a badge."
+        );
       } else {
-        toast.error("Error confirming the badge. Please try again later.");
+        toast.error("Erro ao confirmar a badge. Tente novamente mais tarde.");
       }
+    } finally {
       setIsLoading(false);
-      navigate("/"); // Redirect to an appropriate page
     }
   };
 
@@ -109,11 +100,11 @@ const ConfirmBadge = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    navigate("/"); // Redirect to the home page or another appropriate page
+    navigate("/"); // Redireciona para a página inicial
   };
 
   const handleConfirmAction = () => {
-    if (modalContent.body.includes("log in")) {
+    if (modalContent.body.includes("login")) {
       handleLoginRedirect();
     } else if (modalContent.body.includes("sign up")) {
       handleSignupRedirect();
@@ -128,7 +119,7 @@ const ConfirmBadge = () => {
           <Spinner animation="border" role="status">
             <span className="visually-hidden">Loading...</span>
           </Spinner>
-          <p>Confirming your badge...</p>
+          <p>Confirmando sua badge...</p>
         </div>
       ) : (
         <ConfirmationModal
@@ -137,8 +128,8 @@ const ConfirmBadge = () => {
           onConfirm={handleConfirmAction}
           title={modalContent.title}
           body={modalContent.body}
-          confirmButtonText="Confirm"
-          cancelButtonText="Cancel"
+          confirmButtonText="Sim"
+          cancelButtonText="Cancelar"
           showButtons={modalContent.showButtons}
         />
       )}
