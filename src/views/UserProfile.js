@@ -578,14 +578,18 @@ useEffect(() => {
     );
 
     if (checked) {
-      setUserData((prevState) => ({
-        ...prevState,
-        languages: [
-          ...prevState.languages,
-          { id: languageObj.id, name: languageObj.language },
-        ],
-      }));
+      // Adiciona o idioma à lista se estiver marcado
+      if (languageObj) {
+        setUserData((prevState) => ({
+          ...prevState,
+          languages: [
+            ...prevState.languages,
+            { id: languageObj.id, name: languageObj.language },
+          ],
+        }));
+      }
     } else {
+      // Remove o idioma da lista se desmarcado
       setUserData((prevState) => ({
         ...prevState,
         languages: prevState.languages.filter((lang) => lang.id !== languageId),
