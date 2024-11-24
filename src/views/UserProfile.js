@@ -591,8 +591,8 @@ useEffect(() => {
         languages: prevState.languages.filter((lang) => lang.id !== languageId),
       }));
     }
-    console.log(userData.languages); // Depuração
   };
+  
 
 useEffect(() => {
   const fetchLanguages = async () => {
@@ -1361,22 +1361,56 @@ const toggleLanguageDropdown = () => {
 
                   {/* Seção Idiomas */}
                   <div className="profile-section">
-                    <h3>
-                      <Globe className="icon" /> Idiomas
-                    </h3>
-                    {Array.isArray(userData.languages) &&
-                    userData.languages.length > 0 ? (
-                      userData.languages.map((language, index) => (
-                        <div key={index} className="profile-info-row">
-                          <Flag className="icon" />
-                          <span className="profile-info-text">
-                            {language.name}
-                          </span>
+                    <h3>Idiomas</h3>
+                    <div
+                      className="language-dropdown"
+                      ref={languageDropdownRef}
+                    >
+                      <button
+                        type="button"
+                        className="language-dropdown-button"
+                        onClick={toggleLanguageDropdown}
+                      >
+                        {userData.languages.length > 0
+                          ? userData.languages
+                              .map((lang) => lang.name)
+                              .join(", ")
+                          : "Selecione os idiomas"}
+                        <span className="dropdown-icon">
+                          {isLanguageDropdownOpen ? (
+                            <ChevronUp />
+                          ) : (
+                            <ChevronDown />
+                          )}
+                        </span>
+                      </button>
+                      {isLanguageDropdownOpen && (
+                        <div className="language-dropdown-content">
+                          {availableLanguages.length > 0 ? (
+                            availableLanguages.map((language) => (
+                              <div
+                                key={language.id}
+                                className="language-checkbox"
+                              >
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    value={language.id}
+                                    checked={userData.languages.some(
+                                      (lang) => lang.id === language.id
+                                    )}
+                                    onChange={handleLanguageCheckboxChange}
+                                  />
+                                  {language.language}
+                                </label>
+                              </div>
+                            ))
+                          ) : (
+                            <p>Carregando idiomas...</p>
+                          )}
                         </div>
-                      ))
-                    ) : (
-                      <p>Nenhum idioma fornecido.</p>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
