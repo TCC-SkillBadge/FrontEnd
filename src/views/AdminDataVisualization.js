@@ -242,7 +242,7 @@ const AdminDataVisualization = () => {
         </div>
 
         {/* Gráfico de Tendência de Solicitações Completadas */}
-        <div className="chart-card">
+        {/* <div className="chart-card">
           <div className="chart-header">
             <h3>Completed Requests Trend</h3>
           </div>
@@ -267,7 +267,7 @@ const AdminDataVisualization = () => {
               </p>
             )}
           </ResponsiveContainer>
-        </div>
+        </div> */}
 
         {/* Gráfico de Proporção de Status de Solicitações */}
         {/* <div className="chart-card">
