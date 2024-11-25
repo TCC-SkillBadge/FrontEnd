@@ -1025,12 +1025,12 @@ const toggleLanguageDropdown = () => {
                 <button onClick={handleShareProfile} className="share-button">
                   <ShareFill /> Compartilhar
                 </button>
-                <button
+                {/* <button                                                    Adicionar quando a funcionalidade estiver pronta
                   onClick={handleDownloadPortfolio}
                   className="download-button"
                 >
                   <FileEarmarkArrowDownFill /> Baixar Portfólio
-                </button>
+                </button> */}
               </div>
             </div>
           </div>

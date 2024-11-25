@@ -118,7 +118,7 @@ const NavBar = (props) => {
     { page: "/orders", title: "Service Request", user: 'UA' },
     { page: "/list-soft-skills", title: "Skills", user: 'UA' },
     { page: "/manage-test", title: "Test", user: 'UA' },
-    { page: "/portfolio", title: "Portfolio", user: 'UC' },
+    // { page: "/portfolio", title: "Portfolio", user: 'UC' },
     { page: "/price", title: "Service Plans", user: 'UA' },
   ];
 
@@ -172,15 +172,31 @@ const NavBar = (props) => {
             </NavDropdown.Item>
             <NavDropdown.Item
               as="div"
-              className="disabled"
+              className="disabled config-item"
               data-bs-toggle="tooltip"
               data-bs-placement="right"
               title="Feature not available"
-              style={{ cursor: "not-allowed", color: "gray" }}
+              style={{
+                pointerEvents: "none",
+                color: "gray",
+                opacity: 0.5,
+                cursor: "not-allowed",
+              }}
             >
               <i className="bi bi-gear"></i> Config
             </NavDropdown.Item>
-            <NavDropdown.Item as={NavLink} to="/portfolio">
+            <NavDropdown.Item
+              as={NavLink}
+              title="Feature not available"
+              className="disabled config-item"
+              style={{
+                pointerEvents: "none",
+                color: "gray",
+                opacity: 0.5,
+                cursor: "not-allowed",
+              }}
+              to="/portfolio"
+            >
               <i className="bi bi-briefcase"></i> Portfolio
             </NavDropdown.Item>
             <NavDropdown.Divider />
