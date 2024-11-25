@@ -934,7 +934,7 @@ const toggleLanguageDropdown = () => {
 
   if (loading) {
     return (
-      <div className="spinner-container">
+      <div className="user-spinner-container">
         <ClipLoader color="#8DFD8B" size={150} />
       </div>
     );
@@ -942,7 +942,7 @@ const toggleLanguageDropdown = () => {
 
   if (error) {
     return (
-      <div className="error-container">
+      <div className="user-error-container">
         <p>{error}</p>
       </div>
     );
@@ -950,20 +950,20 @@ const toggleLanguageDropdown = () => {
 
   if (tipoUsuario === "UC") {
     return (
-      <div className="profile-page">
+      <div className="user-profile-page">
         <ToastContainer />
-        <div className="profile-container default-border-image">
+        <div className="user-profile-container default-border-image">
           {/* Cabeçalho do Perfil */}
-          <div className="profile-header">
-            <div className="profile-photo-wrapper">
+          <div className="user-profile-header">
+            <div className="user-profile-photo-wrapper">
               <img
                 src={imagePreview || userData.imageUrl || "/default-avatar.png"}
                 alt="User Avatar"
-                className="profile-photo"
+                className="user-profile-photo"
               />
               {isEditing && (
-                <div className="edit-photo-overlay">
-                  <label htmlFor="upload-photo" className="edit-photo-icon">
+                <div className="user-edit-photo-overlay">
+                  <label htmlFor="upload-photo" className="user-edit-photo-icon">
                     <CameraFill size={20} /> {/* Usando o ícone de câmera */}
                   </label>
                   <input
@@ -976,13 +976,13 @@ const toggleLanguageDropdown = () => {
                 </div>
               )}
             </div>
-            <div className="profile-info">
+            <div className="user-profile-info">
               {isEditing ? (
                 <>
                   {/* Campos de Edição */}
-                  <div className="profile-input-group">
-                    <label htmlFor="fullName" className="profile-label">
-                      Nome <span className="required">*</span>
+                  <div className="user-profile-input-group">
+                    <label htmlFor="fullName" className="user-profile-label">
+                      Nome <span className="user-required">*</span>
                     </label>
                     <input
                       type="text"
@@ -990,12 +990,12 @@ const toggleLanguageDropdown = () => {
                       name="fullName"
                       value={userData.fullName || ""}
                       onChange={handleInputChange}
-                      className="profile-input"
+                      className="user-profile-input"
                       placeholder="Nome Completo"
                     />
                   </div>
-                  <div className="profile-input-group">
-                    <label htmlFor="occupation" className="profile-label">
+                  <div className="user-profile-input-group">
+                    <label htmlFor="occupation" className="user-profile-label">
                       Ocupação
                     </label>
                     <input
@@ -1004,7 +1004,7 @@ const toggleLanguageDropdown = () => {
                       name="occupation"
                       value={userData.occupation || ""}
                       onChange={handleInputChange}
-                      className="profile-input"
+                      className="user-profile-input"
                       placeholder="Ocupação"
                     />
                   </div>
@@ -1012,17 +1012,17 @@ const toggleLanguageDropdown = () => {
               ) : (
                 <>
                   {/* Exibição dos Dados */}
-                  <h2 className="profile-name">{userData.fullName}</h2>
-                  <p className="profile-title">
+                  <h2 className="user-profile-name">{userData.fullName}</h2>
+                  <p className="user-profile-title">
                     {userData.occupation || "Ocupação não informada"}
                   </p>
                 </>
               )}
-              <div className="profile-actions">
-                <button onClick={handleEditToggle} className="edit-button">
+              <div className="user-profile-actions">
+                <button onClick={handleEditToggle} className="user-edit-button">
                   <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
                 </button>
-                <button onClick={handleShareProfile} className="share-button">
+                <button onClick={handleShareProfile} className="user-share-button">
                   <ShareFill /> Compartilhar
                 </button>
                 {/* <button                                                    Adicionar quando a funcionalidade estiver pronta
@@ -1036,7 +1036,7 @@ const toggleLanguageDropdown = () => {
           </div>
 
           {/* Guias de Perfil e Badges */}
-          <div className="tabs">
+          <div className="user-tabs">
             <button
               onClick={() => handleTabChange("perfil")}
               className={activeTab === "perfil" ? "active" : ""}
@@ -1052,38 +1052,38 @@ const toggleLanguageDropdown = () => {
           </div>
 
           {/* Conteúdo das Guias */}
-          <div className="tab-content">
+          <div className="user-tab-content">
             {/* Guia Perfil */}
             {activeTab === "perfil" &&
               (isEditing ? (
-                <div className="profile-sections">
+                <div className="user-profile-sections">
                   {/* Seção Sobre */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <p>
-                      <PersonFill className="icon" /> Sobre
+                      <PersonFill className="user-icon" /> Sobre
                     </p>
                     <textarea
                       name="about"
                       value={userData.about || ""}
                       onChange={handleInputChange}
-                      className="profile-about-input"
+                      className="user-profile-about-input"
                     />
                   </div>
 
                   {/* Seção Idiomas */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <h3>
-                      <Globe className="icon" /> Idiomas
+                      <Globe className="user-icon" /> Idiomas
                     </h3>
                     {isEditing ? (
                       // Renderiza o dropdown de idiomas apenas no modo de edição
                       <div
-                        className="language-dropdown"
+                        className="user-language-dropdown"
                         ref={languageDropdownRef}
                       >
                         <button
                           type="button"
-                          className="language-dropdown-button"
+                          className="user-language-dropdown-button"
                           onClick={toggleLanguageDropdown}
                         >
                           {userData.languages.length > 0
@@ -1091,7 +1091,7 @@ const toggleLanguageDropdown = () => {
                                 .map((lang) => lang.name)
                                 .join(", ")
                             : "Selecione os idiomas"}
-                          <span className="dropdown-icon">
+                          <span className="user-dropdown-icon">
                             {isLanguageDropdownOpen ? (
                               <ChevronUp />
                             ) : (
@@ -1100,12 +1100,12 @@ const toggleLanguageDropdown = () => {
                           </span>
                         </button>
                         {isLanguageDropdownOpen && (
-                          <div className="language-dropdown-content">
+                          <div className="user-language-dropdown-content">
                             {availableLanguages.length > 0 ? (
                               availableLanguages.map((language) => (
                                 <div
                                   key={language.id}
-                                  className="language-checkbox"
+                                  className="user-language-checkbox"
                                 >
                                   <label>
                                     <input
@@ -1139,13 +1139,13 @@ const toggleLanguageDropdown = () => {
                   </div>
 
                   {/* Seção Educação */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <h3>
-                      <MortarboardFill className="icon" /> Educação
+                      <MortarboardFill className="user-icon" /> Educação
                     </h3>
                     {userData.education.map((edu, index) => (
-                      <div key={index} className="profile-array-item">
-                        <Building className="icon" />
+                      <div key={index} className="user-profile-array-item">
+                        <Building className="user-icon" />
                         <input
                           type="text"
                           value={edu.institution || ""}
@@ -1158,9 +1158,9 @@ const toggleLanguageDropdown = () => {
                               "education"
                             )
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
-                        <AwardFill className="icon" />
+                        <AwardFill className="user-icon" />
                         <input
                           type="text"
                           value={edu.degree || ""}
@@ -1168,9 +1168,9 @@ const toggleLanguageDropdown = () => {
                           onChange={(e) =>
                             handleArrayChange(e, index, "degree", "education")
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
-                        <CalendarFill className="icon" />
+                        <CalendarFill className="user-icon" />
                         <input
                           type="text"
                           value={edu.admissionYear || ""}
@@ -1183,9 +1183,9 @@ const toggleLanguageDropdown = () => {
                               "education"
                             )
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
-                        <CalendarFill className="icon" />
+                        <CalendarFill className="user-icon" />
                         <input
                           type="text"
                           value={edu.graduationYear || ""}
@@ -1198,11 +1198,11 @@ const toggleLanguageDropdown = () => {
                               "education"
                             )
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
                         <button
                           onClick={() => handleRemoveItem(index, "education")}
-                          className="delete-button"
+                          className="user-delete-button"
                         >
                           <Trash />
                         </button>
@@ -1217,20 +1217,20 @@ const toggleLanguageDropdown = () => {
                           graduationYear: "",
                         })
                       }
-                      className="add-button"
+                      className="user-add-button"
                     >
                       <PlusSquare /> Adicionar
                     </button>
                   </div>
 
                   {/* Seção Experiência Profissional */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="icon" /> Experiência Profissional
+                      <Briefcase className="user-icon" /> Experiência Profissional
                     </h3>
                     {userData.professionalExperience.map((exp, index) => (
-                      <div key={index} className="profile-array-item">
-                        <Building className="icon" />
+                      <div key={index} className="user-profile-array-item">
+                        <Building className="user-icon" />
                         <input
                           type="text"
                           value={exp.company || ""}
@@ -1243,9 +1243,9 @@ const toggleLanguageDropdown = () => {
                               "professionalExperience"
                             )
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
-                        <Briefcase className="icon" />
+                        <Briefcase className="user-icon" />
                         <input
                           type="text"
                           value={exp.position || ""}
@@ -1258,9 +1258,9 @@ const toggleLanguageDropdown = () => {
                               "professionalExperience"
                             )
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
-                        <CalendarFill className="icon" />
+                        <CalendarFill className="user-icon" />
                         <input
                           type="text"
                           value={exp.startDate || ""}
@@ -1273,9 +1273,9 @@ const toggleLanguageDropdown = () => {
                               "professionalExperience"
                             )
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
-                        <CalendarFill className="icon" />
+                        <CalendarFill className="user-icon" />
                         <input
                           type="text"
                           value={exp.endDate || ""}
@@ -1288,13 +1288,13 @@ const toggleLanguageDropdown = () => {
                               "professionalExperience"
                             )
                           }
-                          className="profile-input"
+                          className="user-profile-input"
                         />
                         <button
                           onClick={() =>
                             handleRemoveItem(index, "professionalExperience")
                           }
-                          className="delete-button"
+                          className="user-delete-button"
                         >
                           <Trash />
                         </button>
@@ -1309,7 +1309,7 @@ const toggleLanguageDropdown = () => {
                           endDate: "",
                         })
                       }
-                      className="add-button"
+                      className="user-add-button"
                     >
                       <PlusSquare /> Adicionar
                     </button>
@@ -1318,46 +1318,46 @@ const toggleLanguageDropdown = () => {
                   {/* Botão Salvar Alterações */}
                   <button
                     onClick={handleSaveChanges}
-                    className="save-button"
+                    className="user-save-button"
                     disabled={isEditing && !userData.fullName.trim()}
                   >
                     Salvar Alterações
                   </button>
                 </div>
               ) : (
-                <div className="profile-sections">
+                <div className="user-profile-sections">
                   {/* Seção Sobre */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <h3>
-                      <PersonFill className="icon" /> Sobre
+                      <PersonFill className="user-icon" /> Sobre
                     </h3>
                     <p>{userData.about || "Nenhuma descrição fornecida."}</p>
                   </div>
 
                   {/* Seção Educação */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <h3>
-                      <MortarboardFill className="icon" /> Educação
+                      <MortarboardFill className="user-icon" /> Educação
                     </h3>
                     {Array.isArray(userData.education) &&
                     userData.education.length > 0 ? (
                       userData.education.map((edu, index) => (
-                        <div key={index} className="education-item">
-                          <div className="profile-info-row">
-                            <Building className="icon" />
-                            <span className="institution-name">
+                        <div key={index} className="user-education-item">
+                          <div className="user-profile-info-row">
+                            <Building className="user-icon" />
+                            <span className="user-institution-name">
                               {edu.institution}
                             </span>
                           </div>
-                          <div className="profile-info-row">
-                            <AwardFill className="icon" />
-                            <span className="education-degree">
+                          <div className="user-profile-info-row">
+                            <AwardFill className="user-icon" />
+                            <span className="user-education-degree">
                               {edu.degree}
                             </span>
                           </div>
-                          <div className="profile-info-row">
-                            <CalendarFill className="icon" />
-                            <span className="education-dates">
+                          <div className="user-profile-info-row">
+                            <CalendarFill className="user-icon" />
+                            <span className="user-education-dates">
                               {edu.admissionYear} - {edu.graduationYear}
                             </span>
                           </div>
@@ -1369,29 +1369,29 @@ const toggleLanguageDropdown = () => {
                   </div>
 
                   {/* Seção Experiência Profissional */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="icon" /> Experiência Profissional
+                      <Briefcase className="user-icon" /> Experiência Profissional
                     </h3>
                     {Array.isArray(userData.professionalExperience) &&
                     userData.professionalExperience.length > 0 ? (
                       userData.professionalExperience.map((exp, index) => (
-                        <div key={index} className="experience-item">
-                          <div className="profile-info-row">
-                            <Building className="icon" />
-                            <span className="profile-info-text">
+                        <div key={index} className="user-experience-item">
+                          <div className="user-profile-info-row">
+                            <Building className="user-icon" />
+                            <span className="user-profile-info-text">
                               {exp.company}
                             </span>
                           </div>
-                          <div className="profile-info-row">
-                            <Briefcase className="icon" />
-                            <span className="profile-info-text">
+                          <div className="user-profile-info-row">
+                            <Briefcase className="user-icon" />
+                            <span className="user-profile-info-text">
                               {exp.position}
                             </span>
                           </div>
-                          <div className="profile-info-row">
-                            <CalendarFill className="icon" />
-                            <span className="education-dates">
+                          <div className="user-profile-info-row">
+                            <CalendarFill className="user-icon" />
+                            <span className="user-education-dates">
                               {exp.startDate} - {exp.endDate}
                             </span>
                           </div>
@@ -1403,9 +1403,9 @@ const toggleLanguageDropdown = () => {
                   </div>
 
                   {/* Seção Idiomas */}
-                  <div className="profile-section">
+                  <div className="user-profile-section">
                     <h3>
-                      <Globe className="icon" /> Idiomas
+                      <Globe className="user-icon" /> Idiomas
                     </h3>
                     <p>
                       {userData.languages.length > 0
@@ -1418,20 +1418,20 @@ const toggleLanguageDropdown = () => {
 
             {/* Guia Badges */}
             {activeTab === "badges" && (
-              <div className="badges-section">
+              <div className="user-badges-section">
                 <h3>Badges</h3>
                 {userData.badges && userData.badges.length > 0 ? (
-                  <div className="badge-slide">
+                  <div className="user-badge-slide">
                     {userData.badges.map((badge, index) => (
-                      <div key={badge.id} className="badge-card default-border-image">
+                      <div key={badge.id} className="user-badge-card default-border-image">
                         <img
                           src={badge.image_url}
                           alt="Badge"
-                          className="badge-preview"
+                          className="user-badge-preview"
                         />
                         <h3>{badge.name_badge}</h3>
-                        <div className="badge-visibility">
-                          <label className="custom-checkbox">
+                        <div className="user-badge-visibility">
+                          <label className="user-custom-checkbox">
                             <input
                               type="checkbox"
                               checked={badge.is_public}
@@ -1439,7 +1439,7 @@ const toggleLanguageDropdown = () => {
                                 handleBadgeVisibilityChange(e, badge.id, index)
                               }
                             />
-                            <span className="checkmark"></span>
+                            <span className="user-checkmark"></span>
                             {badge.is_public ? "Pública" : "Privada"}
                           </label>
                         </div>
@@ -1457,19 +1457,19 @@ const toggleLanguageDropdown = () => {
     );
   } else if (tipoUsuario === "UE") {
     return (
-      <div className="profile-page">
+      <div className="user-profile-page">
         <ToastContainer />
-        <div className="profile-container default-border-image">
-          <div className="profile-header">
-            <div className="profile-photo-wrapper">
+        <div className="user-profile-container default-border-image">
+          <div className="user-profile-header">
+            <div className="user-profile-photo-wrapper">
               <img
                 src={imagePreview || userData.imageUrl || "/default-avatar.png"}
                 alt="User Avatar"
-                className="profile-photo"
+                className="user-profile-photo"
               />
               {isEditing && (
-                <div className="edit-photo-overlay">
-                  <label htmlFor="upload-photo" className="edit-photo-icon">
+                <div className="user-edit-photo-overlay">
+                  <label htmlFor="upload-photo" className="user-edit-photo-icon">
                     <CameraFill size={20} /> {/* Usando o ícone de câmera */}
                   </label>
                   <input
@@ -1483,7 +1483,7 @@ const toggleLanguageDropdown = () => {
               )}
             </div>
 
-            <div className="profile-info">
+            <div className="user-profile-info">
               {console.log("usename= ", userData.username)}
               {isEditing ? (
                 <input
@@ -1491,43 +1491,43 @@ const toggleLanguageDropdown = () => {
                   name="username"
                   value={userData.username || ""}
                   onChange={handleInputChange}
-                  className="profile-name-input"
+                  className="user-profile-name-input"
                 />
               ) : (
-                <h2 className="profile-name">{userData.username}</h2>
+                <h2 className="user-profile-name">{userData.username}</h2>
               )}
-              <p className="profile-title">
+              <p className="user-profile-title">
                 {userData.cnpj || "CNPJ não fornecido"}
               </p>
-              <div className="company-badges">
+              <div className="user-company-badges">
                 {userData.municipio && (
-                  <span className="company-badge">
+                  <span className="user-company-badge">
                     <GeoAlt /> {userData.municipio}
                   </span>
                 )}
                 {userData.segmento && (
-                  <span className="company-badge">
+                  <span className="user-company-badge">
                     <Briefcase /> {userData.segmento}
                   </span>
                 )}
                 {userData.tamanho && (
-                  <span className="company-badge">
+                  <span className="user-company-badge">
                     <PeopleFill /> {userData.tamanho}
                   </span>
                 )}
               </div>
-              <div className="profile-actions">
-                <button onClick={handleEditToggle} className="edit-button">
+              <div className="user-profile-actions">
+                <button onClick={handleEditToggle} className="user-edit-button">
                   <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
                 </button>
-                <button onClick={handleShareProfile} className="share-button">
+                <button onClick={handleShareProfile} className="user-share-button">
                   <ShareFill /> Compartilhar
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="tabs">
+          <div className="user-tabs">
             <button
               onClick={() => handleTabChange("sobre")}
               className={activeTab === "sobre" ? "active" : ""}
@@ -1548,49 +1548,49 @@ const toggleLanguageDropdown = () => {
             </button>
           </div>
 
-          <div className="tab-content">
+          <div className="user-tab-content">
             {activeTab === "sobre" && (
-              <div className="sobre-section">
+              <div className="user-sobre-section">
                 {isEditing ? (
                   <>
-                    <div className="profile-section">
+                    <div className="user-profile-section">
                       <label>
-                        <PersonFill className="icon" /> Sobre
+                        <PersonFill className="user-icon" /> Sobre
                       </label>
                       <textarea
                         name="sobre"
                         value={userData.sobre || ""}
                         onChange={handleInputChange}
-                        className="profile-about-input"
+                        className="user-profile-about-input"
                       />
                     </div>
-                    <div className="profile-section">
+                    <div className="user-profile-section">
                       <label>
-                        <Globe className="icon" /> Website
+                        <Globe className="user-icon" /> Website
                       </label>
                       <input
                         type="text"
                         name="website"
                         value={userData.website || ""}
                         onChange={handleInputChange}
-                        className="profile-input"
+                        className="user-profile-input"
                       />
                     </div>
-                    <div className="profile-section">
+                    <div className="user-profile-section">
                       <label>
-                        <Phone className="icon" /> Telefone
+                        <Phone className="user-icon" /> Telefone
                       </label>
                       <input
                         type="text"
                         name="numero_contato"
                         value={userData.numero_contato || ""}
                         onChange={handleInputChange}
-                        className="profile-input"
+                        className="user-profile-input"
                       />
                     </div>
                     <button
                       onClick={handleSaveChanges}
-                      className="save-button"
+                      className="user-save-button"
                       disabled={isEditing && !userData.username.trim()}
                     >
                       Salvar Alterações
@@ -1598,21 +1598,21 @@ const toggleLanguageDropdown = () => {
                   </>
                 ) : (
                   <>
-                    <div className="profile-section">
+                    <div className="user-profile-section">
                       <h3>
-                        <PersonFill className="icon" /> Sobre
+                        <PersonFill className="user-icon" /> Sobre
                       </h3>
                       <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
                     </div>
-                    <div className="profile-section">
+                    <div className="user-profile-section">
                       <h3>
-                        <Globe className="icon" /> Website
+                        <Globe className="user-icon" /> Website
                       </h3>
                       <p>{userData.website || "Não fornecido"}</p>
                     </div>
-                    <div className="profile-section">
+                    <div className="user-profile-section">
                       <h3>
-                        <Phone className="icon" /> Telefone
+                        <Phone className="user-icon" /> Telefone
                       </h3>
                       <p>{userData.numero_contato || "Não fornecido"}</p>
                     </div>
@@ -1622,7 +1622,7 @@ const toggleLanguageDropdown = () => {
             )}
 
             {activeTab === "eventos" && (
-              <div className="eventos-section">
+              <div className="user-eventos-section">
                 <h3>Eventos Promovidos</h3>
 
                 {/* Componente para criar novos posts */}
@@ -1641,8 +1641,8 @@ const toggleLanguageDropdown = () => {
                 {/* Renderização dos eventos */}
                 {userData.events && userData.events.length > 0 ? (
                   userData.events.map((event, index) => (
-                    <div key={index} className="event-item">
-                      <div className="event-header">
+                    <div key={index} className="user-event-item">
+                      <div className="user-event-header">
                         <img
                           src={
                             imagePreview ||
@@ -1650,27 +1650,27 @@ const toggleLanguageDropdown = () => {
                             "/default-avatar.png"
                           } // Usa a pré-visualização se disponível
                           alt="User Avatar"
-                          className="event-user-avatar"
+                          className="user-event-user-avatar"
                         />
-                        <span className="event-user-name">
+                        <span className="user-event-user-name">
                           {userData.username}
                         </span>
 
                         {/* Exibição da Data e Hora de Publicação */}
                         {event.createdAt && (
-                          <span className="event-publication-time">
+                          <span className="user-event-publication-time">
                             {formatDateTime(event.createdAt)}
                           </span>
                         )}
 
                         {/* Ícone de três pontinhos sempre visível */}
-                        <div className="event-options">
+                        <div className="user-event-options">
                           <ThreeDotsVertical
-                            className="options-icon"
+                            className="user-options-icon"
                             onClick={() => handleOptionsClick(index)}
                           />
                           {optionsVisibleIndex === index && (
-                            <div className="options-menu">
+                            <div className="user-options-menu">
                               {/* Botão "Editar" habilitado apenas se dentro de 24h */}
                               <button
                                 onClick={() => handleEditEvent(event)}
@@ -1699,13 +1699,13 @@ const toggleLanguageDropdown = () => {
                           )}
                         </div>
                       </div>
-                      <div className="event-details">
+                      <div className="user-event-details">
                         <p>{event.descricao || "Nenhuma descrição"}</p>
                         {event.imageUrl && (
                           <img
                             src={event.imageUrl}
                             alt="Event Image"
-                            className="event-image"
+                            className="user-event-image"
                           />
                         )}
                       </div>
@@ -1718,16 +1718,16 @@ const toggleLanguageDropdown = () => {
             )}
 
             {activeTab === "badges" && (
-              <div className="badges-section">
+              <div className="user-badges-section">
                 <h3>Badges</h3>
                 {userData.badges && userData.badges.length > 0 ? (
-                  <div className="badge-slide">
+                  <div className="user-badge-slide">
                     {userData.badges.map((badge) => (
-                      <div key={badge.id_badge} className="badge-card default-border-image">
+                      <div key={badge.id_badge} className="user-badge-card default-border-image">
                         <img
                           src={badge.image_url}
                           alt="Badge"
-                          className="badge-preview"
+                          className="user-badge-preview"
                         />
                         <h3>{badge.name_badge}</h3>
                         <Link to={`/badges/details/${badge.id_badge}`}>
