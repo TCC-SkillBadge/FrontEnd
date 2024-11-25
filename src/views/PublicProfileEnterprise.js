@@ -285,7 +285,7 @@ const PublicProfileEnterprise = () => {
                         className="event-user-avatar"
                       />
                       <span className="event-user-name">
-                        {userData.razao_social}
+                        {userData.username}
                       </span>
                       {event.createdAt && (
                         <span className="event-publication-time">
