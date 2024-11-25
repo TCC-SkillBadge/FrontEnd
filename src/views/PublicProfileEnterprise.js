@@ -9,7 +9,9 @@ import {
   AwardFill,
   PeopleFill,
 } from "react-bootstrap-icons";
+// import { Spinner } from "react-bootstrap"; // Importando o Spinner
 import "../styles/PublicProfileEnterprise.css";
+import ScaleLoader from "react-spinners/ScaleLoader";
 import { toast } from "react-toastify";
 import {
   FaFacebookF,
@@ -43,7 +45,8 @@ const PublicProfileEnterprise = () => {
         setUserData(response.data);
 
         // Supondo que a resposta tenha o email comercial
-        const emailComercial = response.data.email_comercial || "tgempresarial2@gmail.com";
+        const emailComercial =
+          response.data.email_comercial || "tgempresarial2@gmail.com";
         await fetchBadges("UE", emailComercial);
 
         setLoading(false);
@@ -61,18 +64,24 @@ const PublicProfileEnterprise = () => {
 
         if (tipoUsuario === "UC") {
           // Endpoint para usuários comuns
-          response = await axios.get(`http://localhost:7001/badges/wallet?email=${email}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          response = await axios.get(
+            `http://localhost:7001/badges/wallet?email=${email}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
         } else if (tipoUsuario === "UE") {
           // Endpoint para usuários empresariais
-          response = await axios.get(`http://localhost:7001/badges/consult?search=${email}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          response = await axios.get(
+            `http://localhost:7001/badges/consult?search=${email}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
         } else {
           throw new Error("Tipo de usuário inválido");
         }
@@ -157,12 +166,17 @@ const PublicProfileEnterprise = () => {
   };
 
   if (loading) {
-    return <div className="spinner-container">Loading...</div>;
+    return (
+      <div className="spinner-container">
+        <ScaleLoader color="#00BFFF" loading={loading} size={150} />
+        <p>Carregando...</p>
+      </div>
+    );
   }
 
   if (!userData) {
     return (
-      <div className="public-profile-container">User not found.</div>
+      <div className="public-profile-container">Usuário não encontrado.</div>
     );
   }
 
