@@ -976,7 +976,7 @@ const toggleLanguageDropdown = () => {
                   {/* Campos de Edição */}
                   <div className="profile-input-group">
                     <label htmlFor="fullName" className="profile-label">
-                      Nome
+                      Nome <span className="required">*</span>
                     </label>
                     <input
                       type="text"
@@ -1310,7 +1310,11 @@ const toggleLanguageDropdown = () => {
                   </div>
 
                   {/* Botão Salvar Alterações */}
-                  <button onClick={handleSaveChanges} className="save-button">
+                  <button
+                    onClick={handleSaveChanges}
+                    className="save-button"
+                    disabled={isEditing && !userData.fullName.trim()}
+                  >
                     Salvar Alterações
                   </button>
                 </div>
@@ -1578,7 +1582,11 @@ const toggleLanguageDropdown = () => {
                         className="profile-input"
                       />
                     </div>
-                    <button onClick={handleSaveChanges} className="save-button">
+                    <button
+                      onClick={handleSaveChanges}
+                      className="save-button"
+                      disabled={isEditing && !userData.username.trim()}
+                    >
                       Salvar Alterações
                     </button>
                   </>
