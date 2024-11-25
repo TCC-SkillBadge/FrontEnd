@@ -5,6 +5,8 @@
   justify-content: center;
   height: calc(100vh - 87px); /* Ajusta a altura para excluir a altura da navbar */
   background-color: transparent; /* Permite que a cor de fundo global apareça */
+  margin-top: 100px;
+  margin-bottom: 100px;
 }
 
 .create-plan-container {
