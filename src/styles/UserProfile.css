@@ -799,7 +799,7 @@
 }
 
 .language-dropdown-content {
-  display: none; /* Inicialmente escondido */
+  display: absolute; /* Inicialmente escondido */
   position: absolute;
   background-color: rgba(45, 45, 45, 0.95); /* Dark background */
   width: 100%;

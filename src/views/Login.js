@@ -1,5 +1,3 @@
-// src/pages/Login.js
-
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EnvelopeFill, LockFill, Eye, EyeSlash } from "react-bootstrap-icons";
@@ -14,7 +12,7 @@ import "../styles/GlobalStylings.css";
 const API_COMUM = process.env.REACT_APP_API_COMUM;
 const API_ENTERPRISE = process.env.REACT_APP_API_ENTERPRISE;
 const API_ADMIN = process.env.REACT_APP_API_ADMIN;
-const API_BADGES = process.env.REACT_APP_API_BADGES; // Adicione esta variável para o serviço de badges
+const API_BADGES = process.env.REACT_APP_API_BADGE; // Adicione esta variável para o serviço de badges
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -132,43 +130,43 @@ const Login = () => {
 
   // Função para confirmar a badge após o login
   const confirmBadge = async (token) => {
+    const toastId = toast.loading("Confirmando badge...");
     try {
-      const storedAuthToken =
-        sessionStorage.getItem("token") || localStorage.getItem("token");
-
-      if (!storedAuthToken) {
-        // Se o usuário não está logado, não é possível confirmar a badge
-        toast.error("Você precisa estar logado para confirmar a badge.");
+      // Verificar se a URL da API está definida
+      if (!API_BADGES) {
+        console.error("Erro: API_BADGES não está definida.");
         return;
       }
 
+      // Log da URL completa para confirmação
+      const fullUrl = `${API_BADGES}/badges/confirm-badge`;
+      console.log("URL de confirmação da badge:", fullUrl);
+
       // Enviar a solicitação para confirmar a badge
-      const response = await axios.post(
-        `${API_BADGES}/badges/confirm-badge`,
-        { token },
-        {
-          headers: {
-            Authorization: `Bearer ${storedAuthToken}`,
-          },
-        }
-      );
+      const response = await axios.get(`${API_BADGES}/badges/confirm-badge`, {
+        params: { token },
+      });
 
       if (response.status === 200) {
-        toast.success("Badge confirmada com sucesso!");
-        // Remover o token de confirmação do localStorage
+        toast.update(toastId, {
+          render: "Badge confirmada com sucesso!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
         localStorage.removeItem("badgeConfirmationToken");
       }
     } catch (error) {
-      console.error("Erro ao confirmar a badge:", error);
-      if (error.response && error.response.data) {
-        toast.error(error.response.data);
-      } else {
-        toast.error("Erro ao confirmar a badge. Por favor, tente novamente mais tarde.");
-      }
-      // Opcional: remover o token de confirmação para evitar tentativas futuras
+      toast.update(toastId, {
+        render: "Erro ao confirmar a badge. Tente novamente.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
       localStorage.removeItem("badgeConfirmationToken");
     }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -209,7 +207,9 @@ const Login = () => {
           setTimeout(() => {
             navigate("/home");
             // Após o login, verificar se há um token de confirmação e confirmar a badge
-            const confirmationToken = localStorage.getItem("badgeConfirmationToken");
+            const confirmationToken = localStorage.getItem(
+              "badgeConfirmationToken"
+            );
             if (confirmationToken) {
               confirmBadge(confirmationToken);
             }
@@ -243,7 +243,8 @@ const Login = () => {
     Promise.allSettled(resetPasswordPromises).then((results) => {
       if (results.some((response) => response.status === "fulfilled")) {
         toast.update(loading, {
-          render: "Um link para redefinir sua senha foi enviado para seu email.",
+          render:
+            "Um link para redefinir sua senha foi enviado para seu email.",
           type: "success",
           isLoading: false,
           autoClose: 3000,

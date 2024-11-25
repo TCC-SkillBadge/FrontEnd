@@ -46,6 +46,7 @@ const UserProfile = () => {
     imageUrl: "",
     razao_social: "",
     cnpj: "",
+    username: "",
     municipio: "",
     segmento: "",
     tamanho: "",
@@ -281,6 +282,7 @@ const UserProfile = () => {
           ...response.data,
           email_comercial: response.data.email_comercial,
           sobre: response.data.sobre || "",
+          username: response.data.username || "",
           website: response.data.website || "",
           events: eventsResponse.data || [],
           badges: [], // Inicializa como vazio
@@ -531,6 +533,7 @@ useEffect(() => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Atualizando ${name}: ${value}`);
     setUserData({ ...userData, [name]: value });
   };
 
@@ -578,14 +581,18 @@ useEffect(() => {
     );
 
     if (checked) {
-      setUserData((prevState) => ({
-        ...prevState,
-        languages: [
-          ...prevState.languages,
-          { id: languageObj.id, name: languageObj.language },
-        ],
-      }));
+      // Adiciona o idioma à lista se estiver marcado
+      if (languageObj) {
+        setUserData((prevState) => ({
+          ...prevState,
+          languages: [
+            ...prevState.languages,
+            { id: languageObj.id, name: languageObj.language },
+          ],
+        }));
+      }
     } else {
+      // Remove o idioma da lista se desmarcado
       setUserData((prevState) => ({
         ...prevState,
         languages: prevState.languages.filter((lang) => lang.id !== languageId),
@@ -627,37 +634,37 @@ useEffect(() => {
     };
   }, [imagePreview]);
 
-  const validateDates = () => {
-    let isValid = true;
+const validateDates = () => {
+  let isValid = true;
 
-    userData.education.forEach((edu) => {
-      if (
-        edu.admissionYear &&
-        edu.graduationYear &&
-        parseInt(edu.admissionYear) > parseInt(edu.graduationYear)
-      ) {
-        toast.error(
-          `Na educação, o ano de início (${edu.admissionYear}) não pode ser maior que o ano de término (${edu.graduationYear}).`
-        );
-        isValid = false;
-      }
-    });
+  (userData.education || []).forEach((edu) => {
+    if (
+      edu.admissionYear &&
+      edu.graduationYear &&
+      parseInt(edu.admissionYear) > parseInt(edu.graduationYear)
+    ) {
+      toast.error(
+        `Na educação, o ano de início (${edu.admissionYear}) não pode ser maior que o ano de término (${edu.graduationYear}).`
+      );
+      isValid = false;
+    }
+  });
 
-    userData.professionalExperience.forEach((exp) => {
-      if (
-        exp.startDate &&
-        exp.endDate &&
-        parseInt(exp.startDate) > parseInt(exp.endDate)
-      ) {
-        toast.error(
-          `Na experiência profissional, a data de início (${exp.startDate}) não pode ser maior que a data de término (${exp.endDate}).`
-        );
-        isValid = false;
-      }
-    });
+  (userData.professionalExperience || []).forEach((exp) => {
+    if (
+      exp.startDate &&
+      exp.endDate &&
+      parseInt(exp.startDate) > parseInt(exp.endDate)
+    ) {
+      toast.error(
+        `Na experiência profissional, a data de início (${exp.startDate}) não pode ser maior que a data de término (${exp.endDate}).`
+      );
+      isValid = false;
+    }
+  });
 
-    return isValid;
-  };
+  return isValid;
+};
 
   const handleSaveChanges = async () => {
     if (!validateDates()) {
@@ -696,6 +703,7 @@ useEffect(() => {
       } else if (tipoUsuario === "UE") {
         formData.append("razao_social", userData.razao_social || "");
         formData.append("cnpj", userData.cnpj || "");
+        formData.append("username", userData.username || "");
         formData.append("cep", userData.cep || "");
         formData.append("logradouro", userData.logradouro || "");
         formData.append("bairro", userData.bairro || "");
@@ -899,7 +907,7 @@ useEffect(() => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [languageDropdownRef]);
 
 const toggleLanguageDropdown = () => {
   setIsLanguageDropdownOpen((prevState) => !prevState);
@@ -1048,55 +1056,67 @@ const toggleLanguageDropdown = () => {
                     <h3>
                       <Globe className="icon" /> Idiomas
                     </h3>
-                    <div
-                      className="language-dropdown"
-                      ref={languageDropdownRef}
-                    >
-                      <button
-                        type="button"
-                        className="language-dropdown-button"
-                        onClick={toggleLanguageDropdown}
+                    {isEditing ? (
+                      // Renderiza o dropdown de idiomas apenas no modo de edição
+                      <div
+                        className="language-dropdown"
+                        ref={languageDropdownRef}
                       >
+                        <button
+                          type="button"
+                          className="language-dropdown-button"
+                          onClick={toggleLanguageDropdown}
+                        >
+                          {userData.languages.length > 0
+                            ? userData.languages
+                                .map((lang) => lang.name)
+                                .join(", ")
+                            : "Selecione os idiomas"}
+                          <span className="dropdown-icon">
+                            {isLanguageDropdownOpen ? (
+                              <ChevronUp />
+                            ) : (
+                              <ChevronDown />
+                            )}
+                          </span>
+                        </button>
+                        {isLanguageDropdownOpen && (
+                          <div className="language-dropdown-content">
+                            {availableLanguages.length > 0 ? (
+                              availableLanguages.map((language) => (
+                                <div
+                                  key={language.id}
+                                  className="language-checkbox"
+                                >
+                                  <label>
+                                    <input
+                                      type="checkbox"
+                                      value={language.id}
+                                      checked={userData.languages.some(
+                                        (lang) => lang.id === language.id
+                                      )}
+                                      onChange={handleLanguageCheckboxChange}
+                                    />
+                                    {language.language}
+                                  </label>
+                                </div>
+                              ))
+                            ) : (
+                              <p>Carregando idiomas...</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      // Renderiza apenas os idiomas selecionados quando não está no modo de edição
+                      <p>
                         {userData.languages.length > 0
                           ? userData.languages
                               .map((lang) => lang.name)
                               .join(", ")
-                          : "Selecione os idiomas"}
-                        <span className="dropdown-icon">
-                          {isLanguageDropdownOpen ? (
-                            <ChevronUp />
-                          ) : (
-                            <ChevronDown />
-                          )}
-                        </span>
-                      </button>
-                      {isLanguageDropdownOpen && (
-                        <div className="language-dropdown-content">
-                          {availableLanguages.length > 0 ? (
-                            availableLanguages.map((language) => (
-                              <div
-                                key={language.id}
-                                className="language-checkbox"
-                              >
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    value={language.id}
-                                    checked={userData.languages.some(
-                                      (lang) => lang.id === language.id
-                                    )}
-                                    onChange={handleLanguageCheckboxChange}
-                                  />
-                                  {language.language}
-                                </label>
-                              </div>
-                            ))
-                          ) : (
-                            <p>Carregando idiomas...</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                          : "Nenhum idioma selecionado."}
+                      </p>
+                    )}
                   </div>
 
                   {/* Seção Educação */}
@@ -1361,56 +1381,14 @@ const toggleLanguageDropdown = () => {
 
                   {/* Seção Idiomas */}
                   <div className="profile-section">
-                    <h3>Idiomas</h3>
-                    <div
-                      className="language-dropdown"
-                      ref={languageDropdownRef}
-                    >
-                      <button
-                        type="button"
-                        className="language-dropdown-button"
-                        onClick={toggleLanguageDropdown}
-                      >
-                        {userData.languages.length > 0
-                          ? userData.languages
-                              .map((lang) => lang.name)
-                              .join(", ")
-                          : "Selecione os idiomas"}
-                        <span className="dropdown-icon">
-                          {isLanguageDropdownOpen ? (
-                            <ChevronUp />
-                          ) : (
-                            <ChevronDown />
-                          )}
-                        </span>
-                      </button>
-                      {isLanguageDropdownOpen && (
-                        <div className="language-dropdown-content">
-                          {availableLanguages.length > 0 ? (
-                            availableLanguages.map((language) => (
-                              <div
-                                key={language.id}
-                                className="language-checkbox"
-                              >
-                                <label>
-                                  <input
-                                    type="checkbox"
-                                    value={language.id}
-                                    checked={userData.languages.some(
-                                      (lang) => lang.id === language.id
-                                    )}
-                                    onChange={handleLanguageCheckboxChange}
-                                  />
-                                  {language.language}
-                                </label>
-                              </div>
-                            ))
-                          ) : (
-                            <p>Carregando idiomas...</p>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <h3>
+                      <Globe className="icon" /> Idiomas
+                    </h3>
+                    <p>
+                      {userData.languages.length > 0
+                        ? userData.languages.map((lang) => lang.name).join(", ")
+                        : "Nenhum idioma selecionado."}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -1483,16 +1461,17 @@ const toggleLanguageDropdown = () => {
             </div>
 
             <div className="profile-info">
+              {console.log("usename= ", userData.username)}
               {isEditing ? (
                 <input
                   type="text"
-                  name="razao_social"
-                  value={userData.razao_social || ""}
+                  name="username"
+                  value={userData.username || ""}
                   onChange={handleInputChange}
                   className="profile-name-input"
                 />
               ) : (
-                <h2 className="profile-name">{userData.razao_social}</h2>
+                <h2 className="profile-name">{userData.username}</h2>
               )}
               <p className="profile-title">
                 {userData.cnpj || "CNPJ não fornecido"}
