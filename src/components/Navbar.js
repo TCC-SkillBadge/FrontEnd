@@ -113,6 +113,7 @@ const NavBar = (props) => {
     { page: "/proficiency-test", title: "Skill Test", user: 'UC' },
     { page: "/price", title: "Plans", user: 'UE' },
     { page: "/badges", title: "Badges", user: 'UE' },
+    { page: "/requests", title: "Requests", user: 'UE' },
     { page: "/contact", title: "Contact", user: 'UE' },
     { page: "/api-reference", title: "API Reference", user: 'UE' },
     { page: "/orders", title: "Service Request", user: 'UA' },
