@@ -667,6 +667,19 @@ const validateDates = () => {
 };
 
   const handleSaveChanges = async () => {
+    if (tipoUsuario === "UC") {
+      if (!userData.fullName.trim()) {
+        toast.error(
+          "O campo 'Nome Completo' é obrigatório e não pode estar vazio."
+        );
+        return; // Impede a continuação da função
+      }
+    } else if (tipoUsuario === "UE") {
+      if (!userData.username.trim()) {
+        toast.error("O campo 'Username' é obrigatório e não pode estar vazio.");
+        return; // Impede a continuação da função
+      }
+    }
     if (!validateDates()) {
       return;
     }
