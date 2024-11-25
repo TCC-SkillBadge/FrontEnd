@@ -356,26 +356,27 @@ const PublicProfileEnterprise = () => {
           )}
 
           {activeTab === "badges" && (
-            <div className="_badges-section">
+            <div className="badges-section">
               <h3>Badges</h3>
               {badges && badges.length > 0 ? (
-                <div className="_badges-grid">
+                <div className="badge-slide">
                   {badges.map((badge) => (
-                    <div key={badge.id_badge} className="_badge-card">
+                    <div
+                      key={badge.id_badge}
+                      className="badge-card default-border-image"
+                    >
                       <img
                         src={badge.image_url}
                         alt={badge.name_badge}
-                        className="_badge-preview"
+                        className="badge-preview"
                       />
                       <h3>{badge.name_badge}</h3>
-                      <Link to={`/badges/details/${badge.id_badge}`}>
-                        <button>Details</button>
-                      </Link>
+                      {/* Remova o botão "Details" se não for necessário */}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p>No badges available.</p>
+                <p>Nenhuma badge disponível.</p>
               )}
             </div>
           )}

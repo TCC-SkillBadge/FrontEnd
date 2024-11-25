@@ -1,3 +1,6 @@
+/* src/styles/PublicProfileEnterprise.css */
+
+/* Variáveis CSS - Certifique-se de que estão alinhadas com o GlobalStylings.css */
 :root {
   --background-dark: #191A2E;
   --color-primary: #D273FF;
@@ -37,8 +40,6 @@
   padding: 30px;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  /* border: 2px solid;
-  border-image: linear-gradient(to bottom, var(--color-primary), var(--color-secondary)) 1; */
 }
 
 /* Cabeçalho do Perfil */
@@ -247,48 +248,21 @@
   margin-right: 8px;
 }
 
-/* Seção de Detalhes do Evento */
-.event-details p {
-  margin: 0;
-  color: var(--color-text-light);
-}
-
-.event-image {
-  margin-top: 10px;
-  max-width: 100%;
-  border-radius: 5px;
-}
-
 /* Seção de Badges */
-._badges-section {
+.badges-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
 }
 
-._badges-section h3 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  color: var(--color-text-light);
-}
-
-._badges-section h3 .bi {
-  font-size: 1.2rem;
-  margin-right: 8px;
-  color: var(--color-text-light);
-}
-
-._badges-grid {
+.badge-slide {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
 }
 
-._badge-card {
+.badge-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -301,37 +275,29 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-._badge-card:hover {
+.badge-card:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-._badge-preview {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  margin-bottom: 10px;
-  border-radius: 5px;
+.badge-preview {
+  width: calc(100% - 20px);
+  border-radius: 8px;
+  height: 180px;
+  object-fit: cover;
+  margin: 10px;
 }
 
-._badge-card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  color: var(--color-text-light);
-}
-
-._badge-card button {
-  background-color: var(--color-primary);
-  color: var(--color-text-light);
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-._badge-card button:hover {
-  background-color: var(--color-secondary);
+.badge-card h3 {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  word-break: break-word;
+  min-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Responsividade */
@@ -390,26 +356,15 @@
     transform: translateX(-50%);
   }
 
-  ._badges-grid {
-    gap: 15px;
-  }
-
-  ._badge-card {
+  .badge-card {
     width: 120px;
-    padding: 8px;
   }
 
-  ._badge-preview {
-    width: 80px;
-    height: 80px;
+  .badge-preview {
+    height: 150px;
   }
 
-  ._badge-card h3 {
+  .badge-card h3 {
     font-size: 1rem;
-  }
-
-  ._badge-card button {
-    padding: 4px 8px;
-    font-size: 0.8rem;
   }
 }
