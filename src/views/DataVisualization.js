@@ -300,7 +300,7 @@ const DataVisualization = () => {
         />
 
         {/* Popularity Trends */}
-        <LineChartComponent
+        {/* <LineChartComponent
           data={popularityTrends}
           title="Badge Popularity Trends"
           dataKeys={[
@@ -309,7 +309,7 @@ const DataVisualization = () => {
           ]}
           colors={["#7ED321", "#417505"]}
           names={["Recent Badges", "Old Badges"]}
-        />
+        /> */}
       </div>
       <ToastContainer
         position="top-center"
