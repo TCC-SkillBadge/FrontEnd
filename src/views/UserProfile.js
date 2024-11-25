@@ -1421,15 +1421,15 @@ const toggleLanguageDropdown = () => {
               <div className="badges-section">
                 <h3>Badges</h3>
                 {userData.badges && userData.badges.length > 0 ? (
-                  <div className="badges-grid">
+                  <div className="badge-slide">
                     {userData.badges.map((badge, index) => (
-                      <div key={badge.id} className="badge-card">
+                      <div key={badge.id} className="badge-card default-border-image">
                         <img
                           src={badge.image_url}
                           alt="Badge"
                           className="badge-preview"
                         />
-                        <h4>{badge.name_badge}</h4>
+                        <h3>{badge.name_badge}</h3>
                         <div className="badge-visibility">
                           <label className="custom-checkbox">
                             <input
@@ -1721,9 +1721,9 @@ const toggleLanguageDropdown = () => {
               <div className="badges-section">
                 <h3>Badges</h3>
                 {userData.badges && userData.badges.length > 0 ? (
-                  <div className="badges-grid">
+                  <div className="badge-slide">
                     {userData.badges.map((badge) => (
-                      <div key={badge.id_badge} className="badge-card">
+                      <div key={badge.id_badge} className="badge-card default-border-image">
                         <img
                           src={badge.image_url}
                           alt="Badge"

@@ -122,21 +122,53 @@ body {
 }
 
 .wallet-medals {
-  background-color: var(--card-background);
-  padding: 30px;
-  border-radius: 10px;
+  background-color: var(--card-background); 
+  padding: 20px;
+  border-radius: 8px;
   width: 100%;
   max-width: 100%;
 }
 
 .wallet-medal-slide {
   display: flex;
-  justify-content: space-evenly;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
   align-items: center;
   width: 100%;
   min-width: 200px;
   flex-wrap: wrap;
   margin-bottom: 20px;
+}
+
+.wallet-medal-slide .wallet-medal-card {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: white;
+  text-align: center;
+  width: 200px;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px;
+  overflow: hidden;
+  border-radius: 15px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin: 10px auto;
+  position: relative;
+}
+
+.wallet-medal-slide .wallet-medal-card h3 {
+  flex-grow: 1; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px; 
+  word-break: break-word; 
+  min-height: 60px;
+  overflow: hidden; 
+  text-overflow: ellipsis; 
 }
 
 /* Animação Fade-In e Slide-Up */
@@ -155,20 +187,16 @@ body {
   background-color: var(--card-background);
   color: var(--text-color);
   text-align: center;
-  width: 250px;
-  min-height: 260px;
-  /* border: 2px solid;
-  border-image: linear-gradient(to bottom, #d273ff, var(--button-border-color)) 1; */
-  
+  width: 200px;
+  min-height: 210px;
+  margin: 10px;
+  margin: 10px auto;  
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  margin: 15px;
   overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
-  position: relative;
-  opacity: 0;
   animation: fadeInUp 0.5s ease forwards;
 }
 
@@ -182,9 +210,12 @@ body {
 }
 
 .wallet-medal-card .medal-img {
+  width: calc(100% - 20px);
   border-radius: 8px;
-  height: 200px;
+  height: 180px;
   object-fit: cover;
+  margin-top: 10px;
+  margin-bottom: 10px;
   margin: 10px;
 }
 

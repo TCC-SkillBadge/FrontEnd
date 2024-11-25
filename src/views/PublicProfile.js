@@ -23,6 +23,7 @@ import {
 } from "react-bootstrap-icons"; // Importando os ícones
 import "../styles/PublicProfile.css";
 import "../styles/GlobalStylings.css";
+import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScaleLoader from "react-spinners/ScaleLoader"; // Importando o spinner
@@ -319,15 +320,15 @@ const PublicProfile = () => {
             <div className="badges-section">
               <h3>Badges</h3>
               {userData.badges && userData.badges.length > 0 ? (
-                <div className="badges-grid">
+                <div className="profile-badge-slide">
                   {userData.badges.map((badge) => (
-                    <div key={badge.id_badge} className="badge-card">
+                    <div key={badge.id_badge} className="profile-badge-card default-border-image">
                       <img
                         src={badge.image_url}
                         alt="Badge"
-                        className="badge-preview"
+                        className="profile-badge-preview"
                       />
-                      <h4>{badge.name_badge}</h4>
+                      <h3>{badge.name_badge}</h3>
                       <Link to={`/badges/details/${badge.id_badge}`}>
                         <button>Detalhes</button>
                       </Link>
