@@ -190,9 +190,9 @@ const PostForm = ({
           />
         </div>
 
-        <div className="share-wrapper">
+        {/* <div className="share-wrapper">
           <ShareFill className="share-icon" />
-        </div>
+        </div> */}
 
         <button
           type="submit"
