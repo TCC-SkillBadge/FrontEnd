@@ -1,27 +1,27 @@
 .chat-box{
     /*Local CSS variables*/
-    --chat-box-background-color: #180738;
-    --contact-container-background-color: #19144f;
-    --contact-button-background-color: #37317b;
-    --new-chat-button-background-color: #D273FF;
+    --chat-box-background-color:rgba(29, 28, 28, 1);
+    --contact-container-background-color: rgba(0, 0, 0);
+    --contact-button-background-color: #8DFD8B;
+    --new-chat-button-background-color: #8DFD8B;
 
 
     background-color: var(--chat-box-background-color);
     border-radius: 10px;
     padding: 10px;
     color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     height: 100%;
+    
 }
 
 .contact-container{
     position: relative;
-    background-color: var(--contact-container-background-color);
     padding: 15px;
     margin-right: 3%;
-    border-radius: 15px;
-    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+    border-right: 3px solid transparent;
+    width: 30%;
 }
 
 .contact-box{
@@ -30,24 +30,41 @@
     overflow-y: auto;
     scrollbar-color: transparent transparent;
     background-color: transparent;
-    width: fit-content;
     height: 400px;
 }
 
-.contact-button{
+.contact-button {
     display: flex;
     flex-direction: row;
     align-items: center;
     font-size: calc(0.5em + 1vw);
-    background-color: var(--contact-button-background-color);
     color: white;
     width: 100%;
     height: 100%;
-    border-radius: 10px;
+    background-color: transparent;
     margin-bottom: 10px;
-    padding: 17px;
+    padding-bottom: 5px;
+    padding-top: 5px;
     font-weight: bold;
-    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+
+    /* Apenas borda inferior */
+    border: none; /* Remove todas as bordas padrão */
+    border-bottom: 1px solid white;
+
+    /* Remove aparência de botão */
+    outline: none;
+
+    /* Desabilitar efeitos de clique */
+    user-select: none;
+    -webkit-tap-highlight-color: transparent; /* Remove destaque ao tocar */
+}
+
+
+.contact-button:active {
+    /* Prevenir o "afundar" ao clicar */
+    transform: none;
+    box-shadow: none;
+    
 }
 
 .message-container{
@@ -63,7 +80,7 @@
     flex-direction: column-reverse;
     overflow-y: auto;
     scrollbar-color: #3a365e transparent;
-    height: 370px;
+    height: 430px;
     width: 100%;
     min-width: 400px;
 }
@@ -77,7 +94,8 @@
 }
 
 .message-line-sender-box{
-    background-color: #35315f;
+    background-color: #8DFD8B96;
+    border: 2px solid #8DFD8B;
     border-radius: 10px;
     padding: 15px;
     margin: 5px;
@@ -94,7 +112,8 @@
 }
 
 .message-line-receiver-box{
-    background-color: #4a4586;
+    background-color: #D273FF96;
+    border: 2px solid #D273FF;
     border-radius: 10px;
     padding: 15px;
     margin: 5px;
@@ -111,15 +130,36 @@
     font-size: calc(0.6em + 0.8vw);
 }
 
-.date-line{
+.date-line {
     display: flex;
     justify-content: center;
-    background-color: #363359;
-    border-radius: 50px;
+    align-items: center;
+    position: relative;
+    border-radius: 50px; /* Mantém as bordas arredondadas */
     padding: 10px;
     margin: 5px;
     width: 30%;
     min-width: fit-content;
+    background: rgba(29, 28, 28, 1); /* Fundo interno da caixa */
+    z-index: 1; /* Para sobrepor o pseudo-elemento */
+}
+
+.date-line::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50px; /* Mesmo valor da borda externa */
+    padding: 3px; /* Tamanho da "borda" */
+    background: linear-gradient(90deg, #D273FF, #8DFD8B); /* O gradiente */
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0); /* Máscara para criar borda */
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1; /* Fica atrás do conteúdo */
 }
 
 .inoperant-message{
@@ -146,29 +186,30 @@
 
 .search-box{
     /*Local CSS variables*/
-    --search-box-background-color: #180738;
+    --search-box-background-color: rgba(29, 28, 28, 1);
     --search-results-background-color: #281d45;
     --start-chat-box-background-color: #340959;
-    --cancel-button-color: #c01515;
-    --start-button-color: #2eba2b;
+    --cancel-button-color: Red;
+    --start-button-color: #8DFD8B;
 
     width: 40%;
     min-width: 600px;
-    height: 20%;
-    min-height: fit-content;
+    height: auto;
+    min-height: 80%;
+    border-radius: 15px;
     background-color: var(--search-box-background-color);
 }
 
 .search-box-close-btn{
     color: white;
     background-color: transparent;
-    border-radius: 50%;
-    box-shadow: 0 3px 9px 0 rgba(0,0,0,0.8);
+    border-radius: 50%; 
 }
 
 .search-box-close-btn:hover{
-    scale: 1.1;
-    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+    cursor: pointer;
+    transition: 0.5s;
+    scale: 1.4;
 }
 
 .search-result-box{
@@ -176,16 +217,14 @@
     flex-direction: column;
     overflow-y: auto;
     scrollbar-color: transparent transparent;
-    height: 300px;
+    height: 400px;
     width: 100%;
 }
 
 .search-results{
-    background-color: var(--search-results-background-color);
-    border-radius: 10px;
+    border-radius: 15px;
     padding: 15px;
     margin-top: 1rem;
-    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
 }
 
 .iniciate-chat-button{
@@ -203,7 +242,7 @@
 
 .iniciate-chat-button:hover{
     background-color: var(--start-button-color);
-    color: white !important;
+    color: black !important;
     border-color: var(--start-button-color);
     scale: 1.05;
     transition: 0.5s;
@@ -231,11 +270,11 @@
 }
 
 .first-message-box{
-    background-color: var(--start-chat-box-background-color);
+    background-color: var(--chat-box-background-color);
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     margin: 3%;
     padding: 2%;
-    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+
 }
