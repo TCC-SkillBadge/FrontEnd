@@ -21,13 +21,13 @@ const FuncionalidadesManager = () => {
       }
     } catch (error) {
       console.error("Erro ao buscar funcionalidades!", error);
-      toast.error("Erro ao buscar funcionalidades.");
+      toast.error("Error fetching functionalities.");
     }
   };
 
   const handleAddFuncionalidade = async () => {
     if (newFuncionalidade.trim() === "") {
-      toast.error("O nome da funcionalidade não pode estar vazio.");
+      toast.error("The functionality name cannot be empty.");
       return;
     }
 
@@ -37,30 +37,30 @@ const FuncionalidadesManager = () => {
       });
 
       if (response.status === 201) {
-        toast.success("Funcionalidade adicionada com sucesso!");
+        toast.success("Functionality added successfully!");
         setNewFuncionalidade("");
         fetchFuncionalidades();
       }
     } catch (error) {
       console.error("Erro ao adicionar funcionalidade!", error);
-      toast.error("Erro ao adicionar funcionalidade.");
+      toast.error("Error adding functionality.");
     }
   };
 
   return (
     <div>
       <div className="funcionalidades-manager">
-        <h2>Gerenciar Funcionalidades</h2>
+        <h2>Manage Functionalities</h2>
         <div className="add-funcionalidade mb-3">
           <input
             type="text"
             className="form-control me-2"
-            placeholder="Nome da nova funcionalidade"
+            placeholder="Name of the new functionality"
             value={newFuncionalidade}
             onChange={(e) => setNewFuncionalidade(e.target.value)}
           />
           <button className="btn btn-success" onClick={handleAddFuncionalidade}>
-            Adicionar
+            Add
           </button>
         </div>
         <ul className="funcionalidades-list list-group">

@@ -130,7 +130,7 @@ const Login = () => {
 
   // Função para confirmar a badge após o login
   const confirmBadge = async (token) => {
-    const toastId = toast.loading("Confirmando badge...");
+    const toastId = toast.loading("Confirming badge...");
     try {
       // Verificar se a URL da API está definida
       if (!API_BADGES) {
@@ -149,7 +149,7 @@ const Login = () => {
 
       if (response.status === 200) {
         toast.update(toastId, {
-          render: "Badge confirmada com sucesso!",
+          render: "Badge confirmed successfully!",
           type: "success",
           isLoading: false,
           autoClose: 3000,
@@ -158,7 +158,7 @@ const Login = () => {
       }
     } catch (error) {
       toast.update(toastId, {
-        render: "Erro ao confirmar a badge. Tente novamente.",
+        render: "Error confirming the badge. Please try again.",
         type: "error",
         isLoading: false,
         autoClose: 3000,
@@ -203,7 +203,7 @@ const Login = () => {
     toast.promise(
       Promise.all(loginPromises).then((results) => {
         if (results.some((success) => success)) {
-          toast.success("Login realizado com sucesso!");
+            toast.success("Login successful!");
           setTimeout(() => {
             navigate("/home");
             // Após o login, verificar se há um token de confirmação e confirmar a badge
@@ -218,11 +218,11 @@ const Login = () => {
           }, 2000);
         } else {
           setLoginFailed(true);
-          toast.error("Erro ao fazer login. Verifique suas credenciais.");
+            toast.error("Error logging in. Please check your credentials.");
         }
       }),
       {
-        pending: "Fazendo login...",
+        pending: "Logging in...",
       }
     );
   };
@@ -239,19 +239,18 @@ const Login = () => {
       })
     );
 
-    const loading = toast.loading("Enviando link de redefinição...");
+    const loading = toast.loading("Sending reset link...");
     Promise.allSettled(resetPasswordPromises).then((results) => {
       if (results.some((response) => response.status === "fulfilled")) {
         toast.update(loading, {
-          render:
-            "Um link para redefinir sua senha foi enviado para seu email.",
+          render: "A link to reset your password has been sent to your email.",
           type: "success",
           isLoading: false,
           autoClose: 3000,
         });
       } else {
         toast.update(loading, {
-          render: "Falha ao enviar o link de redefinição de senha.",
+          render: "Failed to send the password reset link.",
           type: "error",
           isLoading: false,
           autoClose: 3000,
@@ -263,11 +262,11 @@ const Login = () => {
 
   const handleForgotPasswordClick = () => {
     if (!formData.email) {
-      toast.error("Por favor, insira seu email antes de prosseguir.");
+      toast.error("Please enter your email before proceeding.");
       return;
     }
     setConfirmationMessage(
-      `Enviar o link de redefinição para este email: ${formData.email}`
+      `Send the reset link to this email: ${formData.email}`
     );
     setShowConfirmationModal(true); // Show the confirmation modal when forgot password is clicked
   };
@@ -304,7 +303,7 @@ const Login = () => {
                   type="password"
                   className="form-control"
                   id="password"
-                  placeholder="Senha"
+                  placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
                   required

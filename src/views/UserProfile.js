@@ -1,4 +1,3 @@
-// src/components/UserProfile.jsx
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
@@ -29,7 +28,7 @@ import "../styles/GlobalStylings.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ClipLoader } from "react-spinners";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import PostForm from "../components/PostForm";
 import { useNavigate, useParams } from "react-router-dom";
 import { protectRoute } from "../utils/general-functions/ProtectRoutes";
@@ -131,7 +130,7 @@ const UserProfile = () => {
       // Removido o toast de sucesso
     } catch (error) {
       console.error("Erro ao atualizar visibilidade da badge:", error);
-      toast.error("Falha ao atualizar a visibilidade da badge.");
+      toast.error("Failed to update badge visibility.");
     }
   };
 
@@ -148,7 +147,7 @@ const UserProfile = () => {
 
   const tipoUsuario = sessionStorage.getItem("tipoUsuario");
   const [activeTab, setActiveTab] = useState(
-    tipoUsuario === "UC" ? "perfil" : "sobre"
+    tipoUsuario === "UC" ? "profile" : "about"
   );
   const handleNewPost = (newPost) => {
     setUserData((prevUserData) => ({
@@ -217,7 +216,7 @@ const UserProfile = () => {
       let response;
 
       if (!token) {
-        setError("Usuário não autenticado");
+        setError("User not authenticated");
         setLoading(false);
         return;
       }
@@ -297,13 +296,13 @@ const UserProfile = () => {
           response.data.email_comercial || "teste_comercial@email.com";
         await fetchBadges("UE", email);
       } else {
-        setError("Tipo de usuário inválido");
+        setError("Invalid user type");
       }
 
       setLoading(false);
     } catch (error) {
       console.error("Erro ao obter informações do usuário:", error);
-      setError("Falha ao carregar os dados do usuário");
+      setError("Failed to load user data");
       setLoading(false);
     }
   };
@@ -335,7 +334,7 @@ const UserProfile = () => {
           }
         );
       } else {
-        throw new Error("Tipo de usuário inválido");
+        throw new Error("Invalid user type");
       }
 
       setUserData((prevData) => ({
@@ -364,61 +363,61 @@ const UserProfile = () => {
   };
 
   // Verificar autenticação e buscar informações do usuário
-useEffect(() => {
-  const checkAuthentication = async () => {
-    const token = sessionStorage.getItem("token");
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const token = sessionStorage.getItem("token");
 
-    // Se o usuário não estiver autenticado
-    if (!token) {
-      try {
-        // Verificar se o perfil público de usuário comum (UC) está acessível
-        const responseUC = await axios.get(
-          `http://localhost:7009/api/public-profile/${encodedEmail}`
-        );
-        if (responseUC.data) {
-          // Redirecionar para o perfil público de UC
-          navigate(`/public-profile/${encodedEmail}`, { replace: true });
-          return;
+      // Se o usuário não estiver autenticado
+      if (!token) {
+        try {
+          // Verificar se o perfil público de usuário comum (UC) está acessível
+          const responseUC = await axios.get(
+            `http://localhost:7009/api/public-profile/${encodedEmail}`
+          );
+          if (responseUC.data) {
+            // Redirecionar para o perfil público de UC
+            navigate(`/public-profile/${encodedEmail}`, { replace: true });
+            return;
+          }
+        } catch (error) {
+          console.error("Perfil público UC não encontrado, tentando UE...");
         }
-      } catch (error) {
-        console.error("Perfil público UC não encontrado, tentando UE...");
+
+        try {
+          // Verificar se o perfil público de usuário empresarial (UE) está acessível
+          const responseUE = await axios.get(
+            `http://localhost:7003/api/public-profile/${encodedEmail}`
+          );
+          if (responseUE.data) {
+            // Redirecionar para o perfil público de UE
+            navigate(`/public-profile-enterprise/${encodedEmail}`, {
+              replace: true,
+            });
+            return;
+          }
+        } catch (error) {
+          console.error("Perfil público UE não encontrado.");
+        }
+
+        // Se nenhum perfil público for encontrado, redirecionar para a página inicial
+        navigate(`/`, { replace: true });
+        return;
       }
 
+      // Usuário autenticado, carregar informações privadas
       try {
-        // Verificar se o perfil público de usuário empresarial (UE) está acessível
-        const responseUE = await axios.get(
-          `http://localhost:7003/api/public-profile/${encodedEmail}`
-        );
-        if (responseUE.data) {
-          // Redirecionar para o perfil público de UE
-          navigate(`/public-profile-enterprise/${encodedEmail}`, {
-            replace: true,
-          });
-          return;
-        }
+        await fetchUserInfo();
       } catch (error) {
-        console.error("Perfil público UE não encontrado.");
+        console.error(
+          "Erro ao buscar informações do usuário autenticado:",
+          error
+        );
+        navigate(`/`, { replace: true });
       }
+    };
 
-      // Se nenhum perfil público for encontrado, redirecionar para a página inicial
-      navigate(`/`, { replace: true });
-      return;
-    }
-
-    // Usuário autenticado, carregar informações privadas
-    try {
-      await fetchUserInfo();
-    } catch (error) {
-      console.error(
-        "Erro ao buscar informações do usuário autenticado:",
-        error
-      );
-      navigate(`/`, { replace: true });
-    }
-  };
-
-  checkAuthentication();
-}, [navigate, encodedEmail]);
+    checkAuthentication();
+  }, [navigate, encodedEmail]);
 
 
   useEffect(() => {
@@ -530,7 +529,7 @@ useEffect(() => {
         ...prevData,
         photo: null,
       }));
-    }else{
+    } else {
       setOriginalUserData(JSON.parse(JSON.stringify(userData)));
     }
     setIsEditing(!isEditing);
@@ -604,24 +603,24 @@ useEffect(() => {
       }));
     }
   };
-  
 
-useEffect(() => {
-  const fetchLanguages = async () => {
-    try {
-      const token = sessionStorage.getItem("token");
-      const response = await axios.get("http://localhost:7000/api/languages", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setAvailableLanguages(response.data);
-    } catch (error) {
-      console.error("Erro ao buscar idiomas:", error);
-      toast.error("Falha ao carregar idiomas.");
-    }
-  };
 
-  fetchLanguages();
-}, []);
+  useEffect(() => {
+    const fetchLanguages = async () => {
+      try {
+        const token = sessionStorage.getItem("token");
+        const response = await axios.get("http://localhost:7000/api/languages", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAvailableLanguages(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar idiomas:", error);
+        toast.error("Failed to load languages.");
+      }
+    };
+
+    fetchLanguages();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -639,49 +638,49 @@ useEffect(() => {
     };
   }, [imagePreview]);
 
-const validateDates = () => {
-  let isValid = true;
+  const validateDates = () => {
+    let isValid = true;
 
-  (userData.education || []).forEach((edu) => {
-    if (
-      edu.admissionYear &&
-      edu.graduationYear &&
-      parseInt(edu.admissionYear) > parseInt(edu.graduationYear)
-    ) {
-      toast.error(
-        `Na educação, o ano de início (${edu.admissionYear}) não pode ser maior que o ano de término (${edu.graduationYear}).`
-      );
-      isValid = false;
-    }
-  });
+    (userData.education || []).forEach((edu) => {
+      if (
+        edu.admissionYear &&
+        edu.graduationYear &&
+        parseInt(edu.admissionYear) > parseInt(edu.graduationYear)
+      ) {
+        toast.error(
+          `In education, the admission year (${edu.admissionYear}) cannot be greater than the graduation year (${edu.graduationYear}).`
+        );
+        isValid = false;
+      }
+    });
 
-  (userData.professionalExperience || []).forEach((exp) => {
-    if (
-      exp.startDate &&
-      exp.endDate &&
-      parseInt(exp.startDate) > parseInt(exp.endDate)
-    ) {
-      toast.error(
-        `Na experiência profissional, a data de início (${exp.startDate}) não pode ser maior que a data de término (${exp.endDate}).`
-      );
-      isValid = false;
-    }
-  });
+    (userData.professionalExperience || []).forEach((exp) => {
+      if (
+        exp.startDate &&
+        exp.endDate &&
+        parseInt(exp.startDate) > parseInt(exp.endDate)
+      ) {
+        toast.error(
+          `In professional experience, the start date (${exp.startDate}) cannot be greater than the end date (${exp.endDate}).`
+        );
+        isValid = false;
+      }
+    });
 
-  return isValid;
-};
+    return isValid;
+  };
 
   const handleSaveChanges = async () => {
     if (tipoUsuario === "UC") {
       if (!userData.fullName.trim()) {
         toast.error(
-          "O campo 'Nome Completo' é obrigatório e não pode estar vazio."
+          "The 'Full Name' field is required and cannot be empty."
         );
         return; // Impede a continuação da função
       }
     } else if (tipoUsuario === "UE") {
       if (!userData.username.trim()) {
-        toast.error("O campo 'Username' é obrigatório e não pode estar vazio.");
+        toast.error("The 'Username' field is required and cannot be empty.");
         return; // Impede a continuação da função
       }
     }
@@ -746,10 +745,10 @@ const validateDates = () => {
         ...prevData,
         photo: null, // Opcional: garantir que photo também seja resetado
       }));
-      toast.success("Dados atualizados com sucesso");
+      toast.success("Data updated successfully");
     } catch (error) {
       console.error("Erro ao atualizar os dados do usuário:", error);
-      toast.error("Falha ao atualizar os dados do usuário");
+      toast.error("Failed to update user data");
     }
   };
 
@@ -759,31 +758,31 @@ const validateDates = () => {
 
     if (tipoUsuario === "UC") {
       if (!userData.email) {
-        toast.error("Email não disponível.");
+        toast.error("Email not available.");
         return;
       }
       encodedEmail = btoa(userData.email);
       publicProfileUrl = `${window.location.origin}/public-profile/${encodedEmail}`;
     } else if (tipoUsuario === "UE") {
       if (!userData.email_comercial) {
-        toast.error("Email comercial não disponível.");
+        toast.error("Commercial email not available.");
         return;
       }
       encodedEmail = btoa(userData.email_comercial);
       publicProfileUrl = `${window.location.origin}/public-profile-enterprise/${encodedEmail}`;
     } else {
-      toast.error("Tipo de usuário inválido.");
+      toast.error("Invalid user type.");
       return;
     }
 
     navigator.clipboard
       .writeText(publicProfileUrl)
       .then(() => {
-        toast.info("URL do perfil copiada para a área de transferência!");
+        toast.info("Profile URL copied to clipboard!");
       })
       .catch((error) => {
         console.error("Erro ao copiar o link:", error);
-        toast.error("Falha ao copiar o link.");
+        toast.error("Failed to copy the link.");
       });
   };
 
@@ -853,7 +852,7 @@ const validateDates = () => {
       doc.save("portfolio.pdf");
     }
 
-    toast.success("Portfólio baixado com sucesso");
+    toast.success("Portfolio downloaded successfully");
   };
 
   const handleTabChange = (tab) => {
@@ -878,7 +877,7 @@ const validateDates = () => {
 
   const handleDeleteEvent = async (event) => {
     const confirmDelete = window.confirm(
-      "Você realmente deseja excluir este evento?"
+      "Do you really want to delete this event?"
     );
     if (!confirmDelete) return;
 
@@ -893,10 +892,10 @@ const validateDates = () => {
         ...prevUserData,
         events: prevUserData.events.filter((e) => e.id !== event.id),
       }));
-      toast.success("Evento excluído com sucesso!");
+      toast.success("Event deleted successfully!");
     } catch (error) {
       console.error("Erro ao excluir o evento:", error);
-      toast.error("Falha ao excluir o evento.");
+      toast.error("Failed to delete the event.");
     }
   };
 
@@ -928,9 +927,9 @@ const validateDates = () => {
     };
   }, [languageDropdownRef]);
 
-const toggleLanguageDropdown = () => {
-  setIsLanguageDropdownOpen((prevState) => !prevState);
-};
+  const toggleLanguageDropdown = () => {
+    setIsLanguageDropdownOpen((prevState) => !prevState);
+  };
 
   if (loading) {
     return (
@@ -982,7 +981,7 @@ const toggleLanguageDropdown = () => {
                   {/* Campos de Edição */}
                   <div className="user-profile-input-group">
                     <label htmlFor="fullName" className="user-profile-label">
-                      Nome <span className="user-required">*</span>
+                      Name <span className="user-required">*</span>
                     </label>
                     <input
                       type="text"
@@ -991,12 +990,12 @@ const toggleLanguageDropdown = () => {
                       value={userData.fullName || ""}
                       onChange={handleInputChange}
                       className="user-profile-input"
-                      placeholder="Nome Completo"
+                      placeholder="Full Name"
                     />
                   </div>
                   <div className="user-profile-input-group">
                     <label htmlFor="occupation" className="user-profile-label">
-                      Ocupação
+                      Occupation
                     </label>
                     <input
                       type="text"
@@ -1005,7 +1004,7 @@ const toggleLanguageDropdown = () => {
                       value={userData.occupation || ""}
                       onChange={handleInputChange}
                       className="user-profile-input"
-                      placeholder="Ocupação"
+                      placeholder="Occupation"
                     />
                   </div>
                 </>
@@ -1014,16 +1013,16 @@ const toggleLanguageDropdown = () => {
                   {/* Exibição dos Dados */}
                   <h2 className="user-profile-name">{userData.fullName}</h2>
                   <p className="user-profile-title">
-                    {userData.occupation || "Ocupação não informada"}
+                    {userData.occupation || "Occupation not provided"}
                   </p>
                 </>
               )}
               <div className="user-profile-actions">
                 <button onClick={handleEditToggle} className="user-edit-button">
-                  <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+                  <PencilSquare /> {isEditing ? "Cancel" : "Edit"}
                 </button>
                 <button onClick={handleShareProfile} className="user-share-button">
-                  <ShareFill /> Compartilhar
+                  <ShareFill /> Share
                 </button>
                 {/* <button                                                    Adicionar quando a funcionalidade estiver pronta
                   onClick={handleDownloadPortfolio}
@@ -1035,13 +1034,13 @@ const toggleLanguageDropdown = () => {
             </div>
           </div>
 
-          {/* Guias de Perfil e Badges */}
+          {/* Profile and Badges Tabs */}
           <div className="user-tabs">
             <button
-              onClick={() => handleTabChange("perfil")}
-              className={activeTab === "perfil" ? "active" : ""}
+              onClick={() => handleTabChange("profile")}
+              className={activeTab === "profile" ? "active" : ""}
             >
-              Perfil
+              Profile
             </button>
             <button
               onClick={() => handleTabChange("badges")}
@@ -1054,13 +1053,13 @@ const toggleLanguageDropdown = () => {
           {/* Conteúdo das Guias */}
           <div className="user-tab-content">
             {/* Guia Perfil */}
-            {activeTab === "perfil" &&
+            {activeTab === "profile" &&
               (isEditing ? (
                 <div className="user-profile-sections">
                   {/* Seção Sobre */}
                   <div className="user-profile-section">
                     <p>
-                      <PersonFill className="user-icon" /> Sobre
+                      <PersonFill className="user-icon" /> About
                     </p>
                     <textarea
                       name="about"
@@ -1073,7 +1072,7 @@ const toggleLanguageDropdown = () => {
                   {/* Seção Idiomas */}
                   <div className="user-profile-section">
                     <h3>
-                      <Globe className="user-icon" /> Idiomas
+                      <Globe className="user-icon" /> Languages
                     </h3>
                     {isEditing ? (
                       // Renderiza o dropdown de idiomas apenas no modo de edição
@@ -1088,9 +1087,9 @@ const toggleLanguageDropdown = () => {
                         >
                           {userData.languages.length > 0
                             ? userData.languages
-                                .map((lang) => lang.name)
-                                .join(", ")
-                            : "Selecione os idiomas"}
+                              .map((lang) => lang.name)
+                              .join(", ")
+                            : "Select languages"}
                           <span className="user-dropdown-icon">
                             {isLanguageDropdownOpen ? (
                               <ChevronUp />
@@ -1121,7 +1120,7 @@ const toggleLanguageDropdown = () => {
                                 </div>
                               ))
                             ) : (
-                              <p>Carregando idiomas...</p>
+                              <p>Loading languages...</p>
                             )}
                           </div>
                         )}
@@ -1131,9 +1130,9 @@ const toggleLanguageDropdown = () => {
                       <p>
                         {userData.languages.length > 0
                           ? userData.languages
-                              .map((lang) => lang.name)
-                              .join(", ")
-                          : "Nenhum idioma selecionado."}
+                            .map((lang) => lang.name)
+                            .join(", ")
+                          : "No languages selected."}
                       </p>
                     )}
                   </div>
@@ -1141,7 +1140,7 @@ const toggleLanguageDropdown = () => {
                   {/* Seção Educação */}
                   <div className="user-profile-section">
                     <h3>
-                      <MortarboardFill className="user-icon" /> Educação
+                      <MortarboardFill className="user-icon" /> Education
                     </h3>
                     {userData.education.map((edu, index) => (
                       <div key={index} className="user-profile-array-item">
@@ -1149,7 +1148,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={edu.institution || ""}
-                          placeholder="Instituição"
+                          placeholder="Institution"
                           onChange={(e) =>
                             handleArrayChange(
                               e,
@@ -1164,7 +1163,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={edu.degree || ""}
-                          placeholder="Grau"
+                          placeholder="Degree"
                           onChange={(e) =>
                             handleArrayChange(e, index, "degree", "education")
                           }
@@ -1174,7 +1173,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={edu.admissionYear || ""}
-                          placeholder="Ano de Ingresso"
+                          placeholder="Admission Year"
                           onChange={(e) =>
                             handleArrayChange(
                               e,
@@ -1189,7 +1188,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={edu.graduationYear || ""}
-                          placeholder="Ano de Conclusão"
+                          placeholder="Graduation Year"
                           onChange={(e) =>
                             handleArrayChange(
                               e,
@@ -1219,14 +1218,14 @@ const toggleLanguageDropdown = () => {
                       }
                       className="user-add-button"
                     >
-                      <PlusSquare /> Adicionar
+                      <PlusSquare /> Add
                     </button>
                   </div>
 
                   {/* Seção Experiência Profissional */}
                   <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="user-icon" /> Experiência Profissional
+                      <Briefcase className="user-icon" /> Professional Experience
                     </h3>
                     {userData.professionalExperience.map((exp, index) => (
                       <div key={index} className="user-profile-array-item">
@@ -1234,7 +1233,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={exp.company || ""}
-                          placeholder="Empresa"
+                          placeholder="Company"
                           onChange={(e) =>
                             handleArrayChange(
                               e,
@@ -1249,7 +1248,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={exp.position || ""}
-                          placeholder="Cargo"
+                          placeholder="Position"
                           onChange={(e) =>
                             handleArrayChange(
                               e,
@@ -1264,7 +1263,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={exp.startDate || ""}
-                          placeholder="Ano de Início"
+                          placeholder="Start Year"
                           onChange={(e) =>
                             handleArrayChange(
                               e,
@@ -1279,7 +1278,7 @@ const toggleLanguageDropdown = () => {
                         <input
                           type="text"
                           value={exp.endDate || ""}
-                          placeholder="Ano de Término"
+                          placeholder="End Year"
                           onChange={(e) =>
                             handleArrayChange(
                               e,
@@ -1311,7 +1310,7 @@ const toggleLanguageDropdown = () => {
                       }
                       className="user-add-button"
                     >
-                      <PlusSquare /> Adicionar
+                      <PlusSquare /> Add
                     </button>
                   </div>
 
@@ -1321,7 +1320,7 @@ const toggleLanguageDropdown = () => {
                     className="user-save-button"
                     disabled={isEditing && !userData.fullName.trim()}
                   >
-                    Salvar Alterações
+                    Save Changes
                   </button>
                 </div>
               ) : (
@@ -1329,18 +1328,18 @@ const toggleLanguageDropdown = () => {
                   {/* Seção Sobre */}
                   <div className="user-profile-section">
                     <h3>
-                      <PersonFill className="user-icon" /> Sobre
+                      <PersonFill className="user-icon" /> About
                     </h3>
-                    <p>{userData.about || "Nenhuma descrição fornecida."}</p>
+                    <p>{userData.about || "No description provided."}</p>
                   </div>
 
                   {/* Seção Educação */}
                   <div className="user-profile-section">
                     <h3>
-                      <MortarboardFill className="user-icon" /> Educação
+                      <MortarboardFill className="user-icon" /> Education
                     </h3>
                     {Array.isArray(userData.education) &&
-                    userData.education.length > 0 ? (
+                      userData.education.length > 0 ? (
                       userData.education.map((edu, index) => (
                         <div key={index} className="user-education-item">
                           <div className="user-profile-info-row">
@@ -1364,17 +1363,17 @@ const toggleLanguageDropdown = () => {
                         </div>
                       ))
                     ) : (
-                      <p>Nenhuma informação educacional fornecida.</p>
+                      <p>No educational information provided.</p>
                     )}
                   </div>
 
                   {/* Seção Experiência Profissional */}
                   <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="user-icon" /> Experiência Profissional
+                      <Briefcase className="user-icon" /> Professional Experience
                     </h3>
                     {Array.isArray(userData.professionalExperience) &&
-                    userData.professionalExperience.length > 0 ? (
+                      userData.professionalExperience.length > 0 ? (
                       userData.professionalExperience.map((exp, index) => (
                         <div key={index} className="user-experience-item">
                           <div className="user-profile-info-row">
@@ -1398,19 +1397,19 @@ const toggleLanguageDropdown = () => {
                         </div>
                       ))
                     ) : (
-                      <p>Nenhuma experiência profissional fornecida.</p>
+                      <p>No professional experience provided.</p>
                     )}
                   </div>
 
                   {/* Seção Idiomas */}
                   <div className="user-profile-section">
                     <h3>
-                      <Globe className="user-icon" /> Idiomas
+                      <Globe className="user-icon" /> Languages
                     </h3>
                     <p>
                       {userData.languages.length > 0
                         ? userData.languages.map((lang) => lang.name).join(", ")
-                        : "Nenhum idioma selecionado."}
+                        : "No languages selected."}
                     </p>
                   </div>
                 </div>
@@ -1440,14 +1439,14 @@ const toggleLanguageDropdown = () => {
                               }
                             />
                             <span className="user-checkmark"></span>
-                            {badge.is_public ? "Pública" : "Privada"}
+                            {badge.is_public ? "Public" : "Private"}
                           </label>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p>Nenhuma badge disponível.</p>
+                  <p>No badges available.</p>
                 )}
               </div>
             )}
@@ -1497,7 +1496,7 @@ const toggleLanguageDropdown = () => {
                 <h2 className="user-profile-name">{userData.username}</h2>
               )}
               <p className="user-profile-title">
-                {userData.cnpj || "CNPJ não fornecido"}
+                {userData.cnpj || "CNPJ not provided"}
               </p>
               <div className="user-company-badges">
                 {userData.municipio && (
@@ -1518,10 +1517,10 @@ const toggleLanguageDropdown = () => {
               </div>
               <div className="user-profile-actions">
                 <button onClick={handleEditToggle} className="user-edit-button">
-                  <PencilSquare /> {isEditing ? "Cancelar" : "Editar"}
+                  <PencilSquare /> {isEditing ? "Cancel" : "Edit"}
                 </button>
                 <button onClick={handleShareProfile} className="user-share-button">
-                  <ShareFill /> Compartilhar
+                  <ShareFill /> Share
                 </button>
               </div>
             </div>
@@ -1529,16 +1528,16 @@ const toggleLanguageDropdown = () => {
 
           <div className="user-tabs">
             <button
-              onClick={() => handleTabChange("sobre")}
-              className={activeTab === "sobre" ? "active" : ""}
+              onClick={() => handleTabChange("about")}
+              className={activeTab === "about" ? "active" : ""}
             >
-              Sobre
+              About
             </button>
             <button
               onClick={() => handleTabChange("eventos")}
-              className={activeTab === "eventos" ? "active" : ""}
+              className={activeTab === "events" ? "active" : ""}
             >
-              Eventos
+              Events
             </button>
             <button
               onClick={() => handleTabChange("badges")}
@@ -1549,13 +1548,13 @@ const toggleLanguageDropdown = () => {
           </div>
 
           <div className="user-tab-content">
-            {activeTab === "sobre" && (
+            {activeTab === "about" && (
               <div className="user-sobre-section">
                 {isEditing ? (
                   <>
                     <div className="user-profile-section">
                       <label>
-                        <PersonFill className="user-icon" /> Sobre
+                        <PersonFill className="user-icon" /> About
                       </label>
                       <textarea
                         name="sobre"
@@ -1578,7 +1577,7 @@ const toggleLanguageDropdown = () => {
                     </div>
                     <div className="user-profile-section">
                       <label>
-                        <Phone className="user-icon" /> Telefone
+                        <Phone className="user-icon" /> Phone
                       </label>
                       <input
                         type="text"
@@ -1593,35 +1592,35 @@ const toggleLanguageDropdown = () => {
                       className="user-save-button"
                       disabled={isEditing && !userData.username.trim()}
                     >
-                      Salvar Alterações
+                      Save Changes
                     </button>
                   </>
                 ) : (
                   <>
                     <div className="user-profile-section">
                       <h3>
-                        <PersonFill className="user-icon" /> Sobre
+                        <PersonFill className="user-icon" /> About
                       </h3>
-                      <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+                      <p>{userData.sobre || "Not provided."}</p>
                     </div>
                     <div className="user-profile-section">
                       <h3>
                         <Globe className="user-icon" /> Website
                       </h3>
-                      <p>{userData.website || "Não fornecido"}</p>
+                      <p>{userData.website || "Not provided."}</p>
                     </div>
                     <div className="user-profile-section">
                       <h3>
-                        <Phone className="user-icon" /> Telefone
+                        <Phone className="user-icon" /> Phone
                       </h3>
-                      <p>{userData.numero_contato || "Não fornecido"}</p>
+                      <p>{userData.numero_contato || "Not provided."}</p>
                     </div>
                   </>
                 )}
               </div>
             )}
 
-            {activeTab === "eventos" && (
+            {activeTab === "events" && (
               <div className="user-eventos-section">
                 <h3>Eventos Promovidos</h3>
 
@@ -1685,22 +1684,22 @@ const toggleLanguageDropdown = () => {
                                 }}
                                 title={
                                   !isWithin24Hours(event.createdAt)
-                                    ? "Edição disponível apenas nas primeiras 24 horas"
-                                    : "Editar Evento"
+                                    ? "Editing available only within the first 24 hours"
+                                    : "Edit Event"
                                 }
                               >
-                                Editar
+                                Edit
                               </button>
                               {/* Botão "Excluir" sempre habilitado */}
                               <button onClick={() => handleDeleteEvent(event)}>
-                                Excluir
+                                Delete
                               </button>
                             </div>
                           )}
                         </div>
                       </div>
                       <div className="user-event-details">
-                        <p>{event.descricao || "Nenhuma descrição"}</p>
+                        <p>{event.descricao || "No description"}</p>
                         {event.imageUrl && (
                           <img
                             src={event.imageUrl}
@@ -1712,7 +1711,7 @@ const toggleLanguageDropdown = () => {
                     </div>
                   ))
                 ) : (
-                  <p>Nenhum evento disponível.</p>
+                  <p>No events available.</p>
                 )}
               </div>
             )}
@@ -1731,13 +1730,13 @@ const toggleLanguageDropdown = () => {
                         />
                         <h3>{badge.name_badge}</h3>
                         <Link to={`/badges/details/${badge.id_badge}`}>
-                          <button>Detalhes</button>
+                        <button>Details</button>
                         </Link>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p>Nenhuma badge disponível.</p>
+                  <p>No badges available.</p>
                 )}
               </div>
             )}

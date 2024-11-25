@@ -42,7 +42,7 @@ const CommonDetails = () => {
         setUser(userInfoResponse.data);
       } catch (error) {
         console.error("Erro ao obter informações do usuário:", error);
-        toast.error("Erro na autenticação. Por favor, faça login novamente.");
+        toast.error("Authentication error. Please log in again.");
         navigate("/login"); // Redireciona para a página de login se houver erro
       }
     } else {
