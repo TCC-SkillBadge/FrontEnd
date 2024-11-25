@@ -361,7 +361,7 @@ const PublicProfile = () => {
                         className="event-user-avatar"
                       />
                       <span className="event-user-name">
-                        {userData.razao_social}
+                        {userData.username}
                       </span>
 
                       {/* Exibição da Data e Hora de Publicação */}
