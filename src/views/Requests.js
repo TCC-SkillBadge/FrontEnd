@@ -19,6 +19,9 @@ const Requests = () => {
   
   const navigate = useNavigate();
 
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+  const adminUrl = process.env.REACT_APP_API_ADMIN;
+
   // Mapeamento dos nomes de canais para algo mais intuitivo
   const channelMap = {
     criacao_badge: "Badge Creation",
@@ -32,7 +35,7 @@ const Requests = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:7004/admin/requests",
+          `${adminUrl}/admin/requests`,
           { token },
           {
             headers: {
@@ -61,7 +64,7 @@ const Requests = () => {
   
       if (userType === "UE") {
         let userInfoResponse = await axios.get(
-          `http://localhost:7003/api/acessar-info-usuario-jwt`,
+          `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -71,7 +74,7 @@ const Requests = () => {
       } 
       else if (userType === "UA") {
         let userInfoResponse = await axios.get(
-          `http://localhost:7004/admin/acessa-info`,
+          `${adminUrl}/admin/acessa-info`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -194,7 +197,6 @@ const Requests = () => {
               <th>Channel</th>
               <th>Priority</th>
               <th>Status</th>
-              <th>Client</th>
               <th style={{ textAlign: "center" }}>Badge</th>
               <th style={{ textAlign: "center" }}>Options</th>
             </tr>
@@ -207,7 +209,6 @@ const Requests = () => {
                 <td>{channelMap[order.canal] || order.canal}</td>{" "}
                 <td>{order.prioridade}</td>
                 <td>{order.status}</td>
-                <td>{order.email_request}</td>
                 <td style={{ textAlign: "center" }}>
                   {order.name_badge || "-"}
                 </td>

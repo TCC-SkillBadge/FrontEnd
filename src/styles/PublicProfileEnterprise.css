@@ -37,8 +37,8 @@
   padding: 30px;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  border: 2px solid;
-  border-image: linear-gradient(to bottom, var(--color-primary), var(--color-secondary)) 1;
+  /* border: 2px solid;
+  border-image: linear-gradient(to bottom, var(--color-primary), var(--color-secondary)) 1; */
 }
 
 /* Cabeçalho do Perfil */
@@ -260,14 +260,14 @@
 }
 
 /* Seção de Badges */
-.badges-section {
+._badges-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
 }
 
-.badges-section h3 {
+._badges-section h3 {
   font-size: 1.5rem;
   margin-bottom: 20px;
   display: flex;
@@ -275,20 +275,20 @@
   color: var(--color-text-light);
 }
 
-.badges-section h3 .bi {
+._badges-section h3 .bi {
   font-size: 1.2rem;
   margin-right: 8px;
   color: var(--color-text-light);
 }
 
-.badges-grid {
+._badges-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
 }
 
-.badge-card {
+._badge-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -301,12 +301,12 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.badge-card:hover {
+._badge-card:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.badge-preview {
+._badge-preview {
   width: 100px;
   height: 100px;
   object-fit: contain;
@@ -314,13 +314,13 @@
   border-radius: 5px;
 }
 
-.badge-card h3 {
+._badge-card h3 {
   font-size: 1.1rem;
   margin-bottom: 10px;
   color: var(--color-text-light);
 }
 
-.badge-card button {
+._badge-card button {
   background-color: var(--color-primary);
   color: var(--color-text-light);
   border: none;
@@ -330,7 +330,7 @@
   transition: background-color 0.3s;
 }
 
-.badge-card button:hover {
+._badge-card button:hover {
   background-color: var(--color-secondary);
 }
 
@@ -390,25 +390,25 @@
     transform: translateX(-50%);
   }
 
-  .badges-grid {
+  ._badges-grid {
     gap: 15px;
   }
 
-  .badge-card {
+  ._badge-card {
     width: 120px;
     padding: 8px;
   }
 
-  .badge-preview {
+  ._badge-preview {
     width: 80px;
     height: 80px;
   }
 
-  .badge-card h3 {
+  ._badge-card h3 {
     font-size: 1rem;
   }
 
-  .badge-card button {
+  ._badge-card button {
     padding: 4px 8px;
     font-size: 0.8rem;
   }

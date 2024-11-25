@@ -7,6 +7,7 @@ import BarChartComponent from "../components/charts/BarChartComponent";
 import PieChartComponent from "../components/charts/PieChartComponent";
 import LineChartComponent from "../components/charts/LineChartComponent";
 import RadarChartComponent from "../components/charts/RadarChartComponent";
+import { ClipLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/DataVisualization.css";
@@ -164,7 +165,11 @@ const DataVisualization = () => {
   const errorMessage = queries.find((query) => query.isError)?.error?.message;
 
   if (isLoading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="loading-spinner">
+        <ClipLoader size={60} color="#4A90E2" loading={true} />
+      </div>
+    );
   }
 
   if (isError) {
@@ -212,15 +217,13 @@ const DataVisualization = () => {
         {/* Attribution Rate */}
         <PieChartComponent
           data={[
-            { name: "Attributed", value: attributionRate },
-            { name: "Not Attributed", value: 100 - attributionRate },
+            { name: "Attributed", value: attributionRate, fill: "#50E3C2" }, // Verde para Attributed
+            { name: "Not Attributed", value: 100 - attributionRate, fill: "#FF6347" }, // Vermelho para Not Attributed
           ]}
           title="Attribution Rate"
           dataKey="value"
           nameKey="name"
-          fill="#50E3C2"
         />
-
         {/* Average Time */}
         <BarChartComponent
           data={[
@@ -239,13 +242,16 @@ const DataVisualization = () => {
         {/* Acceptance Rate */}
         <PieChartComponent
           data={[
-            { name: "Accepted", value: acceptanceRate },
-            { name: "Not Accepted", value: 100 - acceptanceRate },
+            { name: "Accepted", value: acceptanceRate, fill: "#50E3C2" }, // Verde para Accepted
+            {
+              name: "Not Accepted",
+              value: 100 - acceptanceRate,
+              fill: "#FF6347",
+            }, // Vermelho para Not Accepted
           ]}
           title="Acceptance Rate"
           dataKey="value"
           nameKey="name"
-          fill="#4A90E2" // Alterada para azul claro
         />
 
         {/* Assignment Trends */}
@@ -274,18 +280,19 @@ const DataVisualization = () => {
               value: conversionAnalysis
                 ? conversionAnalysis.conversion_rate
                 : 0,
+              fill: "#B8E986",
             },
             {
               name: "Non-Conversions",
               value: conversionAnalysis
                 ? 100 - conversionAnalysis.conversion_rate
                 : 0,
+              fill: "#FF6347",
             },
           ]}
           title="Conversion Analysis"
           dataKey="value"
           nameKey="name"
-          fill="#B8E986"
         />
 
         {/* Popularity Trends */}

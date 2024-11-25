@@ -9,7 +9,7 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.badge-preview {
+.claim-badge-preview {
   margin-top: 20px;
   padding: 20px;
   background-color: #fff;
@@ -19,7 +19,7 @@
   text-align: left;
 }
 
-.badge-image {
+.claim-badge-image {
   width: 100px;
   height: 100px;
   object-fit: cover;

@@ -259,7 +259,10 @@ const CreateServicePlan = () => {
 
             {/* Funcionalidades Disponíveis */}
             <div className="form-group">
-              <label htmlFor="funcionalidadesDisponiveis" className="form-label">
+              <label
+                htmlFor="funcionalidadesDisponiveis"
+                className="form-label"
+              >
                 Available Features
               </label>
               <CreatableSelect
@@ -275,7 +278,10 @@ const CreateServicePlan = () => {
             {/* Funcionalidades Indisponíveis - Renderização Condicional */}
             {formData.funcionalidadesNaoDisponiveis.length > 0 && (
               <div className="form-group">
-                <label htmlFor="funcionalidadesNaoDisponiveis" className="form-label">
+                <label
+                  htmlFor="funcionalidadesNaoDisponiveis"
+                  className="form-label"
+                >
                   Unavailable Features
                 </label>
                 <CreatableSelect
@@ -358,9 +364,16 @@ const CreateServicePlan = () => {
             </div>
 
             {/* Botão de Salvar */}
-            <div className="text-right">
+            <div className="button-group mt-3">
               <button type="submit" className="btn btn-primary save-button">
                 Save Plan
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary cancel-button"
+                onClick={() => navigate("/price")} // Redireciona para a página de preços
+              >
+                Cancel
               </button>
             </div>
           </form>

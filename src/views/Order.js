@@ -19,6 +19,8 @@ const Orders = () => {
 
   const navigate = useNavigate();
 
+  const adminUrl = process.env.REACT_APP_API_ADMIN;
+
   // Mapeamento dos nomes de canais para algo mais intuitivo
   const channelMap = {
     criacao_badge: "Badge Creation",
@@ -32,7 +34,7 @@ const Orders = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:7004/admin/orders",
+        `${adminUrl}/admin/orders`,
           { token }, // Enviando o token no corpo da requisição
           {
             headers: {
@@ -61,19 +63,9 @@ const Orders = () => {
       const token = sessionStorage.getItem("token");
       const userType = sessionStorage.getItem("tipoUsuario");
   
-      if (userType === "UE") {
+      if (userType === "UA") {
         let userInfoResponse = await axios.get(
-          `http://localhost:7003/api/acessar-info-usuario-jwt`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } 
-      else if (userType === "UA") {
-        let userInfoResponse = await axios.get(
-          `http://localhost:7004/admin/acessa-info`,
+          `${adminUrl}/admin/acessa-info`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

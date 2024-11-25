@@ -41,8 +41,7 @@
   padding: 30px;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
-  border: 2px solid;
-  border-image: linear-gradient(to bottom, var(--color-primary), var(--color-secondary)) 1;
+  
 }
 
 .profile-header {

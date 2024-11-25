@@ -49,6 +49,8 @@ body {
   padding: 30px;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative; /* Adicionado */
+  z-index: 1;
 }
 
 .wallet-header {
@@ -148,7 +150,7 @@ body {
     transform: translateY(0);
   }
 }
-
+/*badge card no card.css*/
 .wallet-medal-card {
   background-color: var(--card-background);
   color: var(--text-color);

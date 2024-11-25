@@ -168,7 +168,7 @@ const PublicProfileEnterprise = () => {
 
   return (
     <div className="profile-page">
-      <div className="public-profile-container">
+      <div className="public-profile-container default-border-image">
         <div className="profile-header">
           <img
             src={userData.imageUrl || "/default-company-logo.png"}
@@ -337,13 +337,17 @@ const PublicProfileEnterprise = () => {
           )}
 
           {activeTab === "badges" && (
-            <div className="badges-section">
+            <div className="_badges-section">
               <h3>Badges</h3>
               {badges && badges.length > 0 ? (
-                <div className="badges-grid">
+                <div className="_badges-grid">
                   {badges.map((badge) => (
-                    <div key={badge.id_badge} className="badge-card">
-                      <img src={badge.image_url} alt={badge.name_badge} className="badge-preview" />
+                    <div key={badge.id_badge} className="_badge-card">
+                      <img
+                        src={badge.image_url}
+                        alt={badge.name_badge}
+                        className="_badge-preview"
+                      />
                       <h3>{badge.name_badge}</h3>
                       <Link to={`/badges/details/${badge.id_badge}`}>
                         <button>Details</button>

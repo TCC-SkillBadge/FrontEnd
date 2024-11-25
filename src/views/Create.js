@@ -1,3 +1,5 @@
+// src/pages/Create.js
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
@@ -60,6 +62,7 @@ const Create = () => {
         }));
       } catch (error) {
         console.error("Erro ao buscar dados da empresa:", error);
+        toast.error("Erro ao buscar dados da empresa. Verifique o CNPJ.");
       }
     }
   };
@@ -123,8 +126,20 @@ const Create = () => {
 
       if (response.status === 201) {
         toast.success("User registered successfully");
+        // Verificar se há um token de confirmação de badge armazenado
+        const badgeToken =
+          localStorage.getItem("badgeConfirmationToken") ||
+          sessionStorage.getItem("badgeConfirmationToken");
         setTimeout(() => {
-          navigate("/login");
+          if (badgeToken) {
+            // Remover o token do armazenamento
+            localStorage.removeItem("badgeConfirmationToken");
+            sessionStorage.removeItem("badgeConfirmationToken");
+            // Redirecionar para a página de confirmação de badge com o token
+            navigate(`/confirm-badge?token=${badgeToken}`);
+          } else {
+            navigate("/login");
+          }
         }, 2000);
       }
     } catch (error) {

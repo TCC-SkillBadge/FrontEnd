@@ -260,3 +260,18 @@
 .recharts-line {
   stroke-width: 3;
 }
+
+/* src/styles/DataVisualization.css */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.no-data-message {
+  text-align: center;
+  color: #ffffff;
+  font-size: 1rem;
+  padding: 50px 0;
+}

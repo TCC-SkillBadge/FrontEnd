@@ -17,6 +17,8 @@ import { OverlayPanel } from "primereact/overlaypanel";
 import ChatBox from "./ChatBox";
 import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min';
 
 const NavBar = (props) => {
   const [token, setToken] = useState(() => props.token);
@@ -39,6 +41,16 @@ const NavBar = (props) => {
       setUserType(() => props.userType);
     }
   }, [props.token, props.user, props.userType]);
+
+  useEffect(() => {
+    const tooltipTriggerList = document.querySelectorAll(
+      '[data-bs-toggle="tooltip"]'
+    );
+    tooltipTriggerList.forEach((tooltipTriggerEl) => {
+      new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  }, []);
+
 
 
   useEffect(() => {
@@ -158,7 +170,14 @@ const NavBar = (props) => {
             >
               <i className="bi bi-person"></i> Profile
             </NavDropdown.Item>
-            <NavDropdown.Item as={NavLink} to="/config">
+            <NavDropdown.Item
+              as="div"
+              className="disabled"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="Feature not available"
+              style={{ cursor: "not-allowed", color: "gray" }}
+            >
               <i className="bi bi-gear"></i> Config
             </NavDropdown.Item>
             <NavDropdown.Item as={NavLink} to="/portfolio">
@@ -180,7 +199,19 @@ const NavBar = (props) => {
             >
               <i className="bi bi-person"></i> Profile
             </NavDropdown.Item>
-            <NavDropdown.Item as={NavLink} to="/config">
+            <NavDropdown.Item
+              as="div"
+              className="disabled config-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="Feature not available"
+              style={{
+                pointerEvents: "none",
+                color: "gray",
+                opacity: 0.5,
+                cursor: "not-allowed",
+              }}
+            >
               <i className="bi bi-gear"></i> Config
             </NavDropdown.Item>
             <NavDropdown.Item as={NavLink} to="/analysis">
@@ -197,15 +228,36 @@ const NavBar = (props) => {
         menuItems = (
           <>
             <NavDropdown.Item
-              as={NavLink}
-              to={encodedEmail ? `/profile/${encodedEmail}` : "/profile"}
+              as="div"
+              className="disabled profile-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="Feature not available"
+              style={{
+                pointerEvents: "none",
+                color: "gray",
+                opacity: 0.5,
+                cursor: "not-allowed",
+              }}
             >
               <i className="bi bi-person"></i> Profile
             </NavDropdown.Item>
-            <NavDropdown.Item as={NavLink} to="/config">
+            <NavDropdown.Item
+              as="div"
+              className="disabled config-item"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="Feature not available"
+              style={{
+                pointerEvents: "none",
+                color: "gray",
+                opacity: 0.5,
+                cursor: "not-allowed",
+              }}
+            >
               <i className="bi bi-gear"></i> Config
             </NavDropdown.Item>
-            <NavDropdown.Item as={NavLink} to="/analytics">
+            <NavDropdown.Item as={NavLink} to="/admin/analysis">
               <i className="bi bi-bar-chart"></i> Analytics
             </NavDropdown.Item>
             <NavDropdown.Divider />

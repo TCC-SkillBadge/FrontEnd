@@ -16,6 +16,8 @@
   max-width: 600px;
   border: 2px solid;
   border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
+  margin-top: 200px;
+  margin-bottom: 200px;
 }
 
 .create-plan-container h2 {
@@ -120,8 +122,10 @@
 .button-group .cancel-button {
   background-color: transparent;
   border-color: #6c757d;
+  border: 2px solid #6c757d;
   color: #6c757d;
   font-weight: bold;
+  border-radius: 5px;
 }
 
 .button-group .cancel-button:hover {
