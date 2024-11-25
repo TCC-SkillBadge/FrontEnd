@@ -167,7 +167,7 @@ const PublicProfileEnterprise = () => {
 
   if (loading) {
     return (
-      <div className="spinner-container">
+      <div className="profile-enterprise-spinner-container">
         <ScaleLoader color="#00BFFF" loading={loading} size={150} />
         <p>Carregando...</p>
       </div>
@@ -176,40 +176,40 @@ const PublicProfileEnterprise = () => {
 
   if (!userData) {
     return (
-      <div className="public-profile-container">Usuário não encontrado.</div>
+      <div className="profile-enterprise-container">Usuário não encontrado.</div>
     );
   }
 
   return (
-    <div className="profile-page">
-      <div className="public-profile-container default-border-image">
-        <div className="profile-header">
+    <div className="profile-enterprise-page">
+      <div className="profile-enterprise-container default-border-image">
+        <div className="profile-enterprise-header">
           <img
             src={userData.imageUrl || "/default-company-logo.png"}
             alt="Company Logo"
-            className="profile-photo"
+            className="profile-enterprise-photo"
           />
-          <div className="profile-info">
-            <h2 className="profile-name">{userData.username}</h2>
+          <div className="profile-enterprise-info">
+            <h2 className="profile-enterprise-name">{userData.username}</h2>
             {/* <p className="profile-title">{userData.cnpj}</p> */}
-            <div className="company-badges">
+            <div className="profile-enterprise-company-badges">
               {userData.municipio && (
-                <span className="company-badge">
+                <span className="profile-enterprise-company-badge">
                   <GeoAlt /> {userData.municipio}
                 </span>
               )}
               {userData.segmento && (
-                <span className="company-badge">
+                <span className="profile-enterprise-company-badge">
                   <Briefcase /> {userData.segmento}
                 </span>
               )}
               {userData.tamanho && (
-                <span className="company-badge">
+                <span className="profile-enterprise-company-badge">
                   <PeopleFill /> {userData.tamanho}
                 </span>
               )}
               {userData.website && (
-                <span className="company-badge">
+                <span className="profile-enterprise-company-badge">
                   <Globe />{" "}
                   <a
                     href={
@@ -226,7 +226,7 @@ const PublicProfileEnterprise = () => {
                 </span>
               )}
               {userData.numero_contato && (
-                <span className="company-badge">
+                <span className="profile-enterprise-company-badge">
                   <PersonFill /> {userData.numero_contato}
                 </span>
               )}
@@ -235,7 +235,7 @@ const PublicProfileEnterprise = () => {
         </div>
 
         {/* Guias */}
-        <div className="tabs">
+        <div className="profile-enterprise-tabs">
           <button
             onClick={() => setActiveTab("sobre")}
             className={activeTab === "sobre" ? "active" : ""}
@@ -257,18 +257,18 @@ const PublicProfileEnterprise = () => {
         </div>
 
         {/* Conteúdo das Guias */}
-        <div className="tab-content">
+        <div className="profile-enterprise-tab-content">
           {activeTab === "sobre" && (
-            <div className="profile-section">
+            <div className="profile-enterprise-section">
               <h3>
-                <PersonFill className="icon" /> About
+                <PersonFill className="profile-enterprise-icon" /> About
               </h3>
               <p>{userData.sobre || "No description provided."}</p>
             </div>
           )}
 
           {activeTab === "eventos" && (
-            <div className="profile-section">
+            <div className="profile-enterprise-section">
               <h3>Promoted Events</h3>
               {userData.events && userData.events.length > 0 ? (
                 userData.events.map((event, index) => (
@@ -278,25 +278,25 @@ const PublicProfileEnterprise = () => {
                       highlightedEventId === event.id ? "highlighted" : ""
                     }`}
                   >
-                    <div className="event-header">
+                    <div className="profile-enterprise-event-header">
                       <img
                         src={userData.imageUrl || "/default-company-logo.png"}
                         alt="Company Logo"
-                        className="event-user-avatar"
+                        className="profile-enterprise-event-user-avatar"
                       />
-                      <span className="event-user-name">
+                      <span className="profile-enterprise-event-user-name">
                         {userData.username}
                       </span>
                       {event.createdAt && (
-                        <span className="event-publication-time">
+                        <span className="profile-enterprise-event-publication-time">
                           {formatDateTime(event.createdAt)}
                         </span>
                       )}
-                      <div className="event-options">
+                      <div className="profile-enterprise-event-options">
                         {/* Botão de Compartilhamento */}
-                        <div className="event-share">
+                        <div className="profile-enterprise-event-share">
                           <FaShareAlt
-                            className="share-icon"
+                            className="profile-enterprise-share-icon"
                             onClick={() =>
                               setShowShareOptions((prevState) => ({
                                 ...prevState,
@@ -307,9 +307,9 @@ const PublicProfileEnterprise = () => {
                           />
                           {/* Opções de compartilhamento */}
                           {showShareOptions[event.id] && (
-                            <div className="share-options">
+                            <div className="profile-enterprise-share-options">
                               <button
-                                className="facebook-button"
+                                className="profile-enterprise-facebook-button"
                                 onClick={() =>
                                   handleShareEvent(event, "facebook")
                                 }
@@ -317,7 +317,7 @@ const PublicProfileEnterprise = () => {
                                 <FaFacebookF /> Facebook
                               </button>
                               <button
-                                className="twitter-button"
+                                className="profile-enterprise-twitter-button"
                                 onClick={() =>
                                   handleShareEvent(event, "twitter")
                                 }
@@ -325,7 +325,7 @@ const PublicProfileEnterprise = () => {
                                 <FaTwitter /> Twitter
                               </button>
                               <button
-                                className="linkedin-button"
+                                className="profile-enterprise-linkedin-button"
                                 onClick={() =>
                                   handleShareEvent(event, "linkedin")
                                 }
@@ -337,13 +337,13 @@ const PublicProfileEnterprise = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="event-details">
+                    <div className="profile-enterprise-event-details">
                       <p>{event.descricao || "No description"}</p>
                       {event.imageUrl && (
                         <img
                           src={event.imageUrl}
                           alt="Event Image"
-                          className="event-image"
+                          className="profile-enterprise-event-image"
                         />
                       )}
                     </div>
@@ -356,22 +356,24 @@ const PublicProfileEnterprise = () => {
           )}
 
           {activeTab === "badges" && (
-            <div className="badges-section">
+            <div className="profile-enterprise-badges-section">
               <h3>Badges</h3>
               {badges && badges.length > 0 ? (
-                <div className="badge-slide">
+                <div className="profile-enterprise-badge-slide">
                   {badges.map((badge) => (
                     <div
                       key={badge.id_badge}
-                      className="badge-card default-border-image"
+                      className="profile-enterprise-badge-card default-border-image"
                     >
                       <img
                         src={badge.image_url}
                         alt={badge.name_badge}
-                        className="badge-preview"
+                        className="profile-enterprise-badge-preview"
                       />
                       <h3>{badge.name_badge}</h3>
-                      {/* Remova o botão "Details" se não for necessário */}
+                      <Link to={`/badges/details/${badge.id_badge}`}>
+                        <button>Details</button>
+                      </Link>
                     </div>
                   ))}
                 </div>

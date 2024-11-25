@@ -115,7 +115,7 @@ const PublicProfile = () => {
 
   if (loading) {
     return (
-      <div className="spinner-container">
+      <div className="profile-spinner-container">
         <ScaleLoader color="#00BFFF" loading={loading} size={150} />
         <p>Carregando...</p>
       </div>
@@ -123,12 +123,12 @@ const PublicProfile = () => {
   }
 
   if (error) {
-    return <div className="error-container">{error}</div>;
+    return <div className="profile-error-container">{error}</div>;
   }
 
   if (!userData) {
     return (
-      <div className="error-container">Dados do usuário não disponíveis.</div>
+      <div className="profile-error-container">Dados do usuário não disponíveis.</div>
     );
   }
 
@@ -161,19 +161,19 @@ const PublicProfile = () => {
             </p>
             {/* Se for UE, exibir badges de município, segmento, etc. */}
             {tipoUsuario === "UE" && (
-              <div className="company-badges">
+              <div className="profile-company-badges">
                 {userData.municipio && (
-                  <span className="company-badge">
+                  <span className="profile-company-badge">
                     <GeoAlt /> {userData.municipio}
                   </span>
                 )}
                 {userData.segmento && (
-                  <span className="company-badge">
+                  <span className="profile-company-badge">
                     <Briefcase /> {userData.segmento}
                   </span>
                 )}
                 {userData.tamanho && (
-                  <span className="company-badge">
+                  <span className="profile-company-badge">
                     <PeopleFill /> {userData.tamanho}
                   </span>
                 )}
@@ -183,7 +183,7 @@ const PublicProfile = () => {
         </div>
 
         {/* Guias */}
-        <div className="tabs">
+        <div className="profile-tabs">
           {tipoUsuario === "UC" ? (
             <>
               <button
@@ -224,14 +224,14 @@ const PublicProfile = () => {
         </div>
 
         {/* Conteúdo das Guias */}
-        <div className="tab-content">
+        <div className="profile-tab-content">
           {/* Guia Perfil para UC */}
           {tipoUsuario === "UC" && activeTab === "perfil" && (
             <div className="profile-sections">
               {/* Seção Sobre */}
               <div className="profile-section">
                 <h3>
-                  <PersonFill className="icon" /> Sobre
+                  <PersonFill className="profile-icon" /> Sobre
                 </h3>
                 <p>{userData.about || "Nenhuma descrição fornecida."}</p>
               </div>
@@ -239,25 +239,25 @@ const PublicProfile = () => {
               {/* Seção Educação */}
               <div className="profile-section">
                 <h3>
-                  <MortarboardFill className="icon" /> Educação
+                  <MortarboardFill className="profile-icon" /> Educação
                 </h3>
                 {Array.isArray(userData.education) &&
                 userData.education.length > 0 ? (
                   userData.education.map((edu, index) => (
-                    <div key={index} className="education-item">
+                    <div key={index} className="profile-education-item">
                       <div className="profile-info-row">
-                        <Building className="icon" />
-                        <span className="institution-name">
+                        <Building className="profile-icon" />
+                        <span className="profile-institution-name">
                           {edu.institution}
                         </span>
                       </div>
                       <div className="profile-info-row">
-                        <AwardFill className="icon" />
-                        <span className="education-degree">{edu.degree}</span>
+                        <AwardFill className="profile-icon" />
+                        <span className="profile-education-degree">{edu.degree}</span>
                       </div>
                       <div className="profile-info-row">
-                        <CalendarFill className="icon" />
-                        <span className="education-dates">
+                        <CalendarFill className="profile-icon" />
+                        <span className="profile-education-dates">
                           {edu.admissionYear} - {edu.graduationYear}
                         </span>
                       </div>
@@ -271,25 +271,25 @@ const PublicProfile = () => {
               {/* Seção Experiência Profissional */}
               <div className="profile-section">
                 <h3>
-                  <Briefcase className="icon" /> Experiência Profissional
+                  <Briefcase className="profile-icon" /> Experiência Profissional
                 </h3>
                 {Array.isArray(userData.professionalExperience) &&
                 userData.professionalExperience.length > 0 ? (
                   userData.professionalExperience.map((exp, index) => (
-                    <div key={index} className="experience-item">
+                    <div key={index} className="profile-experience-item">
                       <div className="profile-info-row">
-                        <Building className="icon" />
+                        <Building className="profile-icon" />
                         <span className="profile-info-text">{exp.company}</span>
                       </div>
                       <div className="profile-info-row">
-                        <Briefcase className="icon" />
+                        <Briefcase className="profile-icon" />
                         <span className="profile-info-text">
                           {exp.position}
                         </span>
                       </div>
                       <div className="profile-info-row">
-                        <CalendarFill className="icon" />
-                        <span className="education-dates">
+                        <CalendarFill className="profile-icon" />
+                        <span className="profile-education-dates">
                           {exp.startDate} - {exp.endDate}
                         </span>
                       </div>
@@ -303,7 +303,7 @@ const PublicProfile = () => {
               {/* Seção Idiomas */}
               <div className="profile-section">
                 <h3>
-                  <Globe className="icon" /> Idiomas
+                  <Globe className="profile-icon" /> Idiomas
                 </h3>
                 <p>
                   {userData.languages.length > 0
@@ -316,7 +316,7 @@ const PublicProfile = () => {
 
           {/* Guia Badges para UC e UE */}
           {activeTab === "badges" && (
-            <div className="badges-section">
+            <div className="profile-badges-section">
               <h3>Badges</h3>
               {userData.badges && userData.badges.length > 0 ? (
                 <div className="profile-badge-slide">
@@ -342,17 +342,17 @@ const PublicProfile = () => {
 
           {/* Guia Sobre para UE */}
           {tipoUsuario === "UE" && activeTab === "sobre" && (
-            <div className="sobre-section">
+            <div className="profile-sobre-section">
               <div className="profile-section">
                 <h3>
-                  <PersonFill className="icon" /> Sobre
+                  <PersonFill className="profile-icon" /> Sobre
                 </h3>
                 <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
               </div>
 
               <div className="profile-section">
                 <h3>
-                  <Globe className="icon" /> Website
+                  <Globe className="profile-icon" /> Website
                 </h3>
                 <p>
                   {userData.website ? (
@@ -371,7 +371,7 @@ const PublicProfile = () => {
 
               <div className="profile-section">
                 <h3>
-                  <Phone className="icon" /> Telefone
+                  <Phone className="profile-icon" /> Telefone
                 </h3>
                 <p>{userData.numero_contato || "Não fornecido"}</p>
               </div>
@@ -380,24 +380,24 @@ const PublicProfile = () => {
 
           {/* Guia Eventos para UE */}
           {tipoUsuario === "UE" && activeTab === "eventos" && (
-            <div className="eventos-section">
+            <div className="profile-eventos-section">
               <h3>Eventos Promovidos</h3>
               {userData.events && userData.events.length > 0 ? (
                 userData.events.map((event, index) => (
-                  <div key={index} className="event-item">
-                    <div className="event-header">
+                  <div key={index} className="profile-event-item">
+                    <div className="profile-event-header">
                       <img
                         src={event.imageUrl || "/default-company-logo.png"}
                         alt="Company Logo"
-                        className="event-user-avatar"
+                        className="profile-event-user-avatar"
                       />
-                      <span className="event-user-name">
+                      <span className="profile-event-user-name">
                         {userData.razao_social || "Empresa"}
                       </span>
 
                       {/* Exibição da Data e Hora de Publicação */}
                       {event.createdAt && (
-                        <span className="event-publication-time">
+                        <span className="profile-event-publication-time">
                           {new Date(event.createdAt).toLocaleString("pt-BR", {
                             year: "numeric",
                             month: "long",
@@ -408,13 +408,13 @@ const PublicProfile = () => {
                         </span>
                       )}
                     </div>
-                    <div className="event-details">
+                    <div className="profile-event-details">
                       <p>{event.descricao || "Nenhuma descrição."}</p>
                       {event.imageUrl && (
                         <img
                           src={event.imageUrl}
                           alt="Event Image"
-                          className="event-image"
+                          className="profile-event-image"
                         />
                       )}
                     </div>

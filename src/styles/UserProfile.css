@@ -16,7 +16,7 @@
 }
 
 /* General Styling */
-.profile-page {
+.user-profile-page {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,7 +25,7 @@
   color: var(--color-text-light);
 }
 
-.spinner-container {
+.user-spinner-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,32 +33,32 @@
   background-color: var(--background-dark);
 }
 
-.profile-container {
+.user-profile-container {
   width: 80%;
   max-width: 1200px;
   margin: 20px auto;
-  background-color: rgba(25, 26, 46, 0.9);
+  background-color:rgba(0, 0, 0, 0.25);
   padding: 30px;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   
 }
 
-.profile-header {
+.user-profile-header {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap; /* Adicionado para permitir quebra de linha */
 }
 
-.profile-photo-wrapper {
+.user-profile-photo-wrapper {
   position: relative;
   width: 150px;
   height: 150px;
   flex-shrink: 0; /* Impede que a imagem encolha */
 }
 
-.profile-photo {
+.user-profile-photo {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -67,7 +67,7 @@
   box-shadow: var(--box-shadow);
 }
 
-.edit-photo-overlay {
+.user-edit-photo-overlay {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -81,115 +81,115 @@
   justify-content: center;
 }
 
-.edit-photo-overlay:hover {
+.user-edit-photo-overlay:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-.edit-photo-icon {
+.user-edit-photo-icon {
   color: var(--color-text-light);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.edit-photo-icon:hover {
+.user-edit-photo-icon:hover {
   color: var(--color-primary);
 }
 
 /* Ajustando o tamanho do ícone */
-.edit-photo-icon .bi {
+.user-edit-photo-icon .user-bi {
   font-size: 1.2rem;
 }
 
 /* Opcional: adicionar animação de escala no hover */
-.edit-photo-overlay:hover .edit-photo-icon {
+.user-edit-photo-overlay:hover .user-edit-photo-icon {
   transform: scale(1.1);
 }
 
 /* Responsividade para a seção de foto */
 @media (max-width: 600px) {
-  .profile-photo-wrapper {
+  .user-profile-photo-wrapper {
     width: 120px;
     height: 120px;
   }
 
-  .edit-photo-overlay {
+  .user-edit-photo-overlay {
     padding: 6px;
   }
 
-  .edit-photo-icon .bi {
+  .user-edit-photo-icon .user-bi {
     font-size: 1rem;
   }
 
   /* Ajustes adicionais para evitar sobreposição */
-  .profile-header {
+  .user-profile-header {
     flex-direction: column;
     align-items: center;
     text-align: center; /* Centraliza o texto */
   }
 
-  .profile-info {
+  .user-profile-info {
     width: 100%; /* Garante que a informação ocupe toda a largura */
     margin-top: 15px; /* Espaço entre a imagem e as informações */
   }
 
-  .profile-name {
+  .user-profile-name {
     font-size: 1.5rem; /* Reduz o tamanho da fonte para telas menores */
   }
 
-  .profile-title {
+  .user-profile-title {
     font-size: 1rem; /* Ajusta o tamanho da fonte */
   }
 
-  .profile-actions {
+  .user-profile-actions {
     flex-direction: column;
     gap: 10px;
     width: 100%;
     margin-top: 15px; /* Espaço acima das ações */
   }
 
-  .profile-actions button {
+  .user-profile-actions button {
     width: 100%; /* Botões ocupam toda a largura */
     justify-content: center;
     margin-bottom: 10px;
   }
 
-  .profile-array-item {
+  .user-profile-array-item {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .profile-array-item input {
+  .user-profile-array-item input {
     margin-right: 0;
     width: 100%;
   }
 }
 
-.profile-info {
+.user-profile-info {
   flex-grow: 1;
 }
 
-.profile-name {
+.user-profile-name {
   font-size: 2rem;
   margin-bottom: 5px;
   color: var(--color-primary);
   word-wrap: break-word; /* Garante quebra de linha em palavras longas */
 }
 
-.profile-title {
+.user-profile-title {
   font-size: 1.2rem;
   color: var(--color-secondary);
   word-wrap: break-word; /* Garante quebra de linha em palavras longas */
 }
 
-.company-badges {
+.user-company-badges {
   display: flex;
   gap: 10px;
   margin-top: 10px;
   flex-wrap: wrap; /* Permite que as badges quebrem a linha em telas pequenas */
 }
 
-.company-badge {
+.user-company-badge {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 5px 10px;
   border-radius: 5px;
@@ -199,17 +199,17 @@
   flex-shrink: 0; /* Impede que as badges encolham */
 }
 
-.company-badge .bi {
+.user-company-badge .user-bi {
   margin-right: 5px;
 }
 
-.profile-actions {
+.user-profile-actions {
   display: flex;
   gap: 10px;
   margin-top: 20px;
 }
 
-.profile-actions button {
+.user-profile-actions button {
   background-color: transparent;
   color: var(--color-primary);
   font-weight: bold;
@@ -221,48 +221,48 @@
   align-items: center;
 }
 
-.profile-actions button:hover {
+.user-profile-actions button:hover {
   background-color: var(--color-primary);
   color: var(--color-text-light);
 }
 
-.profile-sections {
+.user-profile-sections {
   margin-top: 20px;
 }
 
-.profile-section {
+.user-profile-section {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--color-secondary);
 }
 
-.profile-section h3 {
+.user-profile-section h3 {
   font-size: 1.5rem;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
 }
 
-.profile-section label {
+.user-profile-section label {
   font-size: 1.2rem;
   margin-bottom: 5px;
   display: flex;
   align-items: center;
 }
 
-.profile-section h3 .bi,
-.profile-section label .bi {
+.user-profile-section h3 .user-bi,
+.user-profile-section label .user-bi {
   font-size: 1.2rem;
   margin-right: 8px;
   color: var(--color-text-light);
 }
 
 /* Consistent Input Styling */
-.profile-about-input,
-.profile-input,
-.profile-array-item input,
-.profile-array-item textarea,
-.profile-name-input { /* Added .profile-name-input */
+.user-profile-about-input,
+.user-profile-input,
+.user-profile-array-item input,
+.user-profile-array-item textarea,
+.user-profile-name-input { /* Added .profile-name-input */
   background-color: #2d2d2d; /* Dark background */
   border: 1px solid #444444; /* Subtle border */
   border-radius: 4px; /* Slightly rounded corners */
@@ -277,26 +277,26 @@
   transition: var(--transition);
 }
 
-.profile-about-input::placeholder,
-.profile-input::placeholder,
-.profile-array-item input::placeholder,
-.profile-array-item textarea::placeholder,
-.profile-name-input::placeholder { /* Added placeholder styling */
+.user-profile-about-input::placeholder,
+.user-profile-input::placeholder,
+.user-profile-array-item input::placeholder,
+.user-profile-array-item textarea::placeholder,
+.user-profile-name-input::placeholder { /* Added placeholder styling */
   color: var(--color-text-muted);
 }
 
-.profile-about-input:focus,
-.profile-input:focus,
-.profile-array-item input:focus,
-.profile-array-item textarea:focus,
-.profile-name-input:focus { /* Focus states */
+.user-profile-about-input:focus,
+.user-profile-input:focus,
+.user-profile-array-item input:focus,
+.user-profile-array-item textarea:focus,
+.user-profile-name-input:focus { /* Focus states */
   border-color: var(--color-primary);
   background-color: rgba(45, 45, 45, 1);
   outline: none;
 }
 
 /* Styling for 'razao_social' Input */
-.profile-name-input {
+.user-profile-name-input {
   /* The following styles ensure that 'razao_social' input matches other inputs */
   background-color: #2d2d2d; /* Dark background */
   border: 1px solid #444444; /* Subtle border */
@@ -339,25 +339,25 @@
 */
 
 /* Styling for Array Items */
-.profile-array-item {
+.user-profile-array-item {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
   flex-wrap: wrap;
 }
 
-.profile-array-item .icon {
+.user-profile-array-item .user-icon {
   color: var(--color-text-light);
   margin-right: 5px;
 }
 
-.profile-array-item input {
+.user-profile-array-item input {
   flex: 1;
   margin-right: 10px;
   margin-top: 10px;
 }
 
-.save-button {
+.user-save-button {
   background-color: var(--color-secondary);
   color: black;
   font-weight: bold;
@@ -369,23 +369,23 @@
   margin-top: 20px;
 }
 
-.save-button:hover {
+.user-save-button:hover {
   background-color: var(--color-secondary-hover);
 }
 
-.profile-info-row .icon {
+.user-profile-info-row .user-icon {
   font-size: 1rem;
   color: var(--color-text-light);
   vertical-align: middle;
 }
 
-.education-item,
-.experience-item {
+.user-education-item,
+.user-experience-item {
   margin-bottom: 20px;
 }
 
-.institution-name,
-.profile-info-text {
+.user-institution-name,
+.user-profile-info-text {
   font-weight: bold;
   font-size: 1.2rem;
   color: var(--color-text-light);
@@ -393,7 +393,7 @@
   align-items: center;
 }
 
-.education-degree {
+.user-education-degree {
   font-size: 1rem;
   color: var(--color-text-light);
   margin-left: 24px;
@@ -401,27 +401,27 @@
   align-items: center;
 }
 
-.education-dates {
+.user-education-dates {
   font-size: 0.9rem;
   color: var(--color-text-muted);
   margin-left: 24px;
 }
 
-.profile-info-row {
+.user-profile-info-row {
   display: flex;
   align-items: center;
   margin-top: 5px;
 }
 
 /* Styling the Tabs (Profile, Badges) */
-.tabs {
+.user-tabs {
   display: flex;
   justify-content: center;
   gap: 20px;
   margin: 20px 0;
 }
 
-.tabs button {
+.user-tabs button {
   background-color: transparent;
   border: none;
   color: var(--color-text-light);
@@ -431,59 +431,59 @@
   transition: var(--transition);
 }
 
-.tabs button.active {
+.user-tabs button.user-active {
   border-bottom: 2px solid var(--color-primary);
   color: var(--color-primary);
 }
 
-.tabs button:hover {
+.user-tabs button:hover {
   color: var(--color-secondary);
 }
 
-.tab-content {
+.user-tab-content {
   margin-top: 20px;
 }
 
 /* Responsiveness */
 @media (max-width: 600px) {
-  .profile-container {
+  .user-profile-container {
     padding: 15px;
   }
 
-  .profile-header {
+  .user-profile-header {
     flex-direction: column;
     align-items: center;
   }
 
-  .profile-photo {
+  .user-profile-photo {
     margin-right: 0;
     margin-bottom: 15px;
   }
 
-  .profile-actions {
+  .user-profile-actions {
     flex-direction: column;
     width: 100%;
   }
 
-  .profile-actions button {
+  .user-profile-actions button {
     width: 100%;
     justify-content: center;
     margin-bottom: 10px;
   }
 
-  .profile-array-item {
+  .user-profile-array-item {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .profile-array-item input {
+  .user-profile-array-item input {
     margin-right: 0;
     width: 100%;
   }
 }
 
 /* Styling the Events */
-.event-item {
+.user-event-item {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
   border-radius: 5px;
@@ -491,43 +491,43 @@
   position: relative;
 }
 
-.event-header {
+.user-event-header {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
   position: relative;
 }
 
-.event-user-avatar {
+.user-event-user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
 }
 
-.event-user-name {
+.user-event-user-name {
   margin-left: 10px;
   font-weight: bold;
   color: var(--color-text-light);
 }
 
-.event-publication-time {
+.user-event-publication-time {
   display: block;
   font-size: 0.8em;
   color: #888;
   margin-left: 10px;
 }
 
-.event-options {
+.user-event-options {
   margin-left: auto;
   position: relative;
 }
 
-.options-icon {
+.user-options-icon {
   cursor: pointer;
   color: var(--color-text-light);
 }
 
-.options-menu {
+.user-options-menu {
   position: absolute;
   top: 25px;
   right: 0;
@@ -537,7 +537,7 @@
   z-index: 1;
 }
 
-.options-menu button {
+.user-options-menu button {
   display: block;
   width: 100%;
   padding: 10px;
@@ -548,41 +548,41 @@
   cursor: pointer;
 }
 
-.options-menu button:hover {
+.user-options-menu button:hover {
   background: rgba(141, 253, 139, 0.2);
 }
 
-.options-menu button:disabled {
+.user-options-menu button:disabled {
   cursor: not-allowed;
   color: #aaa;
 }
 
-.event-details p {
+.user-event-details p {
   margin: 0;
   color: var(--color-text-light);
 }
 
-.event-image {
+.user-event-image {
   margin-top: 10px;
   max-width: 100%;
   border-radius: 5px;
 }
 
 /* Styling the PostForm */
-.post-form {
+.user-post-form {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 20px;
 }
 
-.post-publication-info {
+.user-post-publication-info {
   margin-bottom: 10px;
   font-size: 0.9em;
   color: #cccccc;
 }
 
-.post-textarea {
+.user-post-textarea {
   width: 100%;
   min-height: 80px;
   background-color: #2d2d2d; /* Dark background */
@@ -597,24 +597,24 @@
   transition: var(--transition);
 }
 
-.post-textarea::placeholder {
+.user-post-textarea::placeholder {
   color: var(--color-text-muted);
 }
 
-.post-textarea:focus {
+.user-post-textarea:focus {
   border-color: var(--color-primary);
   background-color: rgba(45, 45, 45, 1);
   outline: none;
 }
 
-.post-actions {
+.user-post-actions {
   display: flex;
   align-items: center;
   margin-top: 10px;
 }
 
-.image-upload-wrapper,
-.share-wrapper {
+.user-image-upload-wrapper,
+.user-share-wrapper {
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -622,17 +622,17 @@
   margin-right: 10px;
 }
 
-.image-upload-wrapper.disabled {
+.user-image-upload-wrapper.user-disabled {
   cursor: not-allowed;
   opacity: 0.6;
 }
 
-.photo-icon,
-.share-icon {
+.user-photo-icon,
+.user-share-icon {
   font-size: 1.5rem;
 }
 
-.submit-post-button {
+.user-submit-post-button {
   background-color: var(--color-secondary);
   color: black;
   font-weight: bold;
@@ -645,16 +645,16 @@
   align-items: center;
 }
 
-.submit-post-button:hover {
+.user-submit-post-button:hover {
   background-color: var(--color-secondary-hover);
 }
 
-.submit-post-button:disabled {
+.user-submit-post-button:disabled {
   background-color: var(--color-secondary-disabled);
   cursor: not-allowed;
 }
 
-.cancel-button {
+.user-cancel-button {
   background-color: transparent;
   border: 2px solid var(--color-danger);
   color: var(--color-danger);
@@ -667,41 +667,59 @@
   align-items: center;
 }
 
-.cancel-button:hover {
+.user-cancel-button:hover {
   background-color: var(--color-danger);
   border-color: var(--color-danger);
   color: white;
 }
 
-.cancel-button:disabled {
+.user-cancel-button:disabled {
   background-color: var(--color-danger-disabled);
   cursor: not-allowed;
 }
 
-.image-preview {
+.user-image-preview {
   margin-top: 10px;
 }
 
-.image-preview img {
+.user-image-preview img {
   max-width: 100%;
   border-radius: 5px;
 }
 
 /* Styling the Badges */
-.badges-section {
+.user-badges-section {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.badge-slide {
+.user-badge-slide {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
   margin-top: 20px;
 }
 
-.badge-slide .badge-card .badge-preview {
+.user-badge-slide .user-badge-card {
+  background-color: rgba(0, 0, 0, 0.25);
+  color: white;
+  text-align: center;
+  width: 200px;
+  min-height: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 10px;
+  overflow: hidden;
+  border-radius: 15px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin: 10px auto;
+  position: relative;
+}
+
+.user-badge-slide .user-badge-card .user-badge-preview {
   width: calc(100% - 20px);
   border-radius: 8px;
   height: 180px;
@@ -711,7 +729,7 @@
   margin: 10px;
 }
 
-.badge-slide .badge-card h3 {
+.user-badge-slide .user-badge-card h3 {
   flex-grow: 1; 
   display: flex;
   align-items: center;
@@ -720,10 +738,37 @@
   word-break: break-word; 
   min-height: 60px;
   overflow: hidden; 
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
 }
 
-.badge-item {
+.user-badge-card h3 {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.user-badge-card button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: 2px solid #8DFD8B;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  margin-bottom: 10px;
+}
+
+.user-badge-card button:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.user-badge-item {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 10px;
   border-radius: 5px;
@@ -731,14 +776,14 @@
   color: var(--color-text-light);
 }
 
-.badge-icon {
+.user-badge-icon {
   font-size: 2rem;
   color: var(--color-primary);
   margin-bottom: 5px;
 }
 
 /* Styles for Add and Delete Buttons */
-.add-button {
+.user-add-button {
   margin-top: 10px;
   background-color: transparent;
   color: var(--color-primary);
@@ -751,12 +796,12 @@
   align-items: center;
 }
 
-.add-button:hover {
+.user-add-button:hover {
   background-color: var(--color-primary);
   color: var(--color-text-light);
 }
 
-.delete-button {
+.user-delete-button {
   background-color: transparent;
   border: none;
   color: var(--color-text-light);
@@ -768,18 +813,18 @@
   transition: var(--transition);
 }
 
-.delete-button:hover {
+.user-delete-button:hover {
   color: var(--color-danger);
 }
 
 /* Styling the Language Dropdown */
-.language-dropdown {
+.user-language-dropdown {
   position: relative;
   display: inline-block;
   width: 100%;
 }
 
-.language-dropdown-button {
+.user-language-dropdown-button {
   background-color: #2d2d2d; /* Dark background */
   color: #f8f8f2; /* Light text color */
   padding: 10px;
@@ -794,11 +839,11 @@
   transition: var(--transition);
 }
 
-.language-dropdown-button:hover {
+.user-language-dropdown-button:hover {
   background-color: rgba(45, 45, 45, 1); /* Slightly lighter on hover */
 }
 
-.language-dropdown-content {
+.user-language-dropdown-content {
   display: absolute; /* Inicialmente escondido */
   position: absolute;
   background-color: rgba(45, 45, 45, 0.95); /* Dark background */
@@ -811,47 +856,47 @@
   margin-top: 5px;
 }
 
-.required {
+.user-required {
   color: #ff6347; /* Tomate */
   margin-left: 4px;
   font-weight: bold;
 }
 
-.save-button:disabled {
+.user-save-button:disabled {
   background-color: #a9a9a9; /* Cinza Escuro */
   cursor: not-allowed;
   opacity: 0.7;
 }
 /* Mostrar o conteúdo do dropdown quando estiver aberto */
-.language-dropdown.open .language-dropdown-content {
+.user-language-dropdown.user-open .user-language-dropdown-content {
   display: block;
 }
 
-.language-checkbox {
+.user-language-checkbox {
   padding: 10px;
 }
 
-.language-checkbox label {
+.user-language-checkbox label {
   color: var(--color-text-light);
   font-size: 1rem;
   display: flex;
   align-items: center;
 }
 
-.language-checkbox input {
+.user-language-checkbox input {
   margin-right: 10px;
   width: 18px;
   height: 18px;
   cursor: pointer;
 }
 
-.dropdown-icon {
+.user-dropdown-icon {
   font-size: 1.5rem;
   color: var(--color-secondary);
 }
 
 /* Styling Custom Checkboxes */
-.custom-checkbox {
+.user-custom-checkbox {
   position: relative;
   display: inline-block;
   padding-left: 35px;
@@ -862,7 +907,7 @@
   color: var(--color-text-light);
 }
 
-.custom-checkbox input {
+.user-custom-checkbox input {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -870,7 +915,7 @@
   width: 0;
 }
 
-.checkmark {
+.user-checkmark {
   position: absolute;
   top: 0;
   left: 0;
@@ -881,26 +926,26 @@
   border-radius: 4px;
 }
 
-.custom-checkbox:hover input ~ .checkmark {
+.user-custom-checkbox:hover input ~ .user-checkmark {
   background-color: rgba(45, 45, 45, 1);
 }
 
-.custom-checkbox input:checked ~ .checkmark {
+.user-custom-checkbox input:checked ~ .user-checkmark {
   background-color: var(--color-secondary);
   border-color: var(--color-secondary);
 }
 
-.checkmark:after {
+.user-checkmark:after {
   content: "";
   position: absolute;
   display: none;
 }
 
-.custom-checkbox input:checked ~ .checkmark:after {
+.user-custom-checkbox input:checked ~ .user-checkmark:after {
   display: block;
 }
 
-.custom-checkbox .checkmark:after {
+.user-custom-checkbox .user-checkmark:after {
   left: 7px;
   top: 2px;
   width: 5px;
