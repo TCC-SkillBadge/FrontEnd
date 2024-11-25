@@ -1,6 +1,6 @@
 // src/components/PublicProfile.jsx
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import {
   AwardFill,
@@ -19,15 +19,13 @@ import {
   ThreeDotsVertical,
   ChevronDown,
   ChevronUp,
+  CameraFill,
 } from "react-bootstrap-icons"; // Importando os ícones
 import "../styles/PublicProfile.css";
-import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import "../styles/GlobalStylings.css";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-// import ClipLoader from "react-spinners/ClipLoader"; // Importando o spinner
 import ScaleLoader from "react-spinners/ScaleLoader"; // Importando o spinner
-
 
 const PublicProfile = () => {
   const { encodedEmail } = useParams(); // Captura o parâmetro encodedEmail da URL
@@ -36,6 +34,8 @@ const PublicProfile = () => {
   const [activeTab, setActiveTab] = useState("perfil"); // Será ajustado após carregar os dados
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const languageDropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -73,6 +73,7 @@ const PublicProfile = () => {
 
         setLoading(false);
       } catch (error) {
+        console.error("Erro ao buscar perfil público:", error);
         setError("Falha ao carregar o perfil do usuário.");
         setLoading(false);
       }
@@ -88,6 +89,28 @@ const PublicProfile = () => {
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
+  };
+
+  // Função para fechar o dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        languageDropdownRef.current &&
+        !languageDropdownRef.current.contains(event.target)
+      ) {
+        setIsLanguageDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [languageDropdownRef]);
+
+  const toggleLanguageDropdown = () => {
+    setIsLanguageDropdownOpen((prevState) => !prevState);
   };
 
   if (loading) {
@@ -115,16 +138,18 @@ const PublicProfile = () => {
       <div className="profile-container default-border-image">
         {/* Cabeçalho do Perfil */}
         <div className="profile-header">
-          <img
-            src={
-              userData.imageUrl ||
-              (tipoUsuario === "UC"
-                ? "/default-avatar.png"
-                : "/default-company-logo.png")
-            }
-            alt={tipoUsuario === "UC" ? "User Avatar" : "Company Logo"}
-            className="profile-photo"
-          />
+          <div className="profile-photo-wrapper">
+            <img
+              src={
+                userData.imageUrl ||
+                (tipoUsuario === "UC"
+                  ? "/default-avatar.png"
+                  : "/default-company-logo.png")
+              }
+              alt={tipoUsuario === "UC" ? "User Avatar" : "Company Logo"}
+              className="profile-photo"
+            />
+          </div>
           <div className="profile-info">
             <h2 className="profile-name">
               {tipoUsuario === "UC" ? userData.fullName : userData.razao_social}
@@ -280,17 +305,11 @@ const PublicProfile = () => {
                 <h3>
                   <Globe className="icon" /> Idiomas
                 </h3>
-                {Array.isArray(userData.languages) &&
-                userData.languages.length > 0 ? (
-                  userData.languages.map((language, index) => (
-                    <div key={index} className="profile-info-row">
-                      <Flag className="icon" />
-                      <span className="profile-info-text">{language.name}</span>
-                    </div>
-                  ))
-                ) : (
-                  <p>Nenhum idioma fornecido.</p>
-                )}
+                <p>
+                  {userData.languages.length > 0
+                    ? userData.languages.map((lang) => lang.name).join(", ")
+                    : "Nenhum idioma selecionado."}
+                </p>
               </div>
             </div>
           )}
@@ -335,7 +354,19 @@ const PublicProfile = () => {
                 <h3>
                   <Globe className="icon" /> Website
                 </h3>
-                <p>{userData.website || "Não fornecido"}</p>
+                <p>
+                  {userData.website ? (
+                    <a
+                      href={userData.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {userData.website}
+                    </a>
+                  ) : (
+                    "Não fornecido"
+                  )}
+                </p>
               </div>
 
               <div className="profile-section">
@@ -356,12 +387,12 @@ const PublicProfile = () => {
                   <div key={index} className="event-item">
                     <div className="event-header">
                       <img
-                        src={userData.imageUrl || "/default-company-logo.png"}
+                        src={event.imageUrl || "/default-company-logo.png"}
                         alt="Company Logo"
                         className="event-user-avatar"
                       />
                       <span className="event-user-name">
-                        {userData.username}
+                        {userData.razao_social || "Empresa"}
                       </span>
 
                       {/* Exibição da Data e Hora de Publicação */}
