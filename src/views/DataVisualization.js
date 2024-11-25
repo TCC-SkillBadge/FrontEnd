@@ -116,10 +116,10 @@ const DataVisualization = () => {
               params: { email: userInfo.email_comercial },
             })
             .then((res) =>
-              Object.entries(res.data.skills).map(([skill, data]) => ({
-                skill,
-                assigned_count: data.assigned_count,
-                attribution_rate: data.attribution_rate,
+              res.data.skills.top_skills.map((skillData) => ({
+                skill: skillData.skill,
+                assigned_count: skillData.assigned_count,
+                monthly_trend: skillData.monthly_trend,
               }))
             ),
         enabled: !!token && userType === "UE",
@@ -218,7 +218,11 @@ const DataVisualization = () => {
         <PieChartComponent
           data={[
             { name: "Attributed", value: attributionRate, fill: "#50E3C2" }, // Verde para Attributed
-            { name: "Not Attributed", value: 100 - attributionRate, fill: "#FF6347" }, // Vermelho para Not Attributed
+            {
+              name: "Not Attributed",
+              value: 100 - attributionRate,
+              fill: "#FF6347",
+            }, // Vermelho para Not Attributed
           ]}
           title="Attribution Rate"
           dataKey="value"
@@ -268,7 +272,7 @@ const DataVisualization = () => {
           data={softSkillsImpact}
           title="Impact on Soft Skills"
           dataKey="assigned_count"
-          stroke="#F8E71C"
+          stroke="#F5A623"
           name="Assigned Count"
         />
 
@@ -296,7 +300,7 @@ const DataVisualization = () => {
         />
 
         {/* Popularity Trends */}
-        <LineChartComponent
+        {/* <LineChartComponent
           data={popularityTrends}
           title="Badge Popularity Trends"
           dataKeys={[
@@ -305,7 +309,7 @@ const DataVisualization = () => {
           ]}
           colors={["#7ED321", "#417505"]}
           names={["Recent Badges", "Old Badges"]}
-        />
+        /> */}
       </div>
       <ToastContainer
         position="top-center"

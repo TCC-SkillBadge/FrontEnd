@@ -242,7 +242,7 @@ const AdminDataVisualization = () => {
         </div>
 
         {/* Gráfico de Tendência de Solicitações Completadas */}
-        <div className="chart-card">
+        {/* <div className="chart-card">
           <div className="chart-header">
             <h3>Completed Requests Trend</h3>
           </div>
@@ -267,10 +267,10 @@ const AdminDataVisualization = () => {
               </p>
             )}
           </ResponsiveContainer>
-        </div>
+        </div> */}
 
         {/* Gráfico de Proporção de Status de Solicitações */}
-        <div className="chart-card">
+        {/* <div className="chart-card">
           <div className="chart-header">
             <h3>Requests Status Proportion</h3>
           </div>
@@ -297,7 +297,7 @@ const AdminDataVisualization = () => {
               <Legend verticalAlign="bottom" height={36} />
             </PieChart>
           </ResponsiveContainer>
-        </div>
+        </div> */}
       </div>
       <ToastContainer
         position="top-center"
@@ -316,3 +316,6 @@ const AdminDataVisualization = () => {
 };
 
 export default AdminDataVisualization;
+
+
+// comentario
