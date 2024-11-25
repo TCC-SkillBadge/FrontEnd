@@ -177,7 +177,7 @@ const PublicProfileEnterprise = () => {
           />
           <div className="profile-info">
             <h2 className="profile-name">{userData.username}</h2>
-            <p className="profile-title">{userData.cnpj}</p>
+            {/* <p className="profile-title">{userData.cnpj}</p> */}
             <div className="company-badges">
               {userData.municipio && (
                 <span className="company-badge">
@@ -198,7 +198,12 @@ const PublicProfileEnterprise = () => {
                 <span className="company-badge">
                   <Globe />{" "}
                   <a
-                    href={userData.website}
+                    href={
+                      userData.website.startsWith("http://") ||
+                      userData.website.startsWith("https://")
+                        ? userData.website
+                        : `https://${userData.website}`
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                   >
