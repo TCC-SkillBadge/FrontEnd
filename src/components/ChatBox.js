@@ -427,12 +427,12 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
             return (
               <div
               key={contact.email}
-              className='flex flex-row align-items-center mb-2 mt-2'>
+              className='flex flex-row align-items-center '>
                 <button
                 id={`contact-${contact.email}`}
                 className='contact-button'
                 onClick={() => chooseContact(contact)}>
-                  <div className='mr-2'>
+                  <div className='mr-3'>
                     {verifyImageValidity({type: contact.user_type, profile_picture: contact.profile_picture}, '35')}
                   </div>
                   <nobr>{contact.username}</nobr>
@@ -456,7 +456,7 @@ const Contacts = ({contacts, setSearching, chooseContact}) => {
         id='add-contact-btn'
         className='dbuttons dbuttons-primary w-full'
         onClick={() => setSearching(() => true)}>
-          <i className='pi pi-plus'/> New Chat
+          <i className=''/> New Chat
         </button>
       </div>
     </div>
@@ -538,7 +538,7 @@ const MessagesD = ({chosenContact, contactMessages, userEmail, userType, userInf
                       <div
                       className={'flex flex-row ' + (isSenderTheUser ? 'justify-content-start' : 'justify-content-end')}
                       style={{
-                        color: 'lightgray',
+                        color: 'white',
                       }}>
                         {new Date(message.sending_date).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
                       </div>
@@ -559,14 +559,14 @@ const MessagesD = ({chosenContact, contactMessages, userEmail, userType, userInf
         messages.length !== 0 ?
         <div>
           <div>
-           {buildMessages()}
+            {buildMessages()}
           </div>
           <div className='absolute bottom-0 w-full'>
               <InputEmoji
               id='message-input'
               value={newMessage}
               onChange={setNewMessage}
-              onEnter={() => { 
+              onEnter={() => { if(newMessage !== '') {
                 sendMessage({
                   sender_email: userEmail,
                   receiver_email: contactMessages.contact_email,
@@ -574,12 +574,15 @@ const MessagesD = ({chosenContact, contactMessages, userEmail, userType, userInf
                   receiver_username: contactMessages.contact_username,
                   receiver_user_type: contactMessages.contact_type,
                   message: newMessage,
-                })
+                })}
               }}
               placeholder='Type your message and press enter'
               cleanOnEnter
               shouldReturn
-              borderRadius={0}/>
+              background={'transparent'}
+              placeholderColor={'#c4c4c4'}
+              color={'#ffffff'}
+              borderRadius={50}/>
           </div>
         </div> :
         <div className='flex flex-column justify-content-center align-items-center h-full'>
@@ -600,7 +603,11 @@ const SearchBox = ({token, userEmail, userUsername, searching, setSearching, con
   const searchUsers = async () => {
     setLoading(() => true);
     setNoResults(() => false);
-
+    if(searchTerm === '') {
+      setNoResults(() => true);
+      setLoading(() => false);
+      return;
+    }
     const fetchUsers = async () => {
       let UEs = [];
       let UCs = [];
@@ -701,7 +708,7 @@ const SearchBox = ({token, userEmail, userUsername, searching, setSearching, con
 
   return (
     <Dialog
-    className='search-box default-border-image'
+    className='search-box'
     visible={searching}
     onHide={() => {
       if (!searching) return;
@@ -784,6 +791,7 @@ const SearchResultsBox = ({userEmail, userUsername, searchResults, sendMessage, 
 const SearchResults = ({user, userEmail, userUsername, sendMessage, resetSearch}) => {
   const [sendFirstMessage, setSendFirstMessage] = useState(false);
   const [firstMessage, setFirstMessage] = useState('');
+  const [erro, setErro] = useState(false);
 
   const mountFirstMessageButton = useTransition(sendFirstMessage, {
     from: { opacity: 0, transform: 'scale(0)' },
@@ -793,6 +801,10 @@ const SearchResults = ({user, userEmail, userUsername, sendMessage, resetSearch}
   })
 
   const send = () => {
+    if(firstMessage === '') {
+      setErro(() => true);
+      return;
+    }
     sendMessage({
       sender_email: userEmail,
       receiver_email: user.email,
@@ -803,11 +815,15 @@ const SearchResults = ({user, userEmail, userUsername, sendMessage, resetSearch}
     });
     resetSearch();
   };
-
+  useEffect(() => {
+    if(firstMessage !== '') {
+      setErro(() => false);
+    }
+  }, [firstMessage]);
   return(
     <div
     key={user.email}
-    className='search-results'>
+    className='search-results default-border-image'>
       <div>
         <div className='flex flex-row align-items-center mb-2'>
           <div className='mr-3'>
@@ -855,11 +871,17 @@ const SearchResults = ({user, userEmail, userUsername, sendMessage, resetSearch}
                 <InputEmoji
                 id='first-message-input'
                 value={firstMessage}
-                onChange={setFirstMessage}
+                onChange={(value) => { setFirstMessage(value); setErro(false); }}
                 onEnter={() => send()}
                 placeholder='Enter your message'
-                shouldReturn/>
+                shouldReturn
+                border={'5px'}
+                background='transparent'
+                color='white'
+                borderColor={erro ? 'red': 'white'}
+                />      
               </div>
+              {erro && <div className='flex justify-content-center ' style={{color: "red"}}>Please enter a message</div>}
               <div className='flex flex-row justify-content-center'>
                 <button
                 className='iniciate-chat-button mt-3'
