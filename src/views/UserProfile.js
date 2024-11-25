@@ -62,6 +62,8 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const { encodedEmail } = useParams();
 
+  const [originalUserData, setOriginalUserData] = useState(null);
+
   // useEffect(() => {
   //   const updateUrlWithEncodedEmail = async () => {
   //     try {
@@ -523,10 +525,13 @@ useEffect(() => {
     if (isEditing) {
       // Se estiver editando e o usuário clicar para cancelar, reseta imagePreview e photo
       setImagePreview(null);
+      setUserData(originalUserData);
       setUserData((prevData) => ({
         ...prevData,
         photo: null,
       }));
+    }else{
+      setOriginalUserData(JSON.parse(JSON.stringify(userData)));
     }
     setIsEditing(!isEditing);
   };
@@ -736,6 +741,7 @@ const validateDates = () => {
 
       setIsEditing(false);
       setImagePreview(null);
+      setOriginalUserData(null);
       setUserData((prevData) => ({
         ...prevData,
         photo: null, // Opcional: garantir que photo também seja resetado
