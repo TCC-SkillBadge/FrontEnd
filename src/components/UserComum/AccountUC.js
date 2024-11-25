@@ -1,3 +1,3 @@
 import React from "react";
-function AccountUC() {}
+function AccountUC() { }
 export default AccountUC;

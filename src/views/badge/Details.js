@@ -7,7 +7,7 @@ import "../../styles/BadgeDetails.css";
 const Details = () => {
   const [userType, setUserType] = useState(null);
   const [user, setUser] = useState(null);
-  const { id_badge } = useParams(); 
+  const { id_badge } = useParams();
 
   const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
 
@@ -26,9 +26,9 @@ const Details = () => {
       );
       setUserType("business");
       setUser(userInfoResponse.data);
-    } 
-    else{
-        navigate("/home")
+    }
+    else {
+      navigate("/home")
     }
   };
 
@@ -39,11 +39,11 @@ const Details = () => {
     window.onstorage = verificaLogin;
   }, []);
 
-    return (
-      <div className="badge-details-page">
-        <BadgeDetails id_badge={id_badge} url_origem="/badges" />
-      </div>
-    );  
+  return (
+    <div className="badge-details-page">
+      <BadgeDetails id_badge={id_badge} url_origem="/badges" />
+    </div>
+  );
 };
 
 export default Details;

@@ -37,6 +37,10 @@ const Create = () => {
     numeroContato: "",
   });
 
+  const commonUrl = process.env.REACT_APP_API_COMUM;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+  const adminUrl = process.env.REACT_APP_API_ADMIN;
+
   const navigate = useNavigate();
 
   const handleUserTypeChange = (type) => {
@@ -48,7 +52,7 @@ const Create = () => {
     if (cnpj.length === 14) {
       try {
         const response = await axios.get(
-          `http://localhost:7003/api/validarCNPJ?cnpj=${cnpj}`
+          `${enterpriseUrl}/api/validarCNPJ?cnpj=${cnpj}`
         );
         const data = response.data;
         setCompanyData((prevData) => ({
@@ -90,7 +94,7 @@ const Create = () => {
     try {
       let response;
       if (userType === "common") {
-        response = await axios.post("http://localhost:7000/api/user/register", {
+        response = await axios.post(`${commonUrl}/api/user/register`, {
           email: formData.email,
           username: formData.username,
           password: formData.password,
@@ -100,7 +104,7 @@ const Create = () => {
           country: formData.country,
         });
       } else if (userType === "business") {
-        response = await axios.post("http://localhost:7003/api/cadastrar", {
+        response = await axios.post(`${enterpriseUrl}/api/cadastrar`, {
           email_comercial: formData.email,
           username: formData.username,
           senha: formData.password,
@@ -114,7 +118,7 @@ const Create = () => {
           numero_contato: companyData.numeroContato,
         });
       } else if (userType === "admin") {
-        response = await axios.post("http://localhost:7004/admin/cadastrar", {
+        response = await axios.post(`${adminUrl}/admin/cadastrar`, {
           email_admin: formData.email,
           username: formData.username,
           senha: formData.password,

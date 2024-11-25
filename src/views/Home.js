@@ -30,15 +30,15 @@ const Home = () => {
 
   return (
     <div>
-      <div className="coinBackgroundHome"> 
+      <div className="coinBackgroundHome">
       </div>
       <div className="container-fluid home-content">
         <div className="text-container">
           <h1 className="home-title">
-          All your achievements in one secure place.
+            All your achievements in one secure place.
           </h1>
           <p className="home-subtitle">
-             <span className="emitir">Earn</span>,{" "}
+            <span className="emitir">Earn</span>,{" "}
             <span className="conquistar">store</span>{" "}and{" "}
             <span className="armazenar">showcase</span> your badges with ease and confidence.
           </p>

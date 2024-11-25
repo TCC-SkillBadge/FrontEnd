@@ -20,6 +20,8 @@ const CreateServicePlan = () => {
     funcionalidadesNaoDisponiveis: [],
   });
 
+  const planServiceUrl = process.env.REACT_APP_API_PLAN;
+
   const [funcionalidadesOptions, setFuncionalidadesOptions] = useState([]);
   const navigate = useNavigate();
 
@@ -31,7 +33,7 @@ const CreateServicePlan = () => {
       // Buscar funcionalidades do back-end
       const fetchFuncionalidades = async () => {
         try {
-          const response = await axios.get("http://localhost:9090/api/funcionalidades");
+          const response = await axios.get(`${planServiceUrl}/api/funcionalidades`);
           if (response.status === 200) {
             const options = response.data.map((func) => ({
               value: func.id,
@@ -135,7 +137,7 @@ const CreateServicePlan = () => {
       const newOption = actionMeta.option;
       try {
         // Enviar nova funcionalidade para o back-end
-        const response = await axios.post("http://localhost:9090/api/funcionalidades", {
+        const response = await axios.post(`${planServiceUrl}/api/funcionalidades`, {
           nomeFuncionalidade: newOption.label,
         });
         if (response.status === 201) {
@@ -197,7 +199,7 @@ const CreateServicePlan = () => {
     };
 
     try {
-      const response = await axios.post("http://localhost:9090/api/plans", dataToSend);
+      const response = await axios.post(`${planServiceUrl}/api/plans`, dataToSend);
 
       toast.success("Plan created successfully!", {
         position: "top-center",

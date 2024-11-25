@@ -28,6 +28,9 @@ const Price = () => {
 
   const [sticks, setSticks] = useState(false);
 
+  const planServiceUrl = process.env.REACT_APP_API_PLAN;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+
   // Este useEffect é responsável por verificar se o botão de adicionar plano deve ficar fixo no rodapé da página
   // Sua implementação foi necessária para que o botão de adicionar plano não ficasse em cima do footer
   // Modificações foram feitas também no arquivo Price.css
@@ -100,7 +103,7 @@ const Price = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      await axios.delete(`http://localhost:9090/api/plans/${planToDelete}`);
+      await axios.delete(`${planServiceUrl}/api/plans/${planToDelete}`);
       setPlans((prevPlans) =>
         prevPlans.filter((plan) => plan.id !== planToDelete)
       );
@@ -183,7 +186,7 @@ const Price = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:7003/api/usuarios/associar-plano",
+        `${enterpriseUrl}/api/usuarios/associar-plano`,
         {
           planId: planToPurchase.id,
           userEmail: emailComercial,
@@ -339,9 +342,8 @@ const Price = () => {
           >
             <button
               id="add-plan-button"
-              className={`add-plan-button ${
-                plans.length >= 4 ? "disabled" : ""
-              }`}
+              className={`add-plan-button ${plans.length >= 4 ? "disabled" : ""
+                }`}
               onClick={(e) => {
                 if (plans.length >= 4) {
                   e.preventDefault();

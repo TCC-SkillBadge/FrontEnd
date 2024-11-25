@@ -9,13 +9,15 @@ const FuncionalidadesManager = () => {
   const [funcionalidades, setFuncionalidades] = useState([]);
   const [newFuncionalidade, setNewFuncionalidade] = useState("");
 
+  const planServiceUrl = process.env.REACT_APP_API_PLAN;
+
   useEffect(() => {
     fetchFuncionalidades();
   }, []);
 
   const fetchFuncionalidades = async () => {
     try {
-      const response = await axios.get("http://localhost:9090/api/funcionalidades");
+      const response = await axios.get(`${planServiceUrl}/api/funcionalidades`);
       if (response.status === 200) {
         setFuncionalidades(response.data);
       }
@@ -32,7 +34,7 @@ const FuncionalidadesManager = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:9090/api/funcionalidades", {
+      const response = await axios.post(`${planServiceUrl}/api/funcionalidades`, {
         nomeFuncionalidade: newFuncionalidade,
       });
 

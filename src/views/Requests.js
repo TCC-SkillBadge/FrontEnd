@@ -14,9 +14,9 @@ const Requests = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchBadgeId, setSearchBadgeId] = useState("");
   const [orderBy, setOrderBy] = useState("date-desc");
-  
+
   const userType = sessionStorage.getItem("tipoUsuario");
-  
+
   const navigate = useNavigate();
 
   const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
@@ -28,7 +28,7 @@ const Requests = () => {
     edicao_badge: "Badge Editing",
     suporte: "Support",
   };
-  
+
   useEffect(() => {
     const fetchOrders = async () => {
       const token = sessionStorage.getItem("token");
@@ -61,7 +61,7 @@ const Requests = () => {
     const checkLogin = async () => {
       const token = sessionStorage.getItem("token");
       const userType = sessionStorage.getItem("tipoUsuario");
-  
+
       if (userType === "UE") {
         let userInfoResponse = await axios.get(
           `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
@@ -71,7 +71,7 @@ const Requests = () => {
             },
           }
         );
-      } 
+      }
       else if (userType === "UA") {
         let userInfoResponse = await axios.get(
           `${adminUrl}/admin/acessa-info`,
@@ -153,7 +153,7 @@ const Requests = () => {
   return (
     <div className="orders-page">
       <div className="container orders-container">
-      <ToastContainer />
+        <ToastContainer />
         <div className="orders-header">
           <div className="orders-search-group">
             <input
@@ -215,7 +215,7 @@ const Requests = () => {
                 <td style={{ textAlign: "center" }}>
                   {order.id_badge && (
                     <Link to={`/workflow/${order.id_request}`}>
-                      <EyeFill className="eye-icon"/>
+                      <EyeFill className="eye-icon" />
                     </Link>
                   )}
                 </td>

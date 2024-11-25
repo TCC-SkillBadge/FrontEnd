@@ -16,9 +16,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../styles/ChatBox.css'
 import '../styles/GlobalStylings.css';
 
-const chatServiceURL = 'http://localhost:8001';
-const commonUserURL = 'http://localhost:7000/api';
-const enterpriseUserURL = 'http://localhost:7003/api';
+const chatServiceURL = process.env.REACT_APP_API_CHAT;
+const commonUserURL = `${process.env.REACT_APP_API_COMUM}/api`;
+const enterpriseUserURL = `${process.env.REACT_APP_API_ENTERPRISE}/api`;
 
 const connectionCommonUser = axios.create({
   baseURL: commonUserURL,

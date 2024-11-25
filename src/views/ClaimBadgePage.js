@@ -32,10 +32,10 @@ const ClaimBadgePage = () => {
         `/api/badges/details-by-token?token=${token}`
       );
       setBadgeDetails(response.data); // Armazena os detalhes da badge para visualização
-      toast.info("Clique para reivindicar sua badge!", { autoClose: false });
+      toast.info("Click to claim your badge!", { autoClose: false });
     } catch (error) {
       console.error("Erro ao buscar detalhes da badge:", error);
-      toast.error("Erro ao carregar os detalhes da badge.");
+      toast.error("Error loading badge details.");
     }
   };
 
@@ -47,11 +47,11 @@ const ClaimBadgePage = () => {
       );
       if (response.status === 200) {
         setIsClaimed(true);
-        toast.success("Badge reivindicada com sucesso!");
+        toast.success("Badge claimed successfully!");
       }
     } catch (error) {
       console.error("Erro ao reivindicar a badge:", error);
-      toast.error("Erro ao reivindicar a badge.");
+      toast.error("Error claiming the badge.");
     }
   };
 
@@ -60,24 +60,24 @@ const ClaimBadgePage = () => {
       <ToastContainer />
       {isLoggedIn && badgeDetails && !isClaimed && (
         <div className="badge-preview">
-          <h2>Pré-visualização da Badge</h2>
+          <h2>Badge Preview</h2>
           <img
             src={badgeDetails.image_url}
             alt={badgeDetails.name_badge}
             className="badge-image"
           />
           <p>
-            <strong>Nome:</strong> {badgeDetails.name_badge}
+            <strong>Name:</strong> {badgeDetails.name_badge}
           </p>
           <p>
-            <strong>Descrição:</strong> {badgeDetails.desc_badge}
+            <strong>Description:</strong> {badgeDetails.desc_badge}
           </p>
           <button onClick={claimBadge} className="claim-button">
-            Reivindicar Badge
+            Claim Badge
           </button>
         </div>
       )}
-      {isClaimed && <p>Parabéns! Sua badge foi reivindicada com sucesso.</p>}
+      {isClaimed && <p>Congratulations! Your badge has been successfully claimed.</p>}
     </div>
   );
 };

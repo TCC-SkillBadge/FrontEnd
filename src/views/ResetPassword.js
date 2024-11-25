@@ -20,6 +20,9 @@ const ResetPassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
 
+  const commonUrl = process.env.REACT_APP_API_COMUM;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+
   const handleShowPassword = () => {
     const passwordInput = document.querySelector("#newPassword");
     if (showPassword) {
@@ -55,12 +58,12 @@ const ResetPassword = () => {
     }
 
     const endpoints = [
-      "http://localhost:7000/api/user/reset-password",
-      "http://localhost:7003/api//reset-password",
+      `${commonUrl}/api/user/reset-password`,
+      `${enterpriseUrl}/api/reset-password`,
     ]
 
-    const resetPasswordPromises = endpoints.map(endpoint => 
-      axios.post(endpoint, 
+    const resetPasswordPromises = endpoints.map(endpoint =>
+      axios.post(endpoint,
         {
           token,
           newPassword: formData.newPassword
@@ -70,17 +73,17 @@ const ResetPassword = () => {
 
     const loading = toast.loading("Resetting password...");
     Promise.allSettled(resetPasswordPromises)
-    .then(results => {
-      if(results.some(result => result.status === "fulfilled")) {
-        toast.update(loading, { render: "Password reset successfully", type: "success", isLoading: false, autoClose: 2000 });
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-      }
-      else {
-        toast.update(loading, { render: "Fail to reset password", type: "error", isLoading: false, autoClose: 2000 });
-      }
-    })
+      .then(results => {
+        if (results.some(result => result.status === "fulfilled")) {
+          toast.update(loading, { render: "Password reset successfully", type: "success", isLoading: false, autoClose: 2000 });
+          setTimeout(() => {
+            navigate("/login");
+          }, 2000);
+        }
+        else {
+          toast.update(loading, { render: "Fail to reset password", type: "error", isLoading: false, autoClose: 2000 });
+        }
+      })
   };
 
   return (
@@ -104,8 +107,8 @@ const ResetPassword = () => {
                 />
                 {
                   showPassword ?
-                  <EyeSlash onClick={handleShowPassword} /> :
-                  <Eye onClick={handleShowPassword} />
+                    <EyeSlash onClick={handleShowPassword} /> :
+                    <Eye onClick={handleShowPassword} />
                 }
                 <QuestionCircle onClick={() => setShowPasswordRequirements((oldValue) => !oldValue)} />
               </div>
@@ -125,8 +128,8 @@ const ResetPassword = () => {
                 />
                 {
                   showConfirmPassword ?
-                  <EyeSlash onClick={handleShowConfirmPassword} /> :
-                  <Eye onClick={handleShowConfirmPassword} />
+                    <EyeSlash onClick={handleShowConfirmPassword} /> :
+                    <Eye onClick={handleShowConfirmPassword} />
                 }
               </div>
             </div>

@@ -17,6 +17,8 @@ const PostForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+
   useEffect(() => {
     if (existingEvent) {
       setPostText(existingEvent.descricao || "");
@@ -88,7 +90,7 @@ const PostForm = ({
       let response;
       if (existingEvent) {
         response = await axios.put(
-          `http://localhost:7003/api/eventos/${existingEvent.id}`,
+          `${enterpriseUrl}/api/eventos/${existingEvent.id}`,
           formData,
           {
             headers: {
@@ -102,7 +104,7 @@ const PostForm = ({
         onPostUpdated(response.data.evento);
       } else {
         response = await axios.post(
-          "http://localhost:7003/api/eventos",
+          `${enterpriseUrl}/api/eventos`,
           formData,
           {
             headers: {
@@ -174,9 +176,8 @@ const PostForm = ({
 
       <div className="post-actions">
         <div
-          className={`image-upload-wrapper ${
-            existingEvent && !isEditAllowed ? "disabled" : ""
-          }`}
+          className={`image-upload-wrapper ${existingEvent && !isEditAllowed ? "disabled" : ""
+            }`}
           onClick={handleImageClick}
         >
           <Image className="photo-icon" />

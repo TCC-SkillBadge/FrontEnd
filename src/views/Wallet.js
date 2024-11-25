@@ -61,9 +61,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           <button
             key={number}
             onClick={() => onPageChange(number)}
-            className={`pagination-button ${
-              currentPage === number ? "active" : ""
-            }`}
+            className={`pagination-button ${currentPage === number ? "active" : ""
+              }`}
           >
             {number}
           </button>
@@ -83,6 +82,8 @@ const Wallet = () => {
   const [itemsPerPage, setItemsPerPage] = useState(6);
   const navigate = useNavigate();
 
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+
   useEffect(() => {
     const fetchBadges = async () => {
       try {
@@ -90,7 +91,7 @@ const Wallet = () => {
         if (!userInfo) throw new Error("User not logged in");
         const email = JSON.parse(userInfo).email;
         const response = await axios.get(
-          `http://localhost:7001/badges/wallet?email=${email}`
+          `${badgeUrl}/badges/wallet?email=${email}`
         );
         setMedals(response.data);
       } catch (error) {

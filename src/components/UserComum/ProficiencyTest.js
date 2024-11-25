@@ -18,16 +18,19 @@ import { jwtExpirationHandler } from '../../utils/general-functions/JWTExpiratio
 import '../../styles/ProficiencyTest.css';
 import '../../styles/GlobalStylings.css';
 
+const generalServicesURL = process.env.REACT_APP_API_SOFTSKILL;
+const commomUrl = process.env.REACT_APP_API_COMUM;
+
 const baseUrlGeneralServicesSS = axios.create({
-    baseURL: 'http://localhost:6004/softskills'
+    baseURL: `${generalServicesURL}/softskills`
 });
 
 const baseUrlGeneralServicesTest = axios.create({
-    baseURL: 'http://localhost:6004/teste'
+    baseURL: `${generalServicesURL}/teste`
 });
 
 const baseURLUC = axios.create({
-    baseURL: 'http://localhost:7000/api'
+    baseURL: `${commomUrl}/api`
 });
 
 export const ProficiencyTest = () => {
@@ -48,7 +51,7 @@ export const ProficiencyTest = () => {
     const [lastScores, setLastScores] = useState([]);
     const [lastTestDate, setLastTestDate] = useState('');
     const [error, setError] = useState('');
-    
+
     const navigate = useNavigate();
 
     //Iniciating the page
@@ -57,7 +60,7 @@ export const ProficiencyTest = () => {
     }, []);
 
     useEffect(() => {
-        if(!startTest) return;
+        if (!startTest) return;
         const interval = setInterval(() => {
             setTimerSeconds((prev) => prev - 1);
         }, 1000);
@@ -65,15 +68,15 @@ export const ProficiencyTest = () => {
     }, [startTest]);
 
     useEffect(() => {
-        if(timerSeconds === -1){
+        if (timerSeconds === -1) {
             setTimerMinutes((prev) => prev - 1);
             setTimerSeconds(59);
         }
-        if(timerMinutes === 0 && timerSeconds === 0) finalize();
+        if (timerMinutes === 0 && timerSeconds === 0) finalize();
     }, [timerSeconds, timerMinutes]);
 
     useEffect(() => {
-        if(startTest){
+        if (startTest) {
             window.onbeforeunload = (e) => {
                 e.preventDefault();
                 e.returnValue = '';
@@ -88,20 +91,20 @@ export const ProficiencyTest = () => {
     const mountPage = () => {
         //Verification of the last test date
         const verifyLastTest = async () => {
-            try{
+            try {
                 const response = (await baseURLUC.get('/user/verify-last-test',
                     {
-                        headers: {Authorization: `Bearer ${token}`},
-                        params: {email_user: userEmail}
+                        headers: { Authorization: `Bearer ${token}` },
+                        params: { email_user: userEmail }
                     }
                 )).data;
-    
-                if(response.length !== 0){
+
+                if (response.length !== 0) {
                     const lastTestDateAux = new Date(response[0].dt_realizacao);
                     console.log(lastTestDateAux);
                     const diffInDays = (new Date() - lastTestDateAux) / (1000 * 60 * 60 * 24);
-    
-                    if(diffInDays < 7){
+
+                    if (diffInDays < 7) {
                         const lastScoresAux = response.map((result) => {
                             return {
                                 id_soft_skill: result.id_soft_skill,
@@ -112,7 +115,7 @@ export const ProficiencyTest = () => {
                                 notaShow: roundScore((result.nota / result.nota_max) * 100)
                             };
                         });
-    
+
                         setAlreadyTaken(() => true);
                         setLastScores(() => lastScoresAux);
                         setLoading(() => false);
@@ -123,7 +126,7 @@ export const ProficiencyTest = () => {
 
                 return Promise.resolve();
             }
-            catch(error){
+            catch (error) {
                 const msg = handleRequestError(error);
                 setError(msg);
                 setAllFine(false);
@@ -134,27 +137,27 @@ export const ProficiencyTest = () => {
 
         //Fetch Soft Skills and Test methods
         const fetchSoftSkills = async () => {
-            try{
+            try {
                 const response = (await baseUrlGeneralServicesSS.get('/listar',
                     {
-                        headers: {Authorization: `Bearer ${token}`},
-                        params: {tipoUsuario: userType}
+                        headers: { Authorization: `Bearer ${token}` },
+                        params: { tipoUsuario: userType }
                     }
                 )).data;
                 return Promise.resolve(response);
             }
-            catch(error){
+            catch (error) {
                 const msg = handleRequestError(error);
                 return Promise.reject(msg);
             }
         };
 
         const fetchTestData = async () => {
-            try{
+            try {
                 const response = (await baseUrlGeneralServicesTest.get('/fetch',
                     {
-                        headers: {Authorization: `Bearer ${token}`},
-                        params: {tipoUsuario: userType}
+                        headers: { Authorization: `Bearer ${token}` },
+                        params: { tipoUsuario: userType }
                     }
                 )).data;
                 const {
@@ -163,16 +166,16 @@ export const ProficiencyTest = () => {
                     alternativasRankeamento,
                     alternativasMultiplaEscolhaComValores
                 } = response;
-                return Promise.resolve({questoes, alternativasMultiplaEscolha, alternativasRankeamento, alternativasMultiplaEscolhaComValores});
+                return Promise.resolve({ questoes, alternativasMultiplaEscolha, alternativasRankeamento, alternativasMultiplaEscolhaComValores });
             }
-            catch(error){
+            catch (error) {
                 const msg = handleRequestError(error);
                 return Promise.reject(msg);
             }
         };
 
         const mountTest = async () => {
-            try{
+            try {
                 const auxSSs = await fetchSoftSkills();
                 const response = await fetchTestData();
                 const {
@@ -181,29 +184,29 @@ export const ProficiencyTest = () => {
                     alternativasRankeamento,
                     alternativasMultiplaEscolhaComValores
                 } = response;
-                
+
                 const SSs = [];
-                for(let i = 0; i < auxSSs.length; i++){
-                    for(let j = 0; j < questoes.length; j++){
-                        if(auxSSs[i].id_soft_skill === questoes[j].id_soft_skill){
+                for (let i = 0; i < auxSSs.length; i++) {
+                    for (let j = 0; j < questoes.length; j++) {
+                        if (auxSSs[i].id_soft_skill === questoes[j].id_soft_skill) {
                             SSs.push(auxSSs[i]);
                             break;
                         }
                     }
                 };
-    
+
                 const resps = [];
                 const alts = [
                     { tpQ: 'multipla_escolha', alts: [...alternativasMultiplaEscolha] },
                     { tpQ: 'rankeamento', alts: [...alternativasRankeamento] },
                     { tpQ: 'multipla_escolha_com_valores', alts: [...alternativasMultiplaEscolhaComValores] }
                 ];
-                for(let i= 0; i < alts.length; i++){
-                    for(let j = 0; j < questoes.length; j++){
-                        if(questoes[j].tipo_questao === alts[i].tpQ){
+                for (let i = 0; i < alts.length; i++) {
+                    for (let j = 0; j < questoes.length; j++) {
+                        if (questoes[j].tipo_questao === alts[i].tpQ) {
                             const aux = alts[i].alts.filter((alt) => alt.id_questao === questoes[j].id_questao);
-                            if(alts[i].tpQ === 'multipla_escolha' || alts[i].tpQ === 'multipla_escolha_com_valores'){
-                                for(let k = 0; k < aux.length; k++){
+                            if (alts[i].tpQ === 'multipla_escolha' || alts[i].tpQ === 'multipla_escolha_com_valores') {
+                                for (let k = 0; k < aux.length; k++) {
                                     aux[k].escolha_feita = false;
                                 }
                             }
@@ -215,32 +218,32 @@ export const ProficiencyTest = () => {
                         }
                     };
                 };
-    
+
                 setAnswers(resps);
                 setSoftSkills(SSs);
             }
-            catch(error){
+            catch (error) {
                 setError(error);
                 setAllFine(false);
             }
-            finally{
+            finally {
                 setLoading(false);
             }
         };
 
         //Iniciation of the process
-        verifyLastTest().then(() => mountTest()).catch(() => {}) ;
+        verifyLastTest().then(() => mountTest()).catch(() => { });
     };
-    
+
     const userrFinalize = () => {
-        if(doVerifications()) finalize();
+        if (doVerifications()) finalize();
     }
 
     const doVerifications = () => {
-        for(let i = 0; i < answers.length; i++){
-            if(answers[i].tipo_questao === 'multipla_escolha' || answers[i].tipo_questao === 'multipla_escolha_com_valores'){
+        for (let i = 0; i < answers.length; i++) {
+            if (answers[i].tipo_questao === 'multipla_escolha' || answers[i].tipo_questao === 'multipla_escolha_com_valores') {
                 const escolhas = answers[i].alternativas.filter((alt) => alt.escolha_feita);
-                if(escolhas.length === 0){
+                if (escolhas.length === 0) {
                     toast.error(`Answer all questions before finishing the test!`);
                     return false;
                 }
@@ -258,26 +261,26 @@ export const ProficiencyTest = () => {
             resultados: resultSend,
             dt_realizacao: new Date()
         })
-        .then(() => {
-            setTimeout(() => {
-                window.onbeforeunload = null;
+            .then(() => {
+                setTimeout(() => {
+                    window.onbeforeunload = null;
+                    setLoadingResults(false);
+                    navigate(`/result-screen`, { state: resultShow });
+                }, 2000);
+            })
+            .catch((error) => {
                 setLoadingResults(false);
-                navigate(`/result-screen`, { state: resultShow });
-            }, 2000);
-        })
-        .catch((error) => {
-            setLoadingResults(false);
-            let msg;
-            if(error.response) msg = error.response.data.message;
-            else if(error.request) msg = 'Error while trying to access the server!';
-            toast.error(msg);
-        });
+                let msg;
+                if (error.response) msg = error.response.data.message;
+                else if (error.request) msg = 'Error while trying to access the server!';
+                toast.error(msg);
+            });
     };
 
     const calculateScores = () => {
         const getMaxSoftSkillScores = (SSs) => {
             const maxScores = [];
-            for(let i = 0; i < SSs.length; i++){
+            for (let i = 0; i < SSs.length; i++) {
                 const obj = {
                     id_soft_skill: SSs[i].id_soft_skill,
                     maxNota: SSs[i].max_nota_soft_skill
@@ -291,23 +294,23 @@ export const ProficiencyTest = () => {
 
         const calculateFinalScores = (SSs, resps) => {
             const finalScores = [];
-            for(let i = 0; i < SSs.length; i++){
+            for (let i = 0; i < SSs.length; i++) {
                 let aux = 0;
-                for(let j = 0; j < resps.length; j++){
-                    if(SSs[i].id_soft_skill === resps[j].id_soft_skill){
-                       switch(resps[j].tipo_questao){
+                for (let j = 0; j < resps.length; j++) {
+                    if (SSs[i].id_soft_skill === resps[j].id_soft_skill) {
+                        switch (resps[j].tipo_questao) {
                             case 'multipla_escolha':
                                 let isCorrect = false;
-                                for(let k = 0; k < resps[j].alternativas.length; k++){
-                                    if(resps[j].alternativas[k].correta && resps[j].alternativas[k].escolha_feita) isCorrect = true;
+                                for (let k = 0; k < resps[j].alternativas.length; k++) {
+                                    if (resps[j].alternativas[k].correta && resps[j].alternativas[k].escolha_feita) isCorrect = true;
                                 }
-                                if(isCorrect) aux += resps[j].valor_questao;
+                                if (isCorrect) aux += resps[j].valor_questao;
                                 break;
                             case 'rankeamento':
                                 const auxAlternatives = selectionSortObject(resps[j].alternativas, 'valor_alternativa');
                                 const maxCombinacao = (array) => {
                                     let max = 0;
-                                    for(let k = 0; k < array.length; k++){
+                                    for (let k = 0; k < array.length; k++) {
                                         max += array[k].valor_alternativa * ((array.length - 1) - k);
                                     }
                                     return max;
@@ -315,7 +318,7 @@ export const ProficiencyTest = () => {
                                 const max = maxCombinacao(auxAlternatives);
                                 const contarPontos = (array) => {
                                     let nota = 0;
-                                    for(let k = 0; k < array.length; k++){
+                                    for (let k = 0; k < array.length; k++) {
                                         nota += array[k].valor_alternativa * ((array.length - 1) - k);
                                     }
                                     return nota;
@@ -326,14 +329,14 @@ export const ProficiencyTest = () => {
                                 aux += roundScore(auxScore);
                                 break;
                             case 'multipla_escolha_com_valores':
-                                for(let k = 0; k < resps[j].alternativas.length; k++){
-                                    if(resps[j].alternativas[k].escolha_feita){
+                                for (let k = 0; k < resps[j].alternativas.length; k++) {
+                                    if (resps[j].alternativas[k].escolha_feita) {
                                         const result = resps[j].alternativas[k].porcentagem * resps[j].valor_questao / 100;
                                         aux += roundScore(result);
                                     }
                                 };
                             default:
-                       };
+                        };
                     }
                 }
                 const obj = {
@@ -349,7 +352,7 @@ export const ProficiencyTest = () => {
 
         const mountResults = (NM, NF, SSs) => {
             const resultShow = [], resultSend = [];
-            for(let i = 0; i < SSs.length; i++){
+            for (let i = 0; i < SSs.length; i++) {
                 const notaShow = roundScore((NF[i].notaF / NM[i].maxNota) * 100);
                 const obj1 = {
                     id_soft_skill: SSs[i].id_soft_skill,
@@ -380,10 +383,10 @@ export const ProficiencyTest = () => {
     const handleSelectionChange = (idQ, idA) => {
         const answs = [...answers];
         const answ = answs.find((resp) => resp.id_questao === idQ);
-        
+
         const alts = answ.alternativas;
-        for(let i = 0; i < alts.length; i++){
-            if(alts[i].escolha_feita){
+        for (let i = 0; i < alts.length; i++) {
+            if (alts[i].escolha_feita) {
                 alts[i].escolha_feita = false;
             }
         }
@@ -402,19 +405,19 @@ export const ProficiencyTest = () => {
 
     const handleRequestError = (error) => {
         let msg = '';
-        if(error.response){
+        if (error.response) {
             msg = error.response.data.message
-            if(error.response.data.type === 'TokenExpired') jwtExpirationHandler();
+            if (error.response.data.type === 'TokenExpired') jwtExpirationHandler();
         }
-        else if(error.request) msg = 'Error while trying to access server!'
+        else if (error.request) msg = 'Error while trying to access server!'
         return msg;
     };
 
     return (
         <div>
-             <div className='d-test-box'>
+            <div className='d-test-box'>
                 <h1>Competency Test</h1>
-                <Divider/>
+                <Divider />
                 {
                     startTest &&
                     <div>
@@ -423,7 +426,7 @@ export const ProficiencyTest = () => {
                                 The test has a duration of 35 minutes.
                             </div>
                             <div>
-                                <i className='pi pi-clock mr-2'/>
+                                <i className='pi pi-clock mr-2' />
                                 <span>{timerMinutes < 10 ? `0${timerMinutes}` : timerMinutes}:{timerSeconds < 10 ? `0${timerSeconds}` : timerSeconds}</span>
                             </div>
                         </div>
@@ -438,10 +441,10 @@ export const ProficiencyTest = () => {
                                                 answs.map((answ) => {
                                                     return (
                                                         <Answer
-                                                        key={answ.id_questao}
-                                                        answer={answ}
-                                                        handleSelectionChange={handleSelectionChange}
-                                                        handleOrderChange={handleOrderChange}/>
+                                                            key={answ.id_questao}
+                                                            answer={answ}
+                                                            handleSelectionChange={handleSelectionChange}
+                                                            handleOrderChange={handleOrderChange} />
                                                     );
                                                 })
                                             }
@@ -452,21 +455,21 @@ export const ProficiencyTest = () => {
                         </div>
                         <div className='flex flex-row justify-content-between'>
                             <button
-                            className='dbuttons dbuttons-danger pr-4 pl-4'
-                            onClick={() => window.location.replace('/')}
-                            style={{
-                                fontSize: 'calc(15px + 0.6vw)',
-                                fontWeight: 'bold'
-                            }}>
+                                className='dbuttons dbuttons-danger pr-4 pl-4'
+                                onClick={() => window.location.replace('/')}
+                                style={{
+                                    fontSize: 'calc(15px + 0.6vw)',
+                                    fontWeight: 'bold'
+                                }}>
                                 Cancel
                             </button>
                             <button
-                            className='dbuttons dbuttons-success pr-4 pl-4'
-                            onClick={userrFinalize}
-                            style={{
-                                fontSize: 'calc(15px + 0.6vw)',
-                                fontWeight: 'bold'
-                            }}>
+                                className='dbuttons dbuttons-success pr-4 pl-4'
+                                onClick={userrFinalize}
+                                style={{
+                                    fontSize: 'calc(15px + 0.6vw)',
+                                    fontWeight: 'bold'
+                                }}>
                                 Finish
                             </button>
                         </div>
@@ -475,35 +478,35 @@ export const ProficiencyTest = () => {
             </div>
 
             <CalculatingResultsBox
-            loadingResults={loadingResults}
-            setLoadingResults={setLoadingResults}/>
+                loadingResults={loadingResults}
+                setLoadingResults={setLoadingResults} />
 
             <GreetingsModal
-            startTest={startTest}
-            loading={loading}
-            setLoading={setLoading}
-            allFine={allFine}
-            alreadyTaken={alreadyTaken}
-            lastScores={lastScores}
-            setStartTest={setStartTest}
-            lastTestDate={lastTestDate}
-            error={error}/>
+                startTest={startTest}
+                loading={loading}
+                setLoading={setLoading}
+                allFine={allFine}
+                alreadyTaken={alreadyTaken}
+                lastScores={lastScores}
+                setStartTest={setStartTest}
+                lastTestDate={lastTestDate}
+                error={error} />
 
             {/* Messages and confirmation parts */}
 
             <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"/>
-            
-            <ConfirmDialog/>
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" />
+
+            <ConfirmDialog />
         </div>
     )
 };
@@ -512,25 +515,25 @@ const Answer = (props) => {
     const answer = props.answer;
 
     const mountAlternatives = (tpQ) => {
-        switch(tpQ){
+        switch (tpQ) {
             case 'multipla_escolha':
                 return (
                     <AlternativesM
-                    alternatives={answer.alternativas}
-                    handleSelectionChange={props.handleSelectionChange}/>
+                        alternatives={answer.alternativas}
+                        handleSelectionChange={props.handleSelectionChange} />
                 );
             case 'rankeamento':
                 return (
                     <AlternativesR
-                    questionID={answer.id_questao}
-                    alternatives={answer.alternativas}
-                    handleOrderChange={props.handleOrderChange}/>
+                        questionID={answer.id_questao}
+                        alternatives={answer.alternativas}
+                        handleOrderChange={props.handleOrderChange} />
                 )
             case 'multipla_escolha_com_valores':
                 return (
                     <AlternativesMV
-                    alternatives={answer.alternativas}
-                    handleSelectionChange={props.handleSelectionChange}/>
+                        alternatives={answer.alternativas}
+                        handleSelectionChange={props.handleSelectionChange} />
                 )
             default:
         };
@@ -554,10 +557,10 @@ const AlternativesM = (props) => {
                     return (
                         <div className='flex flex-row align-items-center' key={alt.id_alternativa}>
                             <RadioButton
-                            id={`M-question-selection-rb-${alt.id_questao}:${alt.id_alternativa}`}
-                            className='mr-3'
-                            checked={alt.escolha_feita}
-                            onChange={() => props.handleSelectionChange(alt.id_questao, alt.id_alternativa)}/>
+                                id={`M-question-selection-rb-${alt.id_questao}:${alt.id_alternativa}`}
+                                className='mr-3'
+                                checked={alt.escolha_feita}
+                                onChange={() => props.handleSelectionChange(alt.id_questao, alt.id_alternativa)} />
                             <label htmlFor={`rb-${alt.id_questao}:${alt.id_alternativa}`}>
                                 <h4>{alt.texto_alternativa}</h4>
                             </label>
@@ -577,10 +580,10 @@ const AlternativesMV = (props) => {
                     return (
                         <div className='flex flex-row align-items-center' key={alt.id_alternativa}>
                             <RadioButton
-                            id={`MV-question-selection-rb-${alt.id_questao}:${alt.id_alternativa}`}
-                            className='mr-3'
-                            checked={alt.escolha_feita}
-                            onChange={() => props.handleSelectionChange(alt.id_questao, alt.id_alternativa)}/>
+                                id={`MV-question-selection-rb-${alt.id_questao}:${alt.id_alternativa}`}
+                                className='mr-3'
+                                checked={alt.escolha_feita}
+                                onChange={() => props.handleSelectionChange(alt.id_questao, alt.id_alternativa)} />
                             <h4>{alt.texto_alternativa}</h4>
                         </div>
                     );
@@ -597,10 +600,10 @@ const AlternativesR = (props) => {
     }, []);
 
     const onDragEnd = (result) => {
-        const {destination, source} = result;
+        const { destination, source } = result;
 
-        if(!destination) return;
-        if(destination.index === source.index) return;
+        if (!destination) return;
+        if (destination.index === source.index) return;
 
         const newAlts = [...props.alternatives];
         const alt = newAlts[source.index];
@@ -617,16 +620,16 @@ const AlternativesR = (props) => {
                     {
                         (provided) => (
                             <div
-                            id={`R-question-alternatives-${props.questionID}`}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}>
+                                id={`R-question-alternatives-${props.questionID}`}
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}>
                                 {
                                     props.alternatives.map((alt, index) => {
                                         return (
                                             <AltR
-                                            key={alt.id_alternativa}
-                                            alt={alt}
-                                            index={index}/>
+                                                key={alt.id_alternativa}
+                                                alt={alt}
+                                                index={index} />
                                         );
                                     })
                                 }
@@ -640,96 +643,61 @@ const AlternativesR = (props) => {
     )
 };
 
-const AltR = ({alt, index}) => {
+const AltR = ({ alt, index }) => {
     return (
         <Draggable draggableId={`${alt.id_questao}:${alt.id_alternativa}`} index={index}>
             {
                 (provided) => (
                     <div
-                    id={`R-question-alternative-${alt.id_questao}:${alt.id_alternativa}`}
-                    className='alts-r flex flex-row align-items-center p-4'
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}>
-                       <h4>{alt.texto_alternativa}</h4>
+                        id={`R-question-alternative-${alt.id_questao}:${alt.id_alternativa}`}
+                        className='alts-r flex flex-row align-items-center p-4'
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}>
+                        <h4>{alt.texto_alternativa}</h4>
                     </div>
                 )
             }
         </Draggable>
-        
+
     )
 };
 
-const CalculatingResultsBox = ({loadingResults, setLoadingResults}) => {
-    return(
+const CalculatingResultsBox = ({ loadingResults, setLoadingResults }) => {
+    return (
         <Dialog
-        className='loading-box default-border-image'
-        visible={loadingResults}
-        draggable={false}
-        closable={false}
-        onHide={() => {if (!loadingResults) return; setLoadingResults(() => false);}}
-        contentStyle={{
-            overflow: loadingResults ? 'hidden' : 'auto',
-        }}>
-            <Loading show={loadingResults} msg='Calculating Results...'/>
+            className='loading-box default-border-image'
+            visible={loadingResults}
+            draggable={false}
+            closable={false}
+            onHide={() => { if (!loadingResults) return; setLoadingResults(() => false); }}
+            contentStyle={{
+                overflow: loadingResults ? 'hidden' : 'auto',
+            }}>
+            <Loading show={loadingResults} msg='Calculating Results...' />
         </Dialog>
     );
 };
 
-const GreetingsModal = ({startTest, loading, setLoading, allFine, alreadyTaken, lastScores, setStartTest, lastTestDate, error}) => {
+const GreetingsModal = ({ startTest, loading, setLoading, allFine, alreadyTaken, lastScores, setStartTest, lastTestDate, error }) => {
     const alreadyTakenAlert = () => {
-        return(
+        return (
             <div>
-            <h1 className='text-center'>Test Done</h1>
-            <Divider/>
-            <div className='show-results-box'>
-                <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
-                    <p>You've already taken the test this week. Wait at least 7 days to take it again.</p>
-                    <p>Here are your last scores:</p>
-                </div>
-                <div className='flex flex-column align-items-center'>
-                    <ResultChart resultShow={lastScores}/>
-                    <h4 className='mt-4'>Date of Realization: {new Date(lastTestDate).toLocaleDateString()}</h4>
-                    <button
-                    id='test-return-home-already-taken-btn'
-                    style={{fontSize: 'calc(0.8rem + 1vw)'}}
-                    className='dbuttons dbuttons-primary mt-3 pl-5 pr-5'
-                    onClick={() => window.location.replace('/')}>
-                        Return to Home Page
-                    </button>
-                </div> 
-            </div>
-        </div>
-        )
-    };
-
-    const startTestAlert = () => {
-        return(
-            <div>
-                <h1 className='text-center'>The Test is about to Start</h1>
-                <Divider/>
-                <div style={{fontSize: 'calc(0.8rem + 1vw)'}}>
-                    <p>
-                        This test will evaluate your proficiency in a series of Soft Skills, 
-                        which are certain socio-behavioural abilities extremely valued nowadays 
-                        in a myriad of different environments.
-                    </p>
-                    <p>You have 35 minutes to complete it.</p>
-                    <p>Press Start to inciate it.</p>
-                    <p><b>Good Luck!</b></p>
+                <h1 className='text-center'>Test Done</h1>
+                <Divider />
+                <div className='show-results-box'>
+                    <div style={{ fontSize: 'calc(0.8rem + 1vw)' }}>
+                        <p>You've already taken the test this week. Wait at least 7 days to take it again.</p>
+                        <p>Here are your last scores:</p>
+                    </div>
                     <div className='flex flex-column align-items-center'>
+                        <ResultChart resultShow={lastScores} />
+                        <h4 className='mt-4'>Date of Realization: {new Date(lastTestDate).toLocaleDateString()}</h4>
                         <button
-                        id='test-start-btn'
-                        style={{fontSize: 'calc(0.8rem + 1vw)'}}
-                        className='dbuttons dbuttons-success w-4'
-                        onClick={() => setStartTest(() => true)}>
-                            Start
-                        </button>
-                        <button
-                        id='test-return-home-start-test-btn'
-                        style={{fontSize: 'calc(0.8rem + 1vw)'}}
-                        className='dbuttons dbuttons-primary mt-3 w-4'
-                        onClick={() => window.location.replace('/')}>
+                            id='test-return-home-already-taken-btn'
+                            style={{ fontSize: 'calc(0.8rem + 1vw)' }}
+                            className='dbuttons dbuttons-primary mt-3 pl-5 pr-5'
+                            onClick={() => window.location.replace('/')}>
                             Return to Home Page
                         </button>
                     </div>
@@ -738,29 +706,64 @@ const GreetingsModal = ({startTest, loading, setLoading, allFine, alreadyTaken, 
         )
     };
 
-    return(
+    const startTestAlert = () => {
+        return (
+            <div>
+                <h1 className='text-center'>The Test is about to Start</h1>
+                <Divider />
+                <div style={{ fontSize: 'calc(0.8rem + 1vw)' }}>
+                    <p>
+                        This test will evaluate your proficiency in a series of Soft Skills,
+                        which are certain socio-behavioural abilities extremely valued nowadays
+                        in a myriad of different environments.
+                    </p>
+                    <p>You have 35 minutes to complete it.</p>
+                    <p>Press Start to inciate it.</p>
+                    <p><b>Good Luck!</b></p>
+                    <div className='flex flex-column align-items-center'>
+                        <button
+                            id='test-start-btn'
+                            style={{ fontSize: 'calc(0.8rem + 1vw)' }}
+                            className='dbuttons dbuttons-success w-4'
+                            onClick={() => setStartTest(() => true)}>
+                            Start
+                        </button>
+                        <button
+                            id='test-return-home-start-test-btn'
+                            style={{ fontSize: 'calc(0.8rem + 1vw)' }}
+                            className='dbuttons dbuttons-primary mt-3 w-4'
+                            onClick={() => window.location.replace('/')}>
+                            Return to Home Page
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    };
+
+    return (
         <Dialog
-        className='loading-box default-border-image'
-        visible={!startTest}
-        closable={false}
-        draggable={false}
-        onHide={() => {if (startTest) return; setLoading(() => true);}}
-        contentStyle={{
-            overflow: 'hidden',
-        }}>
-            <Loading show={loading} msg='Loading Test...'/>
+            className='loading-box default-border-image'
+            visible={!startTest}
+            closable={false}
+            draggable={false}
+            onHide={() => { if (startTest) return; setLoading(() => true); }}
+            contentStyle={{
+                overflow: 'hidden',
+            }}>
+            <Loading show={loading} msg='Loading Test...' />
             {
                 loading ?
-                null :
-                (
-                    allFine ?
+                    null :
                     (
-                        alreadyTaken ?
-                        alreadyTakenAlert() :
-                        startTestAlert()
-                    ) :
-                    <ErrorMessage msg={error}/>
-                )
+                        allFine ?
+                            (
+                                alreadyTaken ?
+                                    alreadyTakenAlert() :
+                                    startTestAlert()
+                            ) :
+                            <ErrorMessage msg={error} />
+                    )
             }
         </Dialog>
     );

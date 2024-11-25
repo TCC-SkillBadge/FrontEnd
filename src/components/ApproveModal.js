@@ -11,7 +11,7 @@ const ApproveModal = ({
   body,
   approveButtonText = "Approve",
   reproveButtonText = "Reprove",
-  showButtons = true, 
+  showButtons = true,
 }) => {
   return (
     <Modal show={show} onHide={onHide} centered>
@@ -19,7 +19,7 @@ const ApproveModal = ({
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="modal-body-custom">{body}</Modal.Body>
-      {showButtons && ( 
+      {showButtons && (
         <Modal.Footer className="modal-footer-custom">
           <Button
             variant="danger"

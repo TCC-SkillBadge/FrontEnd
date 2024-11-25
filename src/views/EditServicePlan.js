@@ -26,6 +26,8 @@ const EditServicePlan = () => {
     funcionalidadesNaoDisponiveis: [],
   });
 
+  const planServiceUrl = process.env.REACT_APP_API_PLAN;
+
   useEffect(() => {
     const userType = sessionStorage.getItem("tipoUsuario");
     if (userType !== "UA") {
@@ -34,7 +36,7 @@ const EditServicePlan = () => {
       // Buscar funcionalidades do back-end
       const fetchFuncionalidades = async () => {
         try {
-          const response = await axios.get("http://localhost:9090/api/funcionalidades");
+          const response = await axios.get(`${planServiceUrl}/api/funcionalidades`);
           if (response.status === 200) {
             const options = response.data.map((func) => ({
               value: func.id,
@@ -51,7 +53,7 @@ const EditServicePlan = () => {
       // Buscar dados do plano
       const fetchPlan = async () => {
         try {
-          const response = await axios.get(`http://localhost:9090/api/plans/${id}`);
+          const response = await axios.get(`${planServiceUrl}/api/plans/${id}`);
           if (response.status === 200) {
             const planData = response.data;
 
@@ -173,7 +175,7 @@ const EditServicePlan = () => {
       const newOption = actionMeta.option;
       try {
         // Enviar nova funcionalidade para o back-end
-        const response = await axios.post("http://localhost:9090/api/funcionalidades", {
+        const response = await axios.post(`${planServiceUrl}/api/funcionalidades`, {
           nomeFuncionalidade: newOption.label,
         });
         if (response.status === 201) {
@@ -235,7 +237,7 @@ const EditServicePlan = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:9090/api/plans/${id}`, dataToSend);
+      const response = await axios.put(`${planServiceUrl}/api/plans/${id}`, dataToSend);
 
       toast.success("Plan updated successfully!", {
         position: "top-center",
@@ -259,7 +261,7 @@ const EditServicePlan = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:9090/api/plans/${id}`);
+      const response = await axios.delete(`${planServiceUrl}/api/plans/${id}`);
       if (response.status === 204) {
         toast.success("Plan deleted successfully!", {
           position: "top-center",

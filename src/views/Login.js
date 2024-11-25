@@ -203,7 +203,7 @@ const Login = () => {
     toast.promise(
       Promise.all(loginPromises).then((results) => {
         if (results.some((success) => success)) {
-            toast.success("Login successful!");
+          toast.success("Login successful!");
           setTimeout(() => {
             navigate("/home");
             // Após o login, verificar se há um token de confirmação e confirmar a badge
@@ -218,7 +218,7 @@ const Login = () => {
           }, 2000);
         } else {
           setLoginFailed(true);
-            toast.error("Error logging in. Please check your credentials.");
+          toast.error("Error logging in. Please check your credentials.");
         }
       }),
       {

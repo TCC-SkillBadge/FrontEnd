@@ -37,11 +37,14 @@ const PublicProfile = () => {
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const languageDropdownRef = useRef(null);
 
+  const commonUrl = process.env.REACT_APP_API_COMUM;
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7000/api/public-profile/${encodedEmail}`
+          `${commonUrl}/api/public-profile/${encodedEmail}`
         );
         const data = response.data;
 
@@ -242,7 +245,7 @@ const PublicProfile = () => {
                   <MortarboardFill className="profile-icon" /> Educação
                 </h3>
                 {Array.isArray(userData.education) &&
-                userData.education.length > 0 ? (
+                  userData.education.length > 0 ? (
                   userData.education.map((edu, index) => (
                     <div key={index} className="profile-education-item">
                       <div className="profile-info-row">
@@ -274,7 +277,7 @@ const PublicProfile = () => {
                   <Briefcase className="profile-icon" /> Experiência Profissional
                 </h3>
                 {Array.isArray(userData.professionalExperience) &&
-                userData.professionalExperience.length > 0 ? (
+                  userData.professionalExperience.length > 0 ? (
                   userData.professionalExperience.map((exp, index) => (
                     <div key={index} className="profile-experience-item">
                       <div className="profile-info-row">

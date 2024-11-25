@@ -14,22 +14,21 @@ export const ResultScreen = protectRoute(() => {
         console.log('Result Screen Mounted');
         console.log(resultShow);
         resultShow.map((resultado) => console.log(resultado.nome_soft_skill))
-    }
-    , []);
+    }, []);
 
     return (
         <div className='result-box default-border-image'>
             <h1>Your Results</h1>
-            <Divider/>
+            <Divider />
             <div className='flex flex-column align-items-center'>
-                <ResultChart resultShow={resultShow}/>
+                <ResultChart resultShow={resultShow} />
             </div>
             <div className='flex flex-row justify-content-center mt-5 mb-3'>
                 <button
-                id='results-return-home-btn'
-                className='dbuttons dbuttons-primary pr-6 pl-6'
-                style={{fontSize: 'calc(0.8rem + 1.2vw)'}}
-                onClick={() => window.location.replace('/')}>
+                    id='results-return-home-btn'
+                    className='dbuttons dbuttons-primary pr-6 pl-6'
+                    style={{ fontSize: 'calc(0.8rem + 1.2vw)' }}
+                    onClick={() => window.location.replace('/')}>
                     Go Back
                 </button>
             </div>
@@ -37,7 +36,7 @@ export const ResultScreen = protectRoute(() => {
     )
 });
 
-export const ResultChart = ({resultShow}) => {
+export const ResultChart = ({ resultShow }) => {
     const [series, _setSeries] = useState(resultShow.map((resultado) => resultado.notaShow));
     const [labels, _setLabels] = useState(resultShow.map((resultado) => resultado.nome_soft_skill));
     const [colors, _setColors] = useState(resultShow.map((resultado) => `#${resultado.cor_soft_skill}`));
@@ -84,11 +83,11 @@ export const ResultChart = ({resultShow}) => {
     return (
         <div id='result-chart' className='flex'>
             <Chart
-            options={options}
-            series={series}
-            type='polarArea'
-            height={500}
-            width={500}/>
+                options={options}
+                series={series}
+                type='polarArea'
+                height={500}
+                width={500} />
         </div>
     )
 };

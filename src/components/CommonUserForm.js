@@ -130,8 +130,8 @@ const CommonUserForm = ({ formData, handleChange, handlePhoneChange }) => {
           />
           {
             showPassword ?
-            <EyeSlash onClick={handleShowPassword} /> :
-            <Eye onClick={handleShowPassword} />
+              <EyeSlash onClick={handleShowPassword} /> :
+              <Eye onClick={handleShowPassword} />
           }
           <QuestionCircle onClick={() => setShowPasswordRequirements((oldValue) => !oldValue)} />
         </div>
@@ -151,8 +151,8 @@ const CommonUserForm = ({ formData, handleChange, handlePhoneChange }) => {
           />
           {
             showConfirmPassword ?
-            <EyeSlash onClick={handleShowConfirmPassword} /> :
-            <Eye onClick={handleShowConfirmPassword} />
+              <EyeSlash onClick={handleShowConfirmPassword} /> :
+              <Eye onClick={handleShowConfirmPassword} />
           }
         </div>
       </div>

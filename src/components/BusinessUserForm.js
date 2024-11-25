@@ -84,8 +84,8 @@ const BusinessUserForm = ({
           />
           {
             showPassword ?
-            <EyeSlash onClick={handleShowPassword} /> :
-            <Eye onClick={handleShowPassword} />
+              <EyeSlash onClick={handleShowPassword} /> :
+              <Eye onClick={handleShowPassword} />
           }
           <QuestionCircle onClick={() => setShowPasswordRequirements((oldValue) => !oldValue)} />
         </div>
@@ -105,8 +105,8 @@ const BusinessUserForm = ({
           />
           {
             showConfirmPassword ?
-            <EyeSlash onClick={handleShowConfirmPassword} /> :
-            <Eye onClick={handleShowConfirmPassword} />
+              <EyeSlash onClick={handleShowConfirmPassword} /> :
+              <Eye onClick={handleShowConfirmPassword} />
           }
         </div>
       </div>

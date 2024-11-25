@@ -83,11 +83,11 @@ const AdminUserForm = ({ formData, handleChange }) => {
             value={formData.password}
             onChange={handleChange}
             pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
-            required/>
+            required />
           {
             showPassword ?
-            <EyeSlash onClick={handleShowPassword} /> :
-            <Eye onClick={handleShowPassword} />
+              <EyeSlash onClick={handleShowPassword} /> :
+              <Eye onClick={handleShowPassword} />
           }
           <QuestionCircle onClick={() => setShowPasswordRequirements((oldValue) => !oldValue)} />
         </div>
@@ -107,8 +107,8 @@ const AdminUserForm = ({ formData, handleChange }) => {
           />
           {
             showConfirmPassword ?
-            <EyeSlash onClick={handleShowConfirmPassword} /> :
-            <Eye onClick={handleShowConfirmPassword} />
+              <EyeSlash onClick={handleShowConfirmPassword} /> :
+              <Eye onClick={handleShowConfirmPassword} />
           }
         </div>
       </div>
@@ -154,8 +154,8 @@ const AdminUserForm = ({ formData, handleChange }) => {
           />
           {
             showValidationCode ?
-            <EyeSlash onClick={handleShowValidationCode} /> :
-            <Eye onClick={handleShowValidationCode} />
+              <EyeSlash onClick={handleShowValidationCode} /> :
+              <Eye onClick={handleShowValidationCode} />
           }
         </div>
       </div>

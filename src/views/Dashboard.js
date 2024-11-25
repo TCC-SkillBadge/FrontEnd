@@ -31,7 +31,7 @@ const Dashboard = () => {
       const email = sessionStorage.getItem("email");
 
       if (!token || !email) {
-        toast.error("Você precisa estar logado para acessar o Dashboard.");
+        toast.error("You need to be logged in to access the Dashboard.");
         navigate("/login");
         return;
       }
@@ -73,10 +73,10 @@ const Dashboard = () => {
         newData[result.name] = result.data;
       });
       setData(newData);
-      toast.success("Dados carregados com sucesso!");
+      toast.success("Data loaded successfully!");
     } catch (error) {
       console.error("Erro ao buscar os dados de análise:", error);
-      toast.error("Erro ao carregar os dados de análise.");
+      toast.error("Error loading analysis data.");
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ const Dashboard = () => {
   };
 
   const attributionRateData = {
-    labels: ["Atribuído", "Não Atribuído"],
+    labels: ["Assigned", "Not Assigned"],
     datasets: [
       {
         data: data.attributionRate
@@ -115,7 +115,7 @@ const Dashboard = () => {
   };
 
   const acceptanceRateData = {
-    labels: ["Aceito", "Rejeitado"],
+    labels: ["Accepted", "Rejected"],
     datasets: [
       {
         data: data.acceptanceRate
@@ -132,7 +132,7 @@ const Dashboard = () => {
       : [],
     datasets: [
       {
-        label: "Tendência de Atribuição",
+        label: "Assignment Trends",
         data: data.assignmentTrends
           ? Object.values(data.assignmentTrends.trend)
           : [],
@@ -149,7 +149,7 @@ const Dashboard = () => {
       : [],
     datasets: [
       {
-        label: "Impacto em Soft Skills",
+        label: "Impact on Soft Skills",
         data: data.softSkillsImpact
           ? Object.values(data.softSkillsImpact.skills)
           : [],
@@ -166,11 +166,11 @@ const Dashboard = () => {
       : [],
     datasets: [
       {
-        label: "Taxa de Conversão",
+        label: "Conversion Rate",
         data: data.conversionAnalysis
           ? data.conversionAnalysis.by_badge_type.map(
-              (item) => item.conversion_rate
-            )
+            (item) => item.conversion_rate
+          )
           : [],
         backgroundColor: "#FF6384",
       },
@@ -180,25 +180,25 @@ const Dashboard = () => {
   const popularityTrendsData = {
     labels: data.popularityTrends
       ? data.popularityTrends.recent_badges.popularity_score.map(
-          (item) => item.badge_name
-        )
+        (item) => item.badge_name
+      )
       : [],
     datasets: [
       {
-        label: "Popularidade Recente",
+        label: "Recent Popularity",
         data: data.popularityTrends
           ? data.popularityTrends.recent_badges.popularity_score.map(
-              (item) => item.popularity_score
-            )
+            (item) => item.popularity_score
+          )
           : [],
         backgroundColor: "#36A2EB",
       },
       {
-        label: "Popularidade Antiga",
+        label: "Old Popularity",
         data: data.popularityTrends
           ? data.popularityTrends.old_badges.popularity_score.map(
-              (item) => item.popularity_score
-            )
+            (item) => item.popularity_score
+          )
           : [],
         backgroundColor: "#FFCE56",
       },
@@ -208,40 +208,40 @@ const Dashboard = () => {
   return (
     <>
       <div className="dashboard-container">
-        <h1 className="dashboard-title">Dashboard de Análises</h1>
+        <h1 className="dashboard-title">Analysis Dashboard</h1>
         {loading ? (
           <div className="spinner-container">
             <ClipLoader color="#d273ff" loading={loading} size={150} />
-            <p className="loading-text">Carregando dados...</p>
+            <p className="loading-text">Loading data...</p>
           </div>
         ) : (
           <div className="charts-grid">
             <div className="chart-card">
-              <h2>Badges Atribuídos</h2>
+              <h2>Assigned Badges</h2>
               <Bar data={badgesAssignedData} />
             </div>
             <div className="chart-card">
-              <h2>Taxa de Atribuição</h2>
+              <h2>Attribution Rate</h2>
               <Pie data={attributionRateData} />
             </div>
             <div className="chart-card">
-              <h2>Taxa de Aceitação</h2>
+              <h2>Acceptance Rate</h2>
               <Pie data={acceptanceRateData} />
             </div>
             <div className="chart-card">
-              <h2>Tendência de Atribuição</h2>
+              <h2>Assignment Trends</h2>
               <Line data={assignmentTrendsData} />
             </div>
             <div className="chart-card">
-              <h2>Impacto em Soft Skills</h2>
+              <h2>Impact on Soft Skills</h2>
               <Radar data={softSkillsImpactData} />
             </div>
             <div className="chart-card">
-              <h2>Análise de Conversão</h2>
+              <h2>Conversion Analysis</h2>
               <Bar data={conversionAnalysisData} />
             </div>
             <div className="chart-card">
-              <h2>Popularidade de Badges</h2>
+              <h2>Badge Popularity</h2>
               <Bar data={popularityTrendsData} />
             </div>
           </div>

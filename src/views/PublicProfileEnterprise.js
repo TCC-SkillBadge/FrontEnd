@@ -36,11 +36,14 @@ const PublicProfileEnterprise = () => {
   const eventIdFromUrl = queryParams.get("eventId");
   const [highlightedEventId, setHighlightedEventId] = useState(null);
 
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:7003/api/public-profile/${encodedEmail}`
+          `${enterpriseUrl}/api/public-profile/${encodedEmail}`
         );
         setUserData(response.data);
 
@@ -65,7 +68,7 @@ const PublicProfileEnterprise = () => {
         if (tipoUsuario === "UC") {
           // Endpoint para usuários comuns
           response = await axios.get(
-            `http://localhost:7001/badges/wallet?email=${email}`,
+            `${badgeUrl}/badges/wallet?email=${email}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -75,7 +78,7 @@ const PublicProfileEnterprise = () => {
         } else if (tipoUsuario === "UE") {
           // Endpoint para usuários empresariais
           response = await axios.get(
-            `http://localhost:7001/badges/consult?search=${email}`,
+            `${badgeUrl}/badges/consult?search=${email}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -214,7 +217,7 @@ const PublicProfileEnterprise = () => {
                   <a
                     href={
                       userData.website.startsWith("http://") ||
-                      userData.website.startsWith("https://")
+                        userData.website.startsWith("https://")
                         ? userData.website
                         : `https://${userData.website}`
                     }
@@ -274,9 +277,8 @@ const PublicProfileEnterprise = () => {
                 userData.events.map((event, index) => (
                   <div
                     key={index}
-                    className={`event-item ${
-                      highlightedEventId === event.id ? "highlighted" : ""
-                    }`}
+                    className={`event-item ${highlightedEventId === event.id ? "highlighted" : ""
+                      }`}
                   >
                     <div className="profile-enterprise-event-header">
                       <img

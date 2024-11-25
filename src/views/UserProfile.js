@@ -63,51 +63,16 @@ const UserProfile = () => {
 
   const [originalUserData, setOriginalUserData] = useState(null);
 
-  // useEffect(() => {
-  //   const updateUrlWithEncodedEmail = async () => {
-  //     try {
-  //       const token = sessionStorage.getItem("token");
-  //       if (!token) {
-  //         console.error("Token não encontrado. Usuário não autenticado.");
-  //         return;
-  //       }
-
-  //       const response = await axios.get(
-  //         "http://localhost:7000/api/user/info",
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-
-  //       const userEmail = response.data.email || response.data.email_comercial;
-  //       if (!userEmail) {
-  //         console.error("Email do usuário não disponível.");
-  //         return;
-  //       }
-
-  //       const encodedEmail = btoa(userEmail); // Codifica o email
-  //       const currentPath = window.location.pathname;
-
-  //       // Atualiza a URL se necessário
-  //       if (!currentPath.includes(encodedEmail)) {
-  //         navigate(`/public-profile/${encodedEmail}`, { replace: true });
-  //       }
-  //     } catch (error) {
-  //       console.error("Erro ao atualizar a URL:", error);
-  //     }
-  //   };
-
-  //   updateUrlWithEncodedEmail();
-  // }, [navigate]);
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+  const commonUrl = process.env.REACT_APP_API_COMUM;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
 
   const handleBadgeVisibilityChange = async (e, badgeId, index) => {
     const isPublic = e.target.checked;
     try {
       const token = sessionStorage.getItem("token");
       const response = await axios.put(
-        "http://localhost:7000/api/badges/visibility",
+        `${commonUrl}/api/badges/visibility`,
         {
           badgeIds: [badgeId],
           is_public: isPublic,
@@ -165,7 +130,7 @@ const UserProfile = () => {
         try {
           // Verificar o perfil público do usuário comum
           const publicProfileUCResponse = await axios.get(
-            `http://localhost:7000/api/public-profile/${encodedEmail}`
+            `${commonUrl}/api/public-profile/${encodedEmail}`
           );
           if (publicProfileUCResponse.data) {
             navigate(`/public-profile/${encodedEmail}`, { replace: true });
@@ -178,7 +143,7 @@ const UserProfile = () => {
         try {
           // Verificar o perfil público do usuário empresarial
           const publicProfileUEResponse = await axios.get(
-            `http://localhost:7003/api/public-profile/${encodedEmail}`
+            `${enterpriseUrl}/api/public-profile/${encodedEmail}`
           );
           if (publicProfileUEResponse.data) {
             navigate(`/public-profile-enterprise/${encodedEmail}`, {
@@ -223,7 +188,7 @@ const UserProfile = () => {
 
       // Carregar os idiomas disponíveis primeiro
       const languagesResponse = await axios.get(
-        "http://localhost:7000/api/languages",
+        `${commonUrl}/api/languages`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -233,7 +198,7 @@ const UserProfile = () => {
       setAvailableLanguages(languagesResponse.data);
 
       if (tipoUsuario === "UC") {
-        response = await axios.get("http://localhost:7000/api/user/info", {
+        response = await axios.get(`${commonUrl}/api/user/info`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -262,7 +227,7 @@ const UserProfile = () => {
         await fetchBadges("UC", email);
       } else if (tipoUsuario === "UE") {
         response = await axios.get(
-          "http://localhost:7003/api/acessar-info-usuario-jwt",
+          `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -271,7 +236,7 @@ const UserProfile = () => {
         );
 
         const eventsResponse = await axios.get(
-          "http://localhost:7003/api/eventos",
+          `${enterpriseUrl}/api/eventos`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -316,7 +281,7 @@ const UserProfile = () => {
       if (tipoUsuario === "UC") {
         // Endpoint para usuários comuns
         response = await axios.get(
-          `http://localhost:7001/badges/wallet?email=${email}`,
+          `${badgeUrl}/badges/wallet?email=${email}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -326,7 +291,7 @@ const UserProfile = () => {
       } else if (tipoUsuario === "UE") {
         // Endpoint para usuários empresariais
         response = await axios.get(
-          `http://localhost:7001/badges/consult?search=${email}`,
+          `${badgeUrl}/badges/consult?search=${email}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -372,7 +337,7 @@ const UserProfile = () => {
         try {
           // Verificar se o perfil público de usuário comum (UC) está acessível
           const responseUC = await axios.get(
-            `http://localhost:7009/api/public-profile/${encodedEmail}`
+            `${commonUrl}/api/public-profile/${encodedEmail}`
           );
           if (responseUC.data) {
             // Redirecionar para o perfil público de UC
@@ -386,7 +351,7 @@ const UserProfile = () => {
         try {
           // Verificar se o perfil público de usuário empresarial (UE) está acessível
           const responseUE = await axios.get(
-            `http://localhost:7003/api/public-profile/${encodedEmail}`
+            `${enterpriseUrl}/api/public-profile/${encodedEmail}`
           );
           if (responseUE.data) {
             // Redirecionar para o perfil público de UE
@@ -421,102 +386,6 @@ const UserProfile = () => {
 
 
   useEffect(() => {
-    // const fetchUserInfo = async () => {
-    //   try {
-    //     const token = sessionStorage.getItem("token");
-    //     let response;
-
-    //     if (!token) {
-    //       setError("Usuário não autenticado");
-    //       setLoading(false);
-    //       return;
-    //     }
-
-    //     // Carregar os idiomas disponíveis primeiro
-    //     const languagesResponse = await axios.get(
-    //       "http://localhost:7000/api/languages",
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       }
-    //     );
-    //     setAvailableLanguages(languagesResponse.data);
-
-    //     if (tipoUsuario === "UC") {
-    //       response = await axios.get("http://localhost:7000/api/user/info", {
-    //         headers: {
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //       });
-
-    //       // Mapear os idiomas do usuário para objetos com id e name
-    //       const userLanguages = Array.isArray(response.data.languages)
-    //         ? response.data.languages
-    //         : [];
-
-    //       setUserData({
-    //         ...response.data,
-    //         education: Array.isArray(response.data.education)
-    //           ? response.data.education
-    //           : [],
-    //         professionalExperience: Array.isArray(
-    //           response.data.professional_experience
-    //         )
-    //           ? response.data.professional_experience
-    //           : [],
-    //         languages: userLanguages,
-    //       });
-
-    //       // Chamar fetchBadges para usuários comuns
-    //       const email = response.data.email || "teste@email.com";
-    //       await fetchBadges("UC", email);
-    //     } else if (tipoUsuario === "UE") {
-    //       response = await axios.get(
-    //         "http://localhost:7003/api/acessar-info-usuario-jwt",
-    //         {
-    //           headers: {
-    //             Authorization: `Bearer ${token}`,
-    //           },
-    //         }
-    //       );
-
-    //       const eventsResponse = await axios.get(
-    //         "http://localhost:7003/api/eventos",
-    //         {
-    //           headers: {
-    //             Authorization: `Bearer ${token}`,
-    //           },
-    //         }
-    //       );
-
-    //       setUserData({
-    //         ...response.data,
-    //         email_comercial: response.data.email_comercial,
-    //         sobre: response.data.sobre || "",
-    //         website: response.data.website || "",
-    //         events: eventsResponse.data || [],
-    //         badges: [], // Inicializa como vazio
-    //       });
-
-    //       console.log("Loaded events:", eventsResponse.data);
-
-    //       // Chamar fetchBadges para usuários empresariais
-    //       const email =
-    //         response.data.email_comercial || "teste_comercial@email.com";
-    //       await fetchBadges("UE", email);
-    //     } else {
-    //       setError("Tipo de usuário inválido");
-    //     }
-
-    //     setLoading(false);
-    //   } catch (error) {
-    //     console.error("Erro ao obter informações do usuário:", error);
-    //     setError("Falha ao carregar os dados do usuário");
-    //     setLoading(false);
-    //   }
-    // };
-
     fetchUserInfo();
   }, [tipoUsuario]);
 
@@ -609,7 +478,7 @@ const UserProfile = () => {
     const fetchLanguages = async () => {
       try {
         const token = sessionStorage.getItem("token");
-        const response = await axios.get("http://localhost:7000/api/languages", {
+        const response = await axios.get(`${commonUrl}/api/languages`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAvailableLanguages(response.data);
@@ -711,7 +580,7 @@ const UserProfile = () => {
           JSON.stringify(userData.languages.map((lang) => lang.id))
         );
 
-        await axios.put("http://localhost:7000/api/user/update", formData, {
+        await axios.put(`${commonUrl}/api/user/update`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -730,7 +599,7 @@ const UserProfile = () => {
         formData.append("sobre", userData.sobre || "");
         formData.append("website", userData.website || "");
 
-        await axios.put("http://localhost:7003/api/update", formData, {
+        await axios.put(`${enterpriseUrl}/api/update`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -883,7 +752,7 @@ const UserProfile = () => {
 
     try {
       const token = sessionStorage.getItem("token");
-      await axios.delete(`http://localhost:7003/api/eventos/${event.id}`, {
+      await axios.delete(`${enterpriseUrl}/api/eventos/${event.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -1730,7 +1599,7 @@ const UserProfile = () => {
                         />
                         <h3>{badge.name_badge}</h3>
                         <Link to={`/badges/details/${badge.id_badge}`}>
-                        <button>Details</button>
+                          <button>Details</button>
                         </Link>
                       </div>
                     ))}

@@ -16,9 +16,8 @@ const PlanCard = ({
 }) => {
   return (
     <div
-      className={`plan-card ${plan.prioridade ? "highlight" : ""} ${
-        isCurrent ? "current-plan" : ""
-      }`}
+      className={`plan-card ${plan.prioridade ? "highlight" : ""} ${isCurrent ? "current-plan" : ""
+        }`}
     >
       {isAdmin && (
         <div className="admin-icons">
@@ -48,7 +47,7 @@ const PlanCard = ({
       <p className="description">{plan.descricaoPlano}</p>
       <ul className="features">
         {plan.funcionalidadesDisponiveis &&
-        plan.funcionalidadesDisponiveis.length > 0 ? (
+          plan.funcionalidadesDisponiveis.length > 0 ? (
           plan.funcionalidadesDisponiveis.map((func) => (
             <li key={func.id}>
               <i className="bi bi-play-fill feature-icon"></i>{" "}
@@ -61,7 +60,7 @@ const PlanCard = ({
       </ul>
       <ul className="features unavailable">
         {plan.funcionalidadesNaoDisponiveis &&
-        plan.funcionalidadesNaoDisponiveis.length > 0 ? (
+          plan.funcionalidadesNaoDisponiveis.length > 0 ? (
           plan.funcionalidadesNaoDisponiveis.map((func) => (
             <li key={func.id}>
               <i className="bi bi-x-circle-fill feature-icon"></i>{" "}

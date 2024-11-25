@@ -10,10 +10,13 @@ const usePlans = (userType) => {
   const [currentPlan, setCurrentPlan] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const planServiceUrl = process.env.REACT_APP_API_PLAN;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+
   const fetchPlansAndCurrentPlan = async () => {
     try {
       // Buscar todos os planos
-      const response = await axios.get("http://localhost:9090/api/plans");
+      const response = await axios.get(`${planServiceUrl}/api/plans`);
       setPlans(response.data);
 
       // Condicional: Apenas buscar currentPlan se o usuário NÃO for administrativo
@@ -21,7 +24,7 @@ const usePlans = (userType) => {
         const token = sessionStorage.getItem("token");
         if (token) {
           const currentPlanResponse = await axios.get(
-            "http://localhost:7003/api/current-plan",
+            `${enterpriseUrl}/api/current-plan`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -37,7 +40,7 @@ const usePlans = (userType) => {
       setLoading(false);
     } catch (error) {
       console.error("Erro ao buscar os planos ou o plano atual!", error);
-      toast.error("Erro ao buscar os planos. Tente novamente mais tarde.", {
+      toast.error("Error fetching plans. Please try again later.", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -62,11 +65,11 @@ const usePlans = (userType) => {
     try {
       const token = sessionStorage.getItem("token");
       if (!token) {
-        throw new Error("Usuário não autenticado.");
+        throw new Error("User not authenticated.");
       }
 
       const response = await axios.post(
-        "http://localhost:7003/api/usuarios/cancelar-plano",
+        `${enterpriseUrl}/api/usuarios/cancelar-plano`,
         {},
         {
           headers: {
@@ -75,7 +78,7 @@ const usePlans = (userType) => {
         }
       );
 
-      toast.success(response.data.message || "Plano cancelado com sucesso!", {
+      toast.success(response.data.message || "Plan successfully canceled!", {
         position: "top-center",
         autoClose: 3000,
         hideProgressBar: true,
@@ -89,7 +92,7 @@ const usePlans = (userType) => {
     } catch (error) {
       console.error("Erro ao cancelar o plano:", error);
       const errorMessage =
-        error.response?.data?.message || "Falha ao cancelar o plano.";
+        error.response?.data?.message || "Failed to cancel the plan.";
       toast.error(errorMessage, {
         position: "top-center",
         autoClose: 3000,

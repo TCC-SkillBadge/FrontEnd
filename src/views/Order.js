@@ -34,7 +34,7 @@ const Orders = () => {
 
       try {
         const response = await axios.post(
-        `${adminUrl}/admin/orders`,
+          `${adminUrl}/admin/orders`,
           { token }, // Enviando o token no corpo da requisição
           {
             headers: {
@@ -62,7 +62,7 @@ const Orders = () => {
     const checkLogin = async () => {
       const token = sessionStorage.getItem("token");
       const userType = sessionStorage.getItem("tipoUsuario");
-  
+
       if (userType === "UA") {
         let userInfoResponse = await axios.get(
           `${adminUrl}/admin/acessa-info`,
@@ -209,7 +209,7 @@ const Orders = () => {
                 <td style={{ textAlign: "center" }}>
                   {order.id_badge && (
                     <Link to={`/workflow/${order.id_request}`}>
-                      <EyeFill className="eye-icon"/>
+                      <EyeFill className="eye-icon" />
                     </Link>
                   )}
                 </td>

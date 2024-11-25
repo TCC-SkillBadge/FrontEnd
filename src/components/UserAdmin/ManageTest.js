@@ -50,7 +50,7 @@ const ManageTest = () => {
     const [savedAlternativesMV, setSavedAlternativesMV] = useState('');
 
     //Definindo conexão com o backend
-    const generalServicesURL = 'https://ms-softskill.azurewebsites.net';
+    const generalServicesURL = process.env.REACT_APP_API_SOFTSKILL;
 
     //URL Local: http://localhost:6004
     //URL Azure: https://ms-softskill.azurewebsites.net
@@ -73,7 +73,7 @@ const ManageTest = () => {
         const altsRAux = JSON.stringify(alternativesR);
         const altsMVAux = JSON.stringify(alternativesMV);
 
-        if(
+        if (
             (
                 questsAux !== savedQuestions ||
                 altsMAux !== savedAlternativesM ||
@@ -86,31 +86,31 @@ const ManageTest = () => {
 
     useEffect(() => {
         window.onbeforeunload = (e) => {
-            if(saved) return;
+            if (saved) return;
 
             e.preventDefault();
             e.returnValue = '';
         };
 
-        return () => { 
+        return () => {
             window.onbeforeunload = null;
         };
     }, [saved]);
 
     const mountPage = () => {
         const fetchSoftSkills = async () => {
-            try{
+            try {
                 const response = (await connectionGeneralServices.get('/softskills/listar')).data;
                 return Promise.resolve(response);
             }
-            catch(error){
+            catch (error) {
                 const msg = handleRequestError(error);
                 return Promise.reject(msg);
             }
         };
 
         const fetchTeste = async (SSs) => {
-            try{
+            try {
                 const response = (await connectionGeneralServices.get('/teste/fetch')).data;
                 const {
                     questoes,
@@ -126,35 +126,35 @@ const ManageTest = () => {
                     SSs
                 });
             }
-            catch(error){
+            catch (error) {
                 const msg = handleRequestError(error);
                 return Promise.reject(msg);
             }
         }
 
         fetchSoftSkills()
-        .then((response) => fetchTeste(response))
-        .then((response) => {
-            const {
-                questoes,
-                alternativasMultiplaEscolha,
-                alternativasRankeamento,
-                alternativasMultiplaEscolhaComValores,
-                SSs
-            } = response;
-            setSoftSkills(() => SSs);
-            setQuestions(() => questoes);
-            setAlternativesM(() => alternativasMultiplaEscolha);
-            setAlternativesR(() => alternativasRankeamento);
-            setAlternativesMV(() => alternativasMultiplaEscolhaComValores);
+            .then((response) => fetchTeste(response))
+            .then((response) => {
+                const {
+                    questoes,
+                    alternativasMultiplaEscolha,
+                    alternativasRankeamento,
+                    alternativasMultiplaEscolhaComValores,
+                    SSs
+                } = response;
+                setSoftSkills(() => SSs);
+                setQuestions(() => questoes);
+                setAlternativesM(() => alternativasMultiplaEscolha);
+                setAlternativesR(() => alternativasRankeamento);
+                setAlternativesMV(() => alternativasMultiplaEscolhaComValores);
 
-            setSavedState(questoes, alternativasMultiplaEscolha, alternativasRankeamento, alternativasMultiplaEscolhaComValores);
-            setFinishedInitialLoading(() => true);
-        })
-        .catch((error) =>
-            setError(() => error)
-        )
-        .finally(() => setLoading(() => false));
+                setSavedState(questoes, alternativasMultiplaEscolha, alternativasRankeamento, alternativasMultiplaEscolhaComValores);
+                setFinishedInitialLoading(() => true);
+            })
+            .catch((error) =>
+                setError(() => error)
+            )
+            .finally(() => setLoading(() => false));
     };
 
     const setSavedState = (quests, altsM, altsR, altsMV) => {
@@ -166,11 +166,11 @@ const ManageTest = () => {
     };
 
     const generateQuestionId = () => {
-        if(questions.length === 0) return 1;
-        else{
+        if (questions.length === 0) return 1;
+        else {
             let max = 0;
-            for(let i = 0; i < questions.length; i++){
-                if(questions[i].id_questao > max){
+            for (let i = 0; i < questions.length; i++) {
+                if (questions[i].id_questao > max) {
                     max = questions[i].id_questao;
                 }
             }
@@ -187,7 +187,7 @@ const ManageTest = () => {
             valor_questao: 0,
             tipo_questao: '',
         };
-        switch(tpQ){
+        switch (tpQ) {
             case 'M':
                 obj.tipo_questao = 'multipla_escolha';
                 break;
@@ -220,7 +220,7 @@ const ManageTest = () => {
         const newQuestions = questions.filter((questao) => questao.id_questao !== idQ);
         setQuestions(() => newQuestions);
 
-        switch(tpQ){
+        switch (tpQ) {
             case 'multipla_escolha':
                 setAlternativesM((currentAlternatives) => currentAlternatives.filter((alt) => alt.id_questao !== idQ));
                 break;
@@ -236,7 +236,7 @@ const ManageTest = () => {
 
     const generateAlternativeId = (idQ, tpQ) => {
         let alternativeOptions;
-        switch(tpQ){
+        switch (tpQ) {
             case 'multipla_escolha':
                 alternativeOptions = alternativesM.filter((alternativa) => alternativa.id_questao === idQ);
                 break;
@@ -248,11 +248,11 @@ const ManageTest = () => {
                 break;
             default:
         };
-        if(alternativeOptions.length === 0) return 1;
-        else{
+        if (alternativeOptions.length === 0) return 1;
+        else {
             let max = 0;
-            for(let i = 0; i < alternativeOptions.length; i++){
-                if(alternativeOptions[i].id_alternativa > max){
+            for (let i = 0; i < alternativeOptions.length; i++) {
+                if (alternativeOptions[i].id_alternativa > max) {
                     max = alternativeOptions[i].id_alternativa;
                 }
             }
@@ -266,7 +266,7 @@ const ManageTest = () => {
             id_alternativa: generateAlternativeId(idQ, tpQ),
             texto_alternativa: '',
         };
-        switch(tpQ){
+        switch (tpQ) {
             case 'multipla_escolha':
                 obj.correta = false;
                 setAlternativesM((oldAlternatives) => [...oldAlternatives, obj]);
@@ -297,7 +297,7 @@ const ManageTest = () => {
     };
 
     const removeAlternative = (idQ, idA, tpQ) => {
-        switch(tpQ){
+        switch (tpQ) {
             case 'multipla_escolha':
                 setAlternativesM((currentAlternatives) => currentAlternatives.filter((alt) => alt.id_questao !== idQ || alt.id_alternativa !== idA));
                 break;
@@ -325,7 +325,7 @@ const ManageTest = () => {
     };
 
     const saveChanges = async () => {
-        if(!doVerifications()) return;
+        if (!doVerifications()) return;
 
         const saving = toast.loading('Saving changes...');
         connectionGeneralServices.post('/teste/gerir', {
@@ -336,44 +336,44 @@ const ManageTest = () => {
             alternativasRankeamento: alternativesR,
             alternativasMultiplaEscolhaComValores: alternativesMV
         })
-        .then(() => {
-            toast.update(saving, {
-                render: 'Changes saved successfully!',
-                type: 'success',
-                isLoading: false,
-                autoClose: 3000,
+            .then(() => {
+                toast.update(saving, {
+                    render: 'Changes saved successfully!',
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: 3000,
+                });
+                setSavedState(questions, alternativesM, alternativesR, alternativesMV);
+            })
+            .catch((error) => {
+                const msg = handleRequestError(error);
+                toast.update(saving, {
+                    render: `${msg}`,
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: 3000,
+                });
             });
-            setSavedState(questions, alternativesM, alternativesR, alternativesMV);
-        })
-        .catch((error) => {
-            const msg = handleRequestError(error);
-            toast.update(saving, {
-                render: `${msg}`,
-                type: 'error',
-                isLoading: false,
-                autoClose: 3000,
-            });
-        });
     };
 
     const doVerifications = () => {
-        for(let i = 0; i < softSkills.length; i++){
+        for (let i = 0; i < softSkills.length; i++) {
             const questsSS = questions.filter((questao) => questao.id_soft_skill === softSkills[i].id_soft_skill);
-            for(let j = 0; j < questsSS.length; j++){
-                if(questsSS[j].enunciado_questao === ''){
-                toast.error(`Soft Skill ${softSkills[i].nome_soft_skill}'s ${j + 1} question has no statement!`, {
-                    autoClose: 5000
-                });
+            for (let j = 0; j < questsSS.length; j++) {
+                if (questsSS[j].enunciado_questao === '') {
+                    toast.error(`Soft Skill ${softSkills[i].nome_soft_skill}'s ${j + 1} question has no statement!`, {
+                        autoClose: 5000
+                    });
                     return false;
                 }
-                if(questsSS[j].valor_questao === 0){
+                if (questsSS[j].valor_questao === 0) {
                     toast.error(`Soft Skill ${softSkills[i].nome_soft_skill}'s ${j + 1} question has no value!`, {
                         autoClose: 5000
                     });
                     return false;
                 }
                 let alts;
-                switch(questsSS[j].tipo_questao){
+                switch (questsSS[j].tipo_questao) {
                     case 'multipla_escolha':
                         alts = alternativesM.filter((alternativa) => alternativa.id_questao === questsSS[j].id_questao);
                         break;
@@ -385,25 +385,25 @@ const ManageTest = () => {
                         break;
                     default:
                 };
-                if(alts.length < 2){
+                if (alts.length < 2) {
                     toast.error(`Soft Skill ${softSkills[i].nome_soft_skill}'s ${j + 1} question needs to have at least 2 alternatives!`, {
                         autoClose: 5000
                     });
                     return false;
                 }
-                for(let k = 0; k < alts.length; k++){
-                    if(alts[k].texto_alternativa === ''){
+                for (let k = 0; k < alts.length; k++) {
+                    if (alts[k].texto_alternativa === '') {
                         toast.error(`The ${k + 1} alternative of Soft Skill ${softSkills[i].nome_soft_skill}'s ${j + 1} question has no text!`, {
                             autoClose: 5000
                         });
                         return false;
                     }
-                    if(questsSS[j].tipo_questao === 'multipla_escolha'){
-                        for(let l = 0; l < alts.length; l++){
-                            if(alts[l].correta){
+                    if (questsSS[j].tipo_questao === 'multipla_escolha') {
+                        for (let l = 0; l < alts.length; l++) {
+                            if (alts[l].correta) {
                                 break;
                             }
-                            if(l === alts.length - 1){
+                            if (l === alts.length - 1) {
                                 toast.error(`Soft Skill ${softSkills[i].nome_soft_skill}'s ${j + 1} question has no right answer!`, {
                                     autoClose: 5000
                                 });
@@ -420,7 +420,7 @@ const ManageTest = () => {
     const handleStatementChange = (val, idQ) => {
         const newQuestions = [...questions];
         newQuestions[
-            newQuestions.findIndex((questao) => 
+            newQuestions.findIndex((questao) =>
                 questao.id_questao === idQ
             )
         ].enunciado_questao = val;
@@ -439,7 +439,7 @@ const ManageTest = () => {
 
     const handleChangeTextoAlternativa = (val, idQ, idA, tpQ) => {
         let newAlternatives, func;
-        switch(tpQ){
+        switch (tpQ) {
             case 'multipla_escolha':
                 newAlternatives = [...alternativesM];
                 func = setAlternativesM;
@@ -455,7 +455,7 @@ const ManageTest = () => {
             default:
         };
         newAlternatives[
-            newAlternatives.findIndex((alternativa) => 
+            newAlternatives.findIndex((alternativa) =>
                 alternativa.id_questao === idQ && alternativa.id_alternativa === idA
             )
         ].texto_alternativa = val;
@@ -484,30 +484,30 @@ const ManageTest = () => {
 
     const handleCorrectAlternativeChange = (idQ, idA) => {
         const newAlternativesM = [...alternativesM];
-        for(let i = 0; i < newAlternativesM.length; i++){
-            if((newAlternativesM[i].id_questao === idQ) && (newAlternativesM[i].correta)){
+        for (let i = 0; i < newAlternativesM.length; i++) {
+            if ((newAlternativesM[i].id_questao === idQ) && (newAlternativesM[i].correta)) {
                 newAlternativesM[i].correta = false;
             }
         }
         const alt = newAlternativesM[
-                        newAlternativesM.findIndex((alternativa) =>
-                            alternativa.id_questao === idQ && alternativa.id_alternativa === idA
-                        )
-                    ];
+            newAlternativesM.findIndex((alternativa) =>
+                alternativa.id_questao === idQ && alternativa.id_alternativa === idA
+            )
+        ];
         alt.correta = true;
         setAlternativesM(() => newAlternativesM);
     };
 
     const handleRequestError = (error) => {
         let msg = '';
-        if(error.response){
+        if (error.response) {
             msg = error.response.data.message
-            if(error.response.data.type === 'TokenExpired'){
+            if (error.response.data.type === 'TokenExpired') {
                 onbeforeunload = null;
                 jwtExpirationHandler();
             }
         }
-        else if(error.request) msg = 'Error while trying to access server!'
+        else if (error.request) msg = 'Error while trying to access server!'
         return msg;
     };
 
@@ -517,75 +517,77 @@ const ManageTest = () => {
         <div>
             <div className='m-test-box default-border-image'>
                 <h1>Proficiency Test Management</h1>
-                <Divider/>
+                <Divider />
                 <div className='flex justify-content-center'>
-                        <ErrorMessage msg={error}/>
-                        <Loading show={loading} msg='Loading Test...'/>
-                    </div>
+                    <ErrorMessage msg={error} />
+                    <Loading show={loading} msg='Loading Test...' />
+                </div>
                 <div>
                     <Accordion multiple>
                         {
                             softSkills.map((softSkill) => {
                                 return (
                                     <AccordionTab
-                                    key={softSkill.id_soft_skill}
-                                    header={softSkill.nome_soft_skill}
-                                    pt={{
-                                        headerAction: {className: 'accordion-h'},
-                                        headerTitle: {style: {
-                                            textTransform: 'uppercase',
-                                            fontSize: '1.5rem',
-                                        }},
-                                        content: {className: 'accordion-c'}
-                                    }}>
+                                        key={softSkill.id_soft_skill}
+                                        header={softSkill.nome_soft_skill}
+                                        pt={{
+                                            headerAction: { className: 'accordion-h' },
+                                            headerTitle: {
+                                                style: {
+                                                    textTransform: 'uppercase',
+                                                    fontSize: '1.5rem',
+                                                }
+                                            },
+                                            content: { className: 'accordion-c' }
+                                        }}>
                                         <Quests
-                                        questoes={questions.filter((questao) => questao.id_soft_skill === softSkill.id_soft_skill)}
-                                        alternativesM={alternativesM}
-                                        alternativesR={alternativesR}
-                                        alternativesMV={alternativesMV}
-                                        addAlternative={addAlternative}
-                                        confirmRemoveQuestion={confirmRemoveQuestion}
-                                        confirmRemoveAlternative={confirmRemoveAlternative}
-                                        handleStatementChange={handleStatementChange}
-                                        handleQuestionValueChange={handleQuestionValueChange}
-                                        handleChangeTextoAlternativa={handleChangeTextoAlternativa}
-                                        handleCorrectAlternativeChange={handleCorrectAlternativeChange}
-                                        handleAlternativeValueChange={handleAlternativeValueChange}
-                                        handleAlternativePercentageChange={handleAlternativePercentageChange}/>
+                                            questoes={questions.filter((questao) => questao.id_soft_skill === softSkill.id_soft_skill)}
+                                            alternativesM={alternativesM}
+                                            alternativesR={alternativesR}
+                                            alternativesMV={alternativesMV}
+                                            addAlternative={addAlternative}
+                                            confirmRemoveQuestion={confirmRemoveQuestion}
+                                            confirmRemoveAlternative={confirmRemoveAlternative}
+                                            handleStatementChange={handleStatementChange}
+                                            handleQuestionValueChange={handleQuestionValueChange}
+                                            handleChangeTextoAlternativa={handleChangeTextoAlternativa}
+                                            handleCorrectAlternativeChange={handleCorrectAlternativeChange}
+                                            handleAlternativeValueChange={handleAlternativeValueChange}
+                                            handleAlternativePercentageChange={handleAlternativePercentageChange} />
                                         <div className='flex flex-row justify-content-center'>
                                             <div>
                                                 <Dropdown>
                                                     <Dropdown.Toggle
-                                                    id={`add-quest-btn-[${softSkill.nome_soft_skill}]`}
-                                                    as='button'
-                                                    className='dbuttons dbuttons-secondary'
-                                                    style={{
-                                                        padding: '12px',
-                                                        fontSize: 'larger',
-                                                    }}>
-                                                        <i className='pi pi-plus mr-2'/> Add Question
+                                                        id={`add-quest-btn-[${softSkill.nome_soft_skill}]`}
+                                                        as='button'
+                                                        className='dbuttons dbuttons-secondary'
+                                                        style={{
+                                                            padding: '12px',
+                                                            fontSize: 'larger',
+                                                        }}>
+                                                        <i className='pi pi-plus mr-2' /> Add Question
                                                     </Dropdown.Toggle>
-                                                    <Dropdown.Menu style={{backgroundColor: '#28213f', border: '2px solid white'}}>
+                                                    <Dropdown.Menu style={{ backgroundColor: '#28213f', border: '2px solid white' }}>
                                                         <Dropdown.Item
-                                                        id={`add-quest-btn-M-[${softSkill.nome_soft_skill}]`}
-                                                        className='dropdown-buttons'
-                                                        as='button'
-                                                        onClick={() => addQuestion(softSkill.id_soft_skill, 'M')}>
-                                                            <i className='pi pi-plus mr-2'/> Multiple Choices
+                                                            id={`add-quest-btn-M-[${softSkill.nome_soft_skill}]`}
+                                                            className='dropdown-buttons'
+                                                            as='button'
+                                                            onClick={() => addQuestion(softSkill.id_soft_skill, 'M')}>
+                                                            <i className='pi pi-plus mr-2' /> Multiple Choices
                                                         </Dropdown.Item>
                                                         <Dropdown.Item
-                                                        id={`add-quest-btn-R-[${softSkill.nome_soft_skill}]`}
-                                                        className='dropdown-buttons'
-                                                        as='button'
-                                                        onClick={() => addQuestion(softSkill.id_soft_skill, 'R')}>
-                                                            <i className='pi pi-plus mr-2'/> Ranking
+                                                            id={`add-quest-btn-R-[${softSkill.nome_soft_skill}]`}
+                                                            className='dropdown-buttons'
+                                                            as='button'
+                                                            onClick={() => addQuestion(softSkill.id_soft_skill, 'R')}>
+                                                            <i className='pi pi-plus mr-2' /> Ranking
                                                         </Dropdown.Item>
                                                         <Dropdown.Item
-                                                        id={`add-quest-btn-MV-[${softSkill.nome_soft_skill}]`}
-                                                        className='dropdown-buttons'
-                                                        as='button'
-                                                        onClick={() => addQuestion(softSkill.id_soft_skill, 'MV')}>
-                                                            <i className='pi pi-plus mr-2'/> Multiple Choices with Values
+                                                            id={`add-quest-btn-MV-[${softSkill.nome_soft_skill}]`}
+                                                            className='dropdown-buttons'
+                                                            as='button'
+                                                            onClick={() => addQuestion(softSkill.id_soft_skill, 'MV')}>
+                                                            <i className='pi pi-plus mr-2' /> Multiple Choices with Values
                                                         </Dropdown.Item>
                                                     </Dropdown.Menu>
                                                 </Dropdown>
@@ -597,20 +599,20 @@ const ManageTest = () => {
                         }
                     </Accordion>
                     {
-                        showSaveButton((style, item) => 
+                        showSaveButton((style, item) =>
                             item &&
                             <animated.div style={style}>
                                 <div className='flex justify-content-center mt-4 mb-3'>
                                     <button
-                                    id='save-changes-btn'
-                                    className='dbuttons dbuttons-primary'
-                                    onClick={e => confirmSaveChanges(e)}
-                                    style={{
-                                        width: '25%',
-                                        minWidth: '350px',
-                                        fontSize: 'calc(0.8rem + 0.8vw)',
-                                        fontWeight: 'bold'
-                                    }}>
+                                        id='save-changes-btn'
+                                        className='dbuttons dbuttons-primary'
+                                        onClick={e => confirmSaveChanges(e)}
+                                        style={{
+                                            width: '25%',
+                                            minWidth: '350px',
+                                            fontSize: 'calc(0.8rem + 0.8vw)',
+                                            fontWeight: 'bold'
+                                        }}>
                                         Save Changes
                                     </button>
                                 </div>
@@ -623,20 +625,20 @@ const ManageTest = () => {
             {/* Messages and confirmation parts */}
 
             <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"/>
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" />
 
-            <ConfirmPopup/>
+            <ConfirmPopup />
 
-            <ConfirmDialog/>
+            <ConfirmDialog />
         </div>
     );
 };
@@ -645,40 +647,40 @@ const Quests = (props) => {
     const transition = useTransition(props.questoes, springAnimationsConfig);
 
     const buildAlternatives = (item) => {
-        switch(item.tipo_questao){
+        switch (item.tipo_questao) {
             case 'multipla_escolha':
                 return (
                     <AlternativesM
-                    alternativesM={props.alternativesM.filter((alternativa) => alternativa.id_questao === item.id_questao)}
-                    handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
-                    handleCorrectAlternativeChange={props.handleCorrectAlternativeChange}
-                    confirmRemoveAlternative={props.confirmRemoveAlternative}
-                    tpQ={item.tipo_questao}/>
+                        alternativesM={props.alternativesM.filter((alternativa) => alternativa.id_questao === item.id_questao)}
+                        handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
+                        handleCorrectAlternativeChange={props.handleCorrectAlternativeChange}
+                        confirmRemoveAlternative={props.confirmRemoveAlternative}
+                        tpQ={item.tipo_questao} />
                 );
             case 'rankeamento':
                 return (
                     <AlternativesR
-                    alternativesR={props.alternativesR.filter((alternativa) => alternativa.id_questao === item.id_questao)}
-                    handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
-                    handleAlternativeValueChange={props.handleAlternativeValueChange}
-                    confirmRemoveAlternative={props.confirmRemoveAlternative}
-                    tpQ={item.tipo_questao}/>
+                        alternativesR={props.alternativesR.filter((alternativa) => alternativa.id_questao === item.id_questao)}
+                        handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
+                        handleAlternativeValueChange={props.handleAlternativeValueChange}
+                        confirmRemoveAlternative={props.confirmRemoveAlternative}
+                        tpQ={item.tipo_questao} />
                 );
             case 'multipla_escolha_com_valores':
                 return (
                     <AlternativesMV
-                    alternativesMV={props.alternativesMV.filter((alternativa) => alternativa.id_questao === item.id_questao)}
-                    handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
-                    handleAlternativePercentageChange={props.handleAlternativePercentageChange}
-                    confirmRemoveAlternative={props.confirmRemoveAlternative}
-                    tpQ={item.tipo_questao}/>
+                        alternativesMV={props.alternativesMV.filter((alternativa) => alternativa.id_questao === item.id_questao)}
+                        handleChangeTextoAlternativa={props.handleChangeTextoAlternativa}
+                        handleAlternativePercentageChange={props.handleAlternativePercentageChange}
+                        confirmRemoveAlternative={props.confirmRemoveAlternative}
+                        tpQ={item.tipo_questao} />
                 );
             default:
         };
     };
 
     const questionTypeValue = (tpQ) => {
-        switch(tpQ){
+        switch (tpQ) {
             case 'multipla_escolha':
                 return 'Multiple Choices';
             case 'rankeamento':
@@ -691,8 +693,8 @@ const Quests = (props) => {
 
     const questionTypeValueDisplay = (item, position) => {
         const defineMaxWidth = () => {
-            if(position === 2){
-                switch(item.tipo_questao){
+            if (position === 2) {
+                switch (item.tipo_questao) {
                     case 'multipla_escolha':
                         return '23rem';
                     case 'rankeamento':
@@ -708,42 +710,42 @@ const Quests = (props) => {
 
         return (
             <div style={{ maxWidth: defineMaxWidth() }}>
-               <div className='p-inputgroup mb-2'>
+                <div className='p-inputgroup mb-2'>
                     <span className='p-inputgroup-addon'>
                         Question Type:
                     </span>
                     <InputText
-                    id={`question-type-[${item.id_questao}]-${position}`}
-                    className='text-center'
-                    value={questionTypeValue(item.tipo_questao)}
-                    style={{
-                        width: 'fit-content',
-                        fontWeight: 'bold'
-                    }}
-                    disabled/>
+                        id={`question-type-[${item.id_questao}]-${position}`}
+                        className='text-center'
+                        value={questionTypeValue(item.tipo_questao)}
+                        style={{
+                            width: 'fit-content',
+                            fontWeight: 'bold'
+                        }}
+                        disabled />
                 </div>
                 <div className='p-inputgroup'>
                     <span className='p-inputgroup-addon'>
                         Question Value:
                     </span>
                     <InputNumber
-                    id={`question-value-[${item.id_questao}]-${position}`}
-                    locale='pt-BR'
-                    maxFractionDigits={0}
-                    min={0}
-                    allowEmpty={false}
-                    showButtons
-                    buttonLayout='horizontal'
-                    decrementButtonIcon='pi pi-minus'
-                    incrementButtonIcon='pi pi-plus'
-                    value={item.valor_questao}
-                    onValueChange={e => props.handleQuestionValueChange(e.value, item.id_questao)}
-                    pt={{
-                        root: {className: 'flex flex-row'},
-                        incrementButton: {className: 'dbuttons dbuttons-secondary'},
-                        decrementButton: {className: 'dbuttons dbuttons-secondary'},
-                    }}/>
-                </div> 
+                        id={`question-value-[${item.id_questao}]-${position}`}
+                        locale='pt-BR'
+                        maxFractionDigits={0}
+                        min={0}
+                        allowEmpty={false}
+                        showButtons
+                        buttonLayout='horizontal'
+                        decrementButtonIcon='pi pi-minus'
+                        incrementButtonIcon='pi pi-plus'
+                        value={item.valor_questao}
+                        onValueChange={e => props.handleQuestionValueChange(e.value, item.id_questao)}
+                        pt={{
+                            root: { className: 'flex flex-row' },
+                            incrementButton: { className: 'dbuttons dbuttons-secondary' },
+                            decrementButton: { className: 'dbuttons dbuttons-secondary' },
+                        }} />
+                </div>
             </div>
         )
     };
@@ -754,26 +756,26 @@ const Quests = (props) => {
                 transition((style, item) =>
                     item &&
                     <animated.div
-                    style={style}
-                    className='m-quest-box'
-                    key={item.id_questao}>
+                        style={style}
+                        className='m-quest-box'
+                        key={item.id_questao}>
                         <div className='flex justify-content-between'>
                             <h3>Question {props.questoes.findIndex(questao => questao.id_questao === item.id_questao) + 1}</h3>
                             <button
-                            id={`remove-quest-btn-[${item.id_questao}]`}
-                            className='dbuttons dbuttons-danger'
-                            onClick={e => props.confirmRemoveQuestion(e, item.id_questao, item.tipo_questao)}>
+                                id={`remove-quest-btn-[${item.id_questao}]`}
+                                className='dbuttons dbuttons-danger'
+                                onClick={e => props.confirmRemoveQuestion(e, item.id_questao, item.tipo_questao)}>
                                 X
                             </button>
                         </div>
                         <div className='mt-4 mb-4'>
                             <div className='flex flex-row align-items-center mb-2'>
                                 <div className='flex-1 mr-3'>
-                                    <label style={{fontSize: '1.3rem'}}><b>Statement</b></label>
+                                    <label style={{ fontSize: '1.3rem' }}><b>Statement</b></label>
                                     <InputTextarea
-                                    id={`question-statement-[${item.id_questao}]`}
-                                    value={item.enunciado_questao}
-                                    onChange={e => props.handleStatementChange(e.target.value, item.id_questao)}/>  
+                                        id={`question-statement-[${item.id_questao}]`}
+                                        value={item.enunciado_questao}
+                                        onChange={e => props.handleStatementChange(e.target.value, item.id_questao)} />
                                 </div>
                                 <div className=' xl:block lg:block md:hidden sm:hidden'>
                                     {questionTypeValueDisplay(item, 1)}
@@ -788,10 +790,10 @@ const Quests = (props) => {
                         </div>
                         <div className='flex justify-content-center'>
                             <button
-                            id={`add-alt-btn-[${item.id_questao}]`}
-                            className='dbuttons dbuttons-secondary pr-3 pl-3'
-                            onClick={() => props.addAlternative(item.id_questao, item.tipo_questao)}>
-                                <i className='pi pi-plus'/> Add Alternative
+                                id={`add-alt-btn-[${item.id_questao}]`}
+                                className='dbuttons dbuttons-secondary pr-3 pl-3'
+                                onClick={() => props.addAlternative(item.id_questao, item.tipo_questao)}>
+                                <i className='pi pi-plus' /> Add Alternative
                             </button>
                         </div>
                     </animated.div>
@@ -805,14 +807,14 @@ const AlternativesM = (props) => {
     const transition = useTransition(props.alternativesM, springAnimationsConfig);
 
     const correctRadioButton = (item) => {
-        return(
+        return (
             <div>
                 <RadioButton
-                id={`radio-btn-correct-[${item.id_questao}]:[${item.id_alternativa}]-1`}
-                className='mr-2'
-                inputId={`rbCorreta-${item.id_questao}`}
-                checked={item.correta}
-                onChange={() => props.handleCorrectAlternativeChange(item.id_questao, item.id_alternativa)}/>
+                    id={`radio-btn-correct-[${item.id_questao}]:[${item.id_alternativa}]-1`}
+                    className='mr-2'
+                    inputId={`rbCorreta-${item.id_questao}`}
+                    checked={item.correta}
+                    onChange={() => props.handleCorrectAlternativeChange(item.id_questao, item.id_alternativa)} />
                 <label htmlFor={`rbCorreta-${item.id_questao}`}>Correct</label>
             </div>
         )
@@ -824,29 +826,29 @@ const AlternativesM = (props) => {
                 transition((style, item) =>
                     item &&
                     <animated.div
-                    style={style}
-                    className='mb-4'
-                    key={item.id_alternativa}>
+                        style={style}
+                        className='mb-4'
+                        key={item.id_alternativa}>
                         <div className='flex flex-row align-items-center mb-3'>
-                            <i className='pi pi-circle mr-4'/>
+                            <i className='pi pi-circle mr-4' />
                             <InputTextarea
-                            id={`alternative-text-[${item.id_questao}]-[${item.id_alternativa}]`}
-                            className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
-                            value={item.texto_alternativa}
-                            onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
+                                id={`alternative-text-[${item.id_questao}]-[${item.id_alternativa}]`}
+                                className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
+                                value={item.texto_alternativa}
+                                onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)} />
                             <div className='mr-2 xl:block lg:block md:hidden sm:hidden mr-1'>
                                 {correctRadioButton(item)}
                             </div>
                             <button
-                            id={`remove-alt-btn-[${item.id_questao}]:[${item.id_alternativa}]`}
-                            className='dbuttons dbuttons-danger ml-3'
-                            onClick={e => props.confirmRemoveAlternative(e, item.id_questao, item.id_alternativa, props.tpQ)}>
+                                id={`remove-alt-btn-[${item.id_questao}]:[${item.id_alternativa}]`}
+                                className='dbuttons dbuttons-danger ml-3'
+                                onClick={e => props.confirmRemoveAlternative(e, item.id_questao, item.id_alternativa, props.tpQ)}>
                                 X
                             </button>
                         </div>
                         <div className='xl:hidden lg:hidden md:block sm:block'>
                             <div className='flex flex-row align-items-center'>
-                                <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
+                                <i className='pi pi-circle-on mr-4' style={{ color: 'transparent' }} />
                                 {correctRadioButton(item)}
                             </div>
                         </div>
@@ -861,30 +863,30 @@ const AlternativesMV = (props) => {
     const transition = useTransition(props.alternativesMV, springAnimationsConfig);
 
     const percentageInput = (item) => {
-        return(
+        return (
             <div className='p-inputgroup max-w-23rem'>
                 <span className='p-inputgroup-addon'>
                     Score Percentage:
                 </span>
                 <InputNumber
-                id={`alternative-percentage-[${item.id_questao}]:[${item.id_alternativa}]-2`}
-                locale='en-US'
-                maxFractionDigits={0}
-                min={0}
-                max={100}
-                suffix='%'
-                showButtons
-                buttonLayout='horizontal'
-                decrementButtonIcon='pi pi-minus'
-                incrementButtonIcon='pi pi-plus'
-                allowEmpty={false}
-                value={item.porcentagem}
-                onValueChange={e => props.handleAlternativePercentageChange(e.value, item.id_questao, item.id_alternativa)}
-                pt={{
-                    root: {className: 'flex flex-row'},
-                    incrementButton: {className: 'dbuttons dbuttons-secondary'},
-                    decrementButton: {className: 'dbuttons dbuttons-secondary'},
-                }}/>
+                    id={`alternative-percentage-[${item.id_questao}]:[${item.id_alternativa}]-2`}
+                    locale='en-US'
+                    maxFractionDigits={0}
+                    min={0}
+                    max={100}
+                    suffix='%'
+                    showButtons
+                    buttonLayout='horizontal'
+                    decrementButtonIcon='pi pi-minus'
+                    incrementButtonIcon='pi pi-plus'
+                    allowEmpty={false}
+                    value={item.porcentagem}
+                    onValueChange={e => props.handleAlternativePercentageChange(e.value, item.id_questao, item.id_alternativa)}
+                    pt={{
+                        root: { className: 'flex flex-row' },
+                        incrementButton: { className: 'dbuttons dbuttons-secondary' },
+                        decrementButton: { className: 'dbuttons dbuttons-secondary' },
+                    }} />
             </div>
         )
     }
@@ -895,30 +897,30 @@ const AlternativesMV = (props) => {
                 transition((style, item) =>
                     item &&
                     <animated.div
-                    style={style}
-                    className='mb-4'
-                    key={item.id_alternativa}>
+                        style={style}
+                        className='mb-4'
+                        key={item.id_alternativa}>
                         <div className='flex flex-row align-items-center mb-2'>
-                            <i className='pi pi-circle mr-4'/>
+                            <i className='pi pi-circle mr-4' />
                             <InputTextarea
-                            id={`alternative-text-[${item.id_questao}]:[${item.id_alternativa}]`}
-                            className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
-                            value={item.texto_alternativa}
-                            onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
+                                id={`alternative-text-[${item.id_questao}]:[${item.id_alternativa}]`}
+                                className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
+                                value={item.texto_alternativa}
+                                onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)} />
                             <div className='flex mr-2 xl:block lg:hidden md:hidden sm:hidden'>
                                 {percentageInput(item)}
                             </div>
                             <button
-                            id={`remove-alt-btn-[${item.id_questao}]-[${item.id_alternativa}]`}
-                            className='dbuttons dbuttons-danger ml-3'
-                            onClick={e => props.confirmRemoveAlternative(e, item.id_questao, item.id_alternativa, props.tpQ)}>
+                                id={`remove-alt-btn-[${item.id_questao}]-[${item.id_alternativa}]`}
+                                className='dbuttons dbuttons-danger ml-3'
+                                onClick={e => props.confirmRemoveAlternative(e, item.id_questao, item.id_alternativa, props.tpQ)}>
                                 X
                             </button>
                         </div>
                         <div className='xl:hidden lg:block md:block sm:block'>
                             <div className='flex flex-row align-items-center'>
-                               <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
-                               {percentageInput(item)}
+                                <i className='pi pi-circle-on mr-4' style={{ color: 'transparent' }} />
+                                {percentageInput(item)}
                             </div>
                         </div>
                     </animated.div>
@@ -932,28 +934,28 @@ const AlternativesR = (props) => {
     const transition = useTransition(props.alternativesR, springAnimationsConfig);
 
     const valueInput = (item) => {
-        return(
+        return (
             <div className='p-inputgroup max-w-21rem'>
                 <span className='p-inputgroup-addon'>
                     Alternative Value:
                 </span>
                 <InputNumber
-                id={`alternative-value-[${item.id_questao}]:[${item.id_alternativa}]-1`}
-                locale='en-US'
-                maxFractionDigits={0}
-                min={0}
-                allowEmpty={false}
-                showButtons
-                buttonLayout='horizontal'
-                decrementButtonIcon='pi pi-minus'
-                incrementButtonIcon='pi pi-plus'
-                value={item.valor_alternativa}
-                onValueChange={e => props.handleAlternativeValueChange(e.value, item.id_questao, item.id_alternativa)}
-                pt={{
-                    root: {className: 'flex flex-row'},
-                    incrementButton: {className: 'dbuttons dbuttons-secondary'},
-                    decrementButton: {className: 'dbuttons dbuttons-secondary'},
-                }}/>
+                    id={`alternative-value-[${item.id_questao}]:[${item.id_alternativa}]-1`}
+                    locale='en-US'
+                    maxFractionDigits={0}
+                    min={0}
+                    allowEmpty={false}
+                    showButtons
+                    buttonLayout='horizontal'
+                    decrementButtonIcon='pi pi-minus'
+                    incrementButtonIcon='pi pi-plus'
+                    value={item.valor_alternativa}
+                    onValueChange={e => props.handleAlternativeValueChange(e.value, item.id_questao, item.id_alternativa)}
+                    pt={{
+                        root: { className: 'flex flex-row' },
+                        incrementButton: { className: 'dbuttons dbuttons-secondary' },
+                        decrementButton: { className: 'dbuttons dbuttons-secondary' },
+                    }} />
             </div>
         )
     };
@@ -964,29 +966,29 @@ const AlternativesR = (props) => {
                 transition((style, item) =>
                     item &&
                     <animated.div
-                    className=' mb-4'
-                    style={style}
-                    key={item.id_alternativa}>
+                        className=' mb-4'
+                        style={style}
+                        key={item.id_alternativa}>
                         <div className='flex flex-row align-items-center mb-2'>
-                            <i className='pi pi-circle mr-4'/>
+                            <i className='pi pi-circle mr-4' />
                             <InputTextarea
-                            id={`alternative-text-[${item.id_questao}]:[${item.id_alternativa}]`}
-                            className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
-                            value={item.texto_alternativa}
-                            onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)}/>
+                                id={`alternative-text-[${item.id_questao}]:[${item.id_alternativa}]`}
+                                className='xl:w-6 lg:w-6 md:w-8 sm:w-8 mr-3'
+                                value={item.texto_alternativa}
+                                onChange={e => props.handleChangeTextoAlternativa(e.target.value, item.id_questao, item.id_alternativa, props.tpQ)} />
                             <div className='flex mr-2 xl:block lg:hidden md:hidden sm:hidden'>
                                 {valueInput(item)}
                             </div>
                             <button
-                            id={`remove-alt-btn-[${item.id_questao}]:[${item.id_alternativa}]`}
-                            className='dbuttons dbuttons-danger ml-3'
-                            onClick={e => props.confirmRemoveAlternative(e, item.id_questao, item.id_alternativa, props.tpQ)}>
+                                id={`remove-alt-btn-[${item.id_questao}]:[${item.id_alternativa}]`}
+                                className='dbuttons dbuttons-danger ml-3'
+                                onClick={e => props.confirmRemoveAlternative(e, item.id_questao, item.id_alternativa, props.tpQ)}>
                                 X
                             </button>
                         </div>
                         <div className='xl:hidden lg:block md:block sm:block'>
                             <div className='flex flex-row align-items-center'>
-                                <i className='pi pi-circle-on mr-4' style={{color: 'transparent'}}/>
+                                <i className='pi pi-circle-on mr-4' style={{ color: 'transparent' }} />
                                 {valueInput(item)}
                             </div>
                         </div>

@@ -14,20 +14,20 @@ import { jwtExpirationHandler } from '../utils/general-functions/JWTExpirationHa
 import '../styles/GeneralSearch.css';
 import '../styles/GlobalStylings.css';
 
-const commonUserURL = 'http://localhost:7000/api';
-const enterpriseUserURL = 'http://localhost:7003/api';
-const badgeURL = 'http://localhost:7001/badges';
+const commonUrl = process.env.REACT_APP_API_COMUM;
+const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+const badgeUrl = process.env.REACT_APP_API_BADGE;
 
 const connectionCommonUser = axios.create({
-  baseURL: commonUserURL,
+    baseURL: commonUrl,
 });
 
 const connectionEnterpriseUser = axios.create({
-  baseURL: enterpriseUserURL,
+    baseURL: enterpriseUrl,
 });
 
 const connectionBadge = axios.create({
-    baseURL: badgeURL,
+    baseURL: badgeUrl,
 });
 
 export const GeneralSearch = () => {
@@ -37,9 +37,9 @@ export const GeneralSearch = () => {
     const [token, _setToken] = useState(sessionStorage.getItem('token'));
     const [userInfo, _setUserInfo] = useState(JSON.parse(sessionStorage.getItem('userInfo')));
     const [userEmail, _setUserEmail] = useState(() => {
-        if(userInfo.email) return userInfo.email;
-        if(userInfo.email_comercial) return userInfo.email_comercial;
-        if(userInfo.email_admin) return userInfo.email_admin;
+        if (userInfo.email) return userInfo.email;
+        if (userInfo.email_comercial) return userInfo.email_comercial;
+        if (userInfo.email_admin) return userInfo.email_admin;
     });
 
     const [search, _setSearch] = useState(location.state);
@@ -64,32 +64,32 @@ export const GeneralSearch = () => {
 
         //Encontrando os usuários comuns e empresariais
         let UCResponse = [], UEResponse = [];
-        try{
+        try {
             UCResponse = (await connectionCommonUser.get('/find-users', {
                 headers: { Authorization: `Bearer ${token}` },
-                params: { 
+                params: {
                     search,
                     researcher: userEmail,
                 },
             })).data;
             UEResponse = (await connectionEnterpriseUser.get('/find-users', {
                 headers: { Authorization: `Bearer ${token}` },
-                params: { 
-                  search,
-                  researcher: userEmail,
+                params: {
+                    search,
+                    researcher: userEmail,
                 },
             })).data;
         }
-        catch(err){
+        catch (err) {
             const msg = handleRequestError(err);
-            if(msg) toast.error(msg);
+            if (msg) toast.error(msg);
             console.log("Error: ", err);
         }
         //-----------------------------------------------------
 
         //Encontrando os badges
         let badgeResponseAux = [];
-        try{
+        try {
             badgeResponseAux = (await connectionBadge.get('/consult-general', {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
@@ -98,25 +98,25 @@ export const GeneralSearch = () => {
                 },
             })).data;
         }
-        catch(err){
+        catch (err) {
             console.log("Error: ", err);
         }
 
         console.log("BadgeResponseAux: ", badgeResponseAux);
 
         const badgeResponse = [];
-        for(let i = 0; i < badgeResponseAux.length; i++){
+        for (let i = 0; i < badgeResponseAux.length; i++) {
             let razao_social;
-            try{
+            try {
                 razao_social = (await connectionEnterpriseUser.get('/find-users', {
                     headers: { Authorization: `Bearer ${token}` },
-                    params: { 
-                      search: badgeResponseAux[i].institution,
-                      researcher: userEmail,
+                    params: {
+                        search: badgeResponseAux[i].institution,
+                        researcher: userEmail,
                     },
                 })).data[0].razao_social;
             }
-            catch(err){
+            catch (err) {
                 console.log("Error: ", err);
             }
             console.log("Razao Social: ", razao_social);
@@ -144,17 +144,17 @@ export const GeneralSearch = () => {
 
     const buildResults = () => {
         return results.map((result) => {
-            if(result.email){
+            if (result.email) {
                 const encodedEmail = btoa(result.email);
                 return (
                     <div className='general-results-container' key={result.email}>
                         <div className='flex flex-row align-items-center mb-3'>
                             <img
-                            src={result.imageUrl ? result.imageUrl : '/default-avatar.png'}
-                            alt='User'
-                            className='general-search-user-image'
-                            width={45}
-                            height={45}/>
+                                src={result.imageUrl ? result.imageUrl : '/default-avatar.png'}
+                                alt='User'
+                                className='general-search-user-image'
+                                width={45}
+                                height={45} />
                             <h1>{result.username ? result.username : 'Username'}</h1>
                         </div>
                         <div className='flex flex-row'>
@@ -163,27 +163,27 @@ export const GeneralSearch = () => {
                         </div>
                         <div className='flex flex-row justify-content-center mt-3'>
                             <Link
-                            className='redirect-link'
-                            to={`http://localhost:3000/public-profile/${encodedEmail}`}
-                            target="_blank"
-                            rel="noopener noreferrer">
+                                className='redirect-link'
+                                to={`http://localhost:3000/public-profile/${encodedEmail}`}
+                                target="_blank"
+                                rel="noopener noreferrer">
                                 View Profile
                             </Link>
                         </div>
                     </div>
                 );
             }
-            else if(result.email_comercial){
+            else if (result.email_comercial) {
                 const encodedEmail = btoa(result.email_comercial);
                 return (
                     <div className='general-results-container' key={result.email_comercial}>
                         <div className='flex flex-row align-items-center mb-3'>
                             <img
-                            src={result.imageUrl ? result.imageUrl : '/default-avatar.png'}
-                            alt='User'
-                            className='general-search-user-image'
-                            width={45}
-                            height={45}/>
+                                src={result.imageUrl ? result.imageUrl : '/default-avatar.png'}
+                                alt='User'
+                                className='general-search-user-image'
+                                width={45}
+                                height={45} />
                             <h1>{result.username ? result.username : 'Username'}</h1>
                         </div>
                         <div className='flex flex-row'>
@@ -192,32 +192,32 @@ export const GeneralSearch = () => {
                         </div>
                         <div className='flex flex-row justify-content-center mt-3'>
                             <Link
-                            className='redirect-link'
-                            to={`http://localhost:3000/public-profile-enterprise/${encodedEmail}`}
-                            target="_blank"
-                            rel="noopener noreferrer">
+                                className='redirect-link'
+                                to={`http://localhost:3000/public-profile-enterprise/${encodedEmail}`}
+                                target="_blank"
+                                rel="noopener noreferrer">
                                 View Profile
                             </Link>
                         </div>
                     </div>
                 );
             }
-            else if(result.id_badge){
+            else if (result.id_badge) {
                 return (
                     <div className='general-search-badge-results-container' key={result.id_badge}>
                         <img
-                        src={result.image_url}
-                        alt='Badge'
-                        className='general-search-badge-image'
-                        width={400}
-                        height={400}/>
+                            src={result.image_url}
+                            alt='Badge'
+                            className='general-search-badge-image'
+                            width={400}
+                            height={400} />
                         <h1>{result.name_badge ? result.name_badge : 'Badge Name'}</h1>
                         <div className='flex flex-row justify-content-center mt-3'>
                             <Link
-                            className='redirect-link'
-                            to={`http://localhost:3000/badge-public-display/${result.id_badge}/${result.razao_social}`}
-                            target="_blank"
-                            rel="noopener noreferrer">
+                                className='redirect-link'
+                                to={`http://localhost:3000/badge-public-display/${result.id_badge}/${result.razao_social}`}
+                                target="_blank"
+                                rel="noopener noreferrer">
                                 View Details
                             </Link>
                         </div>
@@ -228,25 +228,25 @@ export const GeneralSearch = () => {
     };
 
     const handleSearch = () => {
-        if(searchAux === '') return;
+        if (searchAux === '') return;
         navigate('/general-search', { state: searchAux });
     };
 
     const handleRequestError = (error) => {
         console.log("Error in handleRequestError: ", error);
         let msg = '';
-        if(error.response){
+        if (error.response) {
             msg = error.response.data.message
-            if(
+            if (
                 (error.response.data.type === 'TokenExpired')
                 ||
                 (error.response.data.name === 'TokenExpiredError')
-            ){
+            ) {
                 jwtExpirationHandler();
                 return;
             }
         }
-        else if(error.request) msg = 'Error while trying to access server!'
+        else if (error.request) msg = 'Error while trying to access server!'
         return msg;
     };
 
@@ -258,47 +258,47 @@ export const GeneralSearch = () => {
                         Search Term
                     </span>
                     <InputText
-                    id='general-search-term'
-                    value={searchAux}
-                    onChange={e => setSearchAux(e.target.value)}
-                    onKeyDown={e => { if(e.key === 'Enter') handleSearch(); }}
-                    style={{
-                        borderRadius: '0px',
-                        fontSize: 'calc(1rem + 0.5vw)',
-                    }}/>
+                        id='general-search-term'
+                        value={searchAux}
+                        onChange={e => setSearchAux(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
+                        style={{
+                            borderRadius: '0px',
+                            fontSize: 'calc(1rem + 0.5vw)',
+                        }} />
                     <Button
-                    className='general-search-page-btn'
-                    icon='pi pi-search'
-                    onClick={handleSearch}/>
+                        className='general-search-page-btn'
+                        icon='pi pi-search'
+                        onClick={handleSearch} />
                 </div>
-                <Loading show={searching} msg='Loading Search'/>
+                <Loading show={searching} msg='Loading Search' />
                 {
                     !searching && results.length === 0 ?
-                    <div className='flex flex-row justify-content-center'>
-                        <h1 className='green-lines p-4'>No Results Found</h1>
-                    </div> :
-                    null
+                        <div className='flex flex-row justify-content-center'>
+                            <h1 className='green-lines p-4'>No Results Found</h1>
+                        </div> :
+                        null
                 }
                 <div>
-                    { buildResults() }
+                    {buildResults()}
                 </div>
             </div>
 
             {/* Messages and confirmation parts */}
 
             <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"/>
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" />
 
-            <ConfirmDialog/>
+            <ConfirmDialog />
         </div>
     )
 }

@@ -193,9 +193,8 @@ const DataVisualization = () => {
         {/* Badges Assigned com controle interno */}
         <BarChartComponent
           data={[{ name: "Badges", count: badgesAssigned }]}
-          title={`Badges Assigned in the Last ${badgeMonths} Month${
-            badgeMonths > 1 ? "s" : ""
-          }`}
+          title={`Badges Assigned in the Last ${badgeMonths} Month${badgeMonths > 1 ? "s" : ""
+            }`}
           dataKey="count"
           fill="#4A90E2"
           name="Badges Assigned"

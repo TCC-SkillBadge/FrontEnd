@@ -15,6 +15,9 @@ const ApiReference = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("Java");
   const [showApiKey, setShowApiKey] = useState(false); // State to control API Key visibility
 
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
+  const badgeUrl = process.env.REACT_APP_API_BADGE;
+
   // Function to verify login and set states
   const verifyLogin = () => {
     const userTypeStored = sessionStorage.getItem("tipoUsuario");
@@ -49,7 +52,7 @@ const ApiReference = () => {
       setLoadingApiKey(true);
       try {
         // Define the correct URL based on user type
-        const backendUrl = "http://localhost:7003/api/acessar-info-usuario-jwt"; // Complete backend URL for UE
+        const backendUrl = `${enterpriseUrl}/api/acessar-info-usuario-jwt`; // Complete backend URL for UE
 
         const response = await axios.get(backendUrl, {
           params: { email_comercial: user.email_comercial },
@@ -91,7 +94,7 @@ const ApiReference = () => {
 
     setGeneratingApiKey(true);
     try {
-      const backendUrl = "http://localhost:7003/api/generate-api-key"; // Adjust to the correct backend URL
+      const backendUrl = `${enterpriseUrl}/api/generate-api-key`; // Adjust to the correct backend URL
       const response = await axios.post(backendUrl, {
         email_comercial: user.email_comercial,
       });
@@ -133,7 +136,7 @@ const ApiReference = () => {
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:7001/api/badges/assign"))
+                .uri(URI.create("${badgeUrl}/api/badges/assign"))
                 .header("Content-Type", "application/json")
                 .header("x-api-key", apiKey)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -143,7 +146,7 @@ const ApiReference = () => {
             System.out.println(response.body());
         }
     }`,
-        PHP: `<?php
+    PHP: `<?php
     // Example in PHP using cURL
     $apiKey = "YOUR_API_KEY_HERE";
     $data = array(
@@ -166,7 +169,7 @@ const ApiReference = () => {
 
     echo $response;
     ?>`,
-        "Node.js": `// Example in Node.js using axios
+    "Node.js": `// Example in Node.js using axios
     const axios = require('axios');
 
     const apiKey = 'YOUR_API_KEY_HERE';
@@ -175,7 +178,7 @@ const ApiReference = () => {
       id_badge: 'badge1234'
     };
 
-    axios.post('http://localhost:7001/api/badges/assign', data, {
+    axios.post('${badgeUrl}/api/badges/assign', data, {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey
@@ -187,7 +190,7 @@ const ApiReference = () => {
     .catch(error => {
       console.error(error);
     });`,
-        Python: `# Example in Python using requests
+    Python: `# Example in Python using requests
     import requests
 
     api_key = 'YOUR_API_KEY_HERE'
@@ -200,9 +203,9 @@ const ApiReference = () => {
         'x-api-key': api_key
     }
 
-    response = requests.post('http://localhost:7001/api/badges/assign', json=data, headers=headers)
+    response = requests.post('${badgeUrl}/api/badges/assign', json=data, headers=headers)
     print(response.text)`,
-        C: `/* Example in C using libcurl */
+    C: `/* Example in C using libcurl */
     #include <curl/curl.h>
 
     int main(void) {
@@ -218,7 +221,7 @@ const ApiReference = () => {
             snprintf(apiKeyHeader, sizeof(apiKeyHeader), "x-api-key: %s", apiKey);
             headers = curl_slist_append(headers, apiKeyHeader);
 
-            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:7001/api/badges/assign");
+            curl_easy_setopt(curl, CURLOPT_URL, "${badgeUrl}/api/badges/assign");
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -227,7 +230,7 @@ const ApiReference = () => {
         }
         return 0;
     }`,
-        "C++": `// Example in C++ using libcurl
+    "C++": `// Example in C++ using libcurl
     #include <curl/curl.h>
     #include <string>
 
@@ -243,7 +246,7 @@ const ApiReference = () => {
             std::string apiKeyHeader = "x-api-key: " + apiKey;
             headers = curl_slist_append(headers, apiKeyHeader.c_str());
 
-            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:7001/api/badges/assign");
+            curl_easy_setopt(curl, CURLOPT_URL, "${badgeUrl}/api/badges/assign");
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -252,7 +255,7 @@ const ApiReference = () => {
         }
         return 0;
     }`,
-        "C#": `// Example in C# using HttpClient
+    "C#": `// Example in C# using HttpClient
     using System;
     using System.Net.Http;
     using System.Text;
@@ -276,7 +279,7 @@ const ApiReference = () => {
                 {
                     client.DefaultRequestHeaders.Add("x-api-key", apiKey);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await client.PostAsync("http://localhost:7001/api/badges/assign", content);
+                    var response = await client.PostAsync("${badgeUrl}/api/badges/assign", content);
                     string result = await response.Content.ReadAsStringAsync();
                     Console.WriteLine(result);
                 }
@@ -385,7 +388,7 @@ const ApiReference = () => {
             <h4>Request Example:</h4>
             <p className="code-snippet">
               <code>
-                {`curl -X POST "http://localhost:7001/api/badges/assign" \\
+                {`curl -X POST "${badgeUrl}/api/badges/assign" \\
 -H "x-api-key: YOUR_API_KEY_HERE" \\
 -H "Content-Type: application/json" \\
 -d '{ "email_com": "user@example.com", "id_badge": "badge1234" }'`}
@@ -436,7 +439,7 @@ const ApiReference = () => {
               <strong>Method:</strong> POST
             </li>
             <li>
-              <strong>URL:</strong> http://localhost:7001/api/badges/assign
+              <strong>URL:</strong> ${badgeUrl}/api/badges/assign
             </li>
             <li>
               <strong>Headers:</strong>
@@ -478,9 +481,8 @@ const ApiReference = () => {
             {languages.map((language) => (
               <button
                 key={language}
-                className={`language-tab ${
-                  selectedLanguage === language ? "active" : ""
-                }`}
+                className={`language-tab ${selectedLanguage === language ? "active" : ""
+                  }`}
                 onClick={() => handleLanguageChange(language)}
               >
                 {language}

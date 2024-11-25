@@ -52,7 +52,7 @@ import About from "./About";
 import Dashboard from "./Dashboard";
 import DataVisualization from "./DataVisualization"; // Importado do segundo arquivo
 import ConfirmBadge from "./ConfirmBadge";
-import CommonDetails from "./badge/CommonDetails"; 
+import CommonDetails from "./badge/CommonDetails";
 import AdminDataVisualization from "./AdminDataVisualization";
 
 function App() {

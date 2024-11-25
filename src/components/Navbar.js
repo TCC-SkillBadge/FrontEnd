@@ -30,14 +30,16 @@ const NavBar = (props) => {
   const navigate = useNavigate();
   const chatRef = useRef(null);
 
+  const adminUrl = process.env.REACT_APP_API_ADMIN;
+
   useEffect(() => {
-    if(token !== props.token) {
+    if (token !== props.token) {
       setToken(() => props.token);
     }
-    if(user !== props.user) {
+    if (user !== props.user) {
       setUser(() => props.user);
     }
-    if(userType !== props.userType) {
+    if (userType !== props.userType) {
       setUserType(() => props.userType);
     }
   }, [props.token, props.user, props.userType]);
@@ -57,7 +59,7 @@ const NavBar = (props) => {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:7004/admin/notificacoes",
+          `${adminUrl}/admin/notificacoes`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -93,7 +95,7 @@ const NavBar = (props) => {
   const handleClearNotifications = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:7004/admin/limpar-notificacoes",
+        `${adminUrl}/admin/limpar-notificacoes`,
         null,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -127,7 +129,7 @@ const NavBar = (props) => {
   const renderNavItems = (renderType) => {
     const filteredPages = menuPageCollection.filter((page) => page.user === userType || page.user === 'any');
 
-    if(renderType === 'nav') {
+    if (renderType === 'nav') {
       return (
         <>
           {filteredPages.map((page) => (
@@ -137,7 +139,7 @@ const NavBar = (props) => {
           ))}
         </>
       );
-    } else if(renderType === 'dropdown') {
+    } else if (renderType === 'dropdown') {
       return (
         <>
           {filteredPages.map((page) => (
@@ -287,7 +289,7 @@ const NavBar = (props) => {
       default:
         menuItems = null;
     }
-  
+
     return (
       <NavDropdown
         title={
@@ -301,7 +303,7 @@ const NavBar = (props) => {
         }
         id="user-menu"
         className="user-menu"
-        >
+      >
         {menuItems}
       </NavDropdown>
     );
@@ -360,7 +362,7 @@ const NavBar = (props) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if(search !== "") {
+    if (search !== "") {
       console.log("Search: ", search);
       navigate('/general-search', { state: search });
       setSearch(() => "");
@@ -372,7 +374,7 @@ const NavBar = (props) => {
       <Container fluid>
         <div className="flex flex-row align-items-center">
           <Navbar.Brand as={NavLink} to="/home">
-            <img height={50} width='auto' src="/Icone.png"/>
+            <img height={50} width='auto' src="/Icone.png" />
           </Navbar.Brand>
           <div className="expanded-menu">
             <Nav className={"me-auto"}>
@@ -380,8 +382,8 @@ const NavBar = (props) => {
             </Nav>
           </div>
           <NavDropdown
-          className={"collapsed-menu flex-1"}
-          title={<i className="pi pi-align-justify" style={{fontSize: '2rem'}}/>}
+            className={"collapsed-menu flex-1"}
+            title={<i className="pi pi-align-justify" style={{ fontSize: '2rem' }} />}
           >
             {renderNavItems('dropdown')}
           </NavDropdown>
@@ -394,11 +396,11 @@ const NavBar = (props) => {
               placeholder="Search"
               className="searchInput"
               value={search}
-              onChange={(e) =>  setSearch(e.target.value)}
-              onKeyDown={(e) => { if(e.key === 'Enter') handleSearch(e); }}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(e); }}
             />
             <button className="search-btn" onClick={(e) => handleSearch(e)}>
-              <i className="bi bi-search"/>
+              <i className="bi bi-search" />
             </button>
           </Form>
         }
