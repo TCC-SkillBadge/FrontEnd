@@ -1,3 +1,4 @@
+// src/components/PostForm.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { PlusSquare, Image, ShareFill } from "react-bootstrap-icons";
@@ -14,6 +15,7 @@ const PostForm = ({
   const [postText, setPostText] = useState("");
   const [postImage, setPostImage] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (existingEvent) {
@@ -24,10 +26,21 @@ const PostForm = ({
 
   const handleTextChange = (e) => {
     setPostText(e.target.value);
+    // Limpa o erro quando o usuário começa a digitar
+    if (errors.descricao) {
+      setErrors((prevErrors) => ({ ...prevErrors, descricao: null }));
+    }
   };
 
   const handleImageChange = (e) => {
-    setPostImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setPostImage(file);
+      // Limpa o erro relacionado à imagem, se houver
+      if (errors.image) {
+        setErrors((prevErrors) => ({ ...prevErrors, image: null }));
+      }
+    }
   };
 
   const handleImageClick = () => {
@@ -36,11 +49,28 @@ const PostForm = ({
     }
   };
 
+  // Função de validação
+  const validate = () => {
+    const newErrors = {};
+    if (!postText.trim()) {
+      newErrors.descricao = "A descrição é obrigatória.";
+    }
+    // Adicione outras validações de campos obrigatórios aqui, se necessário
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validação antes da submissão
+    if (!validate()) {
+      toast.error("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
     if (!isEditAllowed && existingEvent) {
-      toast.error("It is no longer possible to edit this post.");
+      toast.error("Não é mais possível editar este post.");
       return;
     }
 
@@ -68,7 +98,7 @@ const PostForm = ({
           }
         );
 
-        toast.success("Post updated successfully!");
+        toast.success("Post atualizado com sucesso!");
         onPostUpdated(response.data.evento);
       } else {
         response = await axios.post(
@@ -82,16 +112,17 @@ const PostForm = ({
           }
         );
 
-        toast.success("Post created successfully!");
+        toast.success("Post criado com sucesso!");
         onPostCreated(response.data.evento);
       }
 
+      // Limpeza dos campos após a submissão
       setPostText("");
       setPostImage(null);
       onClose && onClose();
     } catch (error) {
-      console.error("Error saving the post:", error);
-      toast.error("Failed to save the post.");
+      console.error("Erro ao salvar o post:", error);
+      toast.error("Falha ao salvar o post.");
     } finally {
       setIsSubmitting(false);
     }
@@ -100,6 +131,7 @@ const PostForm = ({
   const handleCancel = () => {
     setPostText("");
     setPostImage(null);
+    setErrors({});
     onClose && onClose();
   };
 
@@ -121,19 +153,24 @@ const PostForm = ({
       {existingEvent && existingEvent.createdAt && (
         <div className="post-publication-info">
           <p>
-            Published on:{" "}
+            Publicado em:{" "}
             <strong>{formatDateTime(existingEvent.createdAt)}</strong>
           </p>
         </div>
       )}
 
-      <textarea
-        value={postText}
-        onChange={handleTextChange}
-        placeholder="Write something..."
-        className="post-textarea"
-        disabled={existingEvent && !isEditAllowed}
-      />
+      <div className="form-group">
+        <textarea
+          value={postText}
+          onChange={handleTextChange}
+          placeholder="Escreva algo..."
+          className={`post-textarea ${errors.descricao ? "is-invalid" : ""}`}
+          disabled={existingEvent && !isEditAllowed}
+        />
+        {errors.descricao && (
+          <div className="invalid-feedback">{errors.descricao}</div>
+        )}
+      </div>
 
       <div className="post-actions">
         <div
@@ -172,20 +209,20 @@ const PostForm = ({
             className="cancel-button"
             disabled={!isEditAllowed}
           >
-            Cancel
+            Cancelar
           </button>
         )}
       </div>
 
       {postImage && (
         <div className="image-preview">
-          <img src={URL.createObjectURL(postImage)} alt="Preview" />
+          <img src={URL.createObjectURL(postImage)} alt="Pré-visualização" />
         </div>
       )}
 
       {existingEvent && existingEvent.imageUrl && !postImage && (
         <div className="image-preview">
-          <img src={existingEvent.imageUrl} alt="Existing image" />
+          <img src={existingEvent.imageUrl} alt="Imagem existente" />
         </div>
       )}
     </form>
