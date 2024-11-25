@@ -106,7 +106,7 @@ const CreateBadge = () => {
   const badgePreview = () => {
     if (image_badge !== null) {
       return (
-        <div className="badge-card">
+        <div className="badge-card default-border-image">
           <img
             src={image_badge ? URL.createObjectURL(image_badge) : ""}
             className="badge-preview"
@@ -192,7 +192,7 @@ const CreateBadge = () => {
   return (
     <div>
       <div className="badge-page">
-        <div className="badge-container">
+        <div className="badge-container default-border-image">
           <h2>Create Badge</h2>
           <form onSubmit={handleSubmit}>
             <>
