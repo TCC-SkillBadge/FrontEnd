@@ -23,7 +23,6 @@ import {
 } from "react-bootstrap-icons"; // Importando os ícones
 import "../styles/PublicProfile.css";
 import "../styles/GlobalStylings.css";
-import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ScaleLoader from "react-spinners/ScaleLoader"; // Importando o spinner
