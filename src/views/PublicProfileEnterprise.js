@@ -176,7 +176,7 @@ const PublicProfileEnterprise = () => {
             className="profile-photo"
           />
           <div className="profile-info">
-            <h2 className="profile-name">{userData.razao_social}</h2>
+            <h2 className="profile-name">{userData.username}</h2>
             <p className="profile-title">{userData.cnpj}</p>
             <div className="company-badges">
               {userData.municipio && (
