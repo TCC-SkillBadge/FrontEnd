@@ -233,15 +233,22 @@ const Login = () => {
       `${API_ENTERPRISE}/api/request-password-reset`,
     ];
 
-    const resetPasswordPromises = endpoints.map((endpoint) =>
-      axios.post(endpoint, {
-        email: formData.email,
-      })
-    );
-
     const loading = toast.loading("Sending reset link...");
-    Promise.allSettled(resetPasswordPromises).then((results) => {
-      if (results.some((response) => response.status === "fulfilled")) {
+
+    try {
+      // Realizar ambas as chamadas e esperar o resultado
+      const results = await Promise.allSettled(
+        endpoints.map((endpoint) =>
+          axios.post(endpoint, { email: formData.email })
+        )
+      );
+
+      // Verificar se ao menos uma chamada teve sucesso
+      const anySuccess = results.some(
+        (result) => result.status === "fulfilled"
+      );
+
+      if (anySuccess) {
         toast.update(loading, {
           render: "A link to reset your password has been sent to your email.",
           type: "success",
@@ -256,9 +263,19 @@ const Login = () => {
           autoClose: 3000,
         });
       }
+    } catch (error) {
+      // Caso haja erro geral inesperado
+      toast.update(loading, {
+        render: "An unexpected error occurred. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    } finally {
       setShowConfirmationModal(false);
-    });
+    }
   };
+
 
   const handleForgotPasswordClick = () => {
     if (!formData.email) {
