@@ -644,16 +644,30 @@ const UserProfile = () => {
       return;
     }
 
-    navigator.clipboard
-      .writeText(publicProfileUrl)
-      .then(() => {
-        toast.info("Profile URL copied to clipboard!");
-      })
-      .catch((error) => {
-        console.error("Erro ao copiar o link:", error);
-        toast.error("Failed to copy the link.");
-      });
+    // Tenta usar a Clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(publicProfileUrl)
+        .then(() => {
+          toast.info("Profile URL copied to clipboard!");
+        })
+        .catch((error) => {
+          console.error("Clipboard API failed:", error);
+          toast.error("Failed to copy the link.");
+        });
+    } else {
+      // Fallback para execCommand
+      const input = document.createElement("input");
+      input.value = publicProfileUrl;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      document.body.removeChild(input);
+      toast.info("URL copied to clipboard (using fallback)!");
+    }
   };
+
+
 
   const handleDownloadPortfolio = async () => {
     const doc = new jsPDF("p", "pt", "a4");
