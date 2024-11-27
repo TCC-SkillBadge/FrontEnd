@@ -155,7 +155,7 @@ const ApiReference = () => {
     );
     $payload = json_encode($data);
 
-    $ch = curl_init("http://localhost:7001/api/badges/assign");
+    $ch = curl_init("https://ms-badges.azurewebsites.net/badges/assign");
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
         "Content-Type: application/json",
         "x-api-key: $apiKey"
@@ -178,7 +178,7 @@ const ApiReference = () => {
       id_badge: 'badge1234'
     };
 
-    axios.post('${badgeUrl}/api/badges/assign', data, {
+    axios.post('${badgeUrl}/badges/assign', data, {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey
@@ -203,7 +203,7 @@ const ApiReference = () => {
         'x-api-key': api_key
     }
 
-    response = requests.post('${badgeUrl}/api/badges/assign', json=data, headers=headers)
+    response = requests.post('${badgeUrl}/badges/assign', json=data, headers=headers)
     print(response.text)`,
     C: `/* Example in C using libcurl */
     #include <curl/curl.h>
@@ -221,7 +221,7 @@ const ApiReference = () => {
             snprintf(apiKeyHeader, sizeof(apiKeyHeader), "x-api-key: %s", apiKey);
             headers = curl_slist_append(headers, apiKeyHeader);
 
-            curl_easy_setopt(curl, CURLOPT_URL, "${badgeUrl}/api/badges/assign");
+            curl_easy_setopt(curl, CURLOPT_URL, "${badgeUrl}/badges/assign");
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -246,7 +246,7 @@ const ApiReference = () => {
             std::string apiKeyHeader = "x-api-key: " + apiKey;
             headers = curl_slist_append(headers, apiKeyHeader.c_str());
 
-            curl_easy_setopt(curl, CURLOPT_URL, "${badgeUrl}/api/badges/assign");
+            curl_easy_setopt(curl, CURLOPT_URL, "${badgeUrl}/badges/assign");
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -279,7 +279,7 @@ const ApiReference = () => {
                 {
                     client.DefaultRequestHeaders.Add("x-api-key", apiKey);
                     var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await client.PostAsync("${badgeUrl}/api/badges/assign", content);
+                    var response = await client.PostAsync("${badgeUrl}/badges/assign", content);
                     string result = await response.Content.ReadAsStringAsync();
                     Console.WriteLine(result);
                 }
@@ -372,7 +372,7 @@ const ApiReference = () => {
           <h2>Endpoints</h2>
 
           <div className="endpoint">
-            <h3>POST /api/badges/assign</h3>
+            <h3>POST /badges/assign</h3>
             <p>This endpoint allows assigning a badge to an end user.</p>
             <h4>Parameters:</h4>
             <ul>
@@ -388,7 +388,7 @@ const ApiReference = () => {
             <h4>Request Example:</h4>
             <p className="code-snippet">
               <code>
-                {`curl -X POST "${badgeUrl}/api/badges/assign" \\
+                {`curl -X POST "${badgeUrl}/badges/assign" \\
 -H "x-api-key: YOUR_API_KEY_HERE" \\
 -H "Content-Type: application/json" \\
 -d '{ "email_com": "user@example.com", "id_badge": "badge1234" }'`}
@@ -439,7 +439,7 @@ const ApiReference = () => {
               <strong>Method:</strong> POST
             </li>
             <li>
-              <strong>URL:</strong> ${badgeUrl}/api/badges/assign
+              <strong>URL:</strong> ${badgeUrl}/badges/assign
             </li>
             <li>
               <strong>Headers:</strong>

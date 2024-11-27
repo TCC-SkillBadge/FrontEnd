@@ -324,7 +324,7 @@ const UserProfile = () => {
       minute: "2-digit",
     };
     const date = new Date(dateString);
-    return date.toLocaleString("pt-BR", options);
+    return date.toLocaleString("en-US", options);
   };
 
   // Verificar autenticação e buscar informações do usuário
@@ -1337,7 +1337,10 @@ const UserProfile = () => {
               />
               {isEditing && (
                 <div className="user-edit-photo-overlay">
-                  <label htmlFor="upload-photo" className="user-edit-photo-icon">
+                  <label
+                    htmlFor="upload-photo"
+                    className="user-edit-photo-icon"
+                  >
                     <CameraFill size={20} /> {/* Usando o ícone de câmera */}
                   </label>
                   <input
@@ -1388,7 +1391,10 @@ const UserProfile = () => {
                 <button onClick={handleEditToggle} className="user-edit-button">
                   <PencilSquare /> {isEditing ? "Cancel" : "Edit"}
                 </button>
-                <button onClick={handleShareProfile} className="user-share-button">
+                <button
+                  onClick={handleShareProfile}
+                  className="user-share-button"
+                >
                   <ShareFill /> Share
                 </button>
               </div>
@@ -1403,7 +1409,7 @@ const UserProfile = () => {
               About
             </button>
             <button
-              onClick={() => handleTabChange("eventos")}
+              onClick={() => handleTabChange("events")}
               className={activeTab === "events" ? "active" : ""}
             >
               Events
@@ -1491,7 +1497,7 @@ const UserProfile = () => {
 
             {activeTab === "events" && (
               <div className="user-eventos-section">
-                <h3>Eventos Promovidos</h3>
+                <h3>Promoted Events</h3>
 
                 {/* Componente para criar novos posts */}
                 <PostForm onPostCreated={handleNewPost} />
@@ -1591,7 +1597,10 @@ const UserProfile = () => {
                 {userData.badges && userData.badges.length > 0 ? (
                   <div className="user-badge-slide">
                     {userData.badges.map((badge) => (
-                      <div key={badge.id_badge} className="user-badge-card default-border-image">
+                      <div
+                        key={badge.id_badge}
+                        className="user-badge-card default-border-image"
+                      >
                         <img
                           src={badge.image_url}
                           alt="Badge"

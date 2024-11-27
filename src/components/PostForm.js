@@ -55,7 +55,7 @@ const PostForm = ({
   const validate = () => {
     const newErrors = {};
     if (!postText.trim()) {
-      newErrors.descricao = "A descrição é obrigatória.";
+      newErrors.descricao = "The description is required.";
     }
     // Adicione outras validações de campos obrigatórios aqui, se necessário
     setErrors(newErrors);
@@ -67,12 +67,12 @@ const PostForm = ({
 
     // Validação antes da submissão
     if (!validate()) {
-      toast.error("Por favor, preencha todos os campos obrigatórios.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
     if (!isEditAllowed && existingEvent) {
-      toast.error("Não é mais possível editar este post.");
+      toast.error("It is no longer possible to edit this post.");
       return;
     }
 
@@ -100,7 +100,7 @@ const PostForm = ({
           }
         );
 
-        toast.success("Post atualizado com sucesso!");
+        toast.success("Post updated successfully!");
         onPostUpdated(response.data.evento);
       } else {
         response = await axios.post(
@@ -114,7 +114,7 @@ const PostForm = ({
           }
         );
 
-        toast.success("Post criado com sucesso!");
+        toast.success("Post created successfully!");
         onPostCreated(response.data.evento);
       }
 
@@ -124,7 +124,7 @@ const PostForm = ({
       onClose && onClose();
     } catch (error) {
       console.error("Erro ao salvar o post:", error);
-      toast.error("Falha ao salvar o post.");
+      toast.error("Failed to save the post.");
     } finally {
       setIsSubmitting(false);
     }
@@ -141,13 +141,13 @@ const PostForm = ({
   const formatDateTime = (dateString) => {
     const options = {
       year: "numeric",
-      month: "long",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
     };
     const date = new Date(dateString);
-    return date.toLocaleString("pt-BR", options);
+    return date.toLocaleString("en-US", options);
   };
 
   return (
@@ -155,7 +155,7 @@ const PostForm = ({
       {existingEvent && existingEvent.createdAt && (
         <div className="post-publication-info">
           <p>
-            Publicado em:{" "}
+            Published on:{" "}
             <strong>{formatDateTime(existingEvent.createdAt)}</strong>
           </p>
         </div>
@@ -165,7 +165,7 @@ const PostForm = ({
         <textarea
           value={postText}
           onChange={handleTextChange}
-          placeholder="Escreva algo..."
+          placeholder="Write something..."
           className={`post-textarea ${errors.descricao ? "is-invalid" : ""}`}
           disabled={existingEvent && !isEditAllowed}
         />
@@ -176,8 +176,9 @@ const PostForm = ({
 
       <div className="post-actions">
         <div
-          className={`image-upload-wrapper ${existingEvent && !isEditAllowed ? "disabled" : ""
-            }`}
+          className={`image-upload-wrapper ${
+            existingEvent && !isEditAllowed ? "disabled" : ""
+          }`}
           onClick={handleImageClick}
         >
           <Image className="photo-icon" />
@@ -200,7 +201,7 @@ const PostForm = ({
           disabled={isSubmitting || (existingEvent && !isEditAllowed)}
           className="submit-post-button"
         >
-          <PlusSquare /> {existingEvent ? "Atualizar" : "Publicar"}
+          <PlusSquare /> {existingEvent ? "Update" : "Publish"}
         </button>
 
         {existingEvent && (
@@ -210,7 +211,7 @@ const PostForm = ({
             className="cancel-button"
             disabled={!isEditAllowed}
           >
-            Cancelar
+            Cancel
           </button>
         )}
       </div>
