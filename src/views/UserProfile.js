@@ -1543,7 +1543,7 @@ const UserProfile = () => {
                 <h3>Promoted Events</h3>
 
                 {/* Componente para criar novos posts */}
-                <PostForm onPostCreated={handleNewPost} />
+                <PostForm  onPostCreated={handleNewPost} />
 
                 {/* Renderizar o PostForm para edição */}
                 {editingEvent && (
@@ -1558,7 +1558,7 @@ const UserProfile = () => {
                 {/* Renderização dos eventos */}
                 {userData.events && userData.events.length > 0 ? (
                   userData.events.map((event, index) => (
-                    <div key={index} className="user-event-item">
+                    <div key={index} className="user-event-item mt-2">
                       <div className="user-event-header">
                         <img
                           src={

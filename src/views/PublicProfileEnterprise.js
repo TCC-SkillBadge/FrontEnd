@@ -165,7 +165,7 @@ const PublicProfileEnterprise = () => {
       minute: "2-digit",
     };
     const date = new Date(dateString);
-    return date.toLocaleString("pt-BR", options);
+    return date.toLocaleString("en-US", options);
   };
 
   if (loading) {
