@@ -78,13 +78,16 @@
 }
 
 .message-box{
-    display: flex;
-    flex-direction: column-reverse;
     height: 80%;
     overflow-y: auto;
     scrollbar-color: transparent transparent;
     width: 100%;
     min-width: 500px;
+}
+
+.messages-displayer{
+    display: flex;
+    flex-direction: column-reverse;
 }
 
 .message-line-sender{
@@ -200,6 +203,9 @@
     min-height: 80%;
     border-radius: 15px;
     background-color: var(--search-box-background-color);
+    overflow-y: auto;
+    scrollbar-color: rgb(20, 20, 20) transparent;
+
 }
 
 .search-box-close-btn{
@@ -217,9 +223,8 @@
 .search-result-box{
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    scrollbar-color: transparent transparent;
-    height: 400px;
+
+    height: 100%;
     width: 100%;
 }
 

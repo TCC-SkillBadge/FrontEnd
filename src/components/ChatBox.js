@@ -485,7 +485,11 @@ const MessagesD = ({
 
   const buildMessages = () => {
     return (
-      <div id="messages-showbox" ref={scrollabelRef}>
+      <div
+        id="messages-showbox"
+        ref={scrollabelRef}
+        className="messages-displayer"
+      >
         {messages.map((message, index, messages) => {
           const isSenderTheUser = userEmail === message.sender_email;
           const differentiateDates = () => {
