@@ -539,36 +539,61 @@ const UserProfile = () => {
     return isValid;
   };
 
-  const handleSaveChanges = async () => {
-    if (tipoUsuario === "UC") {
-      if (!userData.fullName.trim()) {
+  const validateFormFields = () => {
+    let isValid = true;
+
+    // Valida campos de educação
+    (userData.education || []).forEach((edu, index) => {
+      if (
+        !edu.institution ||
+        !edu.degree ||
+        !edu.admissionYear ||
+        !edu.graduationYear
+      ) {
+        toast.error(`Education entry #${index + 1} has missing fields.`);
+        isValid = false;
+      }
+    });
+
+    // Valida campos de experiência profissional
+    (userData.professionalExperience || []).forEach((exp, index) => {
+      if (!exp.company || !exp.position || !exp.startDate || !exp.endDate) {
         toast.error(
-          "The 'Full Name' field is required and cannot be empty."
+          `Professional experience entry #${index + 1} has missing fields.`
         );
-        return; // Impede a continuação da função
+        isValid = false;
       }
-    } else if (tipoUsuario === "UE") {
-      if (!userData.username.trim()) {
-        toast.error("The 'Username' field is required and cannot be empty.");
-        return; // Impede a continuação da função
-      }
-    }
-    if (!validateDates()) {
+    });
+
+    return isValid;
+  };
+
+  const handleSaveChanges = async () => {
+    if (tipoUsuario === "UC" && !userData.fullName.trim()) {
+      toast.error("The 'Full Name' field is required and cannot be empty.");
+      return;
+    } else if (tipoUsuario === "UE" && !userData.username.trim()) {
+      toast.error("The 'Username' field is required and cannot be empty.");
       return;
     }
 
+    if (!validateDates() || !validateFormFields()) {
+      return;
+    }
+
+    // Continue com o envio ao backend
     try {
       const token = sessionStorage.getItem("token");
       const formData = new FormData();
+
       if (userData.photo) {
         formData.append("photo", userData.photo);
       }
 
       if (tipoUsuario === "UC") {
+        // Adiciona os dados do usuário comum
         formData.append("fullName", userData.fullName || "");
         formData.append("occupation", userData.occupation || "");
-        formData.append("country", userData.country || "");
-        formData.append("phoneNumber", userData.phoneNumber || "");
         formData.append("about", userData.about || "");
         formData.append("education", JSON.stringify(userData.education || []));
         formData.append(
@@ -587,15 +612,10 @@ const UserProfile = () => {
           },
         });
       } else if (tipoUsuario === "UE") {
+        // Adiciona os dados do usuário empresarial
         formData.append("razao_social", userData.razao_social || "");
         formData.append("cnpj", userData.cnpj || "");
         formData.append("username", userData.username || "");
-        formData.append("cep", userData.cep || "");
-        formData.append("logradouro", userData.logradouro || "");
-        formData.append("bairro", userData.bairro || "");
-        formData.append("municipio", userData.municipio || "");
-        formData.append("suplemento", userData.suplemento || "");
-        formData.append("numero_contato", userData.numero_contato || "");
         formData.append("sobre", userData.sobre || "");
         formData.append("website", userData.website || "");
 
@@ -609,14 +629,10 @@ const UserProfile = () => {
 
       setIsEditing(false);
       setImagePreview(null);
-      setOriginalUserData(null);
-      setUserData((prevData) => ({
-        ...prevData,
-        photo: null, // Opcional: garantir que photo também seja resetado
-      }));
+      setUserData((prevData) => ({ ...prevData, photo: null }));
       toast.success("Data updated successfully");
     } catch (error) {
-      console.error("Erro ao atualizar os dados do usuário:", error);
+      console.error("Error updating user data:", error);
       toast.error("Failed to update user data");
     }
   };
@@ -941,9 +957,9 @@ const UserProfile = () => {
                 <div className="user-profile-sections">
                   {/* Seção Sobre */}
                   <div className="user-profile-section">
-                    <p>
-                      <PersonFill className="user-icon" /> About
-                    </p>
+                    <h3>
+                      <PersonFill className="user-icon mr-2" /> About
+                    </h3>
                     <textarea
                       name="about"
                       value={userData.about || ""}
@@ -955,7 +971,7 @@ const UserProfile = () => {
                   {/* Seção Idiomas */}
                   <div className="user-profile-section">
                     <h3>
-                      <Globe className="user-icon" /> Languages
+                      <Globe className="user-icon mr-2" /> Languages
                     </h3>
                     {isEditing ? (
                       // Renderiza o dropdown de idiomas apenas no modo de edição
@@ -1023,7 +1039,7 @@ const UserProfile = () => {
                   {/* Seção Educação */}
                   <div className="user-profile-section">
                     <h3>
-                      <MortarboardFill className="user-icon" /> Education
+                      <MortarboardFill className="user-icon mr-2" /> Education
                     </h3>
                     {userData.education.map((edu, index) => (
                       <div key={index} className="user-profile-array-item">
@@ -1108,7 +1124,7 @@ const UserProfile = () => {
                   {/* Seção Experiência Profissional */}
                   <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="user-icon" /> Professional Experience
+                      <Briefcase className="user-icon mr-2" /> Professional Experience
                     </h3>
                     {userData.professionalExperience.map((exp, index) => (
                       <div key={index} className="user-profile-array-item">
@@ -1211,7 +1227,7 @@ const UserProfile = () => {
                   {/* Seção Sobre */}
                   <div className="user-profile-section">
                     <h3>
-                      <PersonFill className="user-icon" /> About
+                      <PersonFill className="user-icon mr-2" /> About
                     </h3>
                     <p>{userData.about || "No description provided."}</p>
                   </div>
@@ -1219,26 +1235,26 @@ const UserProfile = () => {
                   {/* Seção Educação */}
                   <div className="user-profile-section">
                     <h3>
-                      <MortarboardFill className="user-icon" /> Education
+                      <MortarboardFill className="user-icon mr-2" /> Education
                     </h3>
                     {Array.isArray(userData.education) &&
                       userData.education.length > 0 ? (
                       userData.education.map((edu, index) => (
                         <div key={index} className="user-education-item">
                           <div className="user-profile-info-row">
-                            <Building className="user-icon" />
-                            <span className="user-institution-name">
+                            <Building className="user-icon mr-1" />
+                            <span className="user-institution-name ml-1">
                               {edu.institution}
                             </span>
                           </div>
                           <div className="user-profile-info-row">
-                            <AwardFill className="user-icon" />
+                            <AwardFill className="user-icon mr-1" />
                             <span className="user-education-degree">
                               {edu.degree}
                             </span>
                           </div>
                           <div className="user-profile-info-row">
-                            <CalendarFill className="user-icon" />
+                            <CalendarFill className="user-icon mr-1" />
                             <span className="user-education-dates">
                               {edu.admissionYear} - {edu.graduationYear}
                             </span>
@@ -1253,26 +1269,26 @@ const UserProfile = () => {
                   {/* Seção Experiência Profissional */}
                   <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="user-icon" /> Professional Experience
+                      <Briefcase className="user-icon mr-2" /> Professional Experience
                     </h3>
                     {Array.isArray(userData.professionalExperience) &&
                       userData.professionalExperience.length > 0 ? (
                       userData.professionalExperience.map((exp, index) => (
                         <div key={index} className="user-experience-item">
                           <div className="user-profile-info-row">
-                            <Building className="user-icon" />
+                            <Building className="user-icon mr-2" />
                             <span className="user-profile-info-text">
                               {exp.company}
                             </span>
                           </div>
                           <div className="user-profile-info-row">
-                            <Briefcase className="user-icon" />
+                            <Briefcase className="user-icon mr-2 ml-2" />
                             <span className="user-profile-info-text">
                               {exp.position}
                             </span>
                           </div>
                           <div className="user-profile-info-row">
-                            <CalendarFill className="user-icon" />
+                            <CalendarFill className="user-icon ml-2" />
                             <span className="user-education-dates">
                               {exp.startDate} - {exp.endDate}
                             </span>
@@ -1287,7 +1303,7 @@ const UserProfile = () => {
                   {/* Seção Idiomas */}
                   <div className="user-profile-section">
                     <h3>
-                      <Globe className="user-icon" /> Languages
+                      <Globe className="user-icon mr-2" /> Languages
                     </h3>
                     <p>
                       {userData.languages.length > 0

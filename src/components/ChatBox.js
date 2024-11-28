@@ -212,42 +212,51 @@ const ChatBox = () => {
   }, [allMessages]);
 
   const searchContatcs = async (contact) => {
-    const cont ={
+    const cont = {
       email: contact.email,
-      username: contact.username,
       user_type: contact.user_type,
-    }
-    let profile_picture = '';
-    try{
-      if(contact.user_type === 'UC') {
-        const response = (await connectionCommonUser.get('/find-users', {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { 
-            search: contact.email,
-            researcher: userEmail,
-          },
-        })).data;
-        console.log('Response', response);
-        profile_picture = response[0].imageUrl;
+    };
+    let data = null;
+    try {
+      if (contact.user_type === "UC") {
+        const response = (
+          await connectionCommonUser.get("/find-users", {
+            headers: { Authorization: `Bearer ${token}` },
+            params: {
+              search: contact.email,
+              researcher: userEmail,
+            },
+          })
+        ).data;
+        console.log("Response", response);
+        data = response[0];
+      } else {
+        const response = (
+          await connectionEnterpriseUser.get("/find-users", {
+            headers: { Authorization: `Bearer ${token}` },
+            params: {
+              search: contact.email,
+              researcher: userEmail,
+            },
+          })
+        ).data;
+        console.log("Response", response);
+        data = response[0];
       }
-      else{
-        const response = (await connectionEnterpriseUser.get('/find-users', {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { 
-            search: contact.email,
-            researcher: userEmail,
-          },
-        })).data;
-        console.log('Response', response);
-        profile_picture = response[0].imageUrl;
-      }
-    }
-    catch (error) {
+    } catch (error) {
       // console.error('An error occurred while fetching users profile pictures');
       // console.error(error);
       handleRequestError(error);
     }
-    cont.profile_picture = profile_picture;
+
+    if (data) {
+      cont.profile_picture = data.imageUrl ? data.imageUrl : null;
+      cont.username = data.username ? data.username : "Username";
+    } else {
+      cont.profile_picture = null;
+      cont.username = "Username";
+    }
+
     return cont;
   };
 
@@ -529,7 +538,7 @@ const MessagesD = ({chosenContact, contactMessages, userEmail, userType, userInf
                             <div className='mr-2'>
                             {verifyImageValidity({type: contactMessages.contact_type, profile_picture: contactMessages.contact_profile_picture}, '25')}
                             </div>
-                            <b>{contactMessages.contact_username}</b>
+                            <b>{chosenContact}</b>
                           </div> 
                         </div>
                       }
