@@ -241,6 +241,12 @@
   margin-bottom: 10px;
 }
 
+.profile-enterprise-tabs button.active {
+    border-bottom: 2px solid #d273ff;
+    color: #d273ff;
+}
+
+
 .profile-badge-card button:hover {
   background-color: rgba(0, 0, 0, 0.3);
 }

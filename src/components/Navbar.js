@@ -13,12 +13,13 @@ import {
 } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { OverlayPanel } from "primereact/overlaypanel";
+// import { OverlayPanel } from "primereact/overlaypanel";
 import ChatBox from "./ChatBox";
 import "../styles/Navbar.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min';
+import { Sidebar } from "primereact/sidebar";
 
 const NavBar = (props) => {
   const [token, setToken] = useState(() => props.token);
@@ -29,6 +30,8 @@ const NavBar = (props) => {
   const [search, setSearch] = useState(""); // Estado para a barra de pesquisa
   const navigate = useNavigate();
   const chatRef = useRef(null);
+
+  const [showChat, setShowChat] = useState(false);
 
   const adminUrl = process.env.REACT_APP_API_ADMIN;
 
@@ -355,7 +358,12 @@ const NavBar = (props) => {
   };
 
   const renderChat = () => (
-    <button className="btn-chat" onClick={(e) => chatRef.current.toggle(e)}>
+    <button
+      className="btn-chat"
+      onClick={() => {
+        setShowChat((oldValue) => !oldValue);
+      }}
+    >
       <i className="bi bi-chat-left"></i>
     </button>
   );
@@ -374,22 +382,21 @@ const NavBar = (props) => {
       <Container fluid>
         <div className="flex flex-row align-items-center">
           <Navbar.Brand as={NavLink} to="/home">
-            <img height={50} width='auto' src="/Icone.png" />
+            <img height={50} width="auto" src="/Icone.png" />
           </Navbar.Brand>
           <div className="expanded-menu">
-            <Nav className={"me-auto"}>
-              {renderNavItems('nav')}
-            </Nav>
+            <Nav className={"me-auto"}>{renderNavItems("nav")}</Nav>
           </div>
           <NavDropdown
             className={"collapsed-menu flex-1"}
-            title={<i className="pi pi-align-justify" style={{ fontSize: '2rem' }} />}
+            title={
+              <i className="pi pi-align-justify" style={{ fontSize: "2rem" }} />
+            }
           >
-            {renderNavItems('dropdown')}
+            {renderNavItems("dropdown")}
           </NavDropdown>
         </div>
-        {
-          token &&
+        {token && (
           <Form className="d-flex mx-auto searchSection">
             <FormControl
               type="text"
@@ -397,15 +404,17 @@ const NavBar = (props) => {
               className="searchInput"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(e); }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSearch(e);
+              }}
             />
             <button className="search-btn" onClick={(e) => handleSearch(e)}>
               <i className="bi bi-search" />
             </button>
           </Form>
-        }
+        )}
         <Nav className="ml-3">
-          {user && (userType !== 'UA') && renderChat()}{" "}
+          {user && userType !== "UA" && renderChat()}{" "}
           {/* Exibe o ícone do chat apenas se houver usuário e ele não for um usuário administrativo */}
           {user && renderNotifications()}{" "}
           {/* Exibe o sino de notificações apenas se houver usuário */}
@@ -423,15 +432,16 @@ const NavBar = (props) => {
           )}
         </Nav>
 
-        <OverlayPanel
-          id="chat-panel"
-          className="chatbox-panel"
-          ref={chatRef}
-          dismissable={false}
-          showCloseIcon
+        <Sidebar
+          visible={showChat}
+          onHide={() => setShowChat(() => false)}
+          position="right"
+          pt={{
+            closeButton: { className: "chat-close-btn" },
+          }}
         >
           <ChatBox />
-        </OverlayPanel>
+        </Sidebar>
       </Container>
     </Navbar>
   );

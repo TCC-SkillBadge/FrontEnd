@@ -16,21 +16,23 @@
 }
 
 .contact-container{
-    position: relative;
-    padding: 15px;
+    background-color: var(--contact-container-background-color);
+    padding: 25px;
     margin-right: 3%;
-    border-image: linear-gradient(to bottom, #D273FF, #8DFD8B) 1;
-    border-right: 3px solid transparent;
-    width: 30%;
+    border-radius: 15px;
+    box-shadow: 0 9px 18px 0 rgba(0,0,0,0.8);
+    height: 100%;
 }
 
 .contact-box{
     display: flex;
     flex-direction: column;
+    scrollbar-gutter: auto;
     overflow-y: auto;
     scrollbar-color: transparent transparent;
     background-color: transparent;
-    height: 400px;
+    width: fit-content;
+    height: 90%;
 }
 
 .contact-button {
@@ -68,8 +70,8 @@
 }
 
 .message-container{
-    position: relative;
     width: 100%;
+    min-width: fit-content;
     overflow-y: hidden;
     overflow-x: auto;
     scrollbar-color: #3a365e transparent;
@@ -78,11 +80,11 @@
 .message-box{
     display: flex;
     flex-direction: column-reverse;
+    height: 80%;
     overflow-y: auto;
-    scrollbar-color: #3a365e transparent;
-    height: 430px;
+    scrollbar-color: transparent transparent;
     width: 100%;
-    min-width: 400px;
+    min-width: 500px;
 }
 
 .message-line-sender{

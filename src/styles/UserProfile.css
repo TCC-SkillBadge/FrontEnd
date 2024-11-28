@@ -959,13 +959,12 @@
 
 /* Adicione esta regra ao seu UserProfile.css */
 
-.user-profile-container .user-tabs button.user-active {
+.active {
   border-bottom: 2px solid var(--color-primary);
   color: var(--color-primary);
   font-weight: bold;
   background-color: rgba(210, 115, 255, 0.1); /* Sutil destaque */
 }
-
 
 .user-tabs button {
   transition: color 0.3s, border-bottom 0.3s, background-color 0.3s;

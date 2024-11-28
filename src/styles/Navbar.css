@@ -247,51 +247,26 @@
 
 /*ChatBox part*/
 
-.chatbox-panel{
-  /*Local CSS variables*/
-  --chatbox-panel-background-color: rgba(0, 0, 0, 0.6);
-
-  margin-top: 45px;
-  background-color: var(--chatbox-panel-background-color);
-  border-radius: 10px;
-  box-sizing: border-box;
-  z-index: 1500;
-  position: fixed;
+.p-sidebar{
+  background-color: rgba(29, 28, 28, 1);
+  width: fit-content;
+  min-width: 50%;
 }
 
-.p-overlaypanel{
-  min-height: fit-content;
-  margin-left: 3%;
-  margin-right: 3%;
+.p-sidebar-right{
+  min-height: 700px;
 }
 
-.p-overlaypanel-content{
-  width: 70vw;
-  height: 600px;
-
-}
-
-@media (max-width: 1000px){
-  .p-overlaypanel-content{
-    width: 90vw;
-  }
-}
-
-.p-overlaypanel-close{
-  background-color: var(--chatbox-panel-background-color);
+.chat-close-btn{
+  color: white;
+  background-color: transparent;
   border-radius: 50%;
 }
 
-.p-overlaypanel-close:hover {
+.chat-close-btn:hover{
   scale: 1.1;
 }
 
-.p-overlaypanel.p-overlaypanel::before {
-  content: none;
-}
-.p-overlaypanel.p-overlaypanel::after {
-  content: none;
-}
 
 /*Various*/
 
