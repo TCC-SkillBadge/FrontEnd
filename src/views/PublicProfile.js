@@ -20,18 +20,18 @@ import {
   ChevronDown,
   ChevronUp,
   CameraFill,
-} from "react-bootstrap-icons"; // Importando os ícones
+} from "react-bootstrap-icons"; // Importing icons
 import "../styles/PublicProfile.css";
 import "../styles/GlobalStylings.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ScaleLoader from "react-spinners/ScaleLoader"; // Importando o spinner
+import ScaleLoader from "react-spinners/ScaleLoader"; // Importing spinner
 
 const PublicProfile = () => {
-  const { encodedEmail } = useParams(); // Captura o parâmetro encodedEmail da URL
+  const { encodedEmail } = useParams(); // Capture the encodedEmail parameter from the URL
   const [userData, setUserData] = useState(null);
-  const [tipoUsuario, setTipoUsuario] = useState(null); // Armazena o tipo de usuário
-  const [activeTab, setActiveTab] = useState("perfil"); // Será ajustado após carregar os dados
+  const [userType, setUserType] = useState(null); // Store the user type
+  const [activeTab, setActiveTab] = useState("profile"); // Will be adjusted after loading data
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
@@ -48,23 +48,23 @@ const PublicProfile = () => {
         );
         const data = response.data;
 
-        // Determinar o tipo de usuário
-        let tipo;
+        // Determine user type
+        let type;
         if (data.razao_social) {
-          tipo = "UE"; // Usuário Empresarial
+          type = "UE"; // Enterprise User
         } else {
-          tipo = "UC"; // Usuário Comum
+          type = "UC"; // Common User
         }
-        setTipoUsuario(tipo);
+        setUserType(type);
 
-        // Ajustar a guia ativa com base no tipo de usuário
-        if (tipo === "UC") {
-          setActiveTab("perfil");
-        } else if (tipo === "UE") {
-          setActiveTab("sobre");
+        // Adjust active tab based on user type
+        if (type === "UC") {
+          setActiveTab("profile");
+        } else if (type === "UE") {
+          setActiveTab("about");
         }
 
-        // Mapear os dados corretamente
+        // Map data correctly
         setUserData({
           ...data,
           education: Array.isArray(data.education) ? data.education : [],
@@ -76,8 +76,8 @@ const PublicProfile = () => {
 
         setLoading(false);
       } catch (error) {
-        console.error("Erro ao buscar perfil público:", error);
-        setError("Falha ao carregar o perfil do usuário.");
+        console.error("Error fetching public profile:", error);
+        setError("Failed to load user profile.");
         setLoading(false);
       }
     };
@@ -85,16 +85,16 @@ const PublicProfile = () => {
     if (encodedEmail) {
       fetchUserProfile();
     } else {
-      setError("URL de perfil inválida.");
+      setError("Invalid profile URL.");
       setLoading(false);
     }
-  }, [encodedEmail]);
+  }, [encodedEmail, commonUrl]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
   };
 
-  // Função para fechar o dropdown ao clicar fora
+  // Function to close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -120,7 +120,7 @@ const PublicProfile = () => {
     return (
       <div className="profile-spinner-container">
         <ScaleLoader color="#00BFFF" loading={loading} size={150} />
-        <p>Carregando...</p>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -131,7 +131,7 @@ const PublicProfile = () => {
 
   if (!userData) {
     return (
-      <div className="profile-error-container">Dados do usuário não disponíveis.</div>
+      <div className="profile-error-container">User data not available.</div>
     );
   }
 
@@ -139,31 +139,31 @@ const PublicProfile = () => {
     <div className="profile-page">
       <ToastContainer />
       <div className="profile-container default-border-image">
-        {/* Cabeçalho do Perfil */}
+        {/* Profile Header */}
         <div className="profile-header">
           <div className="profile-photo-wrapper">
             <img
               src={
                 userData.imageUrl ||
-                (tipoUsuario === "UC"
+                (userType === "UC"
                   ? "/default-avatar.png"
                   : "/default-company-logo.png")
               }
-              alt={tipoUsuario === "UC" ? "User Avatar" : "Company Logo"}
+              alt={userType === "UC" ? "User Avatar" : "Company Logo"}
               className="profile-photo"
             />
           </div>
           <div className="profile-info">
             <h2 className="profile-name">
-              {tipoUsuario === "UC" ? userData.fullName : userData.razao_social}
+              {userType === "UC" ? userData.fullName : userData.razao_social}
             </h2>
             <p className="profile-title">
-              {tipoUsuario === "UC"
-                ? userData.occupation || "Ocupação não informada"
-                : userData.cnpj || "CNPJ não fornecido"}
+              {userType === "UC"
+                ? userData.occupation || "Occupation not provided"
+                : userData.cnpj || "CNPJ not provided"}
             </p>
-            {/* Se for UE, exibir badges de município, segmento, etc. */}
-            {tipoUsuario === "UE" && (
+            {/* If UE, display badges like municipality, segment, etc. */}
+            {userType === "UE" && (
               <div className="profile-company-badges">
                 {userData.municipio && (
                   <span className="profile-company-badge">
@@ -185,15 +185,15 @@ const PublicProfile = () => {
           </div>
         </div>
 
-        {/* Guias */}
+        {/* Tabs */}
         <div className="profile-tabs">
-          {tipoUsuario === "UC" ? (
+          {userType === "UC" ? (
             <>
               <button
-                onClick={() => handleTabChange("perfil")}
-                className={activeTab === "perfil" ? "active" : ""}
+                onClick={() => handleTabChange("profile")}
+                className={activeTab === "profile" ? "active" : ""}
               >
-                Perfil
+                Profile
               </button>
               <button
                 onClick={() => handleTabChange("badges")}
@@ -205,16 +205,16 @@ const PublicProfile = () => {
           ) : (
             <>
               <button
-                onClick={() => handleTabChange("sobre")}
-                className={activeTab === "sobre" ? "active" : ""}
+                onClick={() => handleTabChange("about")}
+                className={activeTab === "about" ? "active" : ""}
               >
-                Sobre
+                About
               </button>
               <button
-                onClick={() => handleTabChange("eventos")}
-                className={activeTab === "eventos" ? "active" : ""}
+                onClick={() => handleTabChange("events")}
+                className={activeTab === "events" ? "active" : ""}
               >
-                Eventos
+                Events
               </button>
               <button
                 onClick={() => handleTabChange("badges")}
@@ -226,26 +226,26 @@ const PublicProfile = () => {
           )}
         </div>
 
-        {/* Conteúdo das Guias */}
+        {/* Tabs Content */}
         <div className="profile-tab-content">
-          {/* Guia Perfil para UC */}
-          {tipoUsuario === "UC" && activeTab === "perfil" && (
+          {/* Profile Tab for UC */}
+          {userType === "UC" && activeTab === "profile" && (
             <div className="profile-sections">
-              {/* Seção Sobre */}
+              {/* About Section */}
               <div className="profile-section">
                 <h3>
-                  <PersonFill className="profile-icon" /> Sobre
+                  <PersonFill className="profile-icon" /> About
                 </h3>
-                <p>{userData.about || "Nenhuma descrição fornecida."}</p>
+                <p>{userData.about || "No description provided."}</p>
               </div>
 
-              {/* Seção Educação */}
+              {/* Education Section */}
               <div className="profile-section">
                 <h3>
-                  <MortarboardFill className="profile-icon" /> Educação
+                  <MortarboardFill className="profile-icon" /> Education
                 </h3>
                 {Array.isArray(userData.education) &&
-                  userData.education.length > 0 ? (
+                userData.education.length > 0 ? (
                   userData.education.map((edu, index) => (
                     <div key={index} className="profile-education-item">
                       <div className="profile-info-row">
@@ -256,28 +256,31 @@ const PublicProfile = () => {
                       </div>
                       <div className="profile-info-row">
                         <AwardFill className="profile-icon" />
-                        <span className="profile-education-degree">{edu.degree}</span>
+                        <span className="profile-education-degree">
+                          {edu.degree}
+                        </span>
                       </div>
                       <div className="profile-info-row">
                         <CalendarFill className="profile-icon" />
                         <span className="profile-education-dates">
-                          {edu.admissionYear} - {edu.graduationYear}
+                          {edu.admissionYear} -{" "}
+                          {edu.graduationYear || "At the moment"}
                         </span>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p>Nenhuma informação educacional fornecida.</p>
+                  <p>No educational information provided.</p>
                 )}
               </div>
 
-              {/* Seção Experiência Profissional */}
+              {/* Professional Experience Section */}
               <div className="profile-section">
                 <h3>
-                  <Briefcase className="profile-icon" /> Experiência Profissional
+                  <Briefcase className="profile-icon" /> Professional Experience
                 </h3>
                 {Array.isArray(userData.professionalExperience) &&
-                  userData.professionalExperience.length > 0 ? (
+                userData.professionalExperience.length > 0 ? (
                   userData.professionalExperience.map((exp, index) => (
                     <div key={index} className="profile-experience-item">
                       <div className="profile-info-row">
@@ -293,38 +296,41 @@ const PublicProfile = () => {
                       <div className="profile-info-row">
                         <CalendarFill className="profile-icon" />
                         <span className="profile-education-dates">
-                          {exp.startDate} - {exp.endDate}
+                          {exp.startDate} - {exp.endDate || "At the moment"}
                         </span>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p>Nenhuma experiência profissional fornecida.</p>
+                  <p>No professional experience provided.</p>
                 )}
               </div>
 
-              {/* Seção Idiomas */}
+              {/* Languages Section */}
               <div className="profile-section">
                 <h3>
-                  <Globe className="profile-icon" /> Idiomas
+                  <Globe className="profile-icon" /> Languages
                 </h3>
                 <p>
                   {userData.languages.length > 0
                     ? userData.languages.map((lang) => lang.name).join(", ")
-                    : "Nenhum idioma selecionado."}
+                    : "No languages selected."}
                 </p>
               </div>
             </div>
           )}
 
-          {/* Guia Badges para UC e UE */}
+          {/* Badges Tab for UC and UE */}
           {activeTab === "badges" && (
             <div className="profile-badges-section">
               <h3>Badges</h3>
               {userData.badges && userData.badges.length > 0 ? (
                 <div className="profile-badge-slide">
                   {userData.badges.map((badge) => (
-                    <div key={badge.id_badge} className="profile-badge-card default-border-image">
+                    <div
+                      key={badge.id_badge}
+                      className="profile-badge-card default-border-image"
+                    >
                       <img
                         src={badge.image_url}
                         alt="Badge"
@@ -332,25 +338,25 @@ const PublicProfile = () => {
                       />
                       <h3>{badge.name_badge}</h3>
                       <Link to={`/badges/details/${badge.id_badge}`}>
-                        <button>Detalhes</button>
+                        <button>Details</button>
                       </Link>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p>Nenhuma badge disponível.</p>
+                <p>No badges available.</p>
               )}
             </div>
           )}
 
-          {/* Guia Sobre para UE */}
-          {tipoUsuario === "UE" && activeTab === "sobre" && (
-            <div className="profile-sobre-section">
+          {/* About Tab for UE */}
+          {userType === "UE" && activeTab === "about" && (
+            <div className="profile-about-section">
               <div className="profile-section">
                 <h3>
-                  <PersonFill className="profile-icon" /> Sobre
+                  <PersonFill className="profile-icon" /> About
                 </h3>
-                <p>{userData.sobre || "Nenhuma descrição fornecida."}</p>
+                <p>{userData.sobre || "No description provided."}</p>
               </div>
 
               <div className="profile-section">
@@ -367,24 +373,24 @@ const PublicProfile = () => {
                       {userData.website}
                     </a>
                   ) : (
-                    "Não fornecido"
+                    "Not provided"
                   )}
                 </p>
               </div>
 
               <div className="profile-section">
                 <h3>
-                  <Phone className="profile-icon" /> Telefone
+                  <Phone className="profile-icon" /> Phone
                 </h3>
-                <p>{userData.numero_contato || "Não fornecido"}</p>
+                <p>{userData.numero_contato || "Not provided"}</p>
               </div>
             </div>
           )}
 
-          {/* Guia Eventos para UE */}
-          {tipoUsuario === "UE" && activeTab === "eventos" && (
-            <div className="profile-eventos-section">
-              <h3>Eventos Promovidos</h3>
+          {/* Events Tab for UE */}
+          {userType === "UE" && activeTab === "events" && (
+            <div className="profile-events-section">
+              <h3>Promoted Events</h3>
               {userData.events && userData.events.length > 0 ? (
                 userData.events.map((event, index) => (
                   <div key={index} className="profile-event-item">
@@ -395,13 +401,13 @@ const PublicProfile = () => {
                         className="profile-event-user-avatar"
                       />
                       <span className="profile-event-user-name">
-                        {userData.razao_social || "Empresa"}
+                        {userData.razao_social || "Company"}
                       </span>
 
-                      {/* Exibição da Data e Hora de Publicação */}
+                      {/* Display Publication Date and Time */}
                       {event.createdAt && (
                         <span className="profile-event-publication-time">
-                          {new Date(event.createdAt).toLocaleString("pt-BR", {
+                          {new Date(event.createdAt).toLocaleString("en-US", {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
@@ -412,7 +418,7 @@ const PublicProfile = () => {
                       )}
                     </div>
                     <div className="profile-event-details">
-                      <p>{event.descricao || "Nenhuma descrição."}</p>
+                      <p>{event.descricao || "No description."}</p>
                       {event.imageUrl && (
                         <img
                           src={event.imageUrl}
@@ -424,7 +430,7 @@ const PublicProfile = () => {
                   </div>
                 ))
               ) : (
-                <p>Nenhum evento disponível.</p>
+                <p>No events available.</p>
               )}
             </div>
           )}
