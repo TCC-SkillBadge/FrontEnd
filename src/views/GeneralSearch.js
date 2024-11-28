@@ -19,15 +19,15 @@ const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
 const badgeUrl = process.env.REACT_APP_API_BADGE;
 
 const connectionCommonUser = axios.create({
-    baseURL: commonUrl,
+    baseURL: commonUrl + "/api",
 });
 
 const connectionEnterpriseUser = axios.create({
-    baseURL: enterpriseUrl,
+    baseURL: enterpriseUrl + "/api",
 });
 
 const connectionBadge = axios.create({
-    baseURL: badgeUrl,
+    baseURL: badgeUrl + "/badges"
 });
 
 export const GeneralSearch = () => {
