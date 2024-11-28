@@ -136,7 +136,7 @@ function App() {
           <Route path="/searchAdmin" element={<SearchAdmin />} />
           <Route path="/listUCs" element={<ListUCs />} />
           <Route path="/listUEs" element={<ListUEs />} />
-          <Route path="/price" element={<Price />} />
+          <Route path="/plans" element={<Price />} />
           <Route path="/createServicePlan" element={<CreateServicePlan />} />
           <Route path="/edit-plan/:id" element={<EditServicePlan />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />

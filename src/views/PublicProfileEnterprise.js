@@ -296,7 +296,7 @@ const PublicProfileEnterprise = () => {
                         className="profile-enterprise-badge-preview"
                       />
                       <h3>{badge.name_badge}</h3>
-                      <Link to={`/badges/details/${badge.id_badge}`}>
+                      <Link to={`/badge-public-display/${badge.id_badge}/${userData.razao_social}`}>
                         <button>Details</button>
                       </Link>
                     </div>
