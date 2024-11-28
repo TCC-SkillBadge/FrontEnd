@@ -544,25 +544,26 @@ const UserProfile = () => {
 
     // Valida campos de educação
     (userData.education || []).forEach((edu, index) => {
-      if (
-        !edu.institution ||
-        !edu.degree ||
-        !edu.admissionYear ||
-        !edu.graduationYear
-      ) {
-        toast.error(`Education entry #${index + 1} has missing fields.`);
+      if (!edu.institution || !edu.degree || !edu.admissionYear) {
+        toast.error(
+          `Education entry #${index + 1} has missing required fields.`
+        );
         isValid = false;
       }
+      // graduationYear pode estar vazio
     });
 
     // Valida campos de experiência profissional
     (userData.professionalExperience || []).forEach((exp, index) => {
-      if (!exp.company || !exp.position || !exp.startDate || !exp.endDate) {
+      if (!exp.company || !exp.position || !exp.startDate) {
         toast.error(
-          `Professional experience entry #${index + 1} has missing fields.`
+          `Professional experience entry #${
+            index + 1
+          } has missing required fields.`
         );
         isValid = false;
       }
+      // endDate pode estar vazio
     });
 
     return isValid;
@@ -861,7 +862,10 @@ const UserProfile = () => {
               />
               {isEditing && (
                 <div className="user-edit-photo-overlay">
-                  <label htmlFor="upload-photo" className="user-edit-photo-icon">
+                  <label
+                    htmlFor="upload-photo"
+                    className="user-edit-photo-icon"
+                  >
                     <CameraFill size={20} /> {/* Usando o ícone de câmera */}
                   </label>
                   <input
@@ -920,7 +924,10 @@ const UserProfile = () => {
                 <button onClick={handleEditToggle} className="user-edit-button">
                   <PencilSquare /> {isEditing ? "Cancel" : "Edit"}
                 </button>
-                <button onClick={handleShareProfile} className="user-share-button">
+                <button
+                  onClick={handleShareProfile}
+                  className="user-share-button"
+                >
                   <ShareFill /> Share
                 </button>
                 {/* <button                                                    Adicionar quando a funcionalidade estiver pronta
@@ -986,8 +993,8 @@ const UserProfile = () => {
                         >
                           {userData.languages.length > 0
                             ? userData.languages
-                              .map((lang) => lang.name)
-                              .join(", ")
+                                .map((lang) => lang.name)
+                                .join(", ")
                             : "Select languages"}
                           <span className="user-dropdown-icon">
                             {isLanguageDropdownOpen ? (
@@ -1029,8 +1036,8 @@ const UserProfile = () => {
                       <p>
                         {userData.languages.length > 0
                           ? userData.languages
-                            .map((lang) => lang.name)
-                            .join(", ")
+                              .map((lang) => lang.name)
+                              .join(", ")
                           : "No languages selected."}
                       </p>
                     )}
@@ -1124,7 +1131,8 @@ const UserProfile = () => {
                   {/* Seção Experiência Profissional */}
                   <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="user-icon mr-2" /> Professional Experience
+                      <Briefcase className="user-icon mr-2" /> Professional
+                      Experience
                     </h3>
                     {userData.professionalExperience.map((exp, index) => (
                       <div key={index} className="user-profile-array-item">
@@ -1238,7 +1246,7 @@ const UserProfile = () => {
                       <MortarboardFill className="user-icon mr-2" /> Education
                     </h3>
                     {Array.isArray(userData.education) &&
-                      userData.education.length > 0 ? (
+                    userData.education.length > 0 ? (
                       userData.education.map((edu, index) => (
                         <div key={index} className="user-education-item">
                           <div className="user-profile-info-row">
@@ -1256,7 +1264,8 @@ const UserProfile = () => {
                           <div className="user-profile-info-row">
                             <CalendarFill className="user-icon mr-1" />
                             <span className="user-education-dates">
-                              {edu.admissionYear} - {edu.graduationYear}
+                              {edu.admissionYear} -{" "}
+                              {edu.graduationYear || "At the moment"}
                             </span>
                           </div>
                         </div>
@@ -1269,10 +1278,11 @@ const UserProfile = () => {
                   {/* Seção Experiência Profissional */}
                   <div className="user-profile-section">
                     <h3>
-                      <Briefcase className="user-icon mr-2" /> Professional Experience
+                      <Briefcase className="user-icon mr-2" /> Professional
+                      Experience
                     </h3>
                     {Array.isArray(userData.professionalExperience) &&
-                      userData.professionalExperience.length > 0 ? (
+                    userData.professionalExperience.length > 0 ? (
                       userData.professionalExperience.map((exp, index) => (
                         <div key={index} className="user-experience-item">
                           <div className="user-profile-info-row">
@@ -1290,7 +1300,7 @@ const UserProfile = () => {
                           <div className="user-profile-info-row">
                             <CalendarFill className="user-icon ml-2" />
                             <span className="user-education-dates">
-                              {exp.startDate} - {exp.endDate}
+                              {exp.startDate} - {exp.endDate || "At the moment"}
                             </span>
                           </div>
                         </div>
@@ -1321,7 +1331,10 @@ const UserProfile = () => {
                 {userData.badges && userData.badges.length > 0 ? (
                   <div className="user-badge-slide">
                     {userData.badges.map((badge, index) => (
-                      <div key={badge.id} className="user-badge-card default-border-image">
+                      <div
+                        key={badge.id}
+                        className="user-badge-card default-border-image"
+                      >
                         <img
                           src={badge.image_url}
                           alt="Badge"
