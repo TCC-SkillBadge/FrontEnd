@@ -1,6 +1,6 @@
 /* src/styles/PublicProfileEnterprise.css */
 
-/* Variáveis CSS - Certifique-se de que estão alinhadas com o GlobalStylings.css */
+/* Variáveis CSS - Alinhadas com a paleta de cores do projeto */
 :root {
   --background-dark: #191A2E;
   --color-primary: #D273FF;
@@ -24,6 +24,7 @@
 
 .profile-enterprise-spinner-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -68,11 +69,6 @@
   color: var(--color-primary);
 }
 
-.profile-enterprise-title {
-  font-size: 1.2rem;
-  color: var(--color-secondary);
-}
-
 .profile-enterprise-company-badges {
   display: flex;
   gap: 10px;
@@ -88,7 +84,7 @@
   align-items: center;
 }
 
-.profile-enterprise-company-badge .profile-enterprise-bi {
+.profile-enterprise-company-badge .react-bootstrap-icons {
   margin-right: 5px;
 }
 
@@ -119,7 +115,7 @@
   transition: var(--transition);
 }
 
-.profile-enterprise-tabs button.profile-enterprise-active {
+.profile-enterprise-tabs button.active {
   border-bottom: 2px solid var(--color-primary);
   color: var(--color-primary);
 }
@@ -148,10 +144,8 @@
   color: var(--color-text-light);
 }
 
-.profile-enterprise-section h3 .profile-enterprise-bi {
-  font-size: 1.2rem;
+.profile-enterprise-section h3 .profile-enterprise-icon {
   margin-right: 8px;
-  color: var(--color-text-light);
 }
 
 .profile-enterprise-section p {
@@ -159,17 +153,17 @@
   color: var(--color-text-light);
 }
 
-/* Seção de Eventos */
-.profile-enterprise-event-item {
+/* Estilos para UserEventItem */
+.user-event-item {
   background-color: rgba(0, 0, 0, 0.3);
   padding: 15px;
   border-radius: 5px;
   margin-bottom: 20px;
   position: relative;
-  transition: var(--transition);
+  transition: border 0.3s;
 }
 
-.profile-enterprise-event-item.profile-enterprise-highlighted {
+.user-event-item.highlighted {
   border: 2px solid var(--color-primary);
 }
 
@@ -214,6 +208,10 @@
   color: var(--color-primary);
 }
 
+.profile-enterprise-event-share {
+  position: relative;
+}
+
 .profile-enterprise-share-options {
   position: absolute;
   top: 30px;
@@ -248,6 +246,17 @@
   margin-right: 8px;
 }
 
+.profile-enterprise-event-details p {
+  margin: 0;
+  color: var(--color-text-light);
+}
+
+.profile-enterprise-event-image {
+  margin-top: 10px;
+  max-width: 100%;
+  border-radius: 5px;
+}
+
 /* Seção de Badges */
 .profile-enterprise-badges-section {
   display: flex;
@@ -262,7 +271,7 @@
   margin-top: 20px;
 }
 
-.profile-enterprise-badge-slide .profile-enterprise-badge-card {
+.profile-enterprise-badge-card {
   background-color: rgba(0, 0, 0, 0.25);
   color: white;
   text-align: center;
@@ -276,40 +285,26 @@
   overflow: hidden;
   border-radius: 15px;
   transition: transform 0.3s, box-shadow 0.3s;
-  margin: 10px auto;
-  position: relative;
 }
 
-.profile-enterprise-badge-slide .profile-enterprise-badge-card .profile-enterprise-badge-preview {
+.profile-enterprise-badge-preview {
   width: calc(100% - 20px);
   border-radius: 8px;
   height: 180px;
   object-fit: cover;
-  margin-top: 10px;
-  margin-bottom: 10px;
   margin: 10px;
 }
 
-.profile-enterprise-badge-slide .profile-enterprise-badge-card h3 {
-  flex-grow: 1; 
+.profile-enterprise-badge-card h3 {
+  flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px; 
-  word-break: break-word; 
+  padding: 10px;
+  word-break: break-word;
   min-height: 60px;
-  overflow: hidden; 
+  overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.profile-enterprise-badge-card h3 {
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 5px 10px;
-  border-radius: 5px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .profile-enterprise-badge-card button {
@@ -345,7 +340,7 @@
 
 /* Responsividade */
 @media (max-width: 600px) {
-  .public-profile-container {
+  .profile-enterprise-container {
     padding: 15px;
   }
 
@@ -362,6 +357,7 @@
 
   .profile-enterprise-company-badges {
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .profile-enterprise-tabs {
@@ -374,7 +370,7 @@
     text-align: center;
   }
 
-  .profile-enterprise-event-item {
+  .user-event-item {
     padding: 10px;
   }
 

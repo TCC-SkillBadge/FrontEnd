@@ -1,3 +1,4 @@
+// src/components/PublicProfileEnterprise.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import axios from "axios";
@@ -6,19 +7,13 @@ import {
   Briefcase,
   Globe,
   PersonFill,
-  AwardFill,
   PeopleFill,
 } from "react-bootstrap-icons";
-// import { Spinner } from "react-bootstrap"; // Importando o Spinner
 import "../styles/PublicProfileEnterprise.css";
 import ScaleLoader from "react-spinners/ScaleLoader";
-import { toast } from "react-toastify";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaShareAlt,
-} from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import UserEventItem from "../components/UserEventItem"; // Ajuste o caminho conforme necessário
+import "react-toastify/dist/ReactToastify.css";
 
 const PublicProfileEnterprise = () => {
   const { encodedEmail } = useParams();
@@ -26,9 +21,6 @@ const PublicProfileEnterprise = () => {
   const [badges, setBadges] = useState([]);
   const [activeTab, setActiveTab] = useState("sobre");
   const [loading, setLoading] = useState(true);
-
-  // Estado para controlar as opções de compartilhamento
-  const [showShareOptions, setShowShareOptions] = useState({});
 
   // Para obter eventId dos parâmetros da URL
   const location = useLocation();
@@ -99,7 +91,7 @@ const PublicProfileEnterprise = () => {
     if (encodedEmail) {
       fetchUserProfile();
     }
-  }, [encodedEmail]);
+  }, [encodedEmail, enterpriseUrl, badgeUrl]);
 
   useEffect(() => {
     if (eventIdFromUrl) {
@@ -107,52 +99,48 @@ const PublicProfileEnterprise = () => {
     }
   }, [eventIdFromUrl]);
 
-  // Fechar as opções de compartilhamento ao clicar fora
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        !event.target.closest(".event-share") &&
-        Object.values(showShareOptions).some((value) => value)
-      ) {
-        setShowShareOptions({});
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [showShareOptions]);
-
-  const handleShareEvent = (event, platform) => {
+  const handleShareEvent = (event) => {
     const encodedEmailParam = encodedEmail;
     const eventId = event.id;
     const eventUrl = `${window.location.origin}/public-profile-enterprise/${encodedEmailParam}?eventId=${eventId}`;
 
-    let shareUrl = "";
+    // URLs de compartilhamento para cada plataforma
+    const shareUrls = {
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        eventUrl
+      )}`,
+      twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+        eventUrl
+      )}&text=${encodeURIComponent(event.descricao)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+        eventUrl
+      )}`,
+    };
+
+    // Exibir um menu de opções de compartilhamento
+    // Neste exemplo, abriremos uma janela para cada plataforma diretamente
+    // Você pode implementar um menu mais elaborado conforme necessário
+
+    // Por simplicidade, vamos criar um prompt para selecionar a plataforma
+    const platform = prompt(
+      "Escolha a plataforma para compartilhar:\n1. Facebook\n2. Twitter\n3. LinkedIn",
+      "1"
+    );
 
     switch (platform) {
-      case "facebook":
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-          eventUrl
-        )}`;
+      case "1":
+        window.open(shareUrls.facebook, "_blank");
         break;
-      case "twitter":
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-          eventUrl
-        )}&text=${encodeURIComponent(event.descricao)}`;
+      case "2":
+        window.open(shareUrls.twitter, "_blank");
         break;
-      case "linkedin":
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-          eventUrl
-        )}`;
+      case "3":
+        window.open(shareUrls.linkedin, "_blank");
         break;
       default:
+        toast.info("Compartilhamento cancelado.");
         break;
     }
-
-    window.open(shareUrl, "_blank");
   };
 
   // Função para formatar a data e hora
@@ -179,12 +167,15 @@ const PublicProfileEnterprise = () => {
 
   if (!userData) {
     return (
-      <div className="profile-enterprise-container">Usuário não encontrado.</div>
+      <div className="profile-enterprise-container">
+        Usuário não encontrado.
+      </div>
     );
   }
 
   return (
     <div className="profile-enterprise-page">
+      <ToastContainer />
       <div className="profile-enterprise-container default-border-image">
         <div className="profile-enterprise-header">
           <img
@@ -194,7 +185,6 @@ const PublicProfileEnterprise = () => {
           />
           <div className="profile-enterprise-info">
             <h2 className="profile-enterprise-name">{userData.username}</h2>
-            {/* <p className="profile-title">{userData.cnpj}</p> */}
             <div className="profile-enterprise-company-badges">
               {userData.municipio && (
                 <span className="profile-enterprise-company-badge">
@@ -217,7 +207,7 @@ const PublicProfileEnterprise = () => {
                   <a
                     href={
                       userData.website.startsWith("http://") ||
-                        userData.website.startsWith("https://")
+                      userData.website.startsWith("https://")
                         ? userData.website
                         : `https://${userData.website}`
                     }
@@ -274,82 +264,15 @@ const PublicProfileEnterprise = () => {
             <div className="profile-enterprise-section">
               <h3>Promoted Events</h3>
               {userData.events && userData.events.length > 0 ? (
-                userData.events.map((event, index) => (
-                  <div
-                    key={index}
-                    className={`event-item ${highlightedEventId === event.id ? "highlighted" : ""
-                      }`}
-                  >
-                    <div className="profile-enterprise-event-header">
-                      <img
-                        src={userData.imageUrl || "/default-company-logo.png"}
-                        alt="Company Logo"
-                        className="profile-enterprise-event-user-avatar"
-                      />
-                      <span className="profile-enterprise-event-user-name">
-                        {userData.username}
-                      </span>
-                      {event.createdAt && (
-                        <span className="profile-enterprise-event-publication-time">
-                          {formatDateTime(event.createdAt)}
-                        </span>
-                      )}
-                      <div className="profile-enterprise-event-options">
-                        {/* Botão de Compartilhamento */}
-                        <div className="profile-enterprise-event-share">
-                          <FaShareAlt
-                            className="profile-enterprise-share-icon"
-                            onClick={() =>
-                              setShowShareOptions((prevState) => ({
-                                ...prevState,
-                                [event.id]: !prevState[event.id],
-                              }))
-                            }
-                            title="Share Event"
-                          />
-                          {/* Opções de compartilhamento */}
-                          {showShareOptions[event.id] && (
-                            <div className="profile-enterprise-share-options">
-                              <button
-                                className="profile-enterprise-facebook-button"
-                                onClick={() =>
-                                  handleShareEvent(event, "facebook")
-                                }
-                              >
-                                <FaFacebookF /> Facebook
-                              </button>
-                              <button
-                                className="profile-enterprise-twitter-button"
-                                onClick={() =>
-                                  handleShareEvent(event, "twitter")
-                                }
-                              >
-                                <FaTwitter /> Twitter
-                              </button>
-                              <button
-                                className="profile-enterprise-linkedin-button"
-                                onClick={() =>
-                                  handleShareEvent(event, "linkedin")
-                                }
-                              >
-                                <FaLinkedinIn /> LinkedIn
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="profile-enterprise-event-details">
-                      <p>{event.descricao || "No description"}</p>
-                      {event.imageUrl && (
-                        <img
-                          src={event.imageUrl}
-                          alt="Event Image"
-                          className="profile-enterprise-event-image"
-                        />
-                      )}
-                    </div>
-                  </div>
+                userData.events.map((event) => (
+                  <UserEventItem
+                    key={event.id} // Use event.id como key para melhor desempenho
+                    event={event}
+                    isHighlighted={highlightedEventId === event.id}
+                    formatDateTime={formatDateTime}
+                    handleShareEvent={handleShareEvent}
+                    userImageUrl={userData.imageUrl} // Passando a URL da imagem do usuário
+                  />
                 ))
               ) : (
                 <p>No events available.</p>
