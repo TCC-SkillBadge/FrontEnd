@@ -337,9 +337,9 @@ const PublicProfile = () => {
                         className="profile-badge-preview"
                       />
                       <h3>{badge.name_badge}</h3>
-                      <Link to={`/badge-public-display/${badge.id_badge}`}>
+                      {/* <Link to={`http://localhost:3000//badge-public-display/${badge.id_badge}`}>
                         <button>Details</button>
-                      </Link>
+                      </Link> */}
                     </div>
                   ))}
                 </div>

@@ -36,6 +36,26 @@ const NavBar = (props) => {
   const adminUrl = process.env.REACT_APP_API_ADMIN;
 
   useEffect(() => {
+    const handleProfilePictureUpdate = () => {
+      const updatedImage = sessionStorage.getItem("userImage");
+      setUser((prevUser) => ({ ...prevUser, imageUrl: updatedImage })); // Atualiza o estado
+    };
+
+    window.addEventListener(
+      "ProfilePictureUpdated",
+      handleProfilePictureUpdate
+    );
+
+    return () => {
+      window.removeEventListener(
+        "ProfilePictureUpdated",
+        handleProfilePictureUpdate
+      );
+    };
+  }, []);
+
+
+  useEffect(() => {
     if (token !== props.token) {
       setToken(() => props.token);
     }
