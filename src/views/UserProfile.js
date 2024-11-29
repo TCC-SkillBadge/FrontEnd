@@ -635,6 +635,8 @@ const UserProfile = () => {
         formData.append("username", userData.username || "");
         formData.append("sobre", userData.sobre || "");
         formData.append("website", userData.website || "");
+        formData.append("numero_contato", userData.numero_contato || "");
+
 
         response = await axios.put(`${enterpriseUrl}/api/update`, formData, {
           headers: {
