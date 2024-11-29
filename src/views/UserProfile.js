@@ -327,6 +327,24 @@ const UserProfile = () => {
     return date.toLocaleString("en-US", options);
   };
 
+  useEffect(() => {
+    const handleProfilePictureUpdated = () => {
+      fetchUserInfo(); // Recarregar as informações do usuário
+    };
+
+    window.addEventListener(
+      "ProfilePictureUpdated",
+      handleProfilePictureUpdated
+    );
+
+    return () => {
+      window.removeEventListener(
+        "ProfilePictureUpdated",
+        handleProfilePictureUpdated
+      );
+    };
+  }, []);
+
   // Verificar autenticação e buscar informações do usuário
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -582,17 +600,16 @@ const UserProfile = () => {
       return;
     }
 
-    // Continue com o envio ao backend
     try {
       const token = sessionStorage.getItem("token");
       const formData = new FormData();
+      let response = null;
 
       if (userData.photo) {
         formData.append("photo", userData.photo);
       }
 
       if (tipoUsuario === "UC") {
-        // Adiciona os dados do usuário comum
         formData.append("fullName", userData.fullName || "");
         formData.append("occupation", userData.occupation || "");
         formData.append("about", userData.about || "");
@@ -606,27 +623,39 @@ const UserProfile = () => {
           JSON.stringify(userData.languages.map((lang) => lang.id))
         );
 
-        await axios.put(`${commonUrl}/api/user/update`, formData, {
+        response = await axios.put(`${commonUrl}/api/user/update`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         });
       } else if (tipoUsuario === "UE") {
-        // Adiciona os dados do usuário empresarial
         formData.append("razao_social", userData.razao_social || "");
         formData.append("cnpj", userData.cnpj || "");
         formData.append("username", userData.username || "");
         formData.append("sobre", userData.sobre || "");
         formData.append("website", userData.website || "");
 
-        await axios.put(`${enterpriseUrl}/api/update`, formData, {
+        response = await axios.put(`${enterpriseUrl}/api/update`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         });
       }
+
+      // Atualizar URL da foto no estado e no sessionStorage
+      if (response && response.data.imageUrl) {
+        setUserData((prevData) => ({
+          ...prevData,
+          imageUrl: response.data.imageUrl,
+        }));
+        sessionStorage.setItem("userImage", response.data.imageUrl);
+        window.dispatchEvent(new Event("ProfilePictureUpdated"));
+      }
+
+      // **Chamada para atualizar todo o userData após salvar as mudanças**
+      await fetchUserInfo(); // Adicione esta linha
 
       setIsEditing(false);
       setImagePreview(null);
@@ -637,6 +666,8 @@ const UserProfile = () => {
       toast.error("Failed to update user data");
     }
   };
+
+
 
   const handleShareProfile = () => {
     let encodedEmail;

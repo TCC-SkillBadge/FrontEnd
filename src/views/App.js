@@ -7,7 +7,7 @@ import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 // Importar NavBar e Footer
 import NavBar from "../components/Navbar"; // Certifique-se que NavBar.js está em src/components/
@@ -55,56 +55,102 @@ import ConfirmBadge from "./ConfirmBadge";
 import CommonDetails from "./badge/CommonDetails";
 import AdminDataVisualization from "./AdminDataVisualization";
 
+import axios from "axios"; // Importar axios para uso no App.js
+
 function App() {
   // Gerenciar o userType, user e token no App.js
   const [user, setUser] = useState(null);
   const [userType, setUserType] = useState(null);
   const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    const verifyStoredLogin = () => {
-      console.log("Verifying stored login");
+  const navigate = useNavigate();
 
-      const storedTokenLS = localStorage.getItem("token");
-      const storedUserTypeLS = localStorage.getItem("tipoUsuario");
-      const storedUserInfoLS = JSON.parse(localStorage.getItem("userInfo"));
+  const adminUrl = process.env.REACT_APP_API_ADMIN;
+  const commonUrl = process.env.REACT_APP_API_COMUM;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
 
-      const storedTokenSS = sessionStorage.getItem("token");
-      const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
-      const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
-
-      if (storedTokenSS && storedUserTypeSS && storedUserInfoSS) {
-        setUserType(storedUserTypeSS);
-        setUser(storedUserInfoSS);
-        setToken(storedTokenSS);
-      } else if (storedTokenLS && storedUserTypeLS && storedUserInfoLS) {
-        sessionStorage.setItem("tipoUsuario", storedUserTypeLS);
-        sessionStorage.setItem("userInfo", JSON.stringify(storedUserInfoLS));
-        sessionStorage.setItem("token", storedTokenLS);
-
-        const storedEmail = localStorage.getItem("email");
-        const storedEncodedEmail = localStorage.getItem("encodedEmail");
-
-        if (storedEmail) sessionStorage.setItem("email", storedEmail);
-        if (storedEncodedEmail)
-          sessionStorage.setItem("encodedEmail", storedEncodedEmail);
-
-        setUserType(storedUserTypeLS);
-        setUser(storedUserInfoLS);
-        setToken(storedTokenLS);
+  // Função para buscar as informações do usuário
+  const fetchUserInfo = async () => {
+    try {
+      if (!token) {
+        setUser(null);
+        setUserType(null);
+        return;
       }
-    };
 
-    const verifyLoggedIn = () => {
-      const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
-      const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
-      const storedTokenSS = sessionStorage.getItem("token");
+      let response;
 
+      if (userType === "UC") {
+        response = await axios.get(`${commonUrl}/api/user/info`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(response.data);
+      } else if (userType === "UE") {
+        response = await axios.get(
+          `${enterpriseUrl}/api/acessar-info-usuario-jwt`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUser(response.data);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      console.error("Erro ao obter informações do usuário:", error);
+      setUser(null);
+      setUserType(null);
+      setToken(null);
+      navigate("/login");
+    }
+  };
+
+  // Função para verificar o login armazenado
+  const verifyStoredLogin = () => {
+    console.log("Verifying stored login");
+
+    const storedTokenLS = localStorage.getItem("token");
+    const storedUserTypeLS = localStorage.getItem("tipoUsuario");
+    const storedUserInfoLS = JSON.parse(localStorage.getItem("userInfo"));
+
+    const storedTokenSS = sessionStorage.getItem("token");
+    const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
+    const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
+
+    if (storedTokenSS && storedUserTypeSS && storedUserInfoSS) {
       setUserType(storedUserTypeSS);
       setUser(storedUserInfoSS);
       setToken(storedTokenSS);
-    };
+    } else if (storedTokenLS && storedUserTypeLS && storedUserInfoLS) {
+      sessionStorage.setItem("tipoUsuario", storedUserTypeLS);
+      sessionStorage.setItem("userInfo", JSON.stringify(storedUserInfoLS));
+      sessionStorage.setItem("token", storedTokenLS);
 
+      const storedEmail = localStorage.getItem("email");
+      const storedEncodedEmail = localStorage.getItem("encodedEmail");
+
+      if (storedEmail) sessionStorage.setItem("email", storedEmail);
+      if (storedEncodedEmail)
+        sessionStorage.setItem("encodedEmail", storedEncodedEmail);
+
+      setUserType(storedUserTypeLS);
+      setUser(storedUserInfoLS);
+      setToken(storedTokenLS);
+    }
+  };
+
+  // Função para verificar se está logado
+  const verifyLoggedIn = () => {
+    const storedUserTypeSS = sessionStorage.getItem("tipoUsuario");
+    const storedUserInfoSS = JSON.parse(sessionStorage.getItem("userInfo"));
+    const storedTokenSS = sessionStorage.getItem("token");
+
+    setUserType(storedUserTypeSS);
+    setUser(storedUserInfoSS);
+    setToken(storedTokenSS);
+  };
+
+  useEffect(() => {
     verifyStoredLogin();
 
     window.addEventListener("LoginChange", verifyLoggedIn);
@@ -113,6 +159,38 @@ function App() {
       window.removeEventListener("LoginChange", verifyLoggedIn);
     };
   }, []);
+
+  // Listener para atualizar a imagem de perfil
+  useEffect(() => {
+    const handleProfilePictureUpdate = () => {
+      const updatedImage = sessionStorage.getItem("userImage");
+      if (updatedImage && user) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          imageUrl: updatedImage,
+        }));
+      }
+    };
+
+    window.addEventListener(
+      "ProfilePictureUpdated",
+      handleProfilePictureUpdate
+    );
+
+    return () => {
+      window.removeEventListener(
+        "ProfilePictureUpdated",
+        handleProfilePictureUpdate
+      );
+    };
+  }, [user]);
+
+  // Recarregar informações do usuário sempre que token ou userType mudar
+  useEffect(() => {
+    if (token && userType) {
+      fetchUserInfo();
+    }
+  }, [token, userType]);
 
   return (
     <div className="App">
