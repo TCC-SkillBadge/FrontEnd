@@ -88,7 +88,7 @@ const PlanCard = ({
 
       {/* Show cancel button only if it's the current plan */}
       {!isAdmin && isEnterpriseUser && isCurrent && (
-        <button className="cancel-button" onClick={() => handleCancel(plan.id)}>
+        <button className="cancel-button-pc" onClick={() => handleCancel(plan.id)}>
           Cancel Plan
         </button>
       )}

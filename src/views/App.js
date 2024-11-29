@@ -93,6 +93,11 @@ function App() {
           }
         );
         setUser(response.data);
+      } else if (userType === "UA") {
+        response = await axios.get(`${adminUrl}/admin/acessa-info`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(response.data);
       } else {
         setUser(null);
       }
@@ -104,6 +109,7 @@ function App() {
       navigate("/login");
     }
   };
+
 
   // Função para verificar o login armazenado
   const verifyStoredLogin = () => {

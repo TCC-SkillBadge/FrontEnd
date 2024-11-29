@@ -447,7 +447,7 @@ const EditServicePlan = () => {
               </button>
               <button
                 type="button"
-                className="btn btn-secondary cancel-button"
+                className="btn btn-secondary cancel-button-CPS"
                 onClick={handleCancel}
               >
                 Cancel

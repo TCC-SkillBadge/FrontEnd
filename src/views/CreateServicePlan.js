@@ -372,7 +372,7 @@ const CreateServicePlan = () => {
               </button>
               <button
                 type="button"
-                className="btn btn-secondary cancel-button"
+                className="btn btn-secondary cancel-button-edit ml-1"//CreateServicePlan
                 onClick={() => navigate("/plans")} // Redireciona para a página de preços
               >
                 Cancel

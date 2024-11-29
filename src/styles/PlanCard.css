@@ -179,10 +179,9 @@
 }
 
 /* Botão de Cancelamento */
-.cancel-button {
-  background-color: #f94144;
+.cancel-button-pc {
   border: none;
-  color: white;
+  color: #007bff;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
@@ -195,12 +194,12 @@
   align-items: center; /* Garante a centralização vertical */
 }
 
-.cancel-button:hover {
-  background-color: #d00000;
+.cancel-button-pc:hover {
   color: white;
 }
 
-.plan-card .cancel-button {
+.plan-card .cancel-button-pc {
+  background: transparent;
   margin-top: 10px;
   width: 100%;
   max-width: 200px;
@@ -208,13 +207,13 @@
 }
 
 /* Ajuste para modo de edição */
-.plan-card.edit-mode .cancel-button {
+.plan-card.edit-mode .cancel-button-pc {
   background-color: #ffb703;
   border: 2px solid #ff8800;
   color: #fff;
 }
 
-.plan-card.edit-mode .cancel-button:hover {
+.plan-card.edit-mode .cancel-button-pc:hover {
   background-color: #ff8800;
   border-color: #d07000;
   color: #ffffff;

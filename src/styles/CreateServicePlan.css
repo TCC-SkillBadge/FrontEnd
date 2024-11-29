@@ -94,6 +94,7 @@
   border-color: #D273FF;
   color: #D273FF;
   font-weight: bold;
+  width: 100%;
 }
 
 .create-plan-container .save-button:hover {
@@ -106,6 +107,7 @@
   display: flex;
   justify-content: space-between; /* Botões ficam nas extremidades esquerda e direita */
   margin-top: 20px; /* Espaço entre o botão "Save Plan" e os outros botões */
+
 }
 
 .button-group .delete-button {
@@ -113,6 +115,7 @@
   border-color: #FF6B6B;
   color: #FF6B6B;
   font-weight: bold;
+  width:50%
 }
 
 .button-group .delete-button:hover {
@@ -121,19 +124,49 @@
   color: white;
 }
 
-.button-group .cancel-button {
+.button-group .cancel-button-CPS {
   background-color: transparent;
   border-color: #6c757d;
   border: 2px solid #6c757d;
   color: #6c757d;
   font-weight: bold;
   border-radius: 5px;
+  width: 50%;
 }
 
-.button-group .cancel-button:hover {
+.button-group .cancel-button-CPS:hover {
   background-color: #6c757d;
   border-color: #6c757d;
   color: white;
+}
+
+.button-group .cancel-button-CSP{
+  background: transparent;
+  border-color: #6c757d;
+  width: 100%;
+}
+
+
+.button-group .cancel-button-edit {
+  background-color: transparent;
+  border-color: #6c757d;
+  border: 2px solid #6c757d;
+  color: #6c757d;
+  font-weight: bold;
+  border-radius: 5px;
+  width: 50%;
+}
+
+.button-group .cancel-button-edit:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.button-group .cancel-button-edit{
+  background: transparent;
+  border-color: #6c757d;
+  width: 100%;
 }
 
 .form-check {
