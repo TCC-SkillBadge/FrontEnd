@@ -16,14 +16,8 @@ const Footer = ({ userType, user }) => {
         <NavLink to="/home" className="footer-item">
           Home
         </NavLink>
-        <NavLink to="/pricing" className="footer-item">
-          Pricing
-        </NavLink>
         <NavLink to="/about" className="footer-item">
           About
-        </NavLink>
-        <NavLink to="/contact" className="footer-item">
-          Contact
         </NavLink>
       </>
     );

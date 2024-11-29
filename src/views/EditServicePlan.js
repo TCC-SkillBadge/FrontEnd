@@ -246,7 +246,7 @@ const EditServicePlan = () => {
 
       if (response.status === 200 || response.status === 201) {
         setTimeout(() => {
-          navigate("/price");
+          navigate("/plans");
         }, 2000);
       }
     } catch (error) {
@@ -268,7 +268,7 @@ const EditServicePlan = () => {
           autoClose: 2000,
         });
         setTimeout(() => {
-          navigate("/price");
+          navigate("/plans");
         }, 2000);
       }
     } catch (error) {
@@ -289,7 +289,7 @@ const EditServicePlan = () => {
   };
 
   const handleCancel = () => {
-    navigate("/price"); // Volta para a página de preço
+    navigate("/plans"); // Volta para a página de preço
   };
 
   return (

@@ -40,7 +40,7 @@ const Aside = ({ userType }) => {
         {userType === "UE" && (
           <>
             <NavLink
-              to="/price"
+              to="/plans"
               className={({ isActive }) =>
                 isActive ? "aside-link active" : "aside-link"
               }
@@ -84,7 +84,7 @@ const Aside = ({ userType }) => {
               Skills
             </NavLink>
             <NavLink
-              to="/price"
+              to="/plans"
               className={({ isActive }) =>
                 isActive ? "aside-link active" : "aside-link"
               }

@@ -116,16 +116,15 @@ const NavBar = (props) => {
     { page: "/about", title: "About", user: 'any' },
     { page: "/wallet", title: "Wallet", user: 'UC' },
     { page: "/proficiency-test", title: "Skill Test", user: 'UC' },
-    { page: "/price", title: "Plans", user: 'UE' },
+    { page: "/plans", title: "Plans", user: 'UE' },
     { page: "/badges", title: "Badges", user: 'UE' },
     { page: "/requests", title: "Requests", user: 'UE' },
-    { page: "/contact", title: "Contact", user: 'UE' },
     { page: "/api-reference", title: "API Reference", user: 'UE' },
     { page: "/orders", title: "Service Request", user: 'UA' },
     { page: "/list-soft-skills", title: "Skills", user: 'UA' },
     { page: "/manage-test", title: "Test", user: 'UA' },
     // { page: "/portfolio", title: "Portfolio", user: 'UC' },
-    { page: "/price", title: "Service Plans", user: 'UA' },
+    { page: "/plans", title: "Service Plans", user: 'UA' },
   ];
 
   //Novo renderizador de itens do menu

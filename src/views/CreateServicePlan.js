@@ -209,7 +209,7 @@ const CreateServicePlan = () => {
       if (response.status === 200 || response.status === 201) {
         // Após o sucesso da criação do plano, redireciona para a página de preço
         setTimeout(() => {
-          navigate("/price");
+          navigate("/plans");
         }, 2000);
       }
     } catch (error) {
@@ -373,7 +373,7 @@ const CreateServicePlan = () => {
               <button
                 type="button"
                 className="btn btn-secondary cancel-button"
-                onClick={() => navigate("/price")} // Redireciona para a página de preços
+                onClick={() => navigate("/plans")} // Redireciona para a página de preços
               >
                 Cancel
               </button>
