@@ -76,7 +76,10 @@ const EditBadge = () => {
       );
 
       if (plan) {
-        setHasPlan(true);
+        const funcionalidades = plan.data.funcionalidadesDisponiveis;
+        if (funcionalidades && funcionalidades.some(f => f.id === 2)) {
+          setHasPlan(true);
+        }
       }
     } else {
       navigate("/home")
@@ -296,116 +299,139 @@ const EditBadge = () => {
 
               {badgePreview()}
 
-              {hasPlan && (
-                <>
-                  <div className="form-group">
-                    <label className="form-label">Request image for your badge?</label>
-                    <select
-                      className="form-control input-icon"
-                      value={requestOrder ? "yes" : "no"}
-                      onChange={handleRequestOrderChange}
-                    >
-                      <option value="no">No</option>
-                      <option value="yes">Yes</option>
-                    </select>
-                  </div>
-                  {requestOrder ?
-                    (
-                      <>
+              {hasPlan ?
+                (
+                  <>
+                    <div className="form-group">
+                      <label className="form-label">Request image for your badge?</label>
+                      <select
+                        className="form-control input-icon"
+                        value={requestOrder ? "yes" : "no"}
+                        onChange={handleRequestOrderChange}
+                      >
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                      </select>
+                    </div>
+                    {requestOrder ?
+                      (
+                        <>
+                          <div className="form-group">
+                            <label className="form-label">
+                              Colors
+                            </label>
+                            <div className="input-icon">
+                              <LightbulbFill />
+                              <ReactTags
+                                tags={colors}
+                                separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
+                                handleDelete={handleDeleteColor}
+                                handleAddition={handleAdditionColor}
+                                inputFieldPosition="bottom"
+                                autocomplete
+                                placeholder="Enter color(Hexadecimal, RGB, RGBA...) and press enter"
+                                maxTags={10}
+                                minTags={2}
+                                autoFocus={false}
+                              />
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">Badge shape</label>
+                            <div className="badge-shape">
+                              <label className="input-icon-radio">
+                                <input
+                                  type="radio"
+                                  value="badge_model1.png"
+                                  checked={badgeShape === "badge_model1.png"}
+                                  onChange={handleBadgeShapeChange}
+                                />
+                                <img src={badgeModel1} alt="Circle Badge" className="badge-shape-image" />
+                              </label>
+                              <label className="input-icon-radio">
+                                <input
+                                  type="radio"
+                                  value="badge_model2.png"
+                                  checked={badgeShape === "badge_model2.png"}
+                                  onChange={handleBadgeShapeChange}
+                                />
+                                <img src={badgeModel2} alt="Square Badge" className="badge-shape-image" />
+                              </label>
+                              <label className="input-icon-radio">
+                                <input
+                                  type="radio"
+                                  value="badge_model3.png"
+                                  checked={badgeShape === "badge_model3.png"}
+                                  onChange={handleBadgeShapeChange}
+                                />
+                                <img src={badgeModel3} alt="Star Badge" className="badge-shape-image" />
+                              </label>
+                            </div>
+                          </div>
+                          <div className="form-group">
+                            <label className="form-label">
+                              Request description
+                            </label>
+                            <div className="input-icon">
+                              <JournalText />
+                              <textarea
+                                className="form-control"
+                                id="desc_request"
+                                placeholder="Enter request description"
+                                value={badge.desc_request}
+                                onChange={handleDescRequest}
+                                required
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )
+                      :
+                      (
                         <div className="form-group">
                           <label className="form-label">
-                            Colors
+                            Badge image
                           </label>
                           <div className="input-icon">
-                            <LightbulbFill />
-                            <ReactTags
-                              tags={colors}
-                              separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
-                              handleDelete={handleDeleteColor}
-                              handleAddition={handleAdditionColor}
-                              inputFieldPosition="bottom"
-                              autocomplete
-                              placeholder="Enter color(Hexadecimal, RGB, RGBA...) and press enter"
-                              maxTags={10}
-                              minTags={2}
-                              autoFocus={false}
-                            />
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          <label className="form-label">Badge shape</label>
-                          <div className="badge-shape">
-                            <label className="input-icon-radio">
-                              <input
-                                type="radio"
-                                value="badge_model1.png"
-                                checked={badgeShape === "badge_model1.png"}
-                                onChange={handleBadgeShapeChange}
-                              />
-                              <img src={badgeModel1} alt="Circle Badge" className="badge-shape-image" />
+                            <ShieldFill />
+                            <label htmlFor="image_badge" className="custom-file-upload">
+                              Choose File
                             </label>
-                            <label className="input-icon-radio">
-                              <input
-                                type="radio"
-                                value="badge_model2.png"
-                                checked={badgeShape === "badge_model2.png"}
-                                onChange={handleBadgeShapeChange}
-                              />
-                              <img src={badgeModel2} alt="Square Badge" className="badge-shape-image" />
-                            </label>
-                            <label className="input-icon-radio">
-                              <input
-                                type="radio"
-                                value="badge_model3.png"
-                                checked={badgeShape === "badge_model3.png"}
-                                onChange={handleBadgeShapeChange}
-                              />
-                              <img src={badgeModel3} alt="Star Badge" className="badge-shape-image" />
-                            </label>
-                          </div>
-                        </div>
-                        <div className="form-group">
-                          <label className="form-label">
-                            Request description
-                          </label>
-                          <div className="input-icon">
-                            <JournalText />
-                            <textarea
+                            <input
+                              type="file"
+                              accept="image/*"
                               className="form-control"
-                              id="desc_request"
-                              placeholder="Enter request description"
-                              value={badge.desc_request}
-                              onChange={handleDescRequest}
-                              required
+                              id="image_badge"
+                              onChange={handleImageChange}
                             />
                           </div>
                         </div>
-                      </>
-                    )
-                    :
-                    (
-                      <div className="form-group">
-                        <label className="form-label">
-                          Badge image
-                        </label>
-                        <div className="input-icon">
-                          <ShieldFill />
-                          <label htmlFor="image_badge" className="custom-file-upload">
-                            Choose File
-                          </label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="form-control"
-                            id="image_badge"
-                            onChange={handleImageChange}
-                          />
-                        </div>
-                      </div>
-                    )
-                  }
-                </>
-              )}
+                      )
+                    }
+                  </>
+                )
+                :
+                (
+                  <div className="form-group">
+                    <label className="form-label">
+                      Badge image
+                    </label>
+                    <div className="input-icon">
+                      <ShieldFill />
+                      <label htmlFor="image_badge" className="custom-file-upload">
+                        Choose File
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="form-control"
+                        id="image_badge"
+                        onChange={handleImageChange}
+                      />
+                    </div>
+                  </div>
+                )
+              }
             </>
             <div className="btn-container">
               <button type="submit" className="btn btn-primary">

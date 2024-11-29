@@ -28,6 +28,7 @@ const CreateBadge = () => {
   const [image_badge, setImageBadge] = useState(null);
   const [tags, setTags] = useState([]);
   const [hasPlan, setHasPlan] = useState(false);
+  const [hasSomePlan, setHasSomePlan] = useState(false);
   const [badgeShape, setBadgeShape] = useState("");
   const [requestOrder, setRequestOrder] = useState(false);
   const [colors, setColor] = useState([]);
@@ -62,7 +63,11 @@ const CreateBadge = () => {
       );
 
       if (plan) {
-        setHasPlan(true);
+        setHasSomePlan(true);
+        const funcionalidades = plan.data.funcionalidadesDisponiveis;
+        if (funcionalidades && funcionalidades.some(f => f.id === 2)) {
+          setHasPlan(true);
+        }
       }
     } else {
       navigate("/home")
@@ -159,6 +164,7 @@ const CreateBadge = () => {
       formDataToSend.append('created_user', user.email_comercial);
       formDataToSend.append('skills_badge', skillsString);
       formDataToSend.append('hasPlan', hasPlan);
+      formDataToSend.append('hasSomePlan', hasSomePlan);
       formDataToSend.append('color_badge', colorsString);
       formDataToSend.append('shape_badge', badgeShape);
       formDataToSend.append('desc_request', formData.desc_request);
@@ -269,7 +275,7 @@ const CreateBadge = () => {
 
               {badgePreview()}
 
-              {hasPlan &&
+              {hasPlan ?
                 (
                   <>
                     <div className="form-group">
@@ -380,7 +386,30 @@ const CreateBadge = () => {
                       )
                     }
                   </>
-                )}
+                )
+                :
+                (
+                  <div className="form-group">
+                    <label className="form-label">
+                      Badge image
+                    </label>
+                    <div className="input-icon">
+                      <ShieldFill />
+                      <label htmlFor="image_badge" className="custom-file-upload">
+                        Choose File
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="form-control"
+                        id="image_badge"
+                        onChange={handleImageChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                )
+              }
             </>
             <div className="btn-container">
               <button type="submit" className="btn btn-primary">
