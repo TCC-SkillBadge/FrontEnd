@@ -3,11 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Spinner } from "react-bootstrap";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import ConfirmationModal from "../components/ConfirmationModal"; // Certifique-se de que este componente existe
-import "../styles/ConfirmBadge.css"; // Adicione estilos específicos se necessário
+import ConfirmationModal from "../components/ConfirmationModal";
+import "../styles/ConfirmBadge.css";
 
-const API_BADGES = process.env.REACT_APP_API_BADGES;
+const API_BADGES = process.env.REACT_APP_API_BADGE;
 
 const ConfirmBadge = () => {
   const location = useLocation();
@@ -47,7 +46,7 @@ const ConfirmBadge = () => {
       if (!storedAuthToken) {
         setModalContent({
           title: "Badge Confirmation",
-          body: "You need to be logged in to confirm the badge. Do you want to log in now?",
+          body: "You need to login to confirm the badge. Would you like to login now?",
           showButtons: true,
         });
         setShowModal(true);
@@ -56,7 +55,7 @@ const ConfirmBadge = () => {
       }
 
       const response = await axios.post(
-        `${API_BADGES}badges/confirm-badge`,
+        `${API_BADGES}/badges/confirm-badge`,
         { token: confirmationToken },
         {
           headers: {
@@ -85,24 +84,30 @@ const ConfirmBadge = () => {
   };
 
   const handleLoginRedirect = () => {
+    console.log("handleLoginRedirect foi chamado");
     setShowModal(false);
     navigate("/login");
   };
 
   const handleSignupRedirect = () => {
+    console.log("handleSignupRedirect foi chamado");
     setShowModal(false);
     navigate("/create");
   };
 
   const handleCloseModal = () => {
+    console.log("handleCloseModal foi chamado");
     setShowModal(false);
     navigate("/");
   };
 
   const handleConfirmAction = () => {
-    if (modalContent.body.includes("login")) {
+    console.log("handleConfirmAction foi chamado");
+    if (modalContent.body.toLowerCase().includes("login")) {
+      console.log("Condição 'login' satisfeita");
       handleLoginRedirect();
-    } else if (modalContent.body.includes("sign up")) {
+    } else if (modalContent.body.toLowerCase().includes("sign up")) {
+      console.log("Condição 'sign up' satisfeita");
       handleSignupRedirect();
     }
   };

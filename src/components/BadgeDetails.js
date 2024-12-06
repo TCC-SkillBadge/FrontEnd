@@ -6,7 +6,12 @@ import "../styles/GlobalStylings.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const BadgeDetails = ({ id_badge, razao_social, url_origem, userType }) => {
+const BadgeDetails = ({
+  id_badge,
+  username_enterprise,
+  url_origem,
+  userType,
+}) => {
   const [badge, setBadge] = useState({
     id_badge: 0,
     name_badge: "",
@@ -30,11 +35,13 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem, userType }) => {
     numero_contato: "",
     api_key: "",
     imageUrl: "",
+    username: "",
   });
 
-  const [razSoc, setRazSoc] = useState("");
+  const [username, setUsername] = useState("");
 
   const badgeUrl = process.env.REACT_APP_API_BADGE;
+  const enterpriseUrl = process.env.REACT_APP_API_ENTERPRISE;
 
   const fetchBadge = async () => {
     try {
@@ -42,6 +49,8 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem, userType }) => {
         `${badgeUrl}/badges/consult?id_badge=${id_badge}`
       );
       setBadge(response.data);
+
+      fetchUsername(response.data.institution);
     } catch (error) {
       console.error("Error fetching the badge:", error);
     }
@@ -56,20 +65,31 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem, userType }) => {
     }
   };
 
+  const fetchUsername = async (institution) => {
+    try {
+      const token = sessionStorage.getItem("token");
+
+      const response = await axios.get(`${enterpriseUrl}/api/find-users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          search: institution,
+          researcher: "",
+        },
+      });
+
+      console.log("response:", response);
+      setUsername(response.data[0].username);
+    } catch (error) {
+      console.error("Error fetching the badge:", error);
+    }
+  };
+
   useEffect(() => {
     fetchBadge();
     fetchUser();
   }, [id_badge]);
-
-  useEffect(() => {
-    let inst = "Unknown";
-    if (user && user.razao_social) {
-      inst = user.razao_social;
-    } else if (razao_social && razao_social !== "undefined") {
-      inst = razao_social;
-    }
-    setRazSoc(() => inst);
-  }, [user, razao_social]);
 
   return (
     <div className="badge-details-container">
@@ -83,7 +103,7 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem, userType }) => {
             />
           </div>
           <br />
-          <p className="badge-details-text">By {razSoc}</p>
+          <p className="badge-details-text">By {username}</p>
         </div>
         <div className="col-md-8">
           <div className="badge-details-content">
@@ -106,9 +126,7 @@ const BadgeDetails = ({ id_badge, razao_social, url_origem, userType }) => {
                   </li>
                 ))
               ) : (
-                <li className="badge-details-skill-tag">
-                  No skills available
-                </li>
+                <li className="badge-details-skill-tag">No skills available</li>
               )}
             </ul>
             {url_origem && (

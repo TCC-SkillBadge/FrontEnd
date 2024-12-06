@@ -963,7 +963,7 @@
   border-bottom: 2px solid var(--color-primary);
   color: var(--color-primary);
   font-weight: bold;
-  background-color: rgba(210, 115, 255, 0.1); /* Sutil destaque */
+ /* Sutil destaque */
 }
 
 .user-tabs button {

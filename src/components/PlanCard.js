@@ -68,7 +68,7 @@ const PlanCard = ({
             </li>
           ))
         ) : (
-          <li>No unavailable features.</li>
+          <li></li>
         )}
       </ul>
       <div className="price">

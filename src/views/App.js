@@ -252,7 +252,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/general-search" element={<GeneralSearch />} />
           <Route
-            path="/badge-public-display/:id_badge/:razao_social"
+            path="/badge-public-display/:id_badge/:username_enterprise"
             element={<BadgePublicDisplay />}
           />
           <Route path="/analysis" element={<DataVisualization />} />
